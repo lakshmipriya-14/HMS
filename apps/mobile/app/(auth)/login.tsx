@@ -12,15 +12,21 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import { Role } from '@multispeciality-hms/contracts';
 
-const QUICK_ROLES = [
+const ALL_ROLES = [
+  { label: 'Doctor (Cardio)', email: 'doctor@aalayamhospital.com', target: '/(doctor)' },
   { label: 'Staff Nurse', email: 'nurse@aalayamhospital.com', target: '/(nurse)' },
-  { label: 'Head Nurse', email: 'headnurse@aalayamhospital.com', target: '/(nurse)' },
-  { label: 'Patient Portal', email: 'patient@aalayamhospital.com', target: '/(patient)' },
+  { label: 'Hospital Admin', email: 'admin@aalayamhospital.com', target: '/(admin)' },
+  { label: 'Reception Desk', email: 'reception@aalayamhospital.com', target: '/(reception)' },
+  { label: 'Pharmacy Staff', email: 'pharmacy@aalayamhospital.com', target: '/(pharmacy)' },
+  { label: 'Lab Technician', email: 'labtech@aalayamhospital.com', target: '/(lab)' },
+  { label: 'Radiology Staff', email: 'radiology@aalayamhospital.com', target: '/(radiology)' },
+  { label: 'Billing & Ward', email: 'billing@aalayamhospital.com', target: '/(billing)' },
   { label: 'Ambulance Driver', email: 'driver@aalayamhospital.com', target: '/(ambulance)' },
+  { label: 'Patient Portal', email: 'patient@aalayamhospital.com', target: '/(patient)' },
 ];
 
 export default function MobileLogin() {
-  const [email, setEmail] = useState('nurse@aalayamhospital.com');
+  const [email, setEmail] = useState('doctor@aalayamhospital.com');
   const [password, setPassword] = useState('Password@123');
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
@@ -30,9 +36,24 @@ export default function MobileLogin() {
     setError('');
     try {
       await login({ email, password });
-      if (email.includes('nurse')) {
+      const lower = email.toLowerCase();
+      if (lower.includes('doctor')) {
+        router.replace('/(doctor)');
+      } else if (lower.includes('nurse')) {
         router.replace('/(nurse)');
-      } else if (email.includes('driver') || email.includes('ambulance')) {
+      } else if (lower.includes('admin')) {
+        router.replace('/(admin)');
+      } else if (lower.includes('reception')) {
+        router.replace('/(reception)');
+      } else if (lower.includes('pharmacy')) {
+        router.replace('/(pharmacy)');
+      } else if (lower.includes('lab')) {
+        router.replace('/(lab)');
+      } else if (lower.includes('radiology')) {
+        router.replace('/(radiology)');
+      } else if (lower.includes('billing') || lower.includes('ward')) {
+        router.replace('/(billing)');
+      } else if (lower.includes('driver') || lower.includes('ambulance')) {
         router.replace('/(ambulance)');
       } else {
         router.replace('/(patient)');
@@ -88,15 +109,15 @@ export default function MobileLogin() {
           {isLoading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Sign In to Mobile EMR</Text>
+            <Text style={styles.buttonText}>Sign In to Mobile Terminal</Text>
           )}
         </TouchableOpacity>
 
         {/* Demo Fast Selector */}
         <View style={styles.demoSection}>
-          <Text style={styles.demoTitle}>1-Click Role Switcher</Text>
+          <Text style={styles.demoTitle}>1-Click Role Switcher (All 10 Roles)</Text>
           <View style={styles.roleGrid}>
-            {QUICK_ROLES.map((r) => (
+            {ALL_ROLES.map((r) => (
               <TouchableOpacity
                 key={r.label}
                 style={[
@@ -128,28 +149,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#0F766E',
     justifyContent: 'center',
     padding: 20,
+    paddingVertical: 36,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 20,
   },
   logoBadge: {
-    width: 60,
-    height: 60,
-    borderRadius: 20,
+    width: 54,
+    height: 54,
+    borderRadius: 18,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   logoLetter: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: 'bold',
     color: '#0F766E',
   },
   title: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontWeight: '800',
     color: '#fff',
   },
   subTitle: {
@@ -161,11 +183,14 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#99F6E4',
     marginTop: 2,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    fontWeight: '600',
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 24,
+    borderRadius: 16,
+    padding: 20,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 10,
@@ -182,70 +207,69 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#334155',
     marginBottom: 6,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 13,
+    borderColor: '#CBD5E1',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: '#0F172A',
     marginBottom: 14,
-    backgroundColor: '#F8FAFC',
   },
   button: {
     backgroundColor: '#0F766E',
-    borderRadius: 12,
-    padding: 14,
+    borderRadius: 10,
+    paddingVertical: 14,
     alignItems: 'center',
-    marginTop: 6,
+    marginTop: 4,
   },
   buttonText: {
     color: '#fff',
-    fontWeight: 'bold',
     fontSize: 14,
+    fontWeight: '700',
   },
   demoSection: {
     marginTop: 20,
-    paddingTop: 16,
     borderTopWidth: 1,
     borderTopColor: '#F1F5F9',
+    paddingTop: 16,
   },
   demoTitle: {
     fontSize: 11,
     fontWeight: '700',
     color: '#64748B',
     textTransform: 'uppercase',
-    textAlign: 'center',
+    letterSpacing: 0.5,
     marginBottom: 10,
+    textAlign: 'center',
   },
   roleGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    justifyContent: 'center',
   },
   roleButton: {
-    paddingVertical: 6,
+    flexBasis: '48%',
+    backgroundColor: '#F1F5F9',
+    paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    backgroundColor: '#F8FAFC',
+    alignItems: 'center',
   },
   roleButtonActive: {
-    backgroundColor: '#CCFBF1',
-    borderColor: '#0F766E',
+    backgroundColor: '#0F766E',
   },
   roleButtonText: {
     fontSize: 11,
-    color: '#475569',
-    fontWeight: '500',
+    fontWeight: '600',
+    color: '#334155',
   },
   roleButtonTextActive: {
-    color: '#0F766E',
-    fontWeight: 'bold',
+    color: '#fff',
   },
 });

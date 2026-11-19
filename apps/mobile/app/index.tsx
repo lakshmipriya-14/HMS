@@ -12,14 +12,48 @@ export default function IndexScreen() {
     if (!isLoading) {
       if (!user) {
         router.replace('/(auth)/login');
-      } else if (user.role === Role.NURSE || user.role === Role.HEAD_NURSE) {
-        router.replace('/(nurse)');
-      } else if (user.role === Role.AMBULANCE_DRIVER || user.role === Role.AMBULANCE_COORDINATOR) {
-        router.replace('/(ambulance)');
-      } else if (user.role === Role.PATIENT) {
-        router.replace('/(patient)');
       } else {
-        router.replace('/(nurse)');
+        switch (user.role) {
+          case Role.SUPER_ADMIN:
+          case Role.HOSPITAL_ADMIN:
+          case Role.DEPARTMENT_ADMIN:
+            router.replace('/(admin)');
+            break;
+          case Role.DOCTOR:
+            router.replace('/(doctor)');
+            break;
+          case Role.NURSE:
+          case Role.HEAD_NURSE:
+            router.replace('/(nurse)');
+            break;
+          case Role.RECEPTIONIST:
+            router.replace('/(reception)');
+            break;
+          case Role.PHARMACIST:
+            router.replace('/(pharmacy)');
+            break;
+          case Role.LAB_TECHNICIAN:
+            router.replace('/(lab)');
+            break;
+          case Role.RADIOLOGY_STAFF:
+            router.replace('/(radiology)');
+            break;
+          case Role.BILLING_STAFF:
+          case Role.INSURANCE_STAFF:
+          case Role.WARD_MANAGER:
+            router.replace('/(billing)');
+            break;
+          case Role.AMBULANCE_DRIVER:
+          case Role.AMBULANCE_COORDINATOR:
+            router.replace('/(ambulance)');
+            break;
+          case Role.PATIENT:
+            router.replace('/(patient)');
+            break;
+          default:
+            router.replace('/(doctor)');
+            break;
+        }
       }
     }
   }, [user, isLoading]);
