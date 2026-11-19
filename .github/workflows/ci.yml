@@ -6,6 +6,14 @@ on:
   pull_request:
     branches: [main, develop]
 
+env:
+  NODE_ENV: test
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/aalayam_hms?schema=public"
+  JWT_ACCESS_SECRET: "aalayam-hospital-super-secret-jwt-key-2026"
+  JWT_REFRESH_SECRET: "aalayam-hospital-super-secret-refresh-key-2026"
+  API_PORT: 4000
+  CORS_ORIGINS: "http://localhost:3000"
+
 jobs:
   lint-and-typecheck:
     name: Lint & Typecheck
@@ -20,12 +28,15 @@ jobs:
           node-version: 22
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
-          version: 9
+          run_install: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm db:generate
 
       - name: Build Shared Packages
         run: pnpm build:packages
@@ -46,12 +57,15 @@ jobs:
           node-version: 22
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
-          version: 9
+          run_install: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm db:generate
 
       - name: Build Shared Packages
         run: pnpm build:packages
@@ -72,12 +86,15 @@ jobs:
           node-version: 22
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
-          version: 9
+          run_install: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm db:generate
 
       - name: Build Packages & Web
         run: |
