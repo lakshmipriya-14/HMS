@@ -25,6 +25,7 @@
     "clean": "pnpm -r exec rm -rf node_modules dist .turbo .next"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.10.1",
     "prettier": "^3.4.2",
     "prisma": "^6.19.3",
@@ -32,6 +33,7 @@
   },
   "packageManager": "pnpm@12.21.0",
   "dependencies": {
-    "@prisma/client": "^6.19.3"
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^2.4.3"
   }
 }
