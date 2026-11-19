@@ -1,0 +1,37 @@
+{
+  "name": "multispeciality-hms",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Enterprise Multispeciality Hospital Management System for Aalayam Multispeciality Hospitals",
+  "author": "Aalayam Engineering Team",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @multispeciality-hms/api --filter @multispeciality-hms/web dev",
+    "dev:api": "pnpm --filter @multispeciality-hms/api dev",
+    "dev:web": "pnpm --filter @multispeciality-hms/web dev",
+    "dev:mobile": "pnpm --filter @multispeciality-hms/mobile start",
+    "build": "pnpm --filter @multispeciality-hms/contracts build && pnpm --filter @multispeciality-hms/shared-types build && pnpm --filter @multispeciality-hms/validation build && pnpm --filter @multispeciality-hms/api-client build && pnpm -r --filter=!@multispeciality-hms/mobile build",
+    "build:packages": "pnpm --filter @multispeciality-hms/contracts build && pnpm --filter @multispeciality-hms/shared-types build && pnpm --filter @multispeciality-hms/validation build && pnpm --filter @multispeciality-hms/config build && pnpm --filter @multispeciality-hms/api-client build",
+    "build:api": "pnpm --filter @multispeciality-hms/api build",
+    "build:web": "pnpm --filter @multispeciality-hms/web build",
+    "typecheck": "pnpm -r exec tsc --noEmit",
+    "lint": "pnpm -r exec eslint . --max-warnings=0",
+    "test": "pnpm --filter @multispeciality-hms/api test && pnpm --filter tests test",
+    "test:integration": "pnpm --filter tests test:integration",
+    "db:generate": "pnpm --filter @multispeciality-hms/api prisma:generate",
+    "db:migrate": "pnpm --filter @multispeciality-hms/api prisma:migrate",
+    "db:seed": "pnpm --filter @multispeciality-hms/api prisma:seed",
+    "db:studio": "pnpm --filter @multispeciality-hms/api prisma:studio",
+    "clean": "pnpm -r exec rm -rf node_modules dist .turbo .next"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "prettier": "^3.4.2",
+    "prisma": "^6.19.3",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "pnpm@12.21.0",
+  "dependencies": {
+    "@prisma/client": "^6.19.3"
+  }
+}

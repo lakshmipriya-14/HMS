@@ -1,0 +1,330 @@
+import {
+  AdmissionStatus,
+  AppointmentStatus,
+  AppointmentType,
+  BedStatus,
+  BedType,
+  BloodGroup,
+  ClaimStatus,
+  ConsultationStatus,
+  DoctorDesignation,
+  EmergencySeverity,
+  Gender,
+  InvoiceStatus,
+  PaymentMethod,
+  Priority,
+  RadiologyStatus,
+  Role,
+  SampleStatus,
+  TripStatus,
+} from './enums.js';
+
+// Auth DTOs
+export interface LoginRequestDto {
+  email: string;
+  password: string;
+}
+
+export interface AuthUserDto {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: Role;
+  permissions: string[];
+  hospitalId?: string;
+  branchId?: string;
+  departmentId?: string;
+  doctorProfileId?: string;
+  patientProfileId?: string;
+  nurseProfileId?: string;
+  employeeId?: string;
+}
+
+export interface LoginResponseDto {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  user: AuthUserDto;
+}
+
+export interface RefreshTokenRequestDto {
+  refreshToken: string;
+}
+
+export interface ChangePasswordRequestDto {
+  currentPassword: string;
+  newPassword: string;
+}
+
+// Patient DTOs
+export interface RegisterPatientDto {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  gender: Gender;
+  bloodGroup?: BloodGroup;
+  email?: string;
+  phone: string;
+  nationalId?: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country?: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  emergencyContactRelation: string;
+  allergies?: string[];
+  medicalHistoryNotes?: string;
+  hospitalId: string;
+}
+
+export interface PatientSearchQueryDto {
+  query?: string;
+  uhid?: string;
+  phone?: string;
+  email?: string;
+  page?: number;
+  limit?: number;
+}
+
+// Appointment DTOs
+export interface CreateAppointmentDto {
+  patientId: string;
+  doctorId: string;
+  departmentId: string;
+  hospitalId: string;
+  branchId?: string;
+  appointmentDate: string;
+  appointmentTime: string;
+  appointmentType: AppointmentType;
+  reasonForVisit: string;
+  priority?: Priority;
+}
+
+export interface CheckInAppointmentDto {
+  appointmentId: string;
+  vitals?: RecordVitalsDto;
+}
+
+// Doctor & Consultation DTOs
+export interface CreateConsultationDto {
+  appointmentId: string;
+  patientId: string;
+  doctorId: string;
+  chiefComplaint: string;
+  historyOfPresentIllness?: string;
+  physicalExaminationNotes?: string;
+  diagnosisNotes: string;
+  icd10Codes?: string[];
+  treatmentPlan: string;
+  followUpDate?: string;
+  admissionRecommended?: boolean;
+  admissionDepartmentId?: string;
+  admissionWardId?: string;
+  admissionNotes?: string;
+}
+
+export interface PrescriptionItemDto {
+  medicineId: string;
+  medicineName: string;
+  dosage: string;
+  frequency: string;
+  durationDays: number;
+  instructions: string;
+  route?: string;
+}
+
+export interface CreatePrescriptionDto {
+  patientId: string;
+  doctorId: string;
+  consultationId?: string;
+  appointmentId?: string;
+  notes?: string;
+  items: PrescriptionItemDto[];
+}
+
+// Nursing DTOs
+export interface RecordVitalsDto {
+  patientId: string;
+  admissionId?: string;
+  temperature?: number;
+  systolicBp?: number;
+  diastolicBp?: number;
+  pulseRate?: number;
+  respiratoryRate?: number;
+  oxygenSaturation?: number;
+  weightKg?: number;
+  heightCm?: number;
+  bloodSugarMgDl?: number;
+  notes?: string;
+}
+
+export interface CreateNursingTaskDto {
+  patientId: string;
+  admissionId: string;
+  nurseId?: string;
+  taskTitle: string;
+  taskDescription: string;
+  dueTime: string;
+  priority: Priority;
+}
+
+export interface AdministerMedicationDto {
+  prescriptionItemId: string;
+  patientId: string;
+  administeredDose: string;
+  notes?: string;
+}
+
+// Laboratory DTOs
+export interface CreateLabOrderDto {
+  patientId: string;
+  doctorId: string;
+  encounterId?: string;
+  clinicalNotes?: string;
+  priority: Priority;
+  testIds: string[];
+}
+
+export interface EnterLabResultItemDto {
+  testParameterId: string;
+  measuredValue: string;
+  unit: string;
+  referenceRange: string;
+  isAbnormal: boolean;
+  isCritical: boolean;
+  remarks?: string;
+}
+
+export interface EnterLabResultsDto {
+  orderId: string;
+  results: EnterLabResultItemDto[];
+  technicianNotes?: string;
+}
+
+// Pharmacy DTOs
+export interface DispensePrescriptionDto {
+  prescriptionId: string;
+  pharmacistId: string;
+  items: {
+    prescriptionItemId: string;
+    batchId: string;
+    dispensedQuantity: number;
+  }[];
+  dispensingNotes?: string;
+}
+
+export interface AdjustStockDto {
+  medicineId: string;
+  batchId?: string;
+  quantityChange: number;
+  reason: string;
+}
+
+// Radiology DTOs
+export interface CreateRadiologyOrderDto {
+  patientId: string;
+  doctorId: string;
+  testId: string;
+  priority: Priority;
+  clinicalIndication: string;
+  specialInstructions?: string;
+}
+
+export interface UploadRadiologyReportDto {
+  orderId: string;
+  findings: string;
+  impression: string;
+  criticalAlert: boolean;
+  imageUrl?: string;
+}
+
+// Wards & Admissions DTOs
+export interface AdmitPatientDto {
+  patientId: string;
+  admittingDoctorId: string;
+  wardId: string;
+  bedId: string;
+  admissionReason: string;
+  initialDiagnosis: string;
+  estimatedStayDays?: number;
+}
+
+export interface TransferBedDto {
+  admissionId: string;
+  targetWardId: string;
+  targetBedId: string;
+  reason: string;
+}
+
+export interface DischargePatientDto {
+  admissionId: string;
+  dischargeSummary: string;
+  followUpInstructions?: string;
+  medicationOnDischarge?: string;
+}
+
+// Billing & Insurance DTOs
+export interface InvoiceItemDto {
+  description: string;
+  category: 'CONSULTATION' | 'LAB' | 'RADIOLOGY' | 'PHARMACY' | 'ROOM' | 'PROCEDURE';
+  quantity: number;
+  unitPrice: number;
+  discountPercentage?: number;
+  referenceId?: string;
+}
+
+export interface CreateInvoiceDto {
+  patientId: string;
+  admissionId?: string;
+  appointmentId?: string;
+  items: InvoiceItemDto[];
+  taxPercentage?: number;
+  discountAmount?: number;
+  notes?: string;
+}
+
+export interface CollectPaymentDto {
+  invoiceId: string;
+  amount: number;
+  paymentMethod: PaymentMethod;
+  transactionReference?: string;
+  notes?: string;
+}
+
+export interface SubmitInsuranceClaimDto {
+  invoiceId: string;
+  patientId: string;
+  insuranceProviderId: string;
+  policyNumber: string;
+  claimAmount: number;
+  preAuthCode?: string;
+  documents?: string[];
+}
+
+// Ambulance DTOs
+export interface CreateAmbulanceRequestDto {
+  callerName: string;
+  callerPhone: string;
+  pickupLocation: string;
+  destinationHospitalId: string;
+  emergencySeverity: EmergencySeverity;
+  patientConditionSummary: string;
+  patientId?: string;
+}
+
+export interface DispatchAmbulanceDto {
+  requestId: string;
+  vehicleId: string;
+  driverId: string;
+}
+
+export interface UpdateTripStatusDto {
+  status: TripStatus;
+  currentLatitude?: number;
+  currentLongitude?: number;
+  notes?: string;
+}
