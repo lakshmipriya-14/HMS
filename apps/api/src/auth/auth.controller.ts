@@ -29,7 +29,7 @@ export class AuthController {
     const ip = req.ip || req.socket.remoteAddress;
     const data = await this.authService.login(loginDto, ip);
     return {
-      message: 'Login successful. Welcome to Aalayam Multispeciality Hospital.',
+      message: 'Login successful. Welcome to Kizuna Multispeciality Hospital.',
       data,
     };
   }

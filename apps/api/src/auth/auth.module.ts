@@ -9,7 +9,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'aalayam-enterprise-hms-jwt-access-secret-key-2026-very-secure',
+      secret: process.env.JWT_SECRET || 'kizuna-enterprise-hms-jwt-access-secret-key-2026-very-secure',
       signOptions: {
         expiresIn: (process.env.JWT_EXPIRATION || '15m') as any,
       },

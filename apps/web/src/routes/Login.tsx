@@ -5,23 +5,23 @@ import { Role } from '@multispeciality-hms/contracts';
 import { HeartPulse, Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
 
 const DEMO_PRESETS = [
-  { label: 'Super Admin', email: 'superadmin@aalayamhospital.com', role: Role.SUPER_ADMIN },
-  { label: 'Hospital Admin', email: 'hospitaladmin@aalayamhospital.com', role: Role.HOSPITAL_ADMIN },
-  { label: 'Doctor (Cardiology)', email: 'doctor@aalayamhospital.com', role: Role.DOCTOR },
-  { label: 'Staff Nurse', email: 'nurse@aalayamhospital.com', role: Role.NURSE },
-  { label: 'Head Nurse', email: 'headnurse@aalayamhospital.com', role: Role.HEAD_NURSE },
-  { label: 'Receptionist', email: 'reception@aalayamhospital.com', role: Role.RECEPTIONIST },
-  { label: 'Lab Technician', email: 'lab@aalayamhospital.com', role: Role.LAB_TECHNICIAN },
-  { label: 'Pharmacist', email: 'pharmacy@aalayamhospital.com', role: Role.PHARMACIST },
-  { label: 'Radiology Staff', email: 'radiology@aalayamhospital.com', role: Role.RADIOLOGY_STAFF },
-  { label: 'Billing Staff', email: 'billing@aalayamhospital.com', role: Role.BILLING_STAFF },
-  { label: 'Ward Manager', email: 'wardmanager@aalayamhospital.com', role: Role.WARD_MANAGER },
-  { label: 'Ambulance Dispatch', email: 'ambulance@aalayamhospital.com', role: Role.AMBULANCE_COORDINATOR },
-  { label: 'Patient Portal', email: 'patient@aalayamhospital.com', role: Role.PATIENT },
+  { label: 'Super Admin', email: 'superadmin@kizunahospital.com', role: Role.SUPER_ADMIN },
+  { label: 'Hospital Admin', email: 'hospitaladmin@kizunahospital.com', role: Role.HOSPITAL_ADMIN },
+  { label: 'Doctor (Cardiology)', email: 'doctor@kizunahospital.com', role: Role.DOCTOR },
+  { label: 'Staff Nurse', email: 'nurse@kizunahospital.com', role: Role.NURSE },
+  { label: 'Head Nurse', email: 'headnurse@kizunahospital.com', role: Role.HEAD_NURSE },
+  { label: 'Receptionist', email: 'reception@kizunahospital.com', role: Role.RECEPTIONIST },
+  { label: 'Lab Technician', email: 'lab@kizunahospital.com', role: Role.LAB_TECHNICIAN },
+  { label: 'Pharmacist', email: 'pharmacy@kizunahospital.com', role: Role.PHARMACIST },
+  { label: 'Radiology Staff', email: 'radiology@kizunahospital.com', role: Role.RADIOLOGY_STAFF },
+  { label: 'Billing Staff', email: 'billing@kizunahospital.com', role: Role.BILLING_STAFF },
+  { label: 'Ward Manager', email: 'wardmanager@kizunahospital.com', role: Role.WARD_MANAGER },
+  { label: 'Ambulance Dispatch', email: 'ambulance@kizunahospital.com', role: Role.AMBULANCE_COORDINATOR },
+  { label: 'Patient Portal', email: 'patient@kizunahospital.com', role: Role.PATIENT },
 ];
 
 export const Login: React.FC = () => {
-  const [email, setEmail] = useState('doctor@aalayamhospital.com');
+  const [email, setEmail] = useState('doctor@kizunahospital.com');
   const [password, setPassword] = useState('Password@123');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,10 +56,10 @@ export const Login: React.FC = () => {
           <HeartPulse className="w-8 h-8" />
         </div>
         <h2 className="mt-4 text-2xl font-extrabold text-slate-900 tracking-tight">
-          Aalayam Multispeciality Hospital
+          Kizuna Multispeciality Hospital
         </h2>
         <p className="text-xs text-teal-800 font-medium mt-1">
-          ஆலயம் பன்னோக்கு மருத்துவமனை • EMR Clinical Portal
+          கிஜுனா பன்னோக்கு மருத்துவமனை • EMR Clinical Portal
         </p>
       </div>
 
@@ -84,7 +84,7 @@ export const Login: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-9 pr-3 py-2.5 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
-                  placeholder="name@aalayamhospital.com"
+                  placeholder="name@kizunahospital.com"
                 />
               </div>
             </div>

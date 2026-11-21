@@ -42,7 +42,7 @@ export const AdminDashboard: React.FC = () => {
             Hospital Administration & Executive Command
           </h2>
           <p className="text-xs text-slate-500 mt-1">
-            Real-time multispeciality operations overview for Aalayam Apex Medical Center
+            Real-time multispeciality operations overview for Kizuna Apex Medical Center
           </p>
         </div>
       </div>
@@ -92,11 +92,11 @@ export const AdminDashboard: React.FC = () => {
           <div className="space-y-3 text-xs text-slate-600">
             <div className="flex justify-between py-1.5 border-b border-slate-100">
               <span className="text-slate-400">Hospital Legal Name</span>
-              <span className="font-semibold text-slate-800">Aalayam Multispeciality Hospital</span>
+              <span className="font-semibold text-slate-800">Kizuna Multispeciality Hospital</span>
             </div>
             <div className="flex justify-between py-1.5 border-b border-slate-100">
               <span className="text-slate-400">Tamil Identity</span>
-              <span className="font-semibold text-slate-800">ஆலயம் பன்னோக்கு மருத்துவமனை</span>
+              <span className="font-semibold text-slate-800">கிஜுனா பன்னோக்கு மருத்துவமனை</span>
             </div>
             <div className="flex justify-between py-1.5 border-b border-slate-100">
               <span className="text-slate-400">License Number</span>

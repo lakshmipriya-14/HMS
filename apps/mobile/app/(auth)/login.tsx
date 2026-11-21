@@ -13,20 +13,20 @@ import { useAuth } from '../../hooks/useAuth';
 import { Role } from '@multispeciality-hms/contracts';
 
 const ALL_ROLES = [
-  { label: 'Doctor (Cardio)', email: 'doctor@aalayamhospital.com', target: '/(doctor)' },
-  { label: 'Staff Nurse', email: 'nurse@aalayamhospital.com', target: '/(nurse)' },
-  { label: 'Hospital Admin', email: 'admin@aalayamhospital.com', target: '/(admin)' },
-  { label: 'Reception Desk', email: 'reception@aalayamhospital.com', target: '/(reception)' },
-  { label: 'Pharmacy Staff', email: 'pharmacy@aalayamhospital.com', target: '/(pharmacy)' },
-  { label: 'Lab Technician', email: 'labtech@aalayamhospital.com', target: '/(lab)' },
-  { label: 'Radiology Staff', email: 'radiology@aalayamhospital.com', target: '/(radiology)' },
-  { label: 'Billing & Ward', email: 'billing@aalayamhospital.com', target: '/(billing)' },
-  { label: 'Ambulance Driver', email: 'driver@aalayamhospital.com', target: '/(ambulance)' },
-  { label: 'Patient Portal', email: 'patient@aalayamhospital.com', target: '/(patient)' },
+  { label: 'Doctor (Cardio)', email: 'doctor@kizunahospital.com', target: '/(doctor)' },
+  { label: 'Staff Nurse', email: 'nurse@kizunahospital.com', target: '/(nurse)' },
+  { label: 'Hospital Admin', email: 'admin@kizunahospital.com', target: '/(admin)' },
+  { label: 'Reception Desk', email: 'reception@kizunahospital.com', target: '/(reception)' },
+  { label: 'Pharmacy Staff', email: 'pharmacy@kizunahospital.com', target: '/(pharmacy)' },
+  { label: 'Lab Technician', email: 'labtech@kizunahospital.com', target: '/(lab)' },
+  { label: 'Radiology Staff', email: 'radiology@kizunahospital.com', target: '/(radiology)' },
+  { label: 'Billing & Ward', email: 'billing@kizunahospital.com', target: '/(billing)' },
+  { label: 'Ambulance Driver', email: 'driver@kizunahospital.com', target: '/(ambulance)' },
+  { label: 'Patient Portal', email: 'patient@kizunahospital.com', target: '/(patient)' },
 ];
 
 export default function MobileLogin() {
-  const [email, setEmail] = useState('doctor@aalayamhospital.com');
+  const [email, setEmail] = useState('doctor@kizunahospital.com');
   const [password, setPassword] = useState('Password@123');
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
@@ -72,10 +72,10 @@ export default function MobileLogin() {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <View style={styles.logoBadge}>
-          <Text style={styles.logoLetter}>A</Text>
+          <Text style={styles.logoLetter}>K</Text>
         </View>
-        <Text style={styles.title}>Aalayam Hospital</Text>
-        <Text style={styles.subTitle}>ஆலயம் பன்னோக்கு மருத்துவமனை</Text>
+        <Text style={styles.title}>Kizuna Hospital</Text>
+        <Text style={styles.subTitle}>கிஜுனா பன்னோக்கு மருத்துவமனை</Text>
         <Text style={styles.subText}>Clinical Mobile Care Terminal</Text>
       </View>
 
@@ -87,7 +87,7 @@ export default function MobileLogin() {
           style={styles.input}
           value={email}
           onChangeText={setEmail}
-          placeholder="email@aalayamhospital.com"
+          placeholder="email@kizunahospital.com"
           autoCapitalize="none"
           keyboardType="email-address"
         />

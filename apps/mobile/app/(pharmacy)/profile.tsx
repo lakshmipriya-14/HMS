@@ -20,7 +20,7 @@ export default function PharmacyProfileScreen() {
           <Pill size={36} color="#7C3AED" />
         </View>
         <Text style={styles.name}>Hospital Pharmacy Dispenser</Text>
-        <Text style={styles.sub}>pharmacy@aalayamhospital.com</Text>
+        <Text style={styles.sub}>pharmacy@kizunahospital.com</Text>
         <Text style={styles.deskTag}>Central Pharmacy Counter 03</Text>
       </View>
 

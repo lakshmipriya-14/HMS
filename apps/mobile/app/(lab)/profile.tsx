@@ -20,7 +20,7 @@ export default function LabProfileScreen() {
           <FlaskConical size={36} color="#EA580C" />
         </View>
         <Text style={styles.name}>Laboratory Technician</Text>
-        <Text style={styles.sub}>labtech@aalayamhospital.com</Text>
+        <Text style={styles.sub}>labtech@kizunahospital.com</Text>
         <Text style={styles.deskTag}>NABL Accredited Pathology Lab</Text>
       </View>
 

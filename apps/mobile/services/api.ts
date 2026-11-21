@@ -1,4 +1,4 @@
-import { createAalayamApiClient } from '@multispeciality-hms/api-client';
+import { createKizunaApiClient } from '@multispeciality-hms/api-client';
 import { Platform } from 'react-native';
 
 // In Android emulator 10.0.2.2 points to host localhost; for iOS / web localhost works.
@@ -8,7 +8,7 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || DEFAULT_URL;
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
 
-export const mobileApiClient = createAalayamApiClient({
+export const mobileApiClient = createKizunaApiClient({
   baseURL: API_BASE_URL,
   getAccessToken: () => accessToken,
   getRefreshToken: () => refreshToken,

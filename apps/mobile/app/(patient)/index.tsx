@@ -12,11 +12,11 @@ export default function PatientHomeScreen() {
     <ScrollView style={styles.container}>
       {/* UHID Welcome Card */}
       <View style={styles.uhidCard}>
-        <Text style={styles.hospital}>Aalayam Multispeciality Hospital</Text>
+        <Text style={styles.hospital}>Kizuna Multispeciality Hospital</Text>
         <Text style={styles.patientName}>{user?.firstName || 'Muthuvel'} {user?.lastName || 'Karuppiah'}</Text>
         <View style={styles.uhidRow}>
           <Text style={styles.uhidLabel}>UHID:</Text>
-          <Text style={styles.uhidCode}>ALY-2026-0001</Text>
+          <Text style={styles.uhidCode}>KZN-2026-0001</Text>
         </View>
       </View>
 

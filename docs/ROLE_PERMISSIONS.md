@@ -1,6 +1,6 @@
-# Aalayam HMS — Role-Based Access Control (RBAC) Matrix
+# Kizuna HMS — Role-Based Access Control (RBAC) Matrix
 
-Aalayam HMS enforces fine-grained permission guards across all backend controllers and frontend navigation routes. Below is the authorized capability matrix across all 16 system roles.
+Kizuna HMS enforces fine-grained permission guards across all backend controllers and frontend navigation routes. Below is the authorized capability matrix across all 16 system roles.
 
 ---
 

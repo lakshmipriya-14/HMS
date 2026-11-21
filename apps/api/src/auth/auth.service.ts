@@ -83,7 +83,7 @@ export class AuthService {
     const refreshTokenString = this.jwtService.sign(
       { sub: user.id, tokenType: 'refresh' },
       {
-        secret: process.env.JWT_REFRESH_SECRET || 'aalayam-enterprise-hms-jwt-refresh-secret-key-2026-very-secure',
+        secret: process.env.JWT_REFRESH_SECRET || 'kizuna-enterprise-hms-jwt-refresh-secret-key-2026-very-secure',
         expiresIn: process.env.JWT_REFRESH_EXPIRATION || '7d',
       }
     );
@@ -131,7 +131,7 @@ export class AuthService {
   async refreshToken(refreshToken: string): Promise<LoginResponseDto> {
     try {
       const decoded = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET || 'aalayam-enterprise-hms-jwt-refresh-secret-key-2026-very-secure',
+        secret: process.env.JWT_REFRESH_SECRET || 'kizuna-enterprise-hms-jwt-refresh-secret-key-2026-very-secure',
       });
 
       const tokenRecord = await this.prisma.refreshToken.findUnique({
@@ -200,7 +200,7 @@ export class AuthService {
       const newRefreshToken = this.jwtService.sign(
         { sub: user.id, tokenType: 'refresh' },
         {
-          secret: process.env.JWT_REFRESH_SECRET || 'aalayam-enterprise-hms-jwt-refresh-secret-key-2026-very-secure',
+          secret: process.env.JWT_REFRESH_SECRET || 'kizuna-enterprise-hms-jwt-refresh-secret-key-2026-very-secure',
           expiresIn: process.env.JWT_REFRESH_EXPIRATION || '7d',
         }
       );

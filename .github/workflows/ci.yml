@@ -1,4 +1,4 @@
-name: Aalayam HMS CI/CD Pipeline
+name: Kizuna HMS CI/CD Pipeline
 
 on:
   push:
@@ -8,9 +8,9 @@ on:
 
 env:
   NODE_ENV: test
-  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/aalayam_hms?schema=public"
-  JWT_ACCESS_SECRET: "aalayam-hospital-super-secret-jwt-key-2026"
-  JWT_REFRESH_SECRET: "aalayam-hospital-super-secret-refresh-key-2026"
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/kizuna_hms?schema=public"
+  JWT_ACCESS_SECRET: "kizuna-hospital-super-secret-jwt-key-2026"
+  JWT_REFRESH_SECRET: "kizuna-hospital-super-secret-refresh-key-2026"
   API_PORT: 4000
   CORS_ORIGINS: "http://localhost:3000"
 

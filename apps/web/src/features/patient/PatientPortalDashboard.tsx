@@ -22,7 +22,7 @@ export const PatientPortalDashboard: React.FC = () => {
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
-        const res = await apiClient.reception.searchPatients(user?.email || 'patient@aalayamhospital.com');
+        const res = await apiClient.reception.searchPatients(user?.email || 'patient@kizunahospital.com');
         if (res.data?.[0]) {
           const detailRes = await apiClient.reception.searchPatients(res.data[0].uhid);
           setPatientRecord(detailRes.data?.[0]);
@@ -50,7 +50,7 @@ export const PatientPortalDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-teal-300 text-xs font-semibold tracking-wider uppercase">
-                Aalayam Digital Health Card (ஆலயம்)
+                Kizuna Digital Health Card (கிஜுனா)
               </p>
               <h2 className="text-xl font-bold mt-0.5">
                 {patientRecord?.firstName || 'Muthuvel'} {patientRecord?.lastName || 'Karuppiah'}

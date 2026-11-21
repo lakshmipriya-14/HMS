@@ -939,7 +939,7 @@ model AmbulanceTrip {
   callerName              String
   callerPhone             String
   pickupLocation          String
-  destinationHospital     String           @default("Aalayam Multispeciality Hospital - Main Campus")
+  destinationHospital     String           @default("Kizuna Multispeciality Hospital - Main Campus")
   severity                String           @default("CRITICAL") // CRITICAL, HIGH, MODERATE, LOW
   status                  String           @default("DISPATCHED") // DISPATCHED, EN_ROUTE_PICKUP, ARRIVED_AT_SCENE, PATIENT_LOADED, EN_ROUTE_HOSPITAL, ARRIVED_HOSPITAL, HANDOVER_COMPLETE
   patientConditionSummary String
