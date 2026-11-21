@@ -89,6 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         firstName: matchedRole.replace('_', ' '),
         lastName: 'Officer',
         role: matchedRole,
+        roles: [matchedRole],
         permissions: (ROLE_PERMISSIONS_MATRIX[matchedRole] as string[]) || [],
       };
 
@@ -115,8 +116,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const hasRole = (...roles: Role[]) => {
     if (!user) return false;
-    if (user.role === Role.SUPER_ADMIN) return true;
-    return roles.includes(user.role);
+    if (user.role === Role.SUPER_ADMIN || user.roles?.includes(Role.SUPER_ADMIN)) return true;
+    if (roles.includes(user.role)) return true;
+    return roles.some((r) => user.roles?.includes(r));
   };
 
   const hasPermission = (permission: string) => {
