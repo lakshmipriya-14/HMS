@@ -20,7 +20,7 @@ export default function ReceptionProfileScreen() {
           <UserPlus size={36} color="#0284C7" />
         </View>
         <Text style={styles.name}>Front Desk Reception</Text>
-        <Text style={styles.sub}>reception@aalayamhospital.com</Text>
+        <Text style={styles.sub}>reception@kizunahospital.com</Text>
         <Text style={styles.deskTag}>OPD Terminal 01 • Main Atrium</Text>
       </View>
 

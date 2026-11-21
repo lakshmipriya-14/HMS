@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Starting Aalayam Multispeciality Hospital database seeding...');
+  console.log('🌱 Starting Kizuna Multispeciality Hospital database seeding...');
 
   // 1. Clean existing records in reverse dependency order
   await prisma.auditLog.deleteMany();
@@ -85,17 +85,17 @@ async function main() {
   // 3. Create Hospital & Branches
   const hospital = await prisma.hospital.create({
     data: {
-      name: 'Aalayam Multispeciality Hospital',
-      tamilName: 'ஆலயம் பன்னோக்கு மருத்துவமனை',
-      code: 'AALAYAM-HQ',
+      name: 'Kizuna Multispeciality Hospital',
+      tamilName: 'கிஜுனா பன்னோக்கு மருத்துவமனை',
+      code: 'KIZUNA-HQ',
       addressLine1: '45, Ring Road, K.K. Nagar',
       city: 'Madurai',
       state: 'Tamil Nadu',
       postalCode: '625020',
       phone: '+91 452 258 9000',
       emergencyPhone: '+91 452 258 9911',
-      email: 'info@aalayamhospital.com',
-      website: 'https://aalayamhospital.com',
+      email: 'info@kizunahospital.com',
+      website: 'https://kizunahospital.com',
       licenseNumber: 'TN-HOSP-MDU-2026-0042',
     },
   });
@@ -103,8 +103,8 @@ async function main() {
   const branchChennai = await prisma.branch.create({
     data: {
       hospitalId: hospital.id,
-      name: 'Aalayam Apex Care - Chennai',
-      code: 'AALAYAM-CHN',
+      name: 'Kizuna Apex Care - Chennai',
+      code: 'KIZUNA-CHN',
       city: 'Chennai',
       address: '120, Velachery Main Road, Guindy, Chennai - 600032',
       phone: '+91 44 2490 8000',
@@ -170,23 +170,23 @@ async function main() {
   };
 
   // 6. Create Demo Users for all 16 Role Groups
-  const superAdmin = await createUser('superadmin@aalayamhospital.com', 'Sundar', 'Ramaswamy', 'SUPER_ADMIN', '+91 98401 00001');
-  const hospitalAdmin = await createUser('hospitaladmin@aalayamhospital.com', 'Kalaivani', 'Natarajan', 'HOSPITAL_ADMIN', '+91 98401 00002');
-  const deptAdmin = await createUser('departmentadmin@aalayamhospital.com', 'Dr. Radhakrishnan', 'Murugesan', 'DEPARTMENT_ADMIN', '+91 98401 00003');
-  const doctorUser = await createUser('doctor@aalayamhospital.com', 'Dr. Senthil', 'Nathan', 'DOCTOR', '+91 98401 00004');
-  const doctorUser2 = await createUser('doctor.physician@aalayamhospital.com', 'Dr. Meenakshi', 'Sundaram', 'DOCTOR', '+91 98401 00005');
-  const nurseUser = await createUser('nurse@aalayamhospital.com', 'Sister Priya', 'Mary', 'NURSE', '+91 98401 00006');
-  const headNurseUser = await createUser('headnurse@aalayamhospital.com', 'Lakshmi', 'Devi', 'HEAD_NURSE', '+91 98401 00007');
-  const receptionUser = await createUser('reception@aalayamhospital.com', 'Kavitha', 'Murugan', 'RECEPTIONIST', '+91 98401 00008');
-  const labUser = await createUser('lab@aalayamhospital.com', 'Karthik', 'Selvam', 'LAB_TECHNICIAN', '+91 98401 00009');
-  const pharmacyUser = await createUser('pharmacy@aalayamhospital.com', 'Ganesh', 'Kumar', 'PHARMACIST', '+91 98401 00010');
-  const radiologyUser = await createUser('radiology@aalayamhospital.com', 'Dr. Balamurugan', 'S', 'RADIOLOGY_STAFF', '+91 98401 00011');
-  const billingUser = await createUser('billing@aalayamhospital.com', 'Ramesh', 'Kannan', 'BILLING_STAFF', '+91 98401 00012');
-  const insuranceUser = await createUser('insurance@aalayamhospital.com', 'Divya', 'Bharathi', 'INSURANCE_STAFF', '+91 98401 00013');
-  const wardManagerUser = await createUser('wardmanager@aalayamhospital.com', 'Murugan', 'Pandian', 'WARD_MANAGER', '+91 98401 00014');
-  const patientUser = await createUser('patient@aalayamhospital.com', 'Muthuvel', 'Karuppiah', 'PATIENT', '+91 98401 00015');
-  const ambCoordUser = await createUser('ambulance@aalayamhospital.com', 'Saravanan', 'G', 'AMBULANCE_COORDINATOR', '+91 98401 00016');
-  const driverUser = await createUser('driver@aalayamhospital.com', 'Velu', 'Pandian', 'AMBULANCE_DRIVER', '+91 98401 00017');
+  const superAdmin = await createUser('superadmin@kizunahospital.com', 'Sundar', 'Ramaswamy', 'SUPER_ADMIN', '+91 98401 00001');
+  const hospitalAdmin = await createUser('hospitaladmin@kizunahospital.com', 'Kalaivani', 'Natarajan', 'HOSPITAL_ADMIN', '+91 98401 00002');
+  const deptAdmin = await createUser('departmentadmin@kizunahospital.com', 'Dr. Radhakrishnan', 'Murugesan', 'DEPARTMENT_ADMIN', '+91 98401 00003');
+  const doctorUser = await createUser('doctor@kizunahospital.com', 'Dr. Senthil', 'Nathan', 'DOCTOR', '+91 98401 00004');
+  const doctorUser2 = await createUser('doctor.physician@kizunahospital.com', 'Dr. Meenakshi', 'Sundaram', 'DOCTOR', '+91 98401 00005');
+  const nurseUser = await createUser('nurse@kizunahospital.com', 'Sister Priya', 'Mary', 'NURSE', '+91 98401 00006');
+  const headNurseUser = await createUser('headnurse@kizunahospital.com', 'Lakshmi', 'Devi', 'HEAD_NURSE', '+91 98401 00007');
+  const receptionUser = await createUser('reception@kizunahospital.com', 'Kavitha', 'Murugan', 'RECEPTIONIST', '+91 98401 00008');
+  const labUser = await createUser('lab@kizunahospital.com', 'Karthik', 'Selvam', 'LAB_TECHNICIAN', '+91 98401 00009');
+  const pharmacyUser = await createUser('pharmacy@kizunahospital.com', 'Ganesh', 'Kumar', 'PHARMACIST', '+91 98401 00010');
+  const radiologyUser = await createUser('radiology@kizunahospital.com', 'Dr. Balamurugan', 'S', 'RADIOLOGY_STAFF', '+91 98401 00011');
+  const billingUser = await createUser('billing@kizunahospital.com', 'Ramesh', 'Kannan', 'BILLING_STAFF', '+91 98401 00012');
+  const insuranceUser = await createUser('insurance@kizunahospital.com', 'Divya', 'Bharathi', 'INSURANCE_STAFF', '+91 98401 00013');
+  const wardManagerUser = await createUser('wardmanager@kizunahospital.com', 'Murugan', 'Pandian', 'WARD_MANAGER', '+91 98401 00014');
+  const patientUser = await createUser('patient@kizunahospital.com', 'Muthuvel', 'Karuppiah', 'PATIENT', '+91 98401 00015');
+  const ambCoordUser = await createUser('ambulance@kizunahospital.com', 'Saravanan', 'G', 'AMBULANCE_COORDINATOR', '+91 98401 00016');
+  const driverUser = await createUser('driver@kizunahospital.com', 'Velu', 'Pandian', 'AMBULANCE_DRIVER', '+91 98401 00017');
 
   console.log('✅ Created Demo Accounts for ALL 16 Roles (Password: Password@123)');
 
@@ -302,7 +302,7 @@ async function main() {
       gender: 'MALE',
       bloodGroup: 'O_POSITIVE',
       phone: '+91 98401 00015',
-      email: 'patient@aalayamhospital.com',
+      email: 'patient@kizunahospital.com',
       nationalId: 'XXXX-XXXX-8921',
       addressLine1: '14, West Masi Street',
       city: 'Madurai',
@@ -775,33 +775,33 @@ async function main() {
       action: 'SEED_INITIALIZE',
       resource: 'SYSTEM',
       details: {
-        message: 'Aalayam Multispeciality Hospital HMS initial seed execution completed successfully.',
+        message: 'Kizuna Multispeciality Hospital HMS initial seed execution completed successfully.',
         timestamp: new Date().toISOString(),
       },
     },
   });
 
-  console.log('\n🎉 Aalayam HMS Seeding Completed Successfully!');
+  console.log('\n🎉 Kizuna HMS Seeding Completed Successfully!');
   console.log('================================================================');
   console.log('Default Credentials for All Roles:');
   console.log('Password for all users: Password@123\n');
-  console.log('1.  SUPER ADMIN:          superadmin@aalayamhospital.com');
-  console.log('2.  HOSPITAL ADMIN:       hospitaladmin@aalayamhospital.com');
-  console.log('3.  DEPARTMENT ADMIN:     departmentadmin@aalayamhospital.com');
-  console.log('4.  DOCTOR (Surgeon):     doctor@aalayamhospital.com');
-  console.log('5.  DOCTOR (Physician):   doctor.physician@aalayamhospital.com');
-  console.log('6.  STAFF NURSE:          nurse@aalayamhospital.com');
-  console.log('7.  HEAD NURSE:           headnurse@aalayamhospital.com');
-  console.log('8.  RECEPTIONIST:         reception@aalayamhospital.com');
-  console.log('9.  LAB TECHNICIAN:       lab@aalayamhospital.com');
-  console.log('10. PHARMACIST:           pharmacy@aalayamhospital.com');
-  console.log('11. RADIOLOGY STAFF:      radiology@aalayamhospital.com');
-  console.log('12. BILLING STAFF:        billing@aalayamhospital.com');
-  console.log('13. INSURANCE STAFF:      insurance@aalayamhospital.com');
-  console.log('14. WARD MANAGER:         wardmanager@aalayamhospital.com');
-  console.log('15. PATIENT PORTAL:       patient@aalayamhospital.com');
-  console.log('16. AMBULANCE DISPATCH:   ambulance@aalayamhospital.com');
-  console.log('17. AMBULANCE DRIVER:     driver@aalayamhospital.com');
+  console.log('1.  SUPER ADMIN:          superadmin@kizunahospital.com');
+  console.log('2.  HOSPITAL ADMIN:       hospitaladmin@kizunahospital.com');
+  console.log('3.  DEPARTMENT ADMIN:     departmentadmin@kizunahospital.com');
+  console.log('4.  DOCTOR (Surgeon):     doctor@kizunahospital.com');
+  console.log('5.  DOCTOR (Physician):   doctor.physician@kizunahospital.com');
+  console.log('6.  STAFF NURSE:          nurse@kizunahospital.com');
+  console.log('7.  HEAD NURSE:           headnurse@kizunahospital.com');
+  console.log('8.  RECEPTIONIST:         reception@kizunahospital.com');
+  console.log('9.  LAB TECHNICIAN:       lab@kizunahospital.com');
+  console.log('10. PHARMACIST:           pharmacy@kizunahospital.com');
+  console.log('11. RADIOLOGY STAFF:      radiology@kizunahospital.com');
+  console.log('12. BILLING STAFF:        billing@kizunahospital.com');
+  console.log('13. INSURANCE STAFF:      insurance@kizunahospital.com');
+  console.log('14. WARD MANAGER:         wardmanager@kizunahospital.com');
+  console.log('15. PATIENT PORTAL:       patient@kizunahospital.com');
+  console.log('16. AMBULANCE DISPATCH:   ambulance@kizunahospital.com');
+  console.log('17. AMBULANCE DRIVER:     driver@kizunahospital.com');
   console.log('================================================================\n');
 }
 

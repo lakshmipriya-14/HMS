@@ -1,8 +1,8 @@
-# Aalayam HMS — Database Architecture & ER Design
+# Kizuna HMS — Database Architecture & ER Design
 
 ## 1. Database Philosophy
 
-The Aalayam HMS relational schema is built on **PostgreSQL** via **Prisma ORM**. It adheres to clinical data governance standards:
+The Kizuna HMS relational schema is built on **PostgreSQL** via **Prisma ORM**. It adheres to clinical data governance standards:
 - **UUID Primary Keys**: Every entity uses `@id @default(uuid())` preventing enumeration attacks.
 - **Audit Columns**: Every table contains `createdAt DateTime @default(now())` and `updatedAt DateTime @updatedAt`.
 - **Soft Deletes**: Critical clinical records utilize `deletedAt DateTime?` to prevent accidental loss of medical data.
@@ -30,7 +30,7 @@ The Aalayam HMS relational schema is built on **PostgreSQL** via **Prisma ORM**.
 - `DoctorSchedule`: Weekly day-wise OPD time slots and patient quotas.
 
 ### 3. Patients & Outpatient Care (OPD)
-- `Patient`: Unique UHID (`ALY-YYYY-XXXX`), demographics, phone, national ID, emergency contacts, persistent allergies, past history.
+- `Patient`: Unique UHID (`KZN-YYYY-XXXX`), demographics, phone, national ID, emergency contacts, persistent allergies, past history.
 - `Appointment`: Number (`APT-YYYY-XXXX`), patient link, doctor link, date, time slot, token number, status (`SCHEDULED`, `CHECKED_IN`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`).
 - `Consultation`: Chief complaints, examination notes, provisional diagnosis, ICD-10 codes, treatment plan, follow-up date, admission recommendations.
 - `Prescription` & `PrescriptionItem`: Number (`RX-YYYY-XXXX`), medicine link, dosage, frequency (`1-0-1`), duration in days, administration instructions (`After food`), route (`Oral`, `IV`), dispensing status.

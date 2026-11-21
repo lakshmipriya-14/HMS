@@ -1,12 +1,12 @@
-# Aalayam Multispeciality Hospital Management System — Architecture
+# Kizuna Multispeciality Hospital Management System — Architecture
 
 ## 1. System Philosophy & Monorepo Design
 
-Aalayam Multispeciality Hospital Management System (HMS) is designed as a unified, enterprise-grade, collaborative monorepo powered by `pnpm` workspaces. It consolidates hospital administration, outpatient care (OPD), inpatient care (IPD), diagnostics, pharmacy, billing, and emergency transport under a single cohesive system.
+Kizuna Multispeciality Hospital Management System (HMS) is designed as a unified, enterprise-grade, collaborative monorepo powered by `pnpm` workspaces. It consolidates hospital administration, outpatient care (OPD), inpatient care (IPD), diagnostics, pharmacy, billing, and emergency transport under a single cohesive system.
 
 ```
 +----------------------------------------------------------------------------------------------------+
-|                                    AALAYAM HMS ENTERPRISE MONOREPO                                 |
+|                                    KIZUNA HMS ENTERPRISE MONOREPO                                  |
 +----------------------------------------------------------------------------------------------------+
 |  APPLICATIONS (apps/)                                                                              |
 |  +---------------------------+   +----------------------------+   +-----------------------------+  |

@@ -10,7 +10,7 @@ export class PatientsService {
     const year = new Date().getFullYear();
     const count = await this.prisma.patient.count();
     const sequence = (count + 1).toString().padStart(4, '0');
-    return `ALY-${year}-${sequence}`;
+    return `KZN-${year}-${sequence}`;
   }
 
   async checkDuplicate(phone: string, email?: string) {
@@ -87,7 +87,7 @@ export class PatientsService {
       data: {
         hospitalId,
         userId: registeringUserId,
-        userEmail: 'system@aalayamhospital.com',
+        userEmail: 'system@kizunahospital.com',
         userRole: 'RECEPTIONIST',
         action: 'CREATE',
         resource: 'PATIENT',

@@ -1,6 +1,6 @@
-# Aalayam HMS — Complete Clinical Integration Workflow
+# Kizuna HMS — Complete Clinical Integration Workflow
 
-This document illustrates the end-to-end lifecycle of a patient receiving multispeciality medical care at Aalayam Hospital, showcasing how all 10 member modules communicate seamlessly through the central backend and PostgreSQL database.
+This document illustrates the end-to-end lifecycle of a patient receiving multispeciality medical care at Kizuna Hospital, showcasing how all 10 member modules communicate seamlessly through the central backend and PostgreSQL database.
 
 ---
 
@@ -8,7 +8,7 @@ This document illustrates the end-to-end lifecycle of a patient receiving multis
 
 ```
 [M4: RECEPTION]
-   │  1. Patient Registration → UHID Generated (ALY-2026-0001)
+   │  1. Patient Registration → UHID Generated (KZN-2026-0001)
    │  2. OPD Appointment Booked & Daily Token #1 Issued
    ▼
 [M2: DOCTOR CLINICAL WORKSPACE]

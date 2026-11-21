@@ -29,7 +29,7 @@ export interface ApiClientConfig {
   onUnauthorized?: () => void;
 }
 
-export class AalayamApiClient {
+export class KizunaApiClient {
   private instance: AxiosInstance;
   private config: ApiClientConfig;
   private isRefreshing = false;
@@ -437,6 +437,10 @@ export class AalayamApiClient {
   };
 }
 
-export function createAalayamApiClient(config: ApiClientConfig): AalayamApiClient {
-  return new AalayamApiClient(config);
+export function createKizunaApiClient(config: ApiClientConfig): KizunaApiClient {
+  return new KizunaApiClient(config);
 }
+
+export const AalayamApiClient = KizunaApiClient;
+export const createAalayamApiClient = createKizunaApiClient;
+

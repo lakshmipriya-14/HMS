@@ -23,13 +23,13 @@ export const Sidebar: React.FC = () => {
         </div>
         <div>
           <h1 className="font-bold text-white text-base leading-tight tracking-tight">
-            Aalayam
+            Kizuna
           </h1>
           <p className="text-[10px] text-teal-400 font-medium tracking-wider uppercase">
             Multispeciality Hospital
           </p>
           <p className="text-[9px] text-slate-500 font-tamil">
-            ஆலயம் மருத்துவமனை
+            கிஜுனா மருத்துவமனை
           </p>
         </div>
       </div>

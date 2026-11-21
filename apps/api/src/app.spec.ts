@@ -1,6 +1,6 @@
 import { Role, ROLE_PERMISSIONS_MATRIX } from '@multispeciality-hms/contracts';
 
-describe('Aalayam HMS API - RBAC & Guard Contracts', () => {
+describe('Kizuna HMS API - RBAC & Guard Contracts', () => {
   it('should verify all 16 hospital roles are configured in matrix', () => {
     const roles = Object.values(Role);
     expect(roles.length).toBe(16);

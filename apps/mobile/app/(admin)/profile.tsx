@@ -20,7 +20,7 @@ export default function AdminProfileScreen() {
           <ShieldCheck size={36} color="#0F766E" />
         </View>
         <Text style={styles.title}>Hospital Administrator</Text>
-        <Text style={styles.sub}>admin@aalayamhospital.com</Text>
+        <Text style={styles.sub}>admin@kizunahospital.com</Text>
         <Text style={styles.roleTag}>SUPER ADMIN PRIVILEGES</Text>
       </View>
 

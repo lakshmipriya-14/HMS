@@ -1,4 +1,4 @@
-# Aalayam HMS — Git & Team Collaboration Workflow
+# Kizuna HMS — Git & Team Collaboration Workflow
 
 This guide details the strict branch management strategy designed for 10 developers collaborating simultaneously on the shared GitHub repository.
 

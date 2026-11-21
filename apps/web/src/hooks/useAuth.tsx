@@ -15,14 +15,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUserDto | null>(() => {
-    const saved = localStorage.getItem('aalayam_user');
+    const saved = localStorage.getItem('kizuna_user');
     return saved ? JSON.parse(saved) : null;
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const verifyUser = async () => {
-      const token = localStorage.getItem('aalayam_access_token');
+      const token = localStorage.getItem('kizuna_access_token');
       if (token) {
         if (token === 'demo-preview-token') {
           setIsLoading(false);
@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const res = await apiClient.auth.getMe();
           if (res.data) {
             setUser(res.data);
-            localStorage.setItem('aalayam_user', JSON.stringify(res.data));
+            localStorage.setItem('kizuna_user', JSON.stringify(res.data));
           }
         } catch (err) {
           console.warn('Session verification failed, falling back to local cached session:', err);
@@ -50,9 +50,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await apiClient.auth.login(dto);
       if (res.data) {
         const { accessToken, refreshToken, user: authUser } = res.data;
-        localStorage.setItem('aalayam_access_token', accessToken);
-        localStorage.setItem('aalayam_refresh_token', refreshToken);
-        localStorage.setItem('aalayam_user', JSON.stringify(authUser));
+        localStorage.setItem('kizuna_access_token', accessToken);
+        localStorage.setItem('kizuna_refresh_token', refreshToken);
+        localStorage.setItem('kizuna_user', JSON.stringify(authUser));
         setUser(authUser);
         return;
       }
@@ -60,26 +60,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.warn('Backend API offline or unreachable. Initializing instant demo session for testing:', apiErr);
       const emailLower = dto.email.toLowerCase().trim();
       const roleMap: Record<string, Role> = {
-        'superadmin@aalayamhospital.com': Role.SUPER_ADMIN,
-        'hospitaladmin@aalayamhospital.com': Role.HOSPITAL_ADMIN,
-        'admin@aalayamhospital.com': Role.HOSPITAL_ADMIN,
-        'deptadmin@aalayamhospital.com': Role.DEPARTMENT_ADMIN,
-        'doctor@aalayamhospital.com': Role.DOCTOR,
-        'nurse@aalayamhospital.com': Role.NURSE,
-        'headnurse@aalayamhospital.com': Role.HEAD_NURSE,
-        'reception@aalayamhospital.com': Role.RECEPTIONIST,
-        'lab@aalayamhospital.com': Role.LAB_TECHNICIAN,
-        'labtech@aalayamhospital.com': Role.LAB_TECHNICIAN,
-        'pathologist@aalayamhospital.com': Role.LAB_TECHNICIAN,
-        'pharmacy@aalayamhospital.com': Role.PHARMACIST,
-        'radiology@aalayamhospital.com': Role.RADIOLOGY_STAFF,
-        'billing@aalayamhospital.com': Role.BILLING_STAFF,
-        'insurance@aalayamhospital.com': Role.INSURANCE_STAFF,
-        'wardmanager@aalayamhospital.com': Role.WARD_MANAGER,
-        'ward@aalayamhospital.com': Role.WARD_MANAGER,
-        'driver@aalayamhospital.com': Role.AMBULANCE_DRIVER,
-        'ambulance@aalayamhospital.com': Role.AMBULANCE_COORDINATOR,
-        'patient@aalayamhospital.com': Role.PATIENT,
+        'superadmin@kizunahospital.com': Role.SUPER_ADMIN,
+        'hospitaladmin@kizunahospital.com': Role.HOSPITAL_ADMIN,
+        'admin@kizunahospital.com': Role.HOSPITAL_ADMIN,
+        'deptadmin@kizunahospital.com': Role.DEPARTMENT_ADMIN,
+        'doctor@kizunahospital.com': Role.DOCTOR,
+        'nurse@kizunahospital.com': Role.NURSE,
+        'headnurse@kizunahospital.com': Role.HEAD_NURSE,
+        'reception@kizunahospital.com': Role.RECEPTIONIST,
+        'lab@kizunahospital.com': Role.LAB_TECHNICIAN,
+        'labtech@kizunahospital.com': Role.LAB_TECHNICIAN,
+        'pathologist@kizunahospital.com': Role.LAB_TECHNICIAN,
+        'pharmacy@kizunahospital.com': Role.PHARMACIST,
+        'radiology@kizunahospital.com': Role.RADIOLOGY_STAFF,
+        'billing@kizunahospital.com': Role.BILLING_STAFF,
+        'insurance@kizunahospital.com': Role.INSURANCE_STAFF,
+        'wardmanager@kizunahospital.com': Role.WARD_MANAGER,
+        'ward@kizunahospital.com': Role.WARD_MANAGER,
+        'driver@kizunahospital.com': Role.AMBULANCE_DRIVER,
+        'ambulance@kizunahospital.com': Role.AMBULANCE_COORDINATOR,
+        'patient@kizunahospital.com': Role.PATIENT,
       };
 
       const matchedRole = roleMap[emailLower] || Role.DOCTOR;
@@ -92,8 +92,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         permissions: (ROLE_PERMISSIONS_MATRIX[matchedRole] as string[]) || [],
       };
 
-      localStorage.setItem('aalayam_access_token', 'demo-preview-token');
-      localStorage.setItem('aalayam_user', JSON.stringify(demoUser));
+      localStorage.setItem('kizuna_access_token', 'demo-preview-token');
+      localStorage.setItem('kizuna_user', JSON.stringify(demoUser));
       setUser(demoUser);
     } finally {
       setIsLoading(false);
@@ -106,9 +106,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch {
       // Ignore network errors on logout
     } finally {
-      localStorage.removeItem('aalayam_access_token');
-      localStorage.removeItem('aalayam_refresh_token');
-      localStorage.removeItem('aalayam_user');
+      localStorage.removeItem('kizuna_access_token');
+      localStorage.removeItem('kizuna_refresh_token');
+      localStorage.removeItem('kizuna_user');
       setUser(null);
     }
   };

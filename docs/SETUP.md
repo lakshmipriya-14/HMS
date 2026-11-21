@@ -1,6 +1,6 @@
-# Aalayam HMS — Local Development & Environment Setup Guide
+# Kizuna HMS — Local Development & Environment Setup Guide
 
-Follow this guide to get the Aalayam Multispeciality Hospital Management System running locally from a clean clone.
+Follow this guide to get the Kizuna Multispeciality Hospital Management System running locally from a clean clone.
 
 ---
 
@@ -22,9 +22,9 @@ cp .env.example .env
 
 Verify your database connection URL in `.env`:
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/aalayam_hms?schema=public"
-JWT_SECRET="aalayam-enterprise-hms-jwt-access-secret-key-2026-very-secure"
-JWT_REFRESH_SECRET="aalayam-enterprise-hms-jwt-refresh-secret-key-2026-very-secure"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/kizuna_hms?schema=public"
+JWT_SECRET="kizuna-enterprise-hms-jwt-access-secret-key-2026-very-secure"
+JWT_REFRESH_SECRET="kizuna-enterprise-hms-jwt-refresh-secret-key-2026-very-secure"
 API_PORT=4000
 WEB_PORT=3000
 ```
@@ -79,21 +79,21 @@ pnpm dev:mobile
 
 | Role | Demo Email Address | Initial Portal |
 | :--- | :--- | :--- |
-| **Super Admin** | `superadmin@aalayamhospital.com` | Hospital Executive Dashboard |
-| **Hospital Admin** | `hospitaladmin@aalayamhospital.com` | Organization Command |
-| **Doctor (Surgeon)** | `doctor@aalayamhospital.com` | OPD Queue & Clinical Workspace |
-| **Doctor (Physician)**| `doctor.physician@aalayamhospital.com` | OPD Consultation Queue |
-| **Staff Nurse** | `nurse@aalayamhospital.com` | Inpatient Care & Vitals Board |
-| **Head Nurse** | `headnurse@aalayamhospital.com` | Ward Superintendent View |
-| **Receptionist** | `reception@aalayamhospital.com` | Patient Registration & Tokens |
-| **Lab Technician** | `lab@aalayamhospital.com` | Analyzer Worklist & Reports |
-| **Pharmacist** | `pharmacy@aalayamhospital.com` | Prescription Queue & Dispensary |
-| **Radiology Staff** | `radiology@aalayamhospital.com` | Imaging Studies & Findings |
-| **Billing Staff** | `billing@aalayamhospital.com` | Invoices & Cashier POS |
-| **Insurance Staff** | `insurance@aalayamhospital.com` | TPA Claims Settlement |
-| **Ward Manager** | `wardmanager@aalayamhospital.com` | Bed Census Map & Housekeeping |
-| **Ambulance Coordinator** | `ambulance@aalayamhospital.com` | Emergency Dispatch Radar |
-| **Ambulance Driver** | `driver@aalayamhospital.com` | Mobile Driver Run Terminal |
-| **Patient Portal** | `patient@aalayamhospital.com` | Digital Health Card & My Records |
+| **Super Admin** | `superadmin@kizunahospital.com` | Hospital Executive Dashboard |
+| **Hospital Admin** | `hospitaladmin@kizunahospital.com` | Organization Command |
+| **Doctor (Surgeon)** | `doctor@kizunahospital.com` | OPD Queue & Clinical Workspace |
+| **Doctor (Physician)**| `doctor.physician@kizunahospital.com` | OPD Consultation Queue |
+| **Staff Nurse** | `nurse@kizunahospital.com` | Inpatient Care & Vitals Board |
+| **Head Nurse** | `headnurse@kizunahospital.com` | Ward Superintendent View |
+| **Receptionist** | `reception@kizunahospital.com` | Patient Registration & Tokens |
+| **Lab Technician** | `lab@kizunahospital.com` | Analyzer Worklist & Reports |
+| **Pharmacist** | `pharmacy@kizunahospital.com` | Prescription Queue & Dispensary |
+| **Radiology Staff** | `radiology@kizunahospital.com` | Imaging Studies & Findings |
+| **Billing Staff** | `billing@kizunahospital.com` | Invoices & Cashier POS |
+| **Insurance Staff** | `insurance@kizunahospital.com` | TPA Claims Settlement |
+| **Ward Manager** | `wardmanager@kizunahospital.com` | Bed Census Map & Housekeeping |
+| **Ambulance Coordinator** | `ambulance@kizunahospital.com` | Emergency Dispatch Radar |
+| **Ambulance Driver** | `driver@kizunahospital.com` | Mobile Driver Run Terminal |
+| **Patient Portal** | `patient@kizunahospital.com` | Digital Health Card & My Records |
 
 *Tip: The web login screen includes a 1-click role switcher button for every role!*

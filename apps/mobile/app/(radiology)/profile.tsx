@@ -20,7 +20,7 @@ export default function RadiologyProfileScreen() {
           <Scan size={36} color="#334155" />
         </View>
         <Text style={styles.name}>Radiology Diagnostic Staff</Text>
-        <Text style={styles.sub}>radiology@aalayamhospital.com</Text>
+        <Text style={styles.sub}>radiology@kizunahospital.com</Text>
         <Text style={styles.deskTag}>Department of Radio-Diagnosis & Imaging</Text>
       </View>
 

@@ -1,5 +1,5 @@
-# Aalayam Multispeciality Hospital Management System (HMS)
-### ஆலயம் பன்னோக்கு மருத்துவமனை
+# Kizuna Multispeciality Hospital Management System (HMS)
+### கிஜுனா பன்னோக்கு மருத்துவமனை
 
 > **"Excellence in Care, Compassion in Healing"**  
 > An integrated, enterprise-grade, collaborative Hospital Management System designed for a 10-member software engineering team developing simultaneously in a shared GitHub repository.
@@ -8,7 +8,7 @@
 
 ## 🏥 Hospital Overview & Architecture
 
-**Aalayam Multispeciality Hospital** is a modern hospital network with its apex medical center in Madurai and city campus in Chennai, Tamil Nadu. The platform provides a single integrated backend, unified database, central authentication, shared API contracts, and dedicated role-specific portals for all clinical and administrative personnel.
+**Kizuna Multispeciality Hospital** is a modern hospital network with its apex medical center in Madurai and city campus in Chennai, Tamil Nadu. The platform provides a single integrated backend, unified database, central authentication, shared API contracts, and dedicated role-specific portals for all clinical and administrative personnel.
 
 ```
 multispeciality-hms/
@@ -111,23 +111,23 @@ pnpm dev:mobile    # Starts Expo Mobile App on http://localhost:8081
 
 | Role Group | Email Address | Portal Features |
 | :--- | :--- | :--- |
-| **SUPER_ADMIN** | `superadmin@aalayamhospital.com` | Hospital Executive Command & Global User Directory |
-| **HOSPITAL_ADMIN** | `hospitaladmin@aalayamhospital.com` | Organization Operations & Audit Trail |
-| **DEPARTMENT_ADMIN** | `departmentadmin@aalayamhospital.com` | Departmental Rosters & Clinical Queues |
-| **DOCTOR** | `doctor@aalayamhospital.com` | Today's OPD Queue, Consultation Notes & Digital Rx |
-| **DOCTOR (Physician)**| `doctor.physician@aalayamhospital.com` | General Medicine & Diabetes Follow-ups |
-| **NURSE** | `nurse@aalayamhospital.com` | Inpatient Bed Census, Vitals Recording & MAR |
-| **HEAD_NURSE** | `headnurse@aalayamhospital.com` | Ward Supervision & Nursing Task Delegation |
-| **RECEPTIONIST** | `reception@aalayamhospital.com` | Patient Registration, UHID Issuance & Token Queue |
-| **LAB_TECHNICIAN** | `lab@aalayamhospital.com` | Specimen Barcodes, Analyzer Results & Reports |
-| **PHARMACIST** | `pharmacy@aalayamhospital.com` | Prescription Queue, Batch Tracking & FEFO Dispensing |
-| **RADIOLOGY_STAFF** | `radiology@aalayamhospital.com` | CT/MRI/X-Ray Worklists, Findings & Report Release |
-| **BILLING_STAFF** | `billing@aalayamhospital.com` | Consolidated Invoices, Cashier POS (Cash/UPI/Cards) |
-| **INSURANCE_STAFF** | `insurance@aalayamhospital.com` | Cashless TPA Claims & Pre-authorization Tracking |
-| **WARD_MANAGER** | `wardmanager@aalayamhospital.com` | Visual Bed Layout Map & Housekeeping Turnover |
-| **PATIENT** | `patient@aalayamhospital.com` | Digital Health Card, My Prescriptions & Lab Results |
-| **AMBULANCE_COORD** | `ambulance@aalayamhospital.com` | 108 Emergency Dispatch & Fleet Tracking |
-| **AMBULANCE_DRIVER** | `driver@aalayamhospital.com` | Mobile Driver Run Navigation & ER Trauma Handover |
+| **SUPER_ADMIN** | `superadmin@kizunahospital.com` | Hospital Executive Command & Global User Directory |
+| **HOSPITAL_ADMIN** | `hospitaladmin@kizunahospital.com` | Organization Operations & Audit Trail |
+| **DEPARTMENT_ADMIN** | `departmentadmin@kizunahospital.com` | Departmental Rosters & Clinical Queues |
+| **DOCTOR** | `doctor@kizunahospital.com` | Today's OPD Queue, Consultation Notes & Digital Rx |
+| **DOCTOR (Physician)**| `doctor.physician@kizunahospital.com` | General Medicine & Diabetes Follow-ups |
+| **NURSE** | `nurse@kizunahospital.com` | Inpatient Bed Census, Vitals Recording & MAR |
+| **HEAD_NURSE** | `headnurse@kizunahospital.com` | Ward Supervision & Nursing Task Delegation |
+| **RECEPTIONIST** | `reception@kizunahospital.com` | Patient Registration, UHID Issuance & Token Queue |
+| **LAB_TECHNICIAN** | `lab@kizunahospital.com` | Specimen Barcodes, Analyzer Results & Reports |
+| **PHARMACIST** | `pharmacy@kizunahospital.com` | Prescription Queue, Batch Tracking & FEFO Dispensing |
+| **RADIOLOGY_STAFF** | `radiology@kizunahospital.com` | CT/MRI/X-Ray Worklists, Findings & Report Release |
+| **BILLING_STAFF** | `billing@kizunahospital.com` | Consolidated Invoices, Cashier POS (Cash/UPI/Cards) |
+| **INSURANCE_STAFF** | `insurance@kizunahospital.com` | Cashless TPA Claims & Pre-authorization Tracking |
+| **WARD_MANAGER** | `wardmanager@kizunahospital.com` | Visual Bed Layout Map & Housekeeping Turnover |
+| **PATIENT** | `patient@kizunahospital.com` | Digital Health Card, My Prescriptions & Lab Results |
+| **AMBULANCE_COORD** | `ambulance@kizunahospital.com` | 108 Emergency Dispatch & Fleet Tracking |
+| **AMBULANCE_DRIVER** | `driver@kizunahospital.com` | Mobile Driver Run Navigation & ER Trauma Handover |
 
 ---
 

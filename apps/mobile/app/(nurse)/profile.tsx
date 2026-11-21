@@ -33,7 +33,7 @@ export default function NurseProfileScreen() {
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Hospital</Text>
-          <Text style={styles.infoVal}>Aalayam Multispeciality</Text>
+          <Text style={styles.infoVal}>Kizuna Multispeciality</Text>
         </View>
 
         <TouchableOpacity style={styles.logoutBtn} onPress={handleSignOut}>
