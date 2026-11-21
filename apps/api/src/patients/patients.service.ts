@@ -54,12 +54,22 @@ export class PatientsService {
       hospitalId = defaultHosp.id;
     }
 
+    let registrationBranchId = dto.registrationBranchId || dto.branchId;
+    if (!registrationBranchId) {
+      const defaultBranch = await this.prisma.branch.findFirst({
+        where: { hospitalId, isActive: true, deletedAt: null },
+      });
+      if (!defaultBranch) throw new BadRequestException('Active hospital branch required for patient registration');
+      registrationBranchId = defaultBranch.id;
+    }
+
     const uhid = await this.generateUhid();
 
     const patient = await this.prisma.patient.create({
       data: {
         uhid,
         hospitalId,
+        registrationBranchId,
         firstName: dto.firstName,
         lastName: dto.lastName,
         dateOfBirth: new Date(dto.dateOfBirth),

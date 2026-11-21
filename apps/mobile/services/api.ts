@@ -7,9 +7,12 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || DEFAULT_URL;
 
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
+let unauthorized: (() => void) | undefined;
+export const setMobileUnauthorizedHandler = (handler?: () => void) => { unauthorized = handler; };
 
 export const mobileApiClient = createAalayamApiClient({
   baseURL: API_BASE_URL,
+  cookieSession: Platform.OS === 'web',
   getAccessToken: () => accessToken,
   getRefreshToken: () => refreshToken,
   setTokens: (access, refresh) => {
@@ -21,7 +24,7 @@ export const mobileApiClient = createAalayamApiClient({
     refreshToken = null;
   },
   onUnauthorized: () => {
-    // Handled in auth state
+    unauthorized?.();
   },
 });
 

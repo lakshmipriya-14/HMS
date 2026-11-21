@@ -1,260 +1,141 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../prisma/prisma.service';
+import { AuthSessionSummaryDto, LoginResponseDto } from '@multispeciality-hms/contracts';
+import { Prisma } from '@prisma/client';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import * as bcrypt from 'bcryptjs';
-import {
-  AuthUserDto,
-  LoginResponseDto,
-  ROLE_PERMISSIONS_MATRIX,
-  Role,
-} from '@multispeciality-hms/contracts';
+import { PrismaService } from '../prisma/prisma.service';
+import { ACCESS_TOKEN_SECONDS, REFRESH_TOKEN_MS } from './auth-config';
+import { resolveAccess } from './access-context';
 import { ChangePasswordDto, LoginDto } from './dto/login.dto';
+
+export const tokenDigest = (token: string) => createHash('sha256').update(token).digest('hex');
+export const randomToken = () => randomBytes(32).toString('base64url');
+export const isToken = (token?: string) => !!token && /^[A-Za-z0-9_-]{43}$/.test(token);
+const invalidSession = () => new UnauthorizedException('Invalid or expired session.');
+const invalidLogin = () => new UnauthorizedException('Invalid email or password.');
+
+export async function lockUser(tx: Prisma.TransactionClient, userId: string) {
+  await tx.$queryRaw`SELECT id FROM "User" WHERE id = ${userId} FOR UPDATE`;
+}
+
+export async function revokeCredentials(tx: Prisma.TransactionClient, userId: string) {
+  const revokedAt = new Date();
+  await tx.refreshToken.updateMany({ where: { userId, revokedAt: null }, data: { revokedAt } });
+  await tx.passwordResetChallenge.updateMany({ where: { userId, revokedAt: null, consumedAt: null }, data: { revokedAt } });
+  await tx.accountAccessToken.updateMany({ where: { userId, revokedAt: null, redeemedAt: null }, data: { revokedAt } });
+}
+
+export async function hashPassword(password: string): Promise<string> {
+  if (password.length < 12 || Buffer.byteLength(password, 'utf8') > 72) {
+    throw new BadRequestException('Use at least 12 characters and at most 72 UTF-8 bytes.');
+  }
+  return bcrypt.hash(password, 12);
+}
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService
-  ) {}
+  private readonly dummyHash = bcrypt.hash(randomToken(), 12);
 
-  async login(loginDto: LoginDto, ipAddress?: string): Promise<LoginResponseDto> {
-    const user = await this.prisma.user.findUnique({
-      where: { email: loginDto.email.toLowerCase().trim() },
-      include: {
-        userRoles: { include: { role: true } },
-        employee: {
-          include: {
-            doctor: true,
-            nursingProfile: true,
-          },
-        },
-        patient: true,
-      },
+  constructor(private readonly prisma: PrismaService, private readonly jwt: JwtService) {}
+
+  async login(dto: LoginDto): Promise<LoginResponseDto> {
+    const account = await this.prisma.user.findUnique({
+      where: { email: dto.email.trim().toLowerCase() }, select: { id: true, passwordHash: true },
     });
-
-    if (!user) {
-      throw new UnauthorizedException('Invalid hospital credentials');
-    }
-
-    if (!user.isActive || user.deletedAt) {
-      throw new UnauthorizedException('User account has been deactivated. Please contact administration.');
-    }
-
-    const isMatch = await bcrypt.compare(loginDto.password, user.passwordHash);
-    if (!isMatch) {
-      throw new UnauthorizedException('Invalid hospital credentials');
-    }
-
-    const primaryRole = (user.userRoles[0]?.role.name as Role) || Role.PATIENT;
-    const permissions = ROLE_PERMISSIONS_MATRIX[primaryRole] || [];
-
-    const authUser: AuthUserDto = {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: primaryRole,
-      permissions,
-      hospitalId: user.hospitalId || undefined,
-      branchId: user.branchId || undefined,
-      departmentId: user.employee?.departmentId || undefined,
-      doctorProfileId: user.employee?.doctor?.id || undefined,
-      patientProfileId: user.patient?.id || undefined,
-      nurseProfileId: user.employee?.nursingProfile?.id || undefined,
-      employeeId: user.employee?.id || undefined,
-    };
-
-    const payload = {
-      sub: user.id,
-      email: user.email,
-      role: primaryRole,
-      hospitalId: user.hospitalId,
-    };
-
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: process.env.JWT_EXPIRATION || '15m',
+    if (Buffer.byteLength(dto.password, 'utf8') > 72) throw invalidLogin();
+    const valid = await bcrypt.compare(dto.password, account?.passwordHash ?? await this.dummyHash);
+    if (!account || !valid) throw invalidLogin();
+    return this.prisma.$transaction(async tx => {
+      await lockUser(tx, account.id);
+      const current = await tx.user.findUnique({ where: { id: account.id }, select: { passwordHash: true } });
+      if (current?.passwordHash !== account.passwordHash) throw invalidLogin();
+      const user = await resolveAccess(tx, account.id);
+      await tx.user.update({ where: { id: account.id }, data: { lastLoginAt: new Date() } });
+      await tx.auditLog.create({ data: {
+        hospitalId: user.hospitalId, branchId: user.branchId, userId: user.id,
+        userEmail: user.email, userRole: user.role, action: 'LOGIN', resource: 'AUTH', resourceId: user.id,
+      } });
+      return (await this.issue(tx, user, randomUUID(), new Date(Date.now() + REFRESH_TOKEN_MS))).response;
     });
-
-    const refreshTokenString = this.jwtService.sign(
-      { sub: user.id, tokenType: 'refresh' },
-      {
-        secret: process.env.JWT_REFRESH_SECRET || 'aalayam-enterprise-hms-jwt-refresh-secret-key-2026-very-secure',
-        expiresIn: process.env.JWT_REFRESH_EXPIRATION || '7d',
-      }
-    );
-
-    // Save refresh token
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    await this.prisma.refreshToken.create({
-      data: {
-        userId: user.id,
-        token: refreshTokenString,
-        expiresAt,
-      },
-    });
-
-    // Update last login
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { lastLoginAt: new Date() },
-    });
-
-    // Audit log
-    await this.prisma.auditLog.create({
-      data: {
-        hospitalId: user.hospitalId,
-        userId: user.id,
-        userEmail: user.email,
-        userRole: primaryRole,
-        action: 'LOGIN',
-        resource: 'AUTH',
-        ipAddress: ipAddress || '127.0.0.1',
-        details: { loginTimestamp: new Date().toISOString() },
-      },
-    });
-
-    return {
-      accessToken,
-      refreshToken: refreshTokenString,
-      expiresIn: 900, // 15 mins in seconds
-      user: authUser,
-    };
   }
 
-  async refreshToken(refreshToken: string): Promise<LoginResponseDto> {
-    try {
-      const decoded = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET || 'aalayam-enterprise-hms-jwt-refresh-secret-key-2026-very-secure',
-      });
-
-      const tokenRecord = await this.prisma.refreshToken.findUnique({
-        where: { token: refreshToken },
-        include: {
-          user: {
-            include: {
-              userRoles: { include: { role: true } },
-              employee: {
-                include: {
-                  doctor: true,
-                  nursingProfile: true,
-                },
-              },
-              patient: true,
-            },
-          },
-        },
-      });
-
-      if (!tokenRecord || tokenRecord.isRevoked || tokenRecord.expiresAt < new Date()) {
-        throw new UnauthorizedException('Refresh token is expired or revoked');
+  async refreshToken(token?: string): Promise<LoginResponseDto> {
+    if (!isToken(token)) throw invalidSession();
+    const digest = tokenDigest(token);
+    const known = await this.prisma.refreshToken.findUnique({ where: { tokenHash: digest }, select: { userId: true } });
+    if (!known) throw invalidSession();
+    const response = await this.prisma.$transaction(async tx => {
+      await lockUser(tx, known.userId);
+      const old = await tx.refreshToken.findUnique({ where: { tokenHash: digest } });
+      if (!old || old.expiresAt.getTime() <= Date.now()) return null;
+      if (old.revokedAt) {
+        if (old.replacedById) await tx.refreshToken.updateMany({
+          where: { userId: old.userId, familyId: old.familyId, revokedAt: null }, data: { revokedAt: new Date() },
+        });
+        return null;
       }
+      const user = await resolveAccess(tx, old.userId);
+      if (user.hospitalId !== old.hospitalId) return null;
+      const issued = await this.issue(tx, user, old.familyId, old.expiresAt);
+      await tx.refreshToken.update({ where: { id: old.id }, data: { revokedAt: new Date(), replacedById: issued.id } });
+      return issued.response;
+    });
+    if (!response) throw invalidSession();
+    return response;
+  }
 
-      const user = tokenRecord.user;
-      if (!user.isActive || user.deletedAt) {
-        throw new UnauthorizedException('User account inactive');
-      }
+  async logout(token?: string): Promise<void> {
+    if (!isToken(token)) return;
+    const lookup = await this.prisma.refreshToken.findUnique({
+      where: { tokenHash: tokenDigest(token) }, select: { userId: true, familyId: true },
+    });
+    if (!lookup) return;
+    await this.prisma.$transaction(async tx => {
+      await lockUser(tx, lookup.userId);
+      await tx.refreshToken.updateMany({ where: { ...lookup, revokedAt: null }, data: { revokedAt: new Date() } });
+    });
+  }
 
-      // Revoke used token
-      await this.prisma.refreshToken.update({
-        where: { id: tokenRecord.id },
-        data: { isRevoked: true },
-      });
-
-      const primaryRole = (user.userRoles[0]?.role.name as Role) || Role.PATIENT;
-      const permissions = ROLE_PERMISSIONS_MATRIX[primaryRole] || [];
-
-      const authUser: AuthUserDto = {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: primaryRole,
-        permissions,
-        hospitalId: user.hospitalId || undefined,
-        branchId: user.branchId || undefined,
-        departmentId: user.employee?.departmentId || undefined,
-        doctorProfileId: user.employee?.doctor?.id || undefined,
-        patientProfileId: user.patient?.id || undefined,
-        nurseProfileId: user.employee?.nursingProfile?.id || undefined,
-        employeeId: user.employee?.id || undefined,
-      };
-
-      const payload = {
-        sub: user.id,
-        email: user.email,
-        role: primaryRole,
-        hospitalId: user.hospitalId,
-      };
-
-      const newAccessToken = this.jwtService.sign(payload, {
-        expiresIn: process.env.JWT_EXPIRATION || '15m',
-      });
-
-      const newRefreshToken = this.jwtService.sign(
-        { sub: user.id, tokenType: 'refresh' },
-        {
-          secret: process.env.JWT_REFRESH_SECRET || 'aalayam-enterprise-hms-jwt-refresh-secret-key-2026-very-secure',
-          expiresIn: process.env.JWT_REFRESH_EXPIRATION || '7d',
-        }
-      );
-
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 7);
-
-      await this.prisma.refreshToken.create({
-        data: {
-          userId: user.id,
-          token: newRefreshToken,
-          expiresAt,
-        },
-      });
-
-      return {
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
-        expiresIn: 900,
-        user: authUser,
-      };
-    } catch {
-      throw new UnauthorizedException('Invalid or expired refresh token');
-    }
+  async listSessions(user: LoginResponseDto['user']): Promise<AuthSessionSummaryDto[]> {
+    if (!user.hospitalId) throw invalidSession();
+    const rows = await this.prisma.refreshToken.findMany({
+      where: { userId: user.id, hospitalId: user.hospitalId, replacedById: null },
+      select: { id: true, createdAt: true, expiresAt: true, revokedAt: true },
+      orderBy: { createdAt: 'desc' }, take: 10,
+    });
+    const now = Date.now();
+    return rows.map(row => ({
+      id: row.id, issuedAt: row.createdAt.toISOString(), expiresAt: row.expiresAt.toISOString(),
+      status: row.revokedAt ? 'REVOKED' : row.expiresAt.getTime() <= now ? 'EXPIRED' : 'ACTIVE',
+    }));
   }
 
   async changePassword(userId: string, dto: ChangePasswordDto): Promise<void> {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException('User not found');
+    const account = await this.prisma.user.findUnique({ where: { id: userId }, select: { passwordHash: true } });
+    if (!account || Buffer.byteLength(dto.currentPassword, 'utf8') > 72
+      || !(await bcrypt.compare(dto.currentPassword, account.passwordHash))) {
+      throw new BadRequestException('Current password is incorrect.');
     }
-
-    const isMatch = await bcrypt.compare(dto.currentPassword, user.passwordHash);
-    if (!isMatch) {
-      throw new BadRequestException('Current password does not match');
-    }
-
-    const newHash = await bcrypt.hash(dto.newPassword, 10);
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { passwordHash: newHash },
-    });
-
-    // Revoke all refresh tokens on password change
-    await this.prisma.refreshToken.updateMany({
-      where: { userId },
-      data: { isRevoked: true },
+    const passwordHash = await hashPassword(dto.newPassword);
+    await this.prisma.$transaction(async tx => {
+      await lockUser(tx, userId);
+      const result = await tx.user.updateMany({
+        where: { id: userId, passwordHash: account.passwordHash, isActive: true, deletedAt: null }, data: { passwordHash },
+      });
+      if (!result.count) throw invalidSession();
+      await revokeCredentials(tx, userId);
     });
   }
 
-  async logout(userId: string): Promise<void> {
-    await this.prisma.refreshToken.updateMany({
-      where: { userId },
-      data: { isRevoked: true },
+  private async issue(tx: Prisma.TransactionClient, user: LoginResponseDto['user'], familyId: string, expiresAt: Date) {
+    if (!user.hospitalId) throw invalidSession();
+    const refreshToken = randomToken();
+    const { id } = await tx.refreshToken.create({
+      data: { userId: user.id, hospitalId: user.hospitalId, tokenHash: tokenDigest(refreshToken), familyId, expiresAt },
+      select: { id: true },
     });
+    const accessToken = await this.jwt.signAsync({ sub: user.id, sid: familyId, kind: 'access' });
+    return { id, response: { accessToken, refreshToken, expiresIn: ACCESS_TOKEN_SECONDS, user } };
   }
 }

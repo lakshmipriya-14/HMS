@@ -1,12 +1,16 @@
 export const API_ENDPOINTS = {
+  PUBLIC_APPOINTMENT_REQUESTS: '/public/appointment-requests',
   // Authentication
   AUTH: {
     LOGIN: '/auth/login',
     LOGOUT: '/auth/logout',
     REFRESH: '/auth/refresh',
     ME: '/auth/me',
+    SESSIONS: '/auth/sessions',
     CHANGE_PASSWORD: '/auth/change-password',
     FORGOT_PASSWORD: '/auth/forgot-password',
+    VERIFY_RESET_OTP: '/auth/verify-reset-otp',
+    REDEEM_ACCOUNT_ACCESS: '/auth/account-access/redeem',
     RESET_PASSWORD: '/auth/reset-password',
   },
 

@@ -14,6 +14,11 @@ export class PrescriptionsService {
   }
 
   async create(dto: CreatePrescriptionDto) {
+    const doctor = await this.prisma.doctor.findUnique({
+      where: { id: dto.doctorId },
+    });
+    if (!doctor) throw new NotFoundException('Doctor not found');
+
     const prescriptionNumber = await this.generatePrescriptionNumber();
 
     return this.prisma.prescription.create({
@@ -24,6 +29,8 @@ export class PrescriptionsService {
         consultationId: dto.consultationId,
         notes: dto.notes,
         dispensingStatus: 'PENDING',
+        hospitalId: doctor.hospitalId,
+        branchId: doctor.branchId,
         items: {
           create: dto.items.map((item) => ({
             medicineId: item.medicineId,
@@ -32,6 +39,8 @@ export class PrescriptionsService {
             durationDays: item.durationDays,
             instructions: item.instructions,
             route: item.route || 'Oral',
+            hospitalId: doctor.hospitalId,
+            branchId: doctor.branchId,
           })),
         },
       },

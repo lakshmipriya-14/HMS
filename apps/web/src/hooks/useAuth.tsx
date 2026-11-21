@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AuthUserDto, Role, LoginRequestDto, ROLE_PERMISSIONS_MATRIX } from '@multispeciality-hms/contracts';
-import { apiClient } from '../services/api';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { AuthUserDto, LoginRequestDto, Role } from '@multispeciality-hms/contracts';
+import { apiClient, setWebUnauthorizedHandler } from '../services/api';
+import { clearPendingLogout, isLogoutPending, markPendingLogout } from '@multispeciality-hms/api-client';
 
 interface AuthContextType {
   user: AuthUserDto | null;
@@ -13,129 +14,53 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<AuthUserDto | null>(() => {
-    const saved = localStorage.getItem('aalayam_user');
-    return saved ? JSON.parse(saved) : null;
-  });
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<AuthUserDto | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const verifyUser = async () => {
-      const token = localStorage.getItem('aalayam_access_token');
-      if (token) {
-        if (token === 'demo-preview-token') {
-          setIsLoading(false);
+    let mounted = true;
+    setWebUnauthorizedHandler(() => setUser(null));
+    const restore = async () => {
+      try {
+        if (isLogoutPending()) {
+          await apiClient.auth.logout();
+          clearPendingLogout();
           return;
         }
-        try {
-          const res = await apiClient.auth.getMe();
-          if (res.data) {
-            setUser(res.data);
-            localStorage.setItem('aalayam_user', JSON.stringify(res.data));
-          }
-        } catch (err) {
-          console.warn('Session verification failed, falling back to local cached session:', err);
-        }
+        const session = await apiClient.auth.restore();
+        if (mounted) setUser(session.user);
+      } catch {
+        if (mounted) setUser(null);
+      } finally {
+        if (mounted) setIsLoading(false);
       }
-      setIsLoading(false);
     };
-
-    verifyUser();
+    void restore();
+    return () => { mounted = false; setWebUnauthorizedHandler(undefined); };
   }, []);
 
   const login = async (dto: LoginRequestDto) => {
-    setIsLoading(true);
-    try {
-      const res = await apiClient.auth.login(dto);
-      if (res.data) {
-        const { accessToken, refreshToken, user: authUser } = res.data;
-        localStorage.setItem('aalayam_access_token', accessToken);
-        localStorage.setItem('aalayam_refresh_token', refreshToken);
-        localStorage.setItem('aalayam_user', JSON.stringify(authUser));
-        setUser(authUser);
-        return;
-      }
-    } catch (apiErr) {
-      console.warn('Backend API offline or unreachable. Initializing instant demo session for testing:', apiErr);
-      const emailLower = dto.email.toLowerCase().trim();
-      const roleMap: Record<string, Role> = {
-        'superadmin@aalayamhospital.com': Role.SUPER_ADMIN,
-        'hospitaladmin@aalayamhospital.com': Role.HOSPITAL_ADMIN,
-        'admin@aalayamhospital.com': Role.HOSPITAL_ADMIN,
-        'deptadmin@aalayamhospital.com': Role.DEPARTMENT_ADMIN,
-        'doctor@aalayamhospital.com': Role.DOCTOR,
-        'nurse@aalayamhospital.com': Role.NURSE,
-        'headnurse@aalayamhospital.com': Role.HEAD_NURSE,
-        'reception@aalayamhospital.com': Role.RECEPTIONIST,
-        'lab@aalayamhospital.com': Role.LAB_TECHNICIAN,
-        'labtech@aalayamhospital.com': Role.LAB_TECHNICIAN,
-        'pathologist@aalayamhospital.com': Role.LAB_TECHNICIAN,
-        'pharmacy@aalayamhospital.com': Role.PHARMACIST,
-        'radiology@aalayamhospital.com': Role.RADIOLOGY_STAFF,
-        'billing@aalayamhospital.com': Role.BILLING_STAFF,
-        'insurance@aalayamhospital.com': Role.INSURANCE_STAFF,
-        'wardmanager@aalayamhospital.com': Role.WARD_MANAGER,
-        'ward@aalayamhospital.com': Role.WARD_MANAGER,
-        'driver@aalayamhospital.com': Role.AMBULANCE_DRIVER,
-        'ambulance@aalayamhospital.com': Role.AMBULANCE_COORDINATOR,
-        'patient@aalayamhospital.com': Role.PATIENT,
-      };
-
-      const matchedRole = roleMap[emailLower] || Role.DOCTOR;
-      const demoUser: AuthUserDto = {
-        id: 'demo-user-id',
-        email: dto.email,
-        firstName: matchedRole.replace('_', ' '),
-        lastName: 'Officer',
-        role: matchedRole,
-        permissions: (ROLE_PERMISSIONS_MATRIX[matchedRole] as string[]) || [],
-      };
-
-      localStorage.setItem('aalayam_access_token', 'demo-preview-token');
-      localStorage.setItem('aalayam_user', JSON.stringify(demoUser));
-      setUser(demoUser);
-    } finally {
-      setIsLoading(false);
-    }
+    if (isLogoutPending()) await apiClient.auth.logout();
+    const response = await apiClient.auth.login(dto);
+    if (!response.data) throw new Error('No session returned.');
+    clearPendingLogout();
+    setUser(response.data.user);
   };
-
   const logout = async () => {
+    markPendingLogout();
     try {
       await apiClient.auth.logout();
-    } catch {
-      // Ignore network errors on logout
+      clearPendingLogout();
     } finally {
-      localStorage.removeItem('aalayam_access_token');
-      localStorage.removeItem('aalayam_refresh_token');
-      localStorage.removeItem('aalayam_user');
       setUser(null);
     }
   };
+  return <AuthContext.Provider value={{ user, isLoading, login, logout, hasRole: (...roles) => !!user && roles.includes(user.role), hasPermission: permission => !!user?.permissions.includes(permission) }}>{children}</AuthContext.Provider>;
+}
 
-  const hasRole = (...roles: Role[]) => {
-    if (!user) return false;
-    if (user.role === Role.SUPER_ADMIN) return true;
-    return roles.includes(user.role);
-  };
-
-  const hasPermission = (permission: string) => {
-    if (!user) return false;
-    if (user.role === Role.SUPER_ADMIN) return true;
-    return user.permissions?.includes(permission) || false;
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout, hasRole, hasPermission }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider.');
   return context;
-};
+}

@@ -1,9 +1,11 @@
+import { WorkspaceGate } from '../../components/WorkspaceGate';
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { LayoutDashboard, Building2, User } from 'lucide-react-native';
 
 export default function AdminTabsLayout() {
   return (
+    <WorkspaceGate home="/(admin)">
     <Tabs
       screenOptions={{
         headerShown: true,
@@ -36,5 +38,6 @@ export default function AdminTabsLayout() {
         }}
       />
     </Tabs>
+    </WorkspaceGate>
   );
 }

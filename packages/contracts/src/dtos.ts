@@ -57,6 +57,29 @@ export interface ChangePasswordRequestDto {
   newPassword: string;
 }
 
+export interface PasswordResetProof {
+  challengeId: string;
+  resetToken: string;
+}
+
+export interface AuthSessionSummaryDto {
+  id: string;
+  issuedAt: string;
+  expiresAt: string;
+  status: 'ACTIVE' | 'EXPIRED' | 'REVOKED';
+}
+
+export interface SuperAdminDashboardDto {
+  branches: number;
+  activeBranches: number;
+  inactiveBranches: number;
+  admins: number;
+  employees: number;
+  doctors: number;
+  departments: number;
+  patients: number;
+}
+
 // Patient DTOs
 export interface RegisterPatientDto {
   firstName: string;
@@ -79,6 +102,8 @@ export interface RegisterPatientDto {
   allergies?: string[];
   medicalHistoryNotes?: string;
   hospitalId: string;
+  branchId?: string;
+  registrationBranchId?: string;
 }
 
 export interface PatientSearchQueryDto {
@@ -279,6 +304,8 @@ export interface InvoiceItemDto {
 
 export interface CreateInvoiceDto {
   patientId: string;
+  hospitalId?: string;
+  branchId?: string;
   admissionId?: string;
   appointmentId?: string;
   items: InvoiceItemDto[];
@@ -292,6 +319,8 @@ export interface CollectPaymentDto {
   amount: number;
   paymentMethod: PaymentMethod;
   transactionReference?: string;
+  idempotencyKey?: string;
+  requestFingerprint?: string;
   notes?: string;
 }
 

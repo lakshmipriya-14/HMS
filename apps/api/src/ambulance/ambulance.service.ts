@@ -79,9 +79,12 @@ export class AmbulanceService {
           callerName: dto.callerName,
           callerPhone: dto.callerPhone,
           pickupLocation: dto.pickupLocation,
+          destinationHospital: dto.destinationHospitalId || 'UYIRINAI Hospital',
           severity: dto.emergencySeverity || 'CRITICAL',
           patientConditionSummary: dto.patientConditionSummary,
           status: 'DISPATCHED',
+          hospitalId: ambulance.hospitalId,
+          branchId: ambulance.branchId,
         },
         include: {
           ambulance: true,

@@ -1,9 +1,11 @@
+import { WorkspaceGate } from '../../components/WorkspaceGate';
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Home, Calendar, FileText, Bell, User } from 'lucide-react-native';
 
 export default function PatientTabsLayout() {
   return (
+    <WorkspaceGate home="/(patient)">
     <Tabs
       screenOptions={{
         headerShown: true,
@@ -50,5 +52,6 @@ export default function PatientTabsLayout() {
         }}
       />
     </Tabs>
+    </WorkspaceGate>
   );
 }

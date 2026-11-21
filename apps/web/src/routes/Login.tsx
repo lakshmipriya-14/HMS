@@ -1,146 +1,99 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import { HeartPulse } from 'lucide-react';
+import type { PasswordResetProof } from '@multispeciality-hms/contracts';
 import { useAuth } from '../hooks/useAuth';
-import { Role } from '@multispeciality-hms/contracts';
-import { HeartPulse, Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
+import { apiClient } from '../services/api';
 
-const DEMO_PRESETS = [
-  { label: 'Super Admin', email: 'superadmin@aalayamhospital.com', role: Role.SUPER_ADMIN },
-  { label: 'Hospital Admin', email: 'hospitaladmin@aalayamhospital.com', role: Role.HOSPITAL_ADMIN },
-  { label: 'Doctor (Cardiology)', email: 'doctor@aalayamhospital.com', role: Role.DOCTOR },
-  { label: 'Staff Nurse', email: 'nurse@aalayamhospital.com', role: Role.NURSE },
-  { label: 'Head Nurse', email: 'headnurse@aalayamhospital.com', role: Role.HEAD_NURSE },
-  { label: 'Receptionist', email: 'reception@aalayamhospital.com', role: Role.RECEPTIONIST },
-  { label: 'Lab Technician', email: 'lab@aalayamhospital.com', role: Role.LAB_TECHNICIAN },
-  { label: 'Pharmacist', email: 'pharmacy@aalayamhospital.com', role: Role.PHARMACIST },
-  { label: 'Radiology Staff', email: 'radiology@aalayamhospital.com', role: Role.RADIOLOGY_STAFF },
-  { label: 'Billing Staff', email: 'billing@aalayamhospital.com', role: Role.BILLING_STAFF },
-  { label: 'Ward Manager', email: 'wardmanager@aalayamhospital.com', role: Role.WARD_MANAGER },
-  { label: 'Ambulance Dispatch', email: 'ambulance@aalayamhospital.com', role: Role.AMBULANCE_COORDINATOR },
-  { label: 'Patient Portal', email: 'patient@aalayamhospital.com', role: Role.PATIENT },
-];
-
-export const Login: React.FC = () => {
-  const [email, setEmail] = useState('doctor@aalayamhospital.com');
-  const [password, setPassword] = useState('Password@123');
-  const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { login } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setIsSubmitting(true);
-    try {
-      await login({ email, password });
-      // Redirect based on role or home
-      navigate('/');
-    } catch (err: any) {
-      setError(err.message || 'Invalid email or password');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const selectDemoRole = (demoEmail: string) => {
-    setEmail(demoEmail);
-    setPassword('Password@123');
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-600 to-emerald-700 flex items-center justify-center text-white mx-auto shadow-xl shadow-teal-900/20">
-          <HeartPulse className="w-8 h-8" />
-        </div>
-        <h2 className="mt-4 text-2xl font-extrabold text-slate-900 tracking-tight">
-          Aalayam Multispeciality Hospital
-        </h2>
-        <p className="text-xs text-teal-800 font-medium mt-1">
-          ஆலயம் பன்னோக்கு மருத்துவமனை • EMR Clinical Portal
-        </p>
-      </div>
-
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 shadow-xl rounded-2xl sm:px-10 border border-slate-200/80">
-          {error && (
-            <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Hospital Email Address
-              </label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
-                  placeholder="name@aalayamhospital.com"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Password</label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full mt-2 py-2.5 px-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors flex items-center justify-center space-x-2"
-            >
-              <span>{isSubmitting ? 'Authenticating...' : 'Sign In to Clinical Terminal'}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
-
-          {/* Quick Demo Switcher */}
-          <div className="mt-6 pt-6 border-t border-slate-100">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 text-center">
-              Quick 1-Click Role Switcher (10 Member Testing)
-            </p>
-            <div className="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto pr-1">
-              {DEMO_PRESETS.map((demo) => (
-                <button
-                  key={demo.label}
-                  type="button"
-                  onClick={() => selectDemoRole(demo.email)}
-                  className={`text-[11px] font-medium p-1.5 rounded text-left border truncate transition-colors ${
-                    email === demo.email
-                      ? 'bg-teal-50 border-teal-500 text-teal-800 font-bold'
-                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                  }`}
-                >
-                  {demo.label}
-                </button>
-              ))}
-            </div>
-            <p className="text-[10px] text-slate-400 text-center mt-3">
-              Password for all seeded accounts: <span className="font-mono font-bold text-slate-600">Password@123</span>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+type Step = 'login' | 'request' | 'verify' | 'reset' | 'redeem';
+const titles: Record<Step, string> = {
+  login: 'Staff login', request: 'Forgot password', verify: 'Verify recovery code',
+  reset: 'Set new password', redeem: 'One-time account access',
 };
+
+export function Login() {
+  const { login, user, isLoading } = useAuth();
+  const [step, setStep] = useState<Step>('login');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmation, setConfirmation] = useState('');
+  const [code, setCode] = useState('');
+  const [proof, setProof] = useState<PasswordResetProof>();
+  const [error, setError] = useState('');
+  const [status, setStatus] = useState('');
+  const [busy, setBusy] = useState(false);
+  function change(next: Step) {
+    setStep(next); setError(''); setStatus(''); setPassword(''); setConfirmation(''); setCode('');
+    if (next !== 'reset') setProof(undefined);
+  }
+  async function submit(event: React.FormEvent) {
+    event.preventDefault();
+    if (busy) return;
+    setBusy(true); setError('');
+    try {
+      if (step === 'login') await login({ email: email.trim(), password });
+      if (step === 'request') {
+        const response = await apiClient.auth.requestPasswordReset(email.trim());
+        change('verify'); setStatus(response.message);
+      }
+      if (step === 'verify') {
+        const response = await apiClient.auth.verifyResetOtp(email.trim(), code.trim());
+        if (!response.data) throw new Error('No recovery session returned.');
+        setProof(response.data); change('reset');
+      }
+      if (step === 'reset' || step === 'redeem') {
+        if (password !== confirmation) throw new Error('The passwords do not match.');
+        if (step === 'redeem') {
+          const cleanCode = code.replace(/\s+/g, '');
+          await apiClient.auth.redeemAccountAccess(cleanCode, password);
+        } else {
+          if (!proof) throw new Error('Verify your recovery code again.');
+          await apiClient.auth.resetPassword(proof, password);
+        }
+        change('login'); setStatus('Password saved. Sign in to continue.');
+      }
+    } catch (e) { setError(e instanceof Error ? e.message : 'The request could not be completed.'); }
+    finally { setBusy(false); }
+  }
+  if (isLoading) return <p role="status">Restoring session…</p>;
+  if (user) return <Navigate to="/" replace />;
+  const newPassword = step === 'reset' || step === 'redeem';
+  const input = 'block w-full rounded border border-slate-300 p-2 mt-1';
+  return <main className="min-h-screen bg-slate-100 grid place-items-center p-6">
+    <form onSubmit={submit} className="bg-white rounded-xl shadow-md max-w-md w-full p-6 space-y-4">
+      <HeartPulse className="text-red-700" /><p className="text-sm font-bold">UYIRINAI MULTISPECIALITY HOSPITAL</p>
+      <h1 className="text-2xl font-bold">{titles[step]}</h1>
+      {error && <p role="alert" className="text-red-700">{error}</p>}
+      {status && <p role="status">{status}</p>}
+      {(step === 'login' || step === 'request') && <label className="block">Registered email
+        <input type="email" autoComplete="username" className={input} value={email} onChange={event => setEmail(event.target.value)} required maxLength={254} disabled={busy} />
+      </label>}
+      {(step === 'verify' || step === 'redeem') && <label className="block">{step === 'verify' ? 'Six digit code' : 'One-time access code'}
+        <input
+          type="text"
+          autoComplete={step === 'verify' ? 'one-time-code' : 'off'}
+          autoCorrect="off"
+          spellCheck={false}
+          className={input}
+          value={code}
+          onChange={event => setCode(event.target.value.replace(/\s+/g, ''))}
+          maxLength={step === 'verify' ? 6 : 128}
+          required
+          disabled={busy}
+        />
+      </label>}
+      {(step === 'login' || newPassword) && <label className="block">{newPassword ? 'New password' : 'Password'}
+        <input type="password" autoComplete={newPassword ? 'new-password' : 'current-password'} className={input} value={password}
+          onChange={event => setPassword(event.target.value)} required minLength={newPassword ? 12 : undefined} disabled={busy} />
+      </label>}
+      {newPassword && <label className="block">Confirm password
+        <input className={input} type="password" autoComplete="new-password" value={confirmation} onChange={event => setConfirmation(event.target.value)} required disabled={busy} />
+      </label>}
+      <button disabled={busy} className="bg-red-700 rounded text-white p-2 w-full" type="submit">{busy ? 'Working…' : step === 'login' ? 'Sign in' : 'Continue'}</button>
+      {step === 'login' ? <div className="flex flex-col gap-2">
+        <button type="button" disabled={busy} onClick={() => change('request')}>Forgot password?</button>
+        <button type="button" disabled={busy} onClick={() => change('redeem')}>Use one-time account access</button>
+      </div> : <button type="button" disabled={busy} onClick={() => change('login')}>Back to sign in</button>}
+    </form>
+  </main>;
+}

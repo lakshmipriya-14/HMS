@@ -58,6 +58,8 @@ export class WardsService {
           admissionReason: dto.admissionReason,
           initialDiagnosis: dto.initialDiagnosis,
           admittedAt: new Date(),
+          hospitalId: bed.hospitalId,
+          branchId: bed.branchId,
         },
       });
 

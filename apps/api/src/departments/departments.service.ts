@@ -1,42 +1,41 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { AuthUserDto, Role } from '@multispeciality-hms/contracts';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class DepartmentsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(hospitalId?: string) {
-    return this.prisma.department.findMany({
-      where: {
-        deletedAt: null,
-        ...(hospitalId ? { hospitalId } : {}),
-      },
-      include: {
-        doctors: {
-          include: {
-            employee: {
-              include: { user: { select: { firstName: true, lastName: true, email: true } } },
-            },
-          },
-        },
-      },
-    });
+  private where(actor: AuthUserDto): Prisma.DepartmentWhereInput {
+    if (!actor.hospitalId) throw new ForbiddenException('Missing hospital scope.');
+    const hospital = { hospitalId: actor.hospitalId, deletedAt: null };
+    if (actor.role === Role.SUPER_ADMIN || actor.role === Role.HOSPITAL_ADMIN) return hospital;
+    if (!actor.branchId || (actor.role === Role.DEPARTMENT_ADMIN && !actor.departmentId)) {
+      throw new ForbiddenException('Missing branch or department scope.');
+    }
+    return { ...hospital, id: actor.departmentId, OR: [{ branchId: actor.branchId }, { branchId: null }] };
   }
 
-  async findOne(id: string) {
-    const dept = await this.prisma.department.findUnique({
-      where: { id },
-      include: {
-        doctors: {
-          include: {
-            employee: { include: { user: true } },
-            qualifications: true,
-          },
-        },
-        wards: true,
+  private include(actor: AuthUserDto): Prisma.DepartmentInclude {
+    return {
+      doctors: {
+        where: { hospitalId: actor.hospitalId, branchId: actor.branchId },
+        include: { employee: { include: { user: { select: { firstName: true, lastName: true, email: true } } } }, qualifications: true },
       },
+      wards: { where: { hospitalId: actor.hospitalId, branchId: actor.branchId } },
+    };
+  }
+
+  async findAll(actor: AuthUserDto) {
+    return this.prisma.department.findMany({ where: this.where(actor), include: this.include(actor) });
+  }
+
+  async findOne(actor: AuthUserDto, id: string) {
+    const department = await this.prisma.department.findFirst({
+      where: { AND: [this.where(actor), { id }] }, include: this.include(actor),
     });
-    if (!dept) throw new NotFoundException('Department not found');
-    return dept;
+    if (!department) throw new NotFoundException('Department not found.');
+    return department;
   }
 }

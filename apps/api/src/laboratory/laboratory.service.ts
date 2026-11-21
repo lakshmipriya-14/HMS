@@ -22,6 +22,11 @@ export class LaboratoryService {
   }
 
   async createOrder(dto: CreateLabOrderDto) {
+    const doctor = await this.prisma.doctor.findUnique({
+      where: { id: dto.doctorId },
+    });
+    if (!doctor) throw new NotFoundException('Doctor not found');
+
     const orderNumber = await this.generateOrderNumber();
     const barcode = `BAR-${Date.now().toString().slice(-6)}`;
 
@@ -31,6 +36,8 @@ export class LaboratoryService {
         barcode,
         patientId: dto.patientId,
         doctorId: dto.doctorId,
+        hospitalId: doctor.hospitalId,
+        branchId: doctor.branchId,
         priority: dto.priority || 'ROUTINE',
         clinicalNotes: dto.clinicalNotes,
         status: 'ORDERED',

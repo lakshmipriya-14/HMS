@@ -54,6 +54,11 @@ export class PharmacyService {
 
   async dispense(prescriptionId: string, dto: DispensePrescriptionDto, pharmacistId: string) {
     return this.prisma.$transaction(async (tx) => {
+      const prescription = await tx.prescription.findUnique({
+        where: { id: prescriptionId },
+      });
+      if (!prescription) throw new NotFoundException('Prescription not found');
+
       for (const item of dto.items) {
         // Check batch availability
         const batch = await tx.medicineBatch.findUnique({
@@ -86,6 +91,8 @@ export class PharmacyService {
             batchId: item.batchId,
             dispensedQuantity: item.dispensedQuantity,
             pharmacistUserId: pharmacistId,
+            hospitalId: prescription.hospitalId,
+            branchId: prescription.branchId,
           },
         });
 

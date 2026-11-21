@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
-import { AuthUserDto, Role, LoginRequestDto, ROLE_PERMISSIONS_MATRIX } from '@multispeciality-hms/contracts';
-import { mobileApiClient, setMobileTokens, clearMobileTokens } from '../services/api';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { AuthUserDto, LoginRequestDto } from '@multispeciality-hms/contracts';
+import { mobileApiClient, setMobileUnauthorizedHandler } from '../services/api';
+import { clearPendingLogout, isLogoutPending, markPendingLogout } from '@multispeciality-hms/api-client';
 
 interface AuthContextType {
   user: AuthUserDto | null;
@@ -11,74 +12,53 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUserDto | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    setMobileUnauthorizedHandler(() => setUser(null));
+    const restore = async () => {
+      try {
+        if (isLogoutPending()) {
+          await mobileApiClient.auth.logout();
+          clearPendingLogout();
+          return;
+        }
+        const session = await mobileApiClient.auth.restore();
+        if (mounted) setUser(session.user);
+      } catch {
+        if (mounted) setUser(null);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    void restore();
+    return () => { mounted = false; setMobileUnauthorizedHandler(undefined); };
+  }, []);
 
   const login = async (dto: LoginRequestDto) => {
-    setIsLoading(true);
+    if (isLogoutPending()) await mobileApiClient.auth.logout();
+    const response = await mobileApiClient.auth.login(dto);
+    if (!response.data) throw new Error('No session returned.');
+    clearPendingLogout();
+    setUser(response.data.user);
+  };
+  const logout = async () => {
+    markPendingLogout();
     try {
-      const res = await mobileApiClient.auth.login(dto);
-      if (res.data) {
-        setMobileTokens(res.data.accessToken, res.data.refreshToken);
-        setUser(res.data.user);
-        return;
-      }
-    } catch (apiErr) {
-      console.warn('Mobile API offline, using instant demo fallback session:', apiErr);
-      const emailLower = dto.email.toLowerCase().trim();
-      const roleMap: Record<string, Role> = {
-        'admin@aalayamhospital.com': Role.HOSPITAL_ADMIN,
-        'superadmin@aalayamhospital.com': Role.SUPER_ADMIN,
-        'hospitaladmin@aalayamhospital.com': Role.HOSPITAL_ADMIN,
-        'doctor@aalayamhospital.com': Role.DOCTOR,
-        'nurse@aalayamhospital.com': Role.NURSE,
-        'headnurse@aalayamhospital.com': Role.HEAD_NURSE,
-        'reception@aalayamhospital.com': Role.RECEPTIONIST,
-        'pharmacy@aalayamhospital.com': Role.PHARMACIST,
-        'labtech@aalayamhospital.com': Role.LAB_TECHNICIAN,
-        'lab@aalayamhospital.com': Role.LAB_TECHNICIAN,
-        'radiology@aalayamhospital.com': Role.RADIOLOGY_STAFF,
-        'billing@aalayamhospital.com': Role.BILLING_STAFF,
-        'ward@aalayamhospital.com': Role.WARD_MANAGER,
-        'wardmanager@aalayamhospital.com': Role.WARD_MANAGER,
-        'driver@aalayamhospital.com': Role.AMBULANCE_DRIVER,
-        'ambulance@aalayamhospital.com': Role.AMBULANCE_COORDINATOR,
-        'patient@aalayamhospital.com': Role.PATIENT,
-      };
-
-      const matchedRole = roleMap[emailLower] || Role.DOCTOR;
-      const demoUser: AuthUserDto = {
-        id: 'mobile-demo-id',
-        email: dto.email,
-        firstName: matchedRole.replace('_', ' '),
-        lastName: 'Terminal',
-        role: matchedRole,
-        permissions: (ROLE_PERMISSIONS_MATRIX[matchedRole] as string[]) || [],
-      };
-
-      setUser(demoUser);
+      await mobileApiClient.auth.logout();
+      clearPendingLogout();
     } finally {
-      setIsLoading(false);
+      setUser(null);
     }
   };
+  return <AuthContext.Provider value={{ user, isLoading, login, logout }}>{children}</AuthContext.Provider>;
+}
 
-  const logout = async () => {
-    clearMobileTokens();
-    setUser(null);
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider.');
   return context;
-};
+}

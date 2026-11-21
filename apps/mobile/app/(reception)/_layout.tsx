@@ -1,9 +1,11 @@
+import { WorkspaceGate } from '../../components/WorkspaceGate';
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { UserPlus, Clock, User } from 'lucide-react-native';
 
 export default function ReceptionTabsLayout() {
   return (
+    <WorkspaceGate home="/(reception)">
     <Tabs
       screenOptions={{
         headerShown: true,
@@ -36,5 +38,6 @@ export default function ReceptionTabsLayout() {
         }}
       />
     </Tabs>
+    </WorkspaceGate>
   );
 }

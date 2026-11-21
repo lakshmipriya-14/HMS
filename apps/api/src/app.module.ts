@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { DoctorsModule } from './doctors/doctors.module';
 import { PatientsModule } from './patients/patients.module';
 import { AppointmentsModule } from './appointments/appointments.module';
+import { AppointmentRequestsModule } from './appointment-requests/appointment-requests.module';
 import { ConsultationsModule } from './consultations/consultations.module';
 import { PrescriptionsModule } from './prescriptions/prescriptions.module';
 import { NursingModule } from './nursing/nursing.module';
@@ -21,8 +22,10 @@ import { AmbulanceModule } from './ambulance/ambulance.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { AuditModule } from './audit/audit.module';
 import { ReportsModule } from './reports/reports.module';
+import { SuperAdminModule } from './super-admin/super-admin.module';
 
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { PermissionsGuard } from './common/guards/permissions.guard';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
@@ -38,6 +41,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
     DoctorsModule,
     PatientsModule,
     AppointmentsModule,
+    AppointmentRequestsModule,
     ConsultationsModule,
     PrescriptionsModule,
     NursingModule,
@@ -50,11 +54,16 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
     NotificationsModule,
     AuditModule,
     ReportsModule,
+    SuperAdminModule,
   ],
   providers: [
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionsGuard,
     },
     {
       provide: APP_FILTER,

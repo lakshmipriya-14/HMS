@@ -30,7 +30,10 @@ out/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.*
 !.env.example
+.pgpass
+pgpass.conf
 
 # Logs
 logs/
@@ -53,3 +56,11 @@ Thumbs.db
 
 # Prisma
 # Keep prisma migrations, ignore local sqlite or runtime caches if any
+
+# Local PostgreSQL backups
+*.dump
+*.pgdump
+*.backup
+*.dump.gz
+*.sql.gz
+/local-db-backups/

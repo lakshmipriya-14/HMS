@@ -1,275 +1,139 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  ScrollView,
-} from 'react-native';
-import { useRouter } from 'expo-router';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Redirect, useRouter } from 'expo-router';
+import { HeartPulse } from 'lucide-react-native';
+import type { PasswordResetProof } from '@multispeciality-hms/contracts';
 import { useAuth } from '../../hooks/useAuth';
-import { Role } from '@multispeciality-hms/contracts';
+import { roleHome } from '../../constants/role-home';
+import { UyirinaiTheme } from '../../constants/theme';
+import { mobileApiClient } from '../../services/api';
 
-const ALL_ROLES = [
-  { label: 'Doctor (Cardio)', email: 'doctor@aalayamhospital.com', target: '/(doctor)' },
-  { label: 'Staff Nurse', email: 'nurse@aalayamhospital.com', target: '/(nurse)' },
-  { label: 'Hospital Admin', email: 'admin@aalayamhospital.com', target: '/(admin)' },
-  { label: 'Reception Desk', email: 'reception@aalayamhospital.com', target: '/(reception)' },
-  { label: 'Pharmacy Staff', email: 'pharmacy@aalayamhospital.com', target: '/(pharmacy)' },
-  { label: 'Lab Technician', email: 'labtech@aalayamhospital.com', target: '/(lab)' },
-  { label: 'Radiology Staff', email: 'radiology@aalayamhospital.com', target: '/(radiology)' },
-  { label: 'Billing & Ward', email: 'billing@aalayamhospital.com', target: '/(billing)' },
-  { label: 'Ambulance Driver', email: 'driver@aalayamhospital.com', target: '/(ambulance)' },
-  { label: 'Patient Portal', email: 'patient@aalayamhospital.com', target: '/(patient)' },
-];
+type Screen = 'login' | 'request' | 'verify' | 'reset' | 'redeem';
+const titles = {
+  login: 'Staff Login', request: 'Forgot Password', verify: 'Verify Recovery Code',
+  reset: 'Set New Password', redeem: 'One-Time Account Access',
+};
 
 export default function MobileLogin() {
-  const [email, setEmail] = useState('doctor@aalayamhospital.com');
-  const [password, setPassword] = useState('Password@123');
+  const [screen, setScreen] = useState<Screen>('login');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [code, setCode] = useState('');
+  const [proof, setProof] = useState<PasswordResetProof>();
+  const [feedback, setFeedback] = useState('');
   const [error, setError] = useState('');
-  const { login, isLoading } = useAuth();
+  const [busy, setBusy] = useState(false);
+  const { user, login, isLoading } = useAuth();
   const router = useRouter();
 
-  const handleSignIn = async () => {
-    setError('');
-    try {
-      await login({ email, password });
-      const lower = email.toLowerCase();
-      if (lower.includes('doctor')) {
-        router.replace('/(doctor)');
-      } else if (lower.includes('nurse')) {
-        router.replace('/(nurse)');
-      } else if (lower.includes('admin')) {
-        router.replace('/(admin)');
-      } else if (lower.includes('reception')) {
-        router.replace('/(reception)');
-      } else if (lower.includes('pharmacy')) {
-        router.replace('/(pharmacy)');
-      } else if (lower.includes('lab')) {
-        router.replace('/(lab)');
-      } else if (lower.includes('radiology')) {
-        router.replace('/(radiology)');
-      } else if (lower.includes('billing') || lower.includes('ward')) {
-        router.replace('/(billing)');
-      } else if (lower.includes('driver') || lower.includes('ambulance')) {
-        router.replace('/(ambulance)');
-      } else {
-        router.replace('/(patient)');
-      }
-    } catch (err: any) {
-      setError(err.message || 'Login failed. Please verify credentials.');
-    }
-  };
+  function change(next: Screen) {
+    setScreen(next); setPassword(''); setConfirm(''); setCode(''); setError(''); setFeedback('');
+    if (next !== 'reset') setProof(undefined);
+  }
 
-  const selectRole = (targetEmail: string) => {
-    setEmail(targetEmail);
-    setPassword('Password@123');
-  };
+  async function submit() {
+    if (busy) return;
+    setBusy(true); setError('');
+    try {
+      if (screen === 'login') await login({ email: email.trim(), password });
+      if (screen === 'request') {
+        const response = await mobileApiClient.auth.requestPasswordReset(email.trim());
+        change('verify');
+        setFeedback(response.data?.mode === 'development'
+          ? 'Local development recovery is enabled. Use the configured development code. No message was sent.'
+          : response.message);
+      }
+      if (screen === 'verify') {
+        const response = await mobileApiClient.auth.verifyResetOtp(email.trim(), code.trim());
+        if (!response.data) throw new Error('No recovery session returned.');
+        setProof(response.data); change('reset');
+      }
+      if (screen === 'redeem' || screen === 'reset') {
+        if (password !== confirm) throw new Error('The passwords do not match.');
+        if (screen === 'redeem') {
+          const cleanCode = code.replace(/\s+/g, '');
+          await mobileApiClient.auth.redeemAccountAccess(cleanCode, password);
+        } else {
+          if (!proof) throw new Error('Verify your recovery code again.');
+          await mobileApiClient.auth.resetPassword(proof, password);
+        }
+        change('login'); setFeedback('Password saved. Sign in to continue.');
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'The request could not be completed.');
+    } finally { setBusy(false); }
+  }
+
+  if (isLoading) return <ActivityIndicator accessibilityLabel="Restoring session" />;
+  if (user) return <Redirect href={roleHome[user.role]} />;
+  const passwordStep = screen === 'login' || screen === 'reset' || screen === 'redeem';
+  const newPassword = screen === 'reset' || screen === 'redeem';
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.logoBadge}>
-          <Text style={styles.logoLetter}>A</Text>
-        </View>
-        <Text style={styles.title}>Aalayam Hospital</Text>
-        <Text style={styles.subTitle}>ஆலயம் பன்னோக்கு மருத்துவமனை</Text>
-        <Text style={styles.subText}>Clinical Mobile Care Terminal</Text>
+    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+      <TouchableOpacity accessibilityRole="button" onPress={() => router.replace('/')}><Text style={styles.home}>‹ Hospital Home</Text></TouchableOpacity>
+      <View style={styles.brand}>
+        <HeartPulse color="white" size={32} />
+        <Text style={styles.hospital}>UYIRINAI MULTISPECIALITY HOSPITAL</Text>
       </View>
-
       <View style={styles.card}>
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-        <Text style={styles.inputLabel}>Hospital Email</Text>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholder="email@aalayamhospital.com"
-          autoCapitalize="none"
-          keyboardType="email-address"
-        />
-
-        <Text style={styles.inputLabel}>Password</Text>
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-          placeholder="••••••••"
-          secureTextEntry
-        />
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleSignIn}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Sign In to Mobile Terminal</Text>
-          )}
+        <Text style={styles.title}>{titles[screen]}</Text>
+        {feedback ? <Text accessibilityLiveRegion="polite">{feedback}</Text> : null}
+        {error ? <Text accessibilityLiveRegion="polite" style={styles.error}>{error}</Text> : null}
+        {(screen === 'login' || screen === 'request') && <>
+          <Text>Registered email</Text>
+          <TextInput style={styles.input} accessibilityLabel="Registered email" value={email} onChangeText={setEmail}
+            keyboardType="email-address" autoCapitalize="none" autoCorrect={false} editable={!busy} />
+        </>}
+        {(screen === 'verify' || screen === 'redeem') && <>
+          <Text>{screen === 'verify' ? 'Six digit code' : 'One-time access code'}</Text>
+          <TextInput
+            style={styles.input}
+            accessibilityLabel={screen === 'verify' ? 'Six digit code' : 'One-time access code'}
+            value={code}
+            onChangeText={(text) => setCode(text.replace(/\s+/g, ''))}
+            keyboardType={screen === 'verify' ? 'number-pad' : 'default'}
+            maxLength={screen === 'verify' ? 6 : 128}
+            autoCapitalize="none"
+            autoCorrect={false}
+            spellCheck={false}
+            secureTextEntry={false}
+            editable={!busy}
+          />
+        </>}
+        {passwordStep && <>
+          <Text>{newPassword ? 'New password' : 'Password'}</Text>
+          <TextInput style={styles.input} accessibilityLabel={newPassword ? 'New password' : 'Password'}
+            value={password} onChangeText={setPassword} secureTextEntry editable={!busy} />
+        </>}
+        {newPassword && <>
+          <Text>Confirm password</Text>
+          <TextInput style={styles.input} accessibilityLabel="Confirm password" value={confirm} onChangeText={setConfirm}
+            secureTextEntry editable={!busy} />
+        </>}
+        <TouchableOpacity accessibilityRole="button" disabled={busy} style={styles.primary} onPress={submit}>
+          {busy ? <ActivityIndicator color="white" /> : <Text style={styles.primaryText}>{screen === 'login' ? 'Sign In' : 'Continue'}</Text>}
         </TouchableOpacity>
-
-        {/* Demo Fast Selector */}
-        <View style={styles.demoSection}>
-          <Text style={styles.demoTitle}>1-Click Role Switcher (All 10 Roles)</Text>
-          <View style={styles.roleGrid}>
-            {ALL_ROLES.map((r) => (
-              <TouchableOpacity
-                key={r.label}
-                style={[
-                  styles.roleButton,
-                  email === r.email && styles.roleButtonActive,
-                ]}
-                onPress={() => selectRole(r.email)}
-              >
-                <Text
-                  style={[
-                    styles.roleButtonText,
-                    email === r.email && styles.roleButtonTextActive,
-                  ]}
-                >
-                  {r.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+        {screen === 'login' ? <>
+          <TouchableOpacity disabled={busy} accessibilityRole="button" onPress={() => change('request')}><Text style={styles.link}>Forgot password?</Text></TouchableOpacity>
+          <TouchableOpacity disabled={busy} accessibilityRole="button" onPress={() => change('redeem')}><Text style={styles.link}>Use one-time account access</Text></TouchableOpacity>
+        </> : <TouchableOpacity disabled={busy} accessibilityRole="button" onPress={() => change('login')}><Text style={styles.link}>Back to sign in</Text></TouchableOpacity>}
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: '#0F766E',
-    justifyContent: 'center',
-    padding: 20,
-    paddingVertical: 36,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  logoBadge: {
-    width: 54,
-    height: 54,
-    borderRadius: 18,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-  logoLetter: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#0F766E',
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#fff',
-  },
-  subTitle: {
-    fontSize: 12,
-    color: '#CCFBF1',
-    marginTop: 2,
-  },
-  subText: {
-    fontSize: 11,
-    color: '#99F6E4',
-    marginTop: 2,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-    fontWeight: '600',
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 4,
-  },
-  errorText: {
-    color: '#DC2626',
-    backgroundColor: '#FEE2E2',
-    padding: 10,
-    borderRadius: 8,
-    fontSize: 12,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  inputLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#334155',
-    marginBottom: 6,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 14,
-    color: '#0F172A',
-    marginBottom: 14,
-  },
-  button: {
-    backgroundColor: '#0F766E',
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  demoSection: {
-    marginTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
-    paddingTop: 16,
-  },
-  demoTitle: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#64748B',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  roleGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  roleButton: {
-    flexBasis: '48%',
-    backgroundColor: '#F1F5F9',
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  roleButtonActive: {
-    backgroundColor: '#0F766E',
-  },
-  roleButtonText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#334155',
-  },
-  roleButtonTextActive: {
-    color: '#fff',
-  },
+  container: { flexGrow: 1, padding: 20, justifyContent: 'center', backgroundColor: UyirinaiTheme.colors.primary },
+  home: { color: 'white', fontWeight: '700', marginBottom: 12 },
+  brand: { alignItems: 'center', gap: 10, marginBottom: 24 },
+  hospital: { color: 'white', fontWeight: '800', textAlign: 'center' },
+  card: { padding: 20, borderRadius: 16, backgroundColor: 'white', gap: 10 },
+  title: { fontSize: 22, fontWeight: '800' },
+  input: { padding: 12, borderRadius: 8, borderWidth: 1, borderColor: UyirinaiTheme.colors.borderGrey },
+  primary: { alignItems: 'center', padding: 13, borderRadius: 8, backgroundColor: UyirinaiTheme.colors.primary },
+  primaryText: { color: 'white', fontWeight: '700' },
+  link: { color: UyirinaiTheme.colors.primary, paddingVertical: 5, fontWeight: '700' },
+  error: { color: UyirinaiTheme.colors.accentRed },
 });

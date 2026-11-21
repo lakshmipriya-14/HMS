@@ -1,6 +1,8 @@
 import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
-import { CreateAppointmentDto } from '@multispeciality-hms/contracts';
+import { AuthUserDto, CreateAppointmentDto } from '@multispeciality-hms/contracts';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { RequirePermissions, Scoped } from '../common/decorators/roles.decorator';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Appointments & Queue')
@@ -19,9 +21,11 @@ export class AppointmentsController {
   }
 
   @Get('queue')
+  @Scoped()
+  @RequirePermissions('APPOINTMENTS:VIEW')
   @ApiOperation({ summary: "Get today's live appointment queue" })
-  async getQueue(@Query('doctorId') doctorId?: string) {
-    const data = await this.service.getTodayQueue(doctorId);
+  async getQueue(@CurrentUser() actor: AuthUserDto, @Query('doctorId') doctorId?: string) {
+    const data = await this.service.getTodayQueue(actor, doctorId);
     return {
       message: "Today's queue retrieved",
       data,
@@ -29,9 +33,11 @@ export class AppointmentsController {
   }
 
   @Get('today')
+  @Scoped()
+  @RequirePermissions('APPOINTMENTS:VIEW')
   @ApiOperation({ summary: "Get today's appointments for doctor or department" })
-  async getToday(@Query('doctorId') doctorId?: string) {
-    const data = await this.service.getTodayQueue(doctorId);
+  async getToday(@CurrentUser() actor: AuthUserDto, @Query('doctorId') doctorId?: string) {
+    const data = await this.service.getTodayQueue(actor, doctorId);
     return {
       message: 'Appointments retrieved',
       data,

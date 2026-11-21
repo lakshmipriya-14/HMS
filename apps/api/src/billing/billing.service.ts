@@ -62,6 +62,31 @@ export class BillingService {
     const discountAmount = dto.discountAmount || 0;
     const totalAmount = Math.max(0, subTotal + taxAmount - discountAmount);
 
+    let hospitalId = dto.hospitalId;
+    let branchId = dto.branchId;
+
+    if (!hospitalId || !branchId) {
+      if (dto.appointmentId) {
+        const apt = await this.prisma.appointment.findUnique({ where: { id: dto.appointmentId } });
+        if (apt) {
+          hospitalId = apt.hospitalId;
+          branchId = apt.branchId;
+        }
+      } else if (dto.admissionId) {
+        const adm = await this.prisma.admission.findUnique({ where: { id: dto.admissionId } });
+        if (adm) {
+          hospitalId = adm.hospitalId;
+          branchId = adm.branchId;
+        }
+      }
+      if (!hospitalId || !branchId) {
+        const patient = await this.prisma.patient.findUnique({ where: { id: dto.patientId } });
+        if (!patient) throw new NotFoundException('Patient not found');
+        hospitalId = patient.hospitalId;
+        branchId = patient.registrationBranchId;
+      }
+    }
+
     return this.prisma.invoice.create({
       data: {
         invoiceNumber,
@@ -75,6 +100,8 @@ export class BillingService {
         paidAmount: 0,
         status: 'PENDING',
         notes: dto.notes,
+        hospitalId,
+        branchId,
         items: {
           create: items,
         },
@@ -106,6 +133,10 @@ export class BillingService {
           transactionReference: dto.transactionReference,
           receivedByUserId: cashierUserId,
           notes: dto.notes,
+          hospitalId: invoice.hospitalId,
+          branchId: invoice.branchId,
+          idempotencyKey: dto.idempotencyKey || `PAY-${invoiceId}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+          requestFingerprint: dto.requestFingerprint || `FP-${invoiceId}-${cashierUserId}-${Date.now()}`,
         },
       });
 

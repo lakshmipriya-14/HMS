@@ -1,6 +1,19 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateAppointmentDto } from '@multispeciality-hms/contracts';
+import { AuthUserDto, CreateAppointmentDto, Role } from '@multispeciality-hms/contracts';
+
+export function appointmentReadScope(actor: AuthUserDto): Prisma.AppointmentWhereInput {
+  if (!actor.hospitalId) throw new ForbiddenException('Missing hospital scope.');
+  const scope = { hospitalId: actor.hospitalId };
+  if (actor.role === Role.SUPER_ADMIN || actor.role === Role.HOSPITAL_ADMIN) return scope;
+  if (actor.role === Role.PATIENT && actor.patientProfileId) return { ...scope, patientId: actor.patientProfileId };
+  if (!actor.branchId) throw new ForbiddenException('Missing branch scope.');
+  if (actor.role === Role.DOCTOR && !actor.doctorProfileId) throw new ForbiddenException('Missing doctor assignment.');
+  if (actor.role === Role.DEPARTMENT_ADMIN && !actor.departmentId) throw new ForbiddenException('Missing department assignment.');
+  return { ...scope, branchId: actor.branchId, departmentId: actor.departmentId,
+    doctorId: actor.role === Role.DOCTOR ? actor.doctorProfileId : undefined };
+}
 
 @Injectable()
 export class AppointmentsService {
@@ -47,6 +60,8 @@ export class AppointmentsService {
         consultationFee: doctor.consultationFee,
         status: 'SCHEDULED',
         isPaid: false,
+        hospitalId: doctor.hospitalId,
+        branchId: doctor.branchId,
       },
       include: {
         patient: { select: { id: true, uhid: true, firstName: true, lastName: true, phone: true } },
@@ -62,18 +77,18 @@ export class AppointmentsService {
     return appointment;
   }
 
-  async getTodayQueue(doctorId?: string) {
+  async getTodayQueue(actor: AuthUserDto, doctorId?: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const where: any = {
+    const where: Prisma.AppointmentWhereInput = {
       appointmentDate: {
         gte: today,
         lt: tomorrow,
       },
-      ...(doctorId ? { doctorId } : {}),
+      AND: [appointmentReadScope(actor), ...(doctorId ? [{ doctorId }] : [])],
     };
 
     return this.prisma.appointment.findMany({

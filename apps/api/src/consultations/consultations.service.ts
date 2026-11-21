@@ -7,11 +7,18 @@ export class ConsultationsService {
   constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateConsultationDto) {
+    const appointment = await this.prisma.appointment.findUnique({
+      where: { id: dto.appointmentId },
+    });
+    if (!appointment) throw new NotFoundException('Appointment not found');
+
     const consultation = await this.prisma.consultation.create({
       data: {
         appointmentId: dto.appointmentId,
-        patientId: dto.patientId,
-        doctorId: dto.doctorId,
+        patientId: dto.patientId || appointment.patientId,
+        doctorId: dto.doctorId || appointment.doctorId,
+        hospitalId: appointment.hospitalId,
+        branchId: appointment.branchId,
         chiefComplaint: dto.chiefComplaint,
         historyOfPresentIllness: dto.historyOfPresentIllness,
         physicalExamNotes: dto.physicalExaminationNotes,

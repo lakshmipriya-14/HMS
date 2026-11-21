@@ -1,0 +1,4 @@
+# Preserve the exact bytes of the upgrade and integrity migrations.
+prisma/migrations/20261121160000_uyirinai_approved_schema_upgrade/migration.sql -text
+prisma/migrations/20261121170000_guard_role_lab_and_append_only/migration.sql -text
+prisma/migrations/20261121180000_public_appointment_requests/migration.sql -text

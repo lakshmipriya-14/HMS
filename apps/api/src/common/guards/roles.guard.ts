@@ -22,11 +22,6 @@ export class RolesGuard implements CanActivate {
       throw new ForbiddenException('Access denied: Authentication context missing');
     }
 
-    // SUPER_ADMIN has global system override
-    if (user.role === Role.SUPER_ADMIN) {
-      return true;
-    }
-
     const hasRole = requiredRoles.includes(user.role);
     if (!hasRole) {
       throw new ForbiddenException(`Access denied: Requires role [${requiredRoles.join(', ')}]`);
