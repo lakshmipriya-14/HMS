@@ -3,10 +3,12 @@ import {
   UnauthorizedException,
   BadRequestException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
+import * as crypto from 'crypto';
 import {
   AuthUserDto,
   LoginResponseDto,
@@ -15,6 +17,10 @@ import {
 } from '@multispeciality-hms/contracts';
 import { ChangePasswordDto, LoginDto } from './dto/login.dto';
 
+function hashToken(token: string): string {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -22,9 +28,82 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
+  private async generateUserDto(
+    user: any,
+    activeRole: Role,
+    assignedRoles: Role[]
+  ): Promise<AuthUserDto> {
+    const permissions = ROLE_PERMISSIONS_MATRIX[activeRole] || [];
+
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: activeRole,
+      roles: assignedRoles,
+      permissions,
+      hospitalId: user.hospitalId || undefined,
+      branchId: user.branchId || undefined,
+      departmentId: user.employee?.departmentId || undefined,
+      doctorProfileId: user.employee?.doctor?.id || undefined,
+      patientProfileId: user.patient?.id || undefined,
+      nurseProfileId: user.employee?.nursingProfile?.id || undefined,
+      employeeId: user.employee?.id || undefined,
+    };
+  }
+
+  private async issueTokenPair(
+    user: any,
+    activeRole: Role,
+    assignedRoles: Role[]
+  ): Promise<LoginResponseDto> {
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: activeRole,
+      roles: assignedRoles,
+      hospitalId: user.hospitalId,
+    };
+
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: process.env.JWT_EXPIRATION || '15m',
+    });
+
+    const refreshTokenString = this.jwtService.sign(
+      { sub: user.id, tokenType: 'refresh', jti: crypto.randomUUID() },
+      {
+        secret: process.env.JWT_REFRESH_SECRET || 'kizuna-enterprise-hms-jwt-refresh-secret-key-2026-very-secure',
+        expiresIn: process.env.JWT_REFRESH_EXPIRATION || '7d',
+      }
+    );
+
+    const tokenHash = hashToken(refreshTokenString);
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    await this.prisma.refreshToken.create({
+      data: {
+        userId: user.id,
+        token: tokenHash,
+        expiresAt,
+      },
+    });
+
+    const authUser = await this.generateUserDto(user, activeRole, assignedRoles);
+
+    return {
+      accessToken,
+      refreshToken: refreshTokenString,
+      expiresIn: 900, // 15 mins in seconds
+      user: authUser,
+    };
+  }
+
   async login(loginDto: LoginDto, ipAddress?: string): Promise<LoginResponseDto> {
+    const normalizedEmail = loginDto.email.toLowerCase().trim();
     const user = await this.prisma.user.findUnique({
-      where: { email: loginDto.email.toLowerCase().trim() },
+      where: { email: normalizedEmail },
       include: {
         userRoles: { include: { role: true } },
         employee: {
@@ -42,7 +121,7 @@ export class AuthService {
     }
 
     if (!user.isActive || user.deletedAt) {
-      throw new UnauthorizedException('User account has been deactivated. Please contact administration.');
+      throw new UnauthorizedException('Invalid hospital credentials');
     }
 
     const isMatch = await bcrypt.compare(loginDto.password, user.passwordHash);
@@ -50,55 +129,16 @@ export class AuthService {
       throw new UnauthorizedException('Invalid hospital credentials');
     }
 
-    const primaryRole = (user.userRoles[0]?.role.name as Role) || Role.PATIENT;
-    const permissions = ROLE_PERMISSIONS_MATRIX[primaryRole] || [];
+    const assignedRoles = user.userRoles.map((ur) => ur.role.name as Role);
+    const availableRoles = assignedRoles.length > 0 ? assignedRoles : [Role.PATIENT];
 
-    const authUser: AuthUserDto = {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: primaryRole,
-      permissions,
-      hospitalId: user.hospitalId || undefined,
-      branchId: user.branchId || undefined,
-      departmentId: user.employee?.departmentId || undefined,
-      doctorProfileId: user.employee?.doctor?.id || undefined,
-      patientProfileId: user.patient?.id || undefined,
-      nurseProfileId: user.employee?.nursingProfile?.id || undefined,
-      employeeId: user.employee?.id || undefined,
-    };
-
-    const payload = {
-      sub: user.id,
-      email: user.email,
-      role: primaryRole,
-      hospitalId: user.hospitalId,
-    };
-
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: process.env.JWT_EXPIRATION || '15m',
-    });
-
-    const refreshTokenString = this.jwtService.sign(
-      { sub: user.id, tokenType: 'refresh' },
-      {
-        secret: process.env.JWT_REFRESH_SECRET || 'kizuna-enterprise-hms-jwt-refresh-secret-key-2026-very-secure',
-        expiresIn: process.env.JWT_REFRESH_EXPIRATION || '7d',
+    let activeRole = availableRoles[0];
+    if (loginDto.selectedRole) {
+      if (!availableRoles.includes(loginDto.selectedRole)) {
+        throw new ForbiddenException('Selected role is not assigned to this user');
       }
-    );
-
-    // Save refresh token
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    await this.prisma.refreshToken.create({
-      data: {
-        userId: user.id,
-        token: refreshTokenString,
-        expiresAt,
-      },
-    });
+      activeRole = loginDto.selectedRole;
+    }
 
     // Update last login
     await this.prisma.user.update({
@@ -109,128 +149,130 @@ export class AuthService {
     // Audit log
     await this.prisma.auditLog.create({
       data: {
-        hospitalId: user.hospitalId,
+        hospitalId: user.hospitalId || undefined,
         userId: user.id,
         userEmail: user.email,
-        userRole: primaryRole,
+        userRole: activeRole,
         action: 'LOGIN',
         resource: 'AUTH',
         ipAddress: ipAddress || '127.0.0.1',
-        details: { loginTimestamp: new Date().toISOString() },
+        details: { loginTimestamp: new Date().toISOString(), selectedRole: activeRole },
       },
     });
 
-    return {
-      accessToken,
-      refreshToken: refreshTokenString,
-      expiresIn: 900, // 15 mins in seconds
-      user: authUser,
-    };
+    return this.issueTokenPair(user, activeRole, availableRoles);
   }
 
-  async refreshToken(refreshToken: string): Promise<LoginResponseDto> {
-    try {
-      const decoded = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET || 'kizuna-enterprise-hms-jwt-refresh-secret-key-2026-very-secure',
-      });
-
-      const tokenRecord = await this.prisma.refreshToken.findUnique({
-        where: { token: refreshToken },
-        include: {
-          user: {
-            include: {
-              userRoles: { include: { role: true } },
-              employee: {
-                include: {
-                  doctor: true,
-                  nursingProfile: true,
-                },
-              },
-              patient: true,
-            },
+  async switchRole(userId: string, targetRole: Role, ipAddress?: string): Promise<LoginResponseDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        userRoles: { include: { role: true } },
+        employee: {
+          include: {
+            doctor: true,
+            nursingProfile: true,
           },
         },
-      });
+        patient: true,
+      },
+    });
 
-      if (!tokenRecord || tokenRecord.isRevoked || tokenRecord.expiresAt < new Date()) {
-        throw new UnauthorizedException('Refresh token is expired or revoked');
-      }
+    if (!user || !user.isActive || user.deletedAt) {
+      throw new UnauthorizedException('User account is invalid, deactivated, or deleted');
+    }
 
-      const user = tokenRecord.user;
-      if (!user.isActive || user.deletedAt) {
-        throw new UnauthorizedException('User account inactive');
-      }
+    const assignedRoles = user.userRoles.map((ur) => ur.role.name as Role);
+    const availableRoles = assignedRoles.length > 0 ? assignedRoles : [Role.PATIENT];
 
-      // Revoke used token
-      await this.prisma.refreshToken.update({
-        where: { id: tokenRecord.id },
-        data: { isRevoked: true },
-      });
+    if (!availableRoles.includes(targetRole)) {
+      throw new ForbiddenException('Selected role is not assigned to this user');
+    }
 
-      const primaryRole = (user.userRoles[0]?.role.name as Role) || Role.PATIENT;
-      const permissions = ROLE_PERMISSIONS_MATRIX[primaryRole] || [];
-
-      const authUser: AuthUserDto = {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: primaryRole,
-        permissions,
+    await this.prisma.auditLog.create({
+      data: {
         hospitalId: user.hospitalId || undefined,
-        branchId: user.branchId || undefined,
-        departmentId: user.employee?.departmentId || undefined,
-        doctorProfileId: user.employee?.doctor?.id || undefined,
-        patientProfileId: user.patient?.id || undefined,
-        nurseProfileId: user.employee?.nursingProfile?.id || undefined,
-        employeeId: user.employee?.id || undefined,
-      };
+        userId: user.id,
+        userEmail: user.email,
+        userRole: targetRole,
+        action: 'SWITCH_ROLE',
+        resource: 'AUTH',
+        ipAddress: ipAddress || '127.0.0.1',
+        details: { switchedToRole: targetRole },
+      },
+    });
 
-      const payload = {
-        sub: user.id,
-        email: user.email,
-        role: primaryRole,
-        hospitalId: user.hospitalId,
-      };
+    return this.issueTokenPair(user, targetRole, availableRoles);
+  }
 
-      const newAccessToken = this.jwtService.sign(payload, {
-        expiresIn: process.env.JWT_EXPIRATION || '15m',
+  async refreshToken(refreshTokenString: string): Promise<LoginResponseDto> {
+    let decoded: any;
+    try {
+      decoded = this.jwtService.verify(refreshTokenString, {
+        secret: process.env.JWT_REFRESH_SECRET || 'kizuna-enterprise-hms-jwt-refresh-secret-key-2026-very-secure',
       });
-
-      const newRefreshToken = this.jwtService.sign(
-        { sub: user.id, tokenType: 'refresh' },
-        {
-          secret: process.env.JWT_REFRESH_SECRET || 'kizuna-enterprise-hms-jwt-refresh-secret-key-2026-very-secure',
-          expiresIn: process.env.JWT_REFRESH_EXPIRATION || '7d',
-        }
-      );
-
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 7);
-
-      await this.prisma.refreshToken.create({
-        data: {
-          userId: user.id,
-          token: newRefreshToken,
-          expiresAt,
-        },
-      });
-
-      return {
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
-        expiresIn: 900,
-        user: authUser,
-      };
     } catch {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
+
+    const tokenHash = hashToken(refreshTokenString);
+    const tokenRecord = await this.prisma.refreshToken.findUnique({
+      where: { token: tokenHash },
+      include: {
+        user: {
+          include: {
+            userRoles: { include: { role: true } },
+            employee: {
+              include: {
+                doctor: true,
+                nursingProfile: true,
+              },
+            },
+            patient: true,
+          },
+        },
+      },
+    });
+
+    if (!tokenRecord) {
+      throw new UnauthorizedException('Refresh token is invalid or expired');
+    }
+
+    // Token Reuse Detection
+    if (tokenRecord.isRevoked) {
+      await this.prisma.refreshToken.updateMany({
+        where: { userId: tokenRecord.userId },
+        data: { isRevoked: true },
+      });
+      throw new UnauthorizedException('Refresh token has been revoked due to reuse detection');
+    }
+
+    if (tokenRecord.expiresAt < new Date()) {
+      throw new UnauthorizedException('Refresh token is expired');
+    }
+
+    const user = tokenRecord.user;
+    if (!user || !user.isActive || user.deletedAt) {
+      throw new UnauthorizedException('User account is invalid or deactivated');
+    }
+
+    // Revoke current refresh token
+    await this.prisma.refreshToken.update({
+      where: { id: tokenRecord.id },
+      data: { isRevoked: true },
+    });
+
+    const assignedRoles = user.userRoles.map((ur) => ur.role.name as Role);
+    const availableRoles = assignedRoles.length > 0 ? assignedRoles : [Role.PATIENT];
+    const activeRole = availableRoles[0];
+
+    return this.issueTokenPair(user, activeRole, availableRoles);
   }
 
   async changePassword(userId: string, dto: ChangePasswordDto): Promise<void> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException('User not found');
+    if (!user || !user.isActive || user.deletedAt) {
+      throw new UnauthorizedException('User account is invalid or deactivated');
     }
 
     const isMatch = await bcrypt.compare(dto.currentPassword, user.passwordHash);
@@ -249,12 +291,43 @@ export class AuthService {
       where: { userId },
       data: { isRevoked: true },
     });
+
+    await this.prisma.auditLog.create({
+      data: {
+        hospitalId: user.hospitalId || undefined,
+        userId: user.id,
+        userEmail: user.email,
+        userRole: 'USER',
+        action: 'CHANGE_PASSWORD',
+        resource: 'AUTH',
+        ipAddress: '127.0.0.1',
+        details: { timestamp: new Date().toISOString() },
+      },
+    });
   }
 
   async logout(userId: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { hospitalId: true, email: true },
+    });
+
     await this.prisma.refreshToken.updateMany({
       where: { userId },
       data: { isRevoked: true },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        hospitalId: user?.hospitalId || undefined,
+        userId,
+        userEmail: user?.email || 'unknown@kizunahospital.com',
+        userRole: 'LOGOUT',
+        action: 'LOGOUT',
+        resource: 'AUTH',
+        ipAddress: '127.0.0.1',
+        details: { timestamp: new Date().toISOString() },
+      },
     });
   }
 }

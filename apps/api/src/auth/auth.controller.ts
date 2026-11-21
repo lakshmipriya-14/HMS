@@ -6,15 +6,14 @@ import {
   Req,
   HttpCode,
   HttpStatus,
-  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ChangePasswordDto, LoginDto, RefreshTokenDto } from './dto/login.dto';
+import { ChangePasswordDto, LoginDto, RefreshTokenDto, SwitchRoleDto } from './dto/login.dto';
 import { Public } from '../common/decorators/roles.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { AuthUserDto } from '@multispeciality-hms/contracts';
 import { Request } from 'express';
-import { ApiTags, ApiOperation, ApiResponse as SwaggerResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -52,6 +51,22 @@ export class AuthController {
     return {
       message: 'User profile retrieved',
       data: user,
+    };
+  }
+
+  @Post('switch-role')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Switch active workspace role' })
+  async switchRole(
+    @CurrentUser('id') userId: string,
+    @Body() dto: SwitchRoleDto,
+    @Req() req: Request
+  ) {
+    const ip = req.ip || req.socket.remoteAddress;
+    const data = await this.authService.switchRole(userId, dto.role, ip);
+    return {
+      message: `Active workspace role switched to ${dto.role}`,
+      data,
     };
   }
 

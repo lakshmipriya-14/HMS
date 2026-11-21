@@ -14,7 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: { sub: string; email: string; role: Role }): Promise<AuthUserDto> {
+  async validate(payload: { sub: string; email: string; role?: Role; roles?: Role[] }): Promise<AuthUserDto> {
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
       include: {
@@ -33,15 +33,20 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new UnauthorizedException('User account is invalid, deactivated, or deleted');
     }
 
-    const primaryRole = (user.userRoles[0]?.role.name as Role) || Role.PATIENT;
-    const permissions = ROLE_PERMISSIONS_MATRIX[primaryRole] || [];
+    const assignedRoles = user.userRoles.map((ur) => ur.role.name as Role);
+    const availableRoles = assignedRoles.length > 0 ? assignedRoles : [Role.PATIENT];
+
+    // Determine active role: use requested role from token if assigned to user, otherwise default to primary assigned role
+    const activeRole = payload.role && availableRoles.includes(payload.role) ? payload.role : availableRoles[0];
+    const permissions = ROLE_PERMISSIONS_MATRIX[activeRole] || [];
 
     return {
       id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      role: primaryRole,
+      role: activeRole,
+      roles: availableRoles,
       permissions,
       hospitalId: user.hospitalId || undefined,
       branchId: user.branchId || undefined,

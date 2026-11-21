@@ -18,6 +18,7 @@ import {
   LoginResponseDto,
   RecordVitalsDto,
   RegisterPatientDto,
+  SwitchRoleRequestDto,
 } from '@multispeciality-hms/contracts';
 
 export interface ApiClientConfig {
@@ -148,6 +149,10 @@ export class KizunaApiClient {
     },
     changePassword: async (dto: ChangePasswordRequestDto) => {
       const res = await this.instance.post<ApiResponse<void>>(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, dto);
+      return res.data;
+    },
+    switchRole: async (dto: SwitchRoleRequestDto) => {
+      const res = await this.instance.post<ApiResponse<LoginResponseDto>>(API_ENDPOINTS.AUTH.SWITCH_ROLE, dto);
       return res.data;
     },
   };

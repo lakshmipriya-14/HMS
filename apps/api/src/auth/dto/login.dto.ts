@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { Role } from '@multispeciality-hms/contracts';
 
 export class LoginDto {
   @IsEmail({}, { message: 'Please provide a valid hospital email address' })
@@ -9,6 +10,16 @@ export class LoginDto {
   @MinLength(6, { message: 'Password must be at least 6 characters' })
   @IsNotEmpty()
   password: string;
+
+  @IsOptional()
+  @IsEnum(Role, { message: 'Invalid role selected' })
+  selectedRole?: Role;
+}
+
+export class SwitchRoleDto {
+  @IsEnum(Role, { message: 'Invalid role selected' })
+  @IsNotEmpty()
+  role: Role;
 }
 
 export class RefreshTokenDto {
@@ -23,7 +34,7 @@ export class ChangePasswordDto {
   currentPassword: string;
 
   @IsString()
-  @MinLength(8)
+  @MinLength(8, { message: 'New password must be at least 8 characters' })
   @IsNotEmpty()
   newPassword: string;
 }

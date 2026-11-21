@@ -23,6 +23,7 @@ import {
 export interface LoginRequestDto {
   email: string;
   password: string;
+  selectedRole?: Role;
 }
 
 export interface AuthUserDto {
@@ -31,6 +32,7 @@ export interface AuthUserDto {
   firstName: string;
   lastName: string;
   role: Role;
+  roles: Role[];
   permissions: string[];
   hospitalId?: string;
   branchId?: string;
@@ -39,6 +41,10 @@ export interface AuthUserDto {
   patientProfileId?: string;
   nurseProfileId?: string;
   employeeId?: string;
+}
+
+export interface SwitchRoleRequestDto {
+  role: Role;
 }
 
 export interface LoginResponseDto {

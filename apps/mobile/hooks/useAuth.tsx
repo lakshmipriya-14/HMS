@@ -54,6 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         firstName: matchedRole.replace('_', ' '),
         lastName: 'Terminal',
         role: matchedRole,
+        roles: [matchedRole],
         permissions: (ROLE_PERMISSIONS_MATRIX[matchedRole] as string[]) || [],
       };
 
