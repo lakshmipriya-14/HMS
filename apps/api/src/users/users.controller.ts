@@ -17,8 +17,13 @@ export class UsersController {
   @Get()
   @Roles(Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.DEPARTMENT_ADMIN)
   @ApiOperation({ summary: 'List system users with filters' })
-  async findAll(@CurrentUser() actor: AuthUserDto, @Query('role') role?: string, @Query('search') search?: string) {
-    const data = await this.service.findAll(actor, role, search);
+  async findAll(
+    @CurrentUser() actor: AuthUserDto,
+    @Query('role') role?: string,
+    @Query('search') search?: string,
+    @Query('branchId') branchId?: string,
+  ) {
+    const data = await this.service.findAll(actor, role, search, branchId);
     return {
       message: 'Users retrieved successfully',
       data,

@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AuthUserDto } from '@multispeciality-hms/contracts';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { RequirePermissions, Scoped } from '../common/decorators/roles.decorator';
@@ -14,8 +14,8 @@ export class DepartmentsController {
 
   @Get()
   @ApiOperation({ summary: 'List all hospital clinical departments' })
-  async findAll(@CurrentUser() actor: AuthUserDto) {
-    const data = await this.service.findAll(actor);
+  async findAll(@CurrentUser() actor: AuthUserDto, @Query('branchId') branchId?: string) {
+    const data = await this.service.findAll(actor, branchId);
     return {
       message: 'Departments retrieved successfully',
       data,

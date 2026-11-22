@@ -1,13 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuthUserDto } from '@multispeciality-hms/contracts';
+import { resolveOperationalScope, assertBranchAccess } from '../common/utils/operational-scope';
 
 @Injectable()
 export class DoctorsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(departmentId?: string, designation?: string) {
+  async findAll(actor?: AuthUserDto, departmentId?: string, designation?: string, branchId?: string) {
     const where: any = {};
-    if (departmentId) where.departmentId = departmentId;
+    if (actor) {
+      const scope = resolveOperationalScope(actor, branchId, departmentId);
+      where.hospitalId = scope.hospitalId;
+      if (scope.branchId) where.branchId = scope.branchId;
+      if (scope.departmentId) where.departmentId = scope.departmentId;
+    } else {
+      if (branchId) where.branchId = branchId;
+      if (departmentId) where.departmentId = departmentId;
+    }
     if (designation) where.designation = designation;
 
     return this.prisma.doctor.findMany({
@@ -34,7 +44,7 @@ export class DoctorsService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, actor?: AuthUserDto) {
     const doctor = await this.prisma.doctor.findUnique({
       where: { id },
       include: {
@@ -48,6 +58,9 @@ export class DoctorsService {
       },
     });
     if (!doctor) throw new NotFoundException('Doctor not found');
+    if (actor) {
+      assertBranchAccess(actor, doctor.branchId);
+    }
     return doctor;
   }
 }

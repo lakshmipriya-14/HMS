@@ -3,7 +3,7 @@ import { AuthUserDto, Role } from '@multispeciality-hms/contracts';
 import { Prisma } from '@prisma/client';
 
 const roles = new Set<string>(Object.values(Role));
-const hospitalRoles = new Set<string>([Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN]);
+const hospitalRoles = new Set<string>([Role.SUPER_ADMIN]);
 
 export async function resolveAccess(db: Prisma.TransactionClient, userId: string): Promise<AuthUserDto> {
   const user = await db.user.findFirst({
@@ -31,8 +31,9 @@ export async function resolveAccess(db: Prisma.TransactionClient, userId: string
       throw new UnauthorizedException('Invalid role scope.');
     }
   } else if (!branchId || !branch?.isActive || branch.deletedAt
-    || (departmentId && (!department?.isActive || department.deletedAt || (department.branchId && department.branchId !== branchId)))
-    || (role === Role.DEPARTMENT_ADMIN && !departmentId)
+    || (departmentId && (!department?.isActive || department.deletedAt || department.branchId !== branchId))
+    || (role === Role.HOSPITAL_ADMIN && departmentId)
+    || (role === Role.DEPARTMENT_ADMIN && (!departmentId || !department?.branchId || department.branchId !== branchId))
     || (role === Role.DOCTOR && (user.employee?.doctor?.branchId !== branchId
       || (departmentId && user.employee?.doctor?.departmentId !== departmentId)))) {
     throw new UnauthorizedException('Invalid branch or department assignment.');

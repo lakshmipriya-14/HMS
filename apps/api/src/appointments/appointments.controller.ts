@@ -24,8 +24,12 @@ export class AppointmentsController {
   @Scoped()
   @RequirePermissions('APPOINTMENTS:VIEW')
   @ApiOperation({ summary: "Get today's live appointment queue" })
-  async getQueue(@CurrentUser() actor: AuthUserDto, @Query('doctorId') doctorId?: string) {
-    const data = await this.service.getTodayQueue(actor, doctorId);
+  async getQueue(
+    @CurrentUser() actor: AuthUserDto,
+    @Query('doctorId') doctorId?: string,
+    @Query('branchId') branchId?: string,
+  ) {
+    const data = await this.service.getTodayQueue(actor, doctorId, branchId);
     return {
       message: "Today's queue retrieved",
       data,
@@ -36,8 +40,12 @@ export class AppointmentsController {
   @Scoped()
   @RequirePermissions('APPOINTMENTS:VIEW')
   @ApiOperation({ summary: "Get today's appointments for doctor or department" })
-  async getToday(@CurrentUser() actor: AuthUserDto, @Query('doctorId') doctorId?: string) {
-    const data = await this.service.getTodayQueue(actor, doctorId);
+  async getToday(
+    @CurrentUser() actor: AuthUserDto,
+    @Query('doctorId') doctorId?: string,
+    @Query('branchId') branchId?: string,
+  ) {
+    const data = await this.service.getTodayQueue(actor, doctorId, branchId);
     return {
       message: 'Appointments retrieved',
       data,

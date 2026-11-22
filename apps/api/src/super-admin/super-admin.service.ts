@@ -98,17 +98,56 @@ export class SuperAdminService {
     const hospitalId = this.scope(actor);
     const branch = await this.prisma.branch.findFirst({ where: { id, hospitalId, deletedAt: null }, include: branchCounts });
     if (!branch) throw new NotFoundException('Branch not found.');
-    const [assignedAdmin, auditHistory] = await Promise.all([
+    const [assignedAdmin, assignedAdmins, departments, doctors, auditHistory] = await Promise.all([
       this.prisma.user.findFirst({
         where: { hospitalId, deletedAt: null, branchId: id, userRoles: { some: { role: { name: Role.HOSPITAL_ADMIN } } } },
-        select: { id: true, firstName: true, lastName: true }, orderBy: { id: 'asc' },
+        select: { id: true, firstName: true, lastName: true, email: true, phone: true }, orderBy: { id: 'asc' },
+      }),
+      this.prisma.user.findMany({
+        where: { hospitalId, deletedAt: null, branchId: id, userRoles: { some: { role: { name: { in: [Role.HOSPITAL_ADMIN, Role.DEPARTMENT_ADMIN] } } } } },
+        select: { id: true, firstName: true, lastName: true, email: true, phone: true, userRoles: { select: { role: { select: { name: true } } } } },
+        orderBy: { id: 'asc' },
+      }),
+      this.prisma.department.findMany({
+        where: { hospitalId, branchId: id, deletedAt: null },
+        select: { id: true, name: true, code: true, isActive: true },
+        orderBy: { name: 'asc' },
+      }),
+      this.prisma.doctor.findMany({
+        where: { hospitalId, branchId: id },
+        select: {
+          id: true,
+          licenseNumber: true,
+          specialization: true,
+          consultationFee: true,
+          isAvailableToday: true,
+          employee: { select: { user: { select: { id: true, firstName: true, lastName: true, email: true } } } },
+        },
+        take: 50,
       }),
       actor.permissions.includes('AUDIT_LOGS:VIEW')
-        ? this.prisma.auditLog.findMany({ where: { hospitalId, branchId: id }, orderBy: { createdAt: 'desc' }, take: 10,
-          select: { id: true, action: true, userEmail: true, createdAt: true } })
+        ? this.prisma.auditLog.findMany({
+            where: { hospitalId, branchId: id },
+            orderBy: { createdAt: 'desc' },
+            take: 20,
+            select: { id: true, action: true, resource: true, resourceId: true, userEmail: true, userRole: true, createdAt: true, details: true },
+          })
         : Promise.resolve([]),
     ]);
-    return { ...branch, assignedAdmin, auditHistory, departmentCount: branch._count.departments, doctorCount: branch._count.doctors };
+    return {
+      ...branch,
+      assignedAdmin,
+      assignedAdmins: assignedAdmins.map(a => ({
+        ...a,
+        role: a.userRoles[0]?.role?.name ?? 'ADMIN',
+      })),
+      departments,
+      doctors,
+      auditHistory,
+      departmentCount: branch._count.departments,
+      doctorCount: branch._count.doctors,
+      employeeCount: branch._count.employees,
+    };
   }
 
   async createBranch(actor: AuthUserDto, data: BranchInput) {
@@ -116,6 +155,17 @@ export class SuperAdminService {
     return this.write(async tx => {
       const row = await tx.branch.create({ data: { ...data, code: data.code.toUpperCase(), hospitalId } });
       await this.audit(tx, actor, 'CREATE', 'BRANCH', row.id, { code: row.code }, row.id);
+      await tx.notification?.create({
+        data: {
+          hospitalId,
+          branchId: row.id,
+          userId: actor.id,
+          title: 'Branch Established',
+          message: `Branch "${row.name}" (${row.code}) was created by ${actor.firstName} ${actor.lastName}.`,
+          type: 'ADMIN_ALERT',
+          linkUrl: `/(super-admin)/branch-details?id=${row.id}`,
+        },
+      });
       return row;
     });
   }
@@ -128,6 +178,19 @@ export class SuperAdminService {
         data: { ...data, code: data.code?.toUpperCase() },
       });
       await this.audit(tx, actor, 'UPDATE', 'BRANCH', id, { fields: Object.keys(data) }, id);
+      if ('isActive' in data) {
+        await tx.notification?.create({
+          data: {
+            hospitalId,
+            branchId: id,
+            userId: actor.id,
+            title: `Branch ${data.isActive ? 'Activated' : 'Deactivated'}`,
+            message: `Branch "${row.name}" status changed to ${data.isActive ? 'Active' : 'Inactive'}.`,
+            type: 'ADMIN_ALERT',
+            linkUrl: `/(super-admin)/branch-details?id=${id}`,
+          },
+        });
+      }
       return row;
     });
   }
@@ -195,15 +258,70 @@ export class SuperAdminService {
   }
 
   async account(actor: AuthUserDto, id: string) {
-    const row = await this.prisma.user.findFirst({ where: { id, hospitalId: this.scope(actor), deletedAt: null }, select: directorySelect });
+    const hospitalId = this.scope(actor);
+    const row = await this.prisma.user.findFirst({
+      where: { id, hospitalId, deletedAt: null },
+      select: {
+        ...directorySelect,
+        hospital: { select: { name: true, code: true } },
+        userRoles: {
+          select: {
+            id: true,
+            branchId: true,
+            departmentId: true,
+            scopeKey: true,
+            role: {
+              select: {
+                id: true,
+                name: true,
+                rolePermissions: {
+                  select: {
+                    permission: { select: { resource: true, action: true } },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
     if (!row) throw new NotFoundException('Account not found.');
-    return userRecord(row);
+
+    const auditHistory = await this.prisma.auditLog.findMany({
+      where: { hospitalId, userId: id },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      select: { id: true, action: true, resource: true, resourceId: true, createdAt: true, details: true },
+    });
+
+    const roleName = row.userRoles.length === 1 ? row.userRoles[0].role.name : null;
+    const permissions = row.userRoles.flatMap(ur =>
+      ur.role.rolePermissions.map(rp => `${rp.permission.resource}:${rp.permission.action}`)
+    );
+
+    return {
+      ...userRecord(row),
+      hospital: row.hospital,
+      role: roleName,
+      roles: row.userRoles.map(ur => ({
+        id: ur.id,
+        name: ur.role.name,
+        scopeKey: ur.scopeKey,
+        branchId: ur.branchId,
+        departmentId: ur.departmentId,
+      })),
+      permissions: [...new Set(permissions)].sort(),
+      auditHistory,
+    };
   }
 
   async createAdministrator(actor: AuthUserDto, input: AdministratorInput) {
     const hospitalId = this.scope(actor);
     if (input.role === Role.DEPARTMENT_ADMIN && (!input.branchId || !input.departmentId)) {
       throw new BadRequestException('Department Admin requires both branch and department.');
+    }
+    if (input.role === Role.HOSPITAL_ADMIN && !input.branchId) {
+      throw new BadRequestException('Hospital Admin requires an assigned branch.');
     }
     const passwordHash = await hashPassword(randomToken());
     return this.write(async tx => {
@@ -213,7 +331,7 @@ export class SuperAdminService {
       if (input.departmentId) {
         const dept = await tx.department.findFirst({
           where: { id: input.departmentId, hospitalId, isActive: true, deletedAt: null,
-            OR: [{ branchId: null }, ...(input.branchId ? [{ branchId: input.branchId }] : [])] },
+            branchId: input.branchId },
           select: { id: true },
         });
         if (!dept) throw new BadRequestException('Department is not available in the selected branch.');
@@ -224,19 +342,40 @@ export class SuperAdminService {
           email: input.email.toLowerCase(), phone: input.phone, passwordHash },
         select: { id: true },
       });
-      const scoped = input.role === Role.DEPARTMENT_ADMIN;
+      const isDeptAdmin = input.role === Role.DEPARTMENT_ADMIN;
+      const isHospAdmin = input.role === Role.HOSPITAL_ADMIN;
       await tx.userRole.create({
-        data: { hospitalId, userId: user.id, roleId: role.id, branchId: scoped ? input.branchId : null,
-          departmentId: scoped ? input.departmentId : null,
-          scopeKey: scoped ? `branch:${input.branchId}:department:${input.departmentId}` : 'hospital' },
+        data: {
+          hospitalId,
+          userId: user.id,
+          roleId: role.id,
+          branchId: isDeptAdmin || isHospAdmin ? input.branchId : null,
+          departmentId: isDeptAdmin ? input.departmentId : null,
+          scopeKey: isDeptAdmin
+            ? `branch:${input.branchId}:department:${input.departmentId}`
+            : isHospAdmin
+            ? `branch:${input.branchId}`
+            : 'hospital',
+        },
       });
       await tx.employee.create({
         data: { hospitalId, userId: user.id, branchId: input.branchId, departmentId: input.departmentId, employeeCode: input.employeeCode,
-          designation: scoped ? 'Department Administrator' : 'Hospital Administrator', dateOfJoining: new Date(input.dateOfJoining + 'T00:00:00Z') },
+          designation: isDeptAdmin ? 'Department Administrator' : 'Hospital Administrator', dateOfJoining: new Date(input.dateOfJoining + 'T00:00:00Z') },
       });
       const invitation = await this.issueCode(tx, actor, user.id, 'INVITATION');
       const record = await tx.user.findUniqueOrThrow({ where: { id: user.id }, select: directorySelect });
       await this.audit(tx, actor, 'CREATE', 'USER', user.id, { role: input.role, invitation: true }, input.branchId);
+      await tx.notification?.create({
+        data: {
+          hospitalId,
+          branchId: input.branchId ?? null,
+          userId: actor.id,
+          title: 'Administrator Onboarded',
+          message: `${input.role.replace(/_/g, ' ')} ${input.firstName} ${input.lastName} was provisioned.`,
+          type: 'ADMIN_ALERT',
+          linkUrl: `/(super-admin)/admin-details?id=${user.id}`,
+        },
+      });
       return { ...userRecord(record), invitation };
     }, true);
   }
@@ -245,6 +384,16 @@ export class SuperAdminService {
     return this.userWrite(actor, id, 'ACCOUNT_STATUS', async (tx, account) => {
       const result = await tx.user.update({ where: { id: account.id }, data: { isActive }, select: { id: true, isActive: true } });
       if (!isActive) await revokeCredentials(tx, id);
+      await tx.notification?.create({
+        data: {
+          hospitalId: account.hospitalId,
+          userId: actor.id,
+          title: `Account ${isActive ? 'Activated' : 'Deactivated'}`,
+          message: `User account "${account.id}" status set to ${isActive ? 'Active' : 'Inactive'}.`,
+          type: 'ADMIN_ALERT',
+          linkUrl: `/(super-admin)/admin-details?id=${account.id}`,
+        },
+      });
       return result;
     });
   }
@@ -266,6 +415,10 @@ export class SuperAdminService {
       }
       await tx.user.update({ where: { id }, data: { branchId } });
       await tx.employee.updateMany({ where: { userId: id, hospitalId: account.hospitalId }, data: { branchId } });
+      await tx.userRole.updateMany({
+        where: { userId: id, hospitalId: account.hospitalId },
+        data: { branchId, scopeKey: `branch:${branchId}` },
+      });
       return { id, branchId };
     }, true);
   }

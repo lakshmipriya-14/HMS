@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateAmbulanceRequestDto, UpdateTripStatusDto } from '@multispeciality-hms/contracts';
+import { CreateAmbulanceRequestDto, UpdateTripStatusDto, AuthUserDto } from '@multispeciality-hms/contracts';
+import { resolveOperationalScope, assertBranchAccess } from '../common/utils/operational-scope';
 
 @Injectable()
 export class AmbulanceService {
@@ -13,14 +14,34 @@ export class AmbulanceService {
     return `AMB-${year}-${sequence}`;
   }
 
-  async getVehicles() {
+  async getVehicles(actor?: AuthUserDto, branchId?: string) {
+    const where: any = {};
+    if (actor) {
+      const scope = resolveOperationalScope(actor, branchId);
+      where.hospitalId = scope.hospitalId;
+      if (scope.branchId) where.branchId = scope.branchId;
+    } else if (branchId) {
+      where.branchId = branchId;
+    }
+
     return this.prisma.ambulance.findMany({
+      where,
       orderBy: { isAvailable: 'desc' },
     });
   }
 
-  async getDrivers() {
+  async getDrivers(actor?: AuthUserDto, branchId?: string) {
+    const where: any = {};
+    if (actor) {
+      const scope = resolveOperationalScope(actor, branchId);
+      where.hospitalId = scope.hospitalId;
+      if (scope.branchId) where.branchId = scope.branchId;
+    } else if (branchId) {
+      where.branchId = branchId;
+    }
+
     return this.prisma.ambulanceDriver.findMany({
+      where,
       include: {
         employee: {
           include: {
@@ -31,11 +52,20 @@ export class AmbulanceService {
     });
   }
 
-  async getActiveTrips() {
+  async getActiveTrips(actor?: AuthUserDto, branchId?: string) {
+    const where: any = {
+      status: { notIn: ['HANDOVER_COMPLETE', 'CANCELLED'] },
+    };
+    if (actor) {
+      const scope = resolveOperationalScope(actor, branchId);
+      where.hospitalId = scope.hospitalId;
+      if (scope.branchId) where.branchId = scope.branchId;
+    } else if (branchId) {
+      where.branchId = branchId;
+    }
+
     return this.prisma.ambulanceTrip.findMany({
-      where: {
-        status: { notIn: ['HANDOVER_COMPLETE', 'CANCELLED'] },
-      },
+      where,
       include: {
         ambulance: true,
         driver: {
@@ -48,14 +78,26 @@ export class AmbulanceService {
     });
   }
 
-  async createEmergencyRequest(dto: CreateAmbulanceRequestDto) {
-    // Find first available ambulance and driver
+  async createEmergencyRequest(dto: CreateAmbulanceRequestDto, actor?: AuthUserDto) {
+    let branchIdFilter: string | undefined = undefined;
+    if (actor) {
+      const scope = resolveOperationalScope(actor);
+      branchIdFilter = scope.branchId;
+    }
+
+    // Find first available ambulance and driver in the branch
     const ambulance = await this.prisma.ambulance.findFirst({
-      where: { isAvailable: true },
+      where: {
+        isAvailable: true,
+        ...(branchIdFilter ? { branchId: branchIdFilter } : {}),
+      },
     });
 
     const driver = await this.prisma.ambulanceDriver.findFirst({
-      where: { isOnDuty: true },
+      where: {
+        isOnDuty: true,
+        ...(branchIdFilter ? { branchId: branchIdFilter } : {}),
+      },
     });
 
     if (!ambulance || !driver) {
@@ -98,9 +140,13 @@ export class AmbulanceService {
     return trip;
   }
 
-  async updateTripStatus(tripId: string, dto: UpdateTripStatusDto) {
+  async updateTripStatus(tripId: string, dto: UpdateTripStatusDto, actor?: AuthUserDto) {
     const trip = await this.prisma.ambulanceTrip.findUnique({ where: { id: tripId } });
     if (!trip) throw new NotFoundException('Trip not found');
+
+    if (actor) {
+      assertBranchAccess(actor, trip.branchId);
+    }
 
     const isComplete = dto.status === 'HANDOVER_COMPLETE' || dto.status === 'CANCELLED';
 
