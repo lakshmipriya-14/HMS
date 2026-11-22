@@ -267,7 +267,7 @@ model UserRole {
   user         User     @relation(fields: [userId, hospitalId], references: [id, hospitalId], onDelete: Cascade)
   roleId       String
   role         Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  // NULL scope is permitted only for SUPER_ADMIN and HOSPITAL_ADMIN; enforced by SQL trigger.
+  // NULL scope is permitted only for SUPER_ADMIN; enforced by SQL trigger.
   branchId     String?
   branch       Branch?  @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
   departmentId String?

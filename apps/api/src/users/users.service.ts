@@ -2,34 +2,53 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { AuthUserDto, Role } from '@multispeciality-hms/contracts';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { resolveOperationalScope } from '../common/utils/operational-scope';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  private scope(actor: AuthUserDto): Prisma.UserWhereInput {
-    if (!actor.hospitalId) throw new ForbiddenException('Missing hospital scope.');
-    const scope = { hospitalId: actor.hospitalId, deletedAt: null };
-    if (actor.role === Role.SUPER_ADMIN || actor.role === Role.HOSPITAL_ADMIN) return scope;
-    if (actor.role !== Role.DEPARTMENT_ADMIN || !actor.branchId || !actor.departmentId) throw new ForbiddenException('Missing department scope.');
-    return { ...scope, employee: { branchId: actor.branchId, departmentId: actor.departmentId } };
+  private scope(actor: AuthUserDto, requestedBranchId?: string): Prisma.UserWhereInput {
+    const scope = resolveOperationalScope(actor, requestedBranchId);
+    const where: Prisma.UserWhereInput = { hospitalId: scope.hospitalId, deletedAt: null };
+    if (actor.role === Role.SUPER_ADMIN) {
+      if (scope.branchId) where.employee = { branchId: scope.branchId };
+      return where;
+    }
+    if (scope.branchId) {
+      where.employee = {
+        branchId: scope.branchId,
+        ...(scope.departmentId ? { departmentId: scope.departmentId } : {}),
+      };
+    }
+    return where;
   }
 
-  async findAll(actor: AuthUserDto, role?: string, search?: string) {
-    const where = this.scope(actor);
+  async findAll(actor: AuthUserDto, role?: string, search?: string, requestedBranchId?: string) {
+    const where = this.scope(actor, requestedBranchId);
+    const conditions: Prisma.UserWhereInput[] = [];
+
     if (search) {
-      where.OR = [
-        { firstName: { contains: search, mode: 'insensitive' } },
-        { lastName: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
-      ];
+      conditions.push({
+        OR: [
+          { firstName: { contains: search, mode: 'insensitive' } },
+          { lastName: { contains: search, mode: 'insensitive' } },
+          { email: { contains: search, mode: 'insensitive' } },
+        ],
+      });
     }
     if (role) {
-      where.userRoles = {
-        some: {
-          role: { name: role },
+      conditions.push({
+        userRoles: {
+          some: {
+            role: { name: role },
+          },
         },
-      };
+      });
+    }
+
+    if (conditions.length > 0) {
+      where.AND = conditions;
     }
 
     const users = await this.prisma.user.findMany({
@@ -65,7 +84,7 @@ export class UsersService {
 
   async findOne(actor: AuthUserDto, id: string) {
     const user = await this.prisma.user.findFirst({
-      where: { ...this.scope(actor), id },
+      where: { AND: [this.scope(actor), { id }] },
       select: {
         id: true, email: true, firstName: true, lastName: true, phone: true, isActive: true,
         userRoles: { include: { role: true } },

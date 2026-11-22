@@ -74,10 +74,39 @@ export interface SuperAdminDashboardDto {
   activeBranches: number;
   inactiveBranches: number;
   admins: number;
+  activeAdmins?: number;
+  inactiveAdmins?: number;
+  totalUsers?: number;
   employees: number;
   doctors: number;
   departments: number;
   patients: number;
+  usersByRole?: Record<string, number>;
+  branchWiseStats?: {
+    id: string;
+    name: string;
+    code: string;
+    isActive: boolean;
+    departmentCount: number;
+    doctorCount: number;
+    employeeCount: number;
+  }[];
+  recentActivities?: {
+    id: string;
+    action: string;
+    resource: string;
+    resourceId?: string | null;
+    userEmail: string;
+    userRole: string;
+    createdAt: string;
+    branchName?: string | null;
+    details?: any;
+  }[];
+  pendingActions?: {
+    pendingAppointmentRequests: number;
+    inactiveBranches: number;
+    unassignedAdmins: number;
+  };
 }
 
 // Patient DTOs

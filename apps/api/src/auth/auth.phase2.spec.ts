@@ -23,9 +23,12 @@ const password = 'Mock-only password for tests';
 const updatedPassword = 'Another mock-only test password';
 
 function mocks(role: Role = Role.HOSPITAL_ADMIN) {
+  const isHospitalScope = role === Role.SUPER_ADMIN || role === Role.PATIENT;
   const assignment = {
-    roleId: 'role', hospitalId: 'hospital', branchId: null as string | null, departmentId: null as string | null,
-    branch: undefined as { isActive: boolean; deletedAt: Date | null } | undefined,
+    roleId: 'role', hospitalId: 'hospital',
+    branchId: isHospitalScope ? null : 'north',
+    departmentId: null as string | null,
+    branch: isHospitalScope ? undefined : ({ isActive: true, deletedAt: null } as { isActive: boolean; deletedAt: Date | null }),
     department: undefined as { branchId: string | null; isActive: boolean; deletedAt: Date | null } | undefined,
     role: { name: role, rolePermissions: [{ permission: { resource: 'USERS', action: 'VIEW' } }] },
   };

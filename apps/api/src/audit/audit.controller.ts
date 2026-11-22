@@ -23,7 +23,12 @@ export class AuditController {
     @Query('resource') resource?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
-    @Query('sortOrder') sortOrder?: 'asc' | 'desc'
+    @Query('sortOrder') sortOrder?: 'asc' | 'desc',
+    @Query('search') search?: string,
+    @Query('branchId') branchId?: string,
+    @Query('role') role?: string,
+    @Query('from') from?: string,
+    @Query('to') to?: string
   ) {
     const data = await this.service.getLogs(
       actor,
@@ -31,7 +36,12 @@ export class AuditController {
       resource,
       page ? parseInt(page, 10) : 1,
       limit ? parseInt(limit, 10) : 25,
-      sortOrder === 'asc' ? 'asc' : 'desc'
+      sortOrder === 'asc' ? 'asc' : 'desc',
+      search,
+      branchId,
+      role,
+      from,
+      to
     );
     return {
       message: 'Audit logs retrieved',
