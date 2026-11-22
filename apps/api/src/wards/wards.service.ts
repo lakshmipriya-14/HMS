@@ -36,7 +36,7 @@ export class WardsService {
 
   async getBeds(wardId: string, actor?: AuthUserDto) {
     if (actor) {
-      const ward = await this.prisma.ward.findUnique({ where: { id: wardId }, select: { hospitalId: true, branchId: true } });
+      const ward: any = await this.prisma.ward.findUnique({ where: { id: wardId }, select: { hospitalId: true, branchId: true } });
       if (!ward) throw new NotFoundException('Ward not found');
       assertBranchAccess(actor, ward.branchId);
     }
@@ -49,7 +49,7 @@ export class WardsService {
   async admitPatient(dto: AdmitPatientDto, actor?: AuthUserDto) {
     return this.prisma.$transaction(async (tx) => {
       // Check bed availability
-      const bed = await tx.bed.findUnique({
+      const bed: any = await tx.bed.findUnique({
         where: { id: dto.bedId },
       });
 

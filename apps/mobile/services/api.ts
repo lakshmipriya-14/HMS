@@ -40,3 +40,49 @@ export const clearMobileTokens = () => {
   accessToken = null;
   refreshToken = null;
 };
+
+export async function apiRequest<T = any>(
+  endpoint: string,
+  options: {
+    method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+    body?: any;
+    params?: Record<string, string | number | boolean | undefined>;
+  } = {}
+): Promise<{ data: T; message?: string }> {
+  const method = options.method || 'GET';
+  let url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  if (options.params) {
+    const searchParams = new URLSearchParams();
+    for (const [key, val] of Object.entries(options.params)) {
+      if (val !== undefined && val !== null) {
+        searchParams.append(key, String(val));
+      }
+    }
+    const queryString = searchParams.toString();
+    if (queryString) {
+      url += (url.includes('?') ? '&' : '?') + queryString;
+    }
+  }
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (accessToken) {
+    headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+
+  const res = await fetch(url, {
+    method,
+    headers,
+    body: options.body ? JSON.stringify(options.body) : undefined,
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    if (res.status === 401) {
+      unauthorized?.();
+    }
+    throw new Error(json.message || `Request failed with status ${res.status}`);
+  }
+  return json;
+}
