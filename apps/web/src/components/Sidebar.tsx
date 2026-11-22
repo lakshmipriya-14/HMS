@@ -1,7 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Role } from '@multispeciality-hms/contracts';
 import { HeartPulse, ChevronRight } from 'lucide-react';
 import { ALL_NAV_ITEMS } from './navigationRegistry';
 
@@ -10,7 +9,6 @@ export const Sidebar: React.FC = () => {
 
   const filteredNav = ALL_NAV_ITEMS.filter((item) => {
     if (!user) return false;
-    if (user.role === Role.SUPER_ADMIN) return true;
     return item.roles.includes(user.role);
   });
 

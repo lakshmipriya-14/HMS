@@ -1,9 +1,11 @@
+import { WorkspaceGate } from '../../components/WorkspaceGate';
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Stethoscope, Users, FileText, User } from 'lucide-react-native';
 
 export default function DoctorTabsLayout() {
   return (
+    <WorkspaceGate home="/(doctor)">
     <Tabs
       screenOptions={{
         headerShown: true,
@@ -43,5 +45,6 @@ export default function DoctorTabsLayout() {
         }}
       />
     </Tabs>
+    </WorkspaceGate>
   );
 }

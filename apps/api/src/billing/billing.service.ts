@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CollectPaymentDto, CreateInvoiceDto } from '@multispeciality-hms/contracts';
+import { CollectPaymentDto, CreateInvoiceDto, AuthUserDto } from '@multispeciality-hms/contracts';
+import { resolveOperationalScope, assertBranchAccess } from '../common/utils/operational-scope';
 
 @Injectable()
 export class BillingService {
@@ -13,11 +14,19 @@ export class BillingService {
     return `INV-${year}-${sequence}`;
   }
 
-  async getInvoices(patientId?: string) {
+  async getInvoices(actor?: AuthUserDto, patientId?: string, branchId?: string) {
+    const where: any = {};
+    if (actor) {
+      const scope = resolveOperationalScope(actor, branchId);
+      where.hospitalId = scope.hospitalId;
+      if (scope.branchId) where.branchId = scope.branchId;
+    } else if (branchId) {
+      where.branchId = branchId;
+    }
+    if (patientId) where.patientId = patientId;
+
     return this.prisma.invoice.findMany({
-      where: {
-        ...(patientId ? { patientId } : {}),
-      },
+      where,
       orderBy: { createdAt: 'desc' },
       include: {
         patient: { select: { id: true, uhid: true, firstName: true, lastName: true, phone: true } },
@@ -27,7 +36,7 @@ export class BillingService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, actor?: AuthUserDto) {
     const invoice = await this.prisma.invoice.findUnique({
       where: { id },
       include: {
@@ -38,6 +47,9 @@ export class BillingService {
       },
     });
     if (!invoice) throw new NotFoundException('Invoice not found');
+    if (actor) {
+      assertBranchAccess(actor, invoice.branchId);
+    }
     return invoice;
   }
 
@@ -62,6 +74,31 @@ export class BillingService {
     const discountAmount = dto.discountAmount || 0;
     const totalAmount = Math.max(0, subTotal + taxAmount - discountAmount);
 
+    let hospitalId = dto.hospitalId;
+    let branchId = dto.branchId;
+
+    if (!hospitalId || !branchId) {
+      if (dto.appointmentId) {
+        const apt = await this.prisma.appointment.findUnique({ where: { id: dto.appointmentId } });
+        if (apt) {
+          hospitalId = apt.hospitalId;
+          branchId = apt.branchId;
+        }
+      } else if (dto.admissionId) {
+        const adm = await this.prisma.admission.findUnique({ where: { id: dto.admissionId } });
+        if (adm) {
+          hospitalId = adm.hospitalId;
+          branchId = adm.branchId;
+        }
+      }
+      if (!hospitalId || !branchId) {
+        const patient = await this.prisma.patient.findUnique({ where: { id: dto.patientId } });
+        if (!patient) throw new NotFoundException('Patient not found');
+        hospitalId = patient.hospitalId;
+        branchId = patient.registrationBranchId;
+      }
+    }
+
     return this.prisma.invoice.create({
       data: {
         invoiceNumber,
@@ -75,6 +112,8 @@ export class BillingService {
         paidAmount: 0,
         status: 'PENDING',
         notes: dto.notes,
+        hospitalId,
+        branchId,
         items: {
           create: items,
         },
@@ -83,10 +122,14 @@ export class BillingService {
     });
   }
 
-  async collectPayment(invoiceId: string, dto: CollectPaymentDto, cashierUserId: string) {
+  async collectPayment(invoiceId: string, dto: CollectPaymentDto, cashierUserId: string, actor?: AuthUserDto) {
     return this.prisma.$transaction(async (tx) => {
       const invoice = await tx.invoice.findUnique({ where: { id: invoiceId } });
       if (!invoice) throw new NotFoundException('Invoice not found');
+
+      if (actor) {
+        assertBranchAccess(actor, invoice.branchId);
+      }
 
       const currentPaid = Number(invoice.paidAmount);
       const total = Number(invoice.totalAmount);
@@ -106,6 +149,10 @@ export class BillingService {
           transactionReference: dto.transactionReference,
           receivedByUserId: cashierUserId,
           notes: dto.notes,
+          hospitalId: invoice.hospitalId,
+          branchId: invoice.branchId,
+          idempotencyKey: dto.idempotencyKey || `PAY-${invoiceId}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+          requestFingerprint: dto.requestFingerprint || `FP-${invoiceId}-${cashierUserId}-${Date.now()}`,
         },
       });
 
@@ -121,8 +168,19 @@ export class BillingService {
     });
   }
 
-  async getInsuranceClaims() {
+  async getInsuranceClaims(actor?: AuthUserDto, branchId?: string) {
+    const where: any = {};
+    if (actor) {
+      const scope = resolveOperationalScope(actor, branchId);
+      if (scope.branchId) {
+        where.invoice = { branchId: scope.branchId };
+      }
+    } else if (branchId) {
+      where.invoice = { branchId };
+    }
+
     return this.prisma.insuranceClaim.findMany({
+      where,
       orderBy: { submittedAt: 'desc' },
       include: {
         patient: { select: { id: true, uhid: true, firstName: true, lastName: true } },

@@ -1,28 +1,25 @@
 import { CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role } from '@multispeciality-hms/contracts';
-import { PERMISSIONS_KEY } from '../decorators/roles.decorator';
+import { IS_PUBLIC_KEY, PERMISSIONS_KEY, SCOPED_KEY } from '../decorators/roles.decorator';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
+    const handlers = [context.getHandler(), context.getClass()];
+    if (this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, handlers)) return true;
+    if (!this.reflector.getAllAndOverride<boolean>(SCOPED_KEY, handlers)) {
+      throw new ForbiddenException('This endpoint is not enabled for scoped access.');
+    }
+    const { user } = context.switchToHttp().getRequest();
+    if (!user?.hospitalId) throw new ForbiddenException('Authenticated hospital scope is required.');
     const requiredPermissions = this.reflector.getAllAndOverride<string[]>(PERMISSIONS_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
 
     if (!requiredPermissions || requiredPermissions.length === 0) {
-      return true;
-    }
-
-    const { user } = context.switchToHttp().getRequest();
-    if (!user) {
-      throw new ForbiddenException('Access denied: User is not authenticated');
-    }
-
-    if (user.role === Role.SUPER_ADMIN) {
       return true;
     }
 

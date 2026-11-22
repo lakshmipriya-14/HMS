@@ -1,9 +1,11 @@
+import { WorkspaceGate } from '../../components/WorkspaceGate';
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { CreditCard, BedDouble, User } from 'lucide-react-native';
 
 export default function BillingTabsLayout() {
   return (
+    <WorkspaceGate home="/(billing)">
     <Tabs
       screenOptions={{
         headerShown: true,
@@ -36,5 +38,6 @@ export default function BillingTabsLayout() {
         }}
       />
     </Tabs>
+    </WorkspaceGate>
   );
 }

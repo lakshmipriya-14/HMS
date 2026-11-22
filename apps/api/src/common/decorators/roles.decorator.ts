@@ -9,3 +9,6 @@ export const RequirePermissions = (...permissions: string[]) => SetMetadata(PERM
 
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
+
+export const SCOPED_KEY = 'scopedAccess';
+export const Scoped = () => SetMetadata(SCOPED_KEY, true);

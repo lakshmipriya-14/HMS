@@ -52,6 +52,7 @@ export const ROLE_PERMISSIONS_MATRIX: Record<Role, PermissionString[]> = {
   ],
 
   [Role.DEPARTMENT_ADMIN]: [
+    'USERS:VIEW',
     'DEPARTMENTS:VIEW', 'DEPARTMENTS:UPDATE',
     'DOCTORS:VIEW', 'DOCTORS:ASSIGN',
     'NURSES:VIEW', 'NURSES:ASSIGN',

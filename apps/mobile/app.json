@@ -1,20 +1,26 @@
 {
   "expo": {
-    "name": "Kizuna HMS Mobile",
-    "slug": "kizuna-hms-mobile",
+    "name": "UYIRINAI MULTISPECIALITY HOSPITAL",
+    "slug": "aalayam-hms-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#0F766E"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kizuna.hospital.hms"
+      "bundleIdentifier": "com.aalayam.hospital.hms"
     },
     "android": {
-      "package": "com.kizuna.hospital.hms"
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0F766E"
+      },
+      "package": "com.aalayam.hospital.hms"
     },
     "web": {
       "bundler": "metro",
@@ -24,6 +30,6 @@
     "experiments": {
       "typedRoutes": true
     },
-    "scheme": "kizunahms"
+    "scheme": "aalayamhms"
   }
 }

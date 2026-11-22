@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateLabOrderDto, EnterLabResultsDto } from '@multispeciality-hms/contracts';
+import { CreateLabOrderDto, EnterLabResultsDto, AuthUserDto } from '@multispeciality-hms/contracts';
+import { resolveOperationalScope, assertBranchAccess } from '../common/utils/operational-scope';
 
 @Injectable()
 export class LaboratoryService {
@@ -21,7 +22,16 @@ export class LaboratoryService {
     });
   }
 
-  async createOrder(dto: CreateLabOrderDto) {
+  async createOrder(dto: CreateLabOrderDto, actor?: AuthUserDto) {
+    const doctor = await this.prisma.doctor.findUnique({
+      where: { id: dto.doctorId },
+    });
+    if (!doctor) throw new NotFoundException('Doctor not found');
+
+    if (actor) {
+      assertBranchAccess(actor, doctor.branchId);
+    }
+
     const orderNumber = await this.generateOrderNumber();
     const barcode = `BAR-${Date.now().toString().slice(-6)}`;
 
@@ -31,6 +41,8 @@ export class LaboratoryService {
         barcode,
         patientId: dto.patientId,
         doctorId: dto.doctorId,
+        hospitalId: doctor.hospitalId,
+        branchId: doctor.branchId,
         priority: dto.priority || 'ROUTINE',
         clinicalNotes: dto.clinicalNotes,
         status: 'ORDERED',
@@ -45,11 +57,20 @@ export class LaboratoryService {
     });
   }
 
-  async getWorklist() {
+  async getWorklist(actor?: AuthUserDto, branchId?: string) {
+    const where: any = {
+      status: { in: ['ORDERED', 'COLLECTED', 'RECEIVED_IN_LAB', 'PROCESSING'] },
+    };
+    if (actor) {
+      const scope = resolveOperationalScope(actor, branchId);
+      where.hospitalId = scope.hospitalId;
+      if (scope.branchId) where.branchId = scope.branchId;
+    } else if (branchId) {
+      where.branchId = branchId;
+    }
+
     return this.prisma.labOrder.findMany({
-      where: {
-        status: { in: ['ORDERED', 'COLLECTED', 'RECEIVED_IN_LAB', 'PROCESSING'] },
-      },
+      where,
       orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
       include: {
         patient: { select: { id: true, uhid: true, firstName: true, lastName: true, gender: true, dateOfBirth: true } },
@@ -64,7 +85,13 @@ export class LaboratoryService {
     });
   }
 
-  async collectSample(orderId: string, barcode?: string) {
+  async collectSample(orderId: string, barcode?: string, actor?: AuthUserDto) {
+    const order = await this.prisma.labOrder.findUnique({ where: { id: orderId } });
+    if (!order) throw new NotFoundException('Lab order not found');
+    if (actor) {
+      assertBranchAccess(actor, order.branchId);
+    }
+
     return this.prisma.labOrder.update({
       where: { id: orderId },
       data: {
@@ -75,7 +102,13 @@ export class LaboratoryService {
     });
   }
 
-  async enterResults(dto: EnterLabResultsDto) {
+  async enterResults(dto: EnterLabResultsDto, actor?: AuthUserDto) {
+    const order = await this.prisma.labOrder.findUnique({ where: { id: dto.orderId } });
+    if (!order) throw new NotFoundException('Lab order not found');
+    if (actor) {
+      assertBranchAccess(actor, order.branchId);
+    }
+
     // Delete previous draft results for this order if any
     await this.prisma.labResult.deleteMany({ where: { labOrderId: dto.orderId } });
 
@@ -102,7 +135,13 @@ export class LaboratoryService {
     });
   }
 
-  async releaseReport(orderId: string, releasedByUserId: string) {
+  async releaseReport(orderId: string, releasedByUserId: string, actor?: AuthUserDto) {
+    const order = await this.prisma.labOrder.findUnique({ where: { id: orderId } });
+    if (!order) throw new NotFoundException('Lab order not found');
+    if (actor) {
+      assertBranchAccess(actor, order.branchId);
+    }
+
     return this.prisma.labOrder.update({
       where: { id: orderId },
       data: {

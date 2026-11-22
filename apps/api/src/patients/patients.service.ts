@@ -1,6 +1,6 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { RegisterPatientDto } from '@multispeciality-hms/contracts';
+import { RegisterPatientDto, AuthUserDto, Role } from '@multispeciality-hms/contracts';
 
 @Injectable()
 export class PatientsService {
@@ -10,7 +10,7 @@ export class PatientsService {
     const year = new Date().getFullYear();
     const count = await this.prisma.patient.count();
     const sequence = (count + 1).toString().padStart(4, '0');
-    return `KZN-${year}-${sequence}`;
+    return `ALY-${year}-${sequence}`;
   }
 
   async checkDuplicate(phone: string, email?: string) {
@@ -37,7 +37,7 @@ export class PatientsService {
     };
   }
 
-  async register(dto: RegisterPatientDto, registeringUserId?: string) {
+  async register(dto: RegisterPatientDto, actor?: AuthUserDto) {
     // Check duplicates first
     const dupCheck = await this.checkDuplicate(dto.phone, dto.email);
     if (dupCheck.isDuplicate) {
@@ -47,11 +47,28 @@ export class PatientsService {
     }
 
     // Default hospital if not supplied
-    let hospitalId = dto.hospitalId;
+    let hospitalId = actor?.hospitalId || dto.hospitalId;
     if (!hospitalId) {
       const defaultHosp = await this.prisma.hospital.findFirst();
       if (!defaultHosp) throw new BadRequestException('Hospital context required');
       hospitalId = defaultHosp.id;
+    }
+
+    let registrationBranchId: string;
+    if (actor && actor.role !== Role.SUPER_ADMIN) {
+      if (!actor.branchId) {
+        throw new ForbiddenException('Operational staff requires branch scope.');
+      }
+      registrationBranchId = actor.branchId;
+    } else {
+      registrationBranchId = dto.registrationBranchId || dto.branchId || '';
+      if (!registrationBranchId) {
+        const defaultBranch = await this.prisma.branch.findFirst({
+          where: { hospitalId, isActive: true, deletedAt: null },
+        });
+        if (!defaultBranch) throw new BadRequestException('Active hospital branch required for patient registration');
+        registrationBranchId = defaultBranch.id;
+      }
     }
 
     const uhid = await this.generateUhid();
@@ -60,6 +77,7 @@ export class PatientsService {
       data: {
         uhid,
         hospitalId,
+        registrationBranchId,
         firstName: dto.firstName,
         lastName: dto.lastName,
         dateOfBirth: new Date(dto.dateOfBirth),
@@ -86,9 +104,10 @@ export class PatientsService {
     await this.prisma.auditLog.create({
       data: {
         hospitalId,
-        userId: registeringUserId,
-        userEmail: 'system@kizunahospital.com',
-        userRole: 'RECEPTIONIST',
+        branchId: registrationBranchId,
+        userId: actor?.id,
+        userEmail: actor?.email || 'system@aalayamhospital.com',
+        userRole: actor?.role || 'RECEPTIONIST',
         action: 'CREATE',
         resource: 'PATIENT',
         resourceId: patient.id,
@@ -99,20 +118,46 @@ export class PatientsService {
     return patient;
   }
 
-  async search(query?: string, phone?: string, uhid?: string) {
+  async search(query?: string, phone?: string, uhid?: string, actor?: AuthUserDto) {
     const where: any = { deletedAt: null };
+    let nestedBranchFilter: { branchId: string } | undefined = undefined;
 
+    if (actor) {
+      where.hospitalId = actor.hospitalId;
+      if (actor.role === Role.SUPER_ADMIN) {
+        // Super Admin has organization-wide scope across all branches
+      } else {
+        if (!actor.branchId) {
+          throw new ForbiddenException('Operational staff requires branch scope.');
+        }
+        nestedBranchFilter = { branchId: actor.branchId };
+        where.OR = [
+          { registrationBranchId: actor.branchId },
+          { appointments: { some: { branchId: actor.branchId } } },
+          { admissions: { some: { branchId: actor.branchId } } },
+          { consultations: { some: { appointment: { branchId: actor.branchId } } } },
+        ];
+      }
+    }
+
+    const searchConditions: any[] = [];
     if (uhid) {
-      where.uhid = { contains: uhid, mode: 'insensitive' };
+      searchConditions.push({ uhid: { contains: uhid, mode: 'insensitive' } });
     } else if (phone) {
-      where.phone = { contains: phone };
+      searchConditions.push({ phone: { contains: phone } });
     } else if (query) {
-      where.OR = [
-        { uhid: { contains: query, mode: 'insensitive' } },
-        { firstName: { contains: query, mode: 'insensitive' } },
-        { lastName: { contains: query, mode: 'insensitive' } },
-        { phone: { contains: query } },
-      ];
+      searchConditions.push({
+        OR: [
+          { uhid: { contains: query, mode: 'insensitive' } },
+          { firstName: { contains: query, mode: 'insensitive' } },
+          { lastName: { contains: query, mode: 'insensitive' } },
+          { phone: { contains: query } },
+        ],
+      });
+    }
+
+    if (searchConditions.length > 0) {
+      where.AND = searchConditions;
     }
 
     return this.prisma.patient.findMany({
@@ -121,28 +166,52 @@ export class PatientsService {
       orderBy: { createdAt: 'desc' },
       include: {
         admissions: {
-          where: { status: 'ADMITTED' },
+          where: { status: 'ADMITTED', ...(nestedBranchFilter || {}) },
           include: { ward: true, bed: true },
         },
       },
     });
   }
 
-  async findOne(id: string) {
-    const patient = await this.prisma.patient.findUnique({
-      where: { id },
+  async findOne(id: string, actor?: AuthUserDto) {
+    const where: any = { id, deletedAt: null };
+    let nestedBranchFilter: { branchId: string } | undefined = undefined;
+
+    if (actor) {
+      where.hospitalId = actor.hospitalId;
+      if (actor.role === Role.SUPER_ADMIN) {
+        // Super Admin has organization-wide scope across all branches
+      } else {
+        if (!actor.branchId) {
+          throw new ForbiddenException('Operational staff requires branch scope.');
+        }
+        nestedBranchFilter = { branchId: actor.branchId };
+        where.OR = [
+          { registrationBranchId: actor.branchId },
+          { appointments: { some: { branchId: actor.branchId } } },
+          { admissions: { some: { branchId: actor.branchId } } },
+          { consultations: { some: { appointment: { branchId: actor.branchId } } } },
+        ];
+      }
+    }
+
+    const patient = await this.prisma.patient.findFirst({
+      where,
       include: {
         appointments: {
+          where: nestedBranchFilter,
           take: 5,
           orderBy: { appointmentDate: 'desc' },
           include: { doctor: { include: { employee: { include: { user: true } } } } },
         },
         consultations: {
+          where: nestedBranchFilter ? { appointment: { branchId: nestedBranchFilter.branchId } } : undefined,
           take: 5,
           orderBy: { createdAt: 'desc' },
           include: { doctor: { include: { employee: { include: { user: true } } } } },
         },
         prescriptions: {
+          where: nestedBranchFilter,
           take: 5,
           orderBy: { createdAt: 'desc' },
           include: { items: { include: { medicine: true } } },
@@ -152,11 +221,13 @@ export class PatientsService {
           orderBy: { createdAt: 'desc' },
         },
         admissions: {
+          where: nestedBranchFilter,
           take: 3,
           orderBy: { admittedAt: 'desc' },
           include: { ward: true, bed: true },
         },
         invoices: {
+          where: nestedBranchFilter,
           take: 5,
           orderBy: { createdAt: 'desc' },
         },

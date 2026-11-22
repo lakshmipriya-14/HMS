@@ -16,13 +16,18 @@ import {
   EnterLabResultsDto,
   LoginRequestDto,
   LoginResponseDto,
+  PublicAppointmentRequestInput,
+  PublicAppointmentRequestReceipt,
   RecordVitalsDto,
+  PasswordResetProof,
+  AuthSessionSummaryDto,
+  SuperAdminDashboardDto,
   RegisterPatientDto,
-  SwitchRoleRequestDto,
 } from '@multispeciality-hms/contracts';
 
 export interface ApiClientConfig {
   baseURL: string;
+  cookieSession?: boolean;
   getAccessToken?: () => string | null;
   getRefreshToken?: () => string | null;
   setTokens?: (accessToken: string, refreshToken: string) => void;
@@ -30,11 +35,31 @@ export interface ApiClientConfig {
   onUnauthorized?: () => void;
 }
 
-export class KizunaApiClient {
+export class AalayamApiClient {
   private instance: AxiosInstance;
   private config: ApiClientConfig;
-  private isRefreshing = false;
-  private refreshSubscribers: ((token: string) => void)[] = [];
+  private refreshing?: Promise<LoginResponseDto>;
+  private signingOut = false;
+
+  private get sessionHeaders() {
+    return this.config.cookieSession ? { 'X-HMS-Session': 'cookie' } : undefined;
+  }
+
+  private refreshSession(): Promise<LoginResponseDto> {
+    if (this.refreshing) return this.refreshing;
+    if (this.signingOut) return Promise.reject(new Error('Sign-out in progress.'));
+    const refreshToken = this.config.getRefreshToken?.();
+    if (!refreshToken && !this.config.cookieSession) return Promise.reject(new Error('No session to restore.'));
+    const request = this.instance.post<ApiResponse<LoginResponseDto>>(API_ENDPOINTS.AUTH.REFRESH,
+      { refreshToken: this.config.cookieSession ? undefined : refreshToken }, { headers: this.sessionHeaders })
+      .then(({ data: response }) => {
+        if (!response.data) throw new Error('No session returned.');
+        this.config.setTokens?.(response.data.accessToken, response.data.refreshToken);
+        return response.data;
+      });
+    this.refreshing = request.finally(() => { this.refreshing = undefined; });
+    return this.refreshing;
+  }
 
   constructor(config: ApiClientConfig) {
     this.config = config;
@@ -44,6 +69,7 @@ export class KizunaApiClient {
         'Content-Type': 'application/json',
       },
       timeout: 30000,
+      withCredentials: !!config.cookieSession,
     });
 
     this.setupInterceptors();
@@ -68,55 +94,20 @@ export class KizunaApiClient {
       async (error: AxiosError<ApiResponse>) => {
         const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-        if (error.response?.status === 401 && !originalRequest._retry && this.config.getRefreshToken) {
-          const refreshToken = this.config.getRefreshToken();
-          if (!refreshToken) {
-            this.config.clearTokens?.();
-            this.config.onUnauthorized?.();
-            return Promise.reject(this.normalizeError(error));
-          }
-
-          if (this.isRefreshing) {
-            return new Promise((resolve) => {
-              this.refreshSubscribers.push((token: string) => {
-                if (originalRequest.headers) {
-                  originalRequest.headers.Authorization = `Bearer ${token}`;
-                }
-                resolve(this.instance(originalRequest));
-              });
-            });
-          }
-
+        const route = originalRequest?.url;
+        const authPublic = route?.startsWith('/auth/')
+          && route !== API_ENDPOINTS.AUTH.ME && route !== API_ENDPOINTS.AUTH.SESSIONS && route !== API_ENDPOINTS.AUTH.CHANGE_PASSWORD;
+        if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !authPublic && !this.signingOut) {
           originalRequest._retry = true;
-          this.isRefreshing = true;
-
           try {
-            const refreshRes = await axios.post<ApiResponse<LoginResponseDto>>(
-              `${this.config.baseURL}${API_ENDPOINTS.AUTH.REFRESH}`,
-              { refreshToken }
-            );
-
-            if (refreshRes.data.success && refreshRes.data.data) {
-              const { accessToken, refreshToken: newRefreshToken } = refreshRes.data.data;
-              this.config.setTokens?.(accessToken, newRefreshToken);
-
-              this.refreshSubscribers.forEach((callback) => callback(accessToken));
-              this.refreshSubscribers = [];
-
-              if (originalRequest.headers) {
-                originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-              }
-              return this.instance(originalRequest);
-            }
-          } catch (refreshErr) {
+            await this.refreshSession();
+            return this.instance(originalRequest);
+          } catch (refreshError) {
             this.config.clearTokens?.();
             this.config.onUnauthorized?.();
-            return Promise.reject(this.normalizeError(refreshErr as AxiosError<ApiResponse>));
-          } finally {
-            this.isRefreshing = false;
+            throw refreshError;
           }
         }
-
         return Promise.reject(this.normalizeError(error));
       }
     );
@@ -134,30 +125,64 @@ export class KizunaApiClient {
   }
 
   // --- MEMBER 1 & COMMON: Auth & Administration ---
+  public appointmentRequests = {
+    submit: async (input: PublicAppointmentRequestInput) => {
+      try {
+        // Public intake must not send a staff session or attempt token refresh.
+        const res = await axios.post<ApiResponse<PublicAppointmentRequestReceipt>>(
+          `${this.config.baseURL.replace(/\/$/, '')}${API_ENDPOINTS.PUBLIC_APPOINTMENT_REQUESTS}`,
+          input,
+          { timeout: 15000, withCredentials: false },
+        );
+        return res.data;
+      } catch (error) {
+        if (axios.isAxiosError<ApiResponse>(error)) throw this.normalizeError(error);
+        throw error;
+      }
+    },
+  };
+
   public auth = {
     login: async (dto: LoginRequestDto) => {
-      const res = await this.instance.post<ApiResponse<LoginResponseDto>>(API_ENDPOINTS.AUTH.LOGIN, dto);
+      const res = await this.instance.post<ApiResponse<LoginResponseDto>>(API_ENDPOINTS.AUTH.LOGIN, dto, { headers: this.sessionHeaders });
+      if (res.data.data) this.config.setTokens?.(res.data.data.accessToken, res.data.data.refreshToken);
       return res.data;
     },
+    restore: () => this.refreshSession(),
     logout: async () => {
-      const res = await this.instance.post<ApiResponse<void>>(API_ENDPOINTS.AUTH.LOGOUT);
-      return res.data;
+      this.signingOut = true;
+      try {
+        await this.refreshing?.catch(() => undefined);
+        const refreshToken = this.config.cookieSession ? undefined : this.config.getRefreshToken?.();
+        const res = await this.instance.post<ApiResponse<void>>(API_ENDPOINTS.AUTH.LOGOUT, { refreshToken }, { headers: this.sessionHeaders });
+        return res.data;
+      } finally {
+        this.config.clearTokens?.();
+        this.signingOut = false;
+      }
     },
-    getMe: async () => {
-      const res = await this.instance.get<ApiResponse<AuthUserDto>>(API_ENDPOINTS.AUTH.ME);
-      return res.data;
-    },
+    getMe: async () => (await this.instance.get<ApiResponse<AuthUserDto>>(API_ENDPOINTS.AUTH.ME)).data,
+    getSessions: async () => (await this.instance.get<ApiResponse<AuthSessionSummaryDto[]>>(API_ENDPOINTS.AUTH.SESSIONS)).data,
     changePassword: async (dto: ChangePasswordRequestDto) => {
       const res = await this.instance.post<ApiResponse<void>>(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, dto);
+      this.config.clearTokens?.();
       return res.data;
     },
-    switchRole: async (dto: SwitchRoleRequestDto) => {
-      const res = await this.instance.post<ApiResponse<LoginResponseDto>>(API_ENDPOINTS.AUTH.SWITCH_ROLE, dto);
-      return res.data;
+    requestPasswordReset: async (email: string) =>
+      (await this.instance.post<ApiResponse<{ mode: 'development' | 'delivery' }>>(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, { email })).data,
+    verifyResetOtp: async (email: string, otp: string) =>
+      (await this.instance.post<ApiResponse<PasswordResetProof>>(API_ENDPOINTS.AUTH.VERIFY_RESET_OTP, { email, otp })).data,
+    resetPassword: async (proof: PasswordResetProof, newPassword: string) =>
+      (await this.instance.post<ApiResponse<void>>(API_ENDPOINTS.AUTH.RESET_PASSWORD, { ...proof, newPassword })).data,
+    redeemAccountAccess: async (code: string, newPassword: string) => {
+      const cleanCode = typeof code === 'string' ? code.replace(/\s+/g, '') : code;
+      return (await this.instance.post<ApiResponse<void>>(API_ENDPOINTS.AUTH.REDEEM_ACCOUNT_ACCESS, { code: cleanCode, newPassword })).data;
     },
   };
 
   public admin = {
+    getSuperAdminDashboard: async () =>
+      (await this.instance.get<ApiResponse<SuperAdminDashboardDto>>('/reports/super-admin-dashboard')).data,
     getUsers: async (params?: any) => {
       const res = await this.instance.get<ApiResponse<any>>(API_ENDPOINTS.USERS.BASE, { params });
       return res.data;
@@ -430,7 +455,22 @@ export class KizunaApiClient {
     },
   };
 
+  public superAdmin = {
+    request: async <T>(path: string, method: 'GET' | 'POST' | 'PATCH' = 'GET', data?: object, params?: object) => {
+      const response = await this.instance.request<ApiResponse<T>>({ url: '/super-admin/' + path, method, data, params });
+      return response.data;
+    },
+    audit: async (params: object) => {
+      const response = await this.instance.get<ApiResponse<Record<string, unknown>[]>>('/audit/logs', { params });
+      return response.data;
+    },
+  };
+
   public notifications = {
+    markAllAsRead: async () => {
+      const response = await this.instance.patch<ApiResponse>('/notifications/mark-all-read');
+      return response.data;
+    },
     getNotifications: async () => {
       const res = await this.instance.get<ApiResponse<any>>(API_ENDPOINTS.NOTIFICATIONS.BASE);
       return res.data;
@@ -442,10 +482,6 @@ export class KizunaApiClient {
   };
 }
 
-export function createKizunaApiClient(config: ApiClientConfig): KizunaApiClient {
-  return new KizunaApiClient(config);
+export function createAalayamApiClient(config: ApiClientConfig): AalayamApiClient {
+  return new AalayamApiClient(config);
 }
-
-export const AalayamApiClient = KizunaApiClient;
-export const createAalayamApiClient = createKizunaApiClient;
-

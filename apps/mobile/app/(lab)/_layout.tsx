@@ -1,9 +1,11 @@
+import { WorkspaceGate } from '../../components/WorkspaceGate';
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { FlaskConical, QrCode, User } from 'lucide-react-native';
 
 export default function LabTabsLayout() {
   return (
+    <WorkspaceGate home="/(lab)">
     <Tabs
       screenOptions={{
         headerShown: true,
@@ -36,5 +38,6 @@ export default function LabTabsLayout() {
         }}
       />
     </Tabs>
+    </WorkspaceGate>
   );
 }

@@ -1,9 +1,11 @@
+import { WorkspaceGate } from '../../components/WorkspaceGate';
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ambulance, ListOrdered, User } from 'lucide-react-native';
 
 export default function AmbulanceTabsLayout() {
   return (
+    <WorkspaceGate home="/(ambulance)">
     <Tabs
       screenOptions={{
         headerShown: true,
@@ -36,5 +38,6 @@ export default function AmbulanceTabsLayout() {
         }}
       />
     </Tabs>
+    </WorkspaceGate>
   );
 }

@@ -21,6 +21,7 @@
     "db:generate": "pnpm --filter @multispeciality-hms/api prisma:generate",
     "db:migrate": "pnpm --filter @multispeciality-hms/api prisma:migrate",
     "db:seed": "pnpm --filter @multispeciality-hms/api prisma:seed",
+    "db:seed:aalayam": "node prisma/seed-aalayam.mjs",
     "db:studio": "pnpm --filter @multispeciality-hms/api prisma:studio",
     "clean": "pnpm -r exec rm -rf node_modules dist .turbo .next"
   },

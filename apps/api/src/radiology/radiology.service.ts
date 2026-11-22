@@ -21,6 +21,11 @@ export class RadiologyService {
   }
 
   async createOrder(dto: CreateRadiologyOrderDto) {
+    const doctor = await this.prisma.doctor.findUnique({
+      where: { id: dto.doctorId },
+    });
+    if (!doctor) throw new NotFoundException('Doctor not found');
+
     const orderNumber = await this.generateOrderNumber();
 
     return this.prisma.radiologyOrder.create({
@@ -32,6 +37,8 @@ export class RadiologyService {
         priority: dto.priority || 'ROUTINE',
         clinicalIndication: dto.clinicalIndication,
         status: 'ORDERED',
+        hospitalId: doctor.hospitalId,
+        branchId: doctor.branchId,
       },
       include: {
         patient: { select: { id: true, uhid: true, firstName: true, lastName: true } },

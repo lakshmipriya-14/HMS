@@ -12,7 +12,7 @@ async function bootstrap() {
 
   // Enable CORS
   const corsOrigins = process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(',')
+    ? process.env.CORS_ORIGINS.split(',').map(value => value.trim())
     : ['http://localhost:3000', 'http://localhost:8081'];
   app.enableCors({
     origin: corsOrigins,
@@ -52,7 +52,7 @@ async function bootstrap() {
   });
 
   const port = process.env.API_PORT || 4000;
-  await app.listen(port);
+  await app.listen(port, process.env.API_HOST || '127.0.0.1');
 
   logger.log(`=============================================================`);
   logger.log(`🏥 Kizuna Multispeciality Hospital API is running!`);

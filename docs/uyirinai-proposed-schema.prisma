@@ -1,0 +1,1407 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ==========================================
+// 1. ORGANIZATION, HOSPITALS & DEPARTMENTS
+// ==========================================
+
+model Hospital {
+  // Permanent UUID; the actual value is provisioned once during approved setup.
+  id            String       @id @default(uuid()) @db.Uuid
+  name          String
+  // Approved canonical hospital code; the Hospital row is provisioned separately.
+  code          String       @unique
+  tamilName     String?
+  addressLine1  String
+  addressLine2  String?
+  city          String
+  state         String
+  postalCode    String
+  country       String       @default("India")
+  phone         String
+  emergencyPhone String?
+  email         String
+  website       String?
+  licenseNumber String       @unique
+  verificationStatus String  @default("UNVERIFIED")
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+  // Set once at the approved migration cutover; no pre-cutover movements are fabricated.
+  inventoryLedgerCutoverAt DateTime?
+
+  branches      Branch[]
+  departments   Department[]
+  users         User[]
+  patients      Patient[]
+  wards         Ward[]
+  ambulances    Ambulance[]
+  auditLogs     AuditLog[]
+  rolePolicies  HospitalRolePolicy[]
+  roleAssignments UserRole[]
+  masterDataSets MasterDataSet[]
+  reportExportJobs ReportExportJob[]
+  passwordResetChallenges PasswordResetChallenge[]
+  inventoryMovements InventoryMovement[]
+
+
+}
+
+model Branch {
+  id           String     @id @default(uuid())
+  hospitalId   String @db.Uuid
+  hospital     Hospital   @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  name         String
+  code         String
+  city         String
+  address      String
+  phone        String
+  type               String?
+  description        String?
+  contactPerson      String?
+  email              String?
+  alternatePhone     String?
+  addressLine2       String?
+  district           String?
+  state              String?
+  country            String?
+  pincode            String?
+  registrationNumber String?
+  licenseNumber      String?
+  gstNumber          String?
+  openingDate        String?
+  workingHours       String?
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+
+  users        User[]
+  employees    Employee[]
+  departments  Department[]
+  userRoleScopes UserRole[]
+  reportExportJobs ReportExportJob[]
+  inventoryMovements InventoryMovement[]
+  auditLogs AuditLog[]
+
+
+  registeredPatients Patient[] @relation("PatientRegistrationBranch")
+  nursingTasks NursingTask[]
+  medicineBatches MedicineBatch[]
+  payments Payment[]
+  insuranceClaims InsuranceClaim[]
+  admissions Admission[]
+  ambulanceTrips AmbulanceTrip[]
+  ambulances Ambulance[]
+  nursingAssignments NursingAssignment[]
+  wards Ward[]
+  invoices Invoice[]
+  labOrders LabOrder[]
+  medicationAdministrations MedicationAdministration[]
+  notifications Notification[]
+  consultations Consultation[]
+  radiologyOrders RadiologyOrder[]
+  patientDocuments PatientDocument[]
+  vitalsRecords VitalsRecord[]
+  prescriptions Prescription[]
+  dispensingRecords DispensingRecord[]
+  appointments Appointment[]
+  doctors Doctor[]
+  nurses NursingStaff[]
+  drivers AmbulanceDriver[]
+  beds Bed[]
+  prescriptionItems PrescriptionItem[]
+  @@unique([hospitalId, code])
+  @@unique([id, hospitalId])
+
+}
+
+model Department {
+  id                 String       @id @default(uuid())
+  hospitalId         String @db.Uuid
+  hospital           Hospital     @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  // NULL means a hospital-wide department; it never grants hospital-wide user access.
+  branchId           String?
+  branch             Branch?      @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  name               String
+  code               String
+  description        String?
+  headOfDepartmentId String?
+  isActive           Boolean      @default(true)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  deletedAt          DateTime?
+
+  userRoleScopes     UserRole[]
+  employees          Employee[]
+  doctors            Doctor[]
+  appointments       Appointment[]
+  wards              Ward[]
+
+  @@unique([hospitalId, code])
+
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId])
+}
+
+// ==========================================
+// 2. AUTHENTICATION & ACCESS CONTROL (RBAC)
+// ==========================================
+
+model User {
+  id              String      @id @default(uuid())
+  hospitalId      String @db.Uuid
+  hospital        Hospital   @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  branchId        String?
+  branch          Branch?     @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  email           String      @unique
+  passwordHash    String
+  firstName       String
+  lastName        String
+  phone           String?
+  avatarUrl       String?
+  isActive        Boolean     @default(true)
+  lastLoginAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  deletedAt       DateTime?
+
+  userRoles       UserRole[]
+  employee        Employee?
+  patient         Patient?
+  notifications   Notification[]
+  auditLogs       AuditLog[]
+  refreshTokens   RefreshToken[]
+  accessTokens    AccountAccessToken[] @relation("AccessTokenRecipient")
+  issuedAccessTokens AccountAccessToken[] @relation("AccessTokenIssuer")
+  passwordResetChallenges PasswordResetChallenge[]
+  reportExportJobs ReportExportJob[]
+  uploadedPatientDocuments PatientDocument[] @relation("PatientDocumentUploader")
+  recordedVitals VitalsRecord[] @relation("VitalsRecorder")
+  releasedLabOrders LabOrder[] @relation("LabOrderReleaser")
+  releasedRadiologyOrders RadiologyOrder[] @relation("RadiologyOrderReleaser")
+  receivedPayments Payment[] @relation("PaymentReceiver")
+  pharmacistDispensingRecords DispensingRecord[] @relation("DispensingPharmacist")
+  performedInventoryMovements InventoryMovement[] @relation("InventoryPerformer")
+
+
+
+  @@unique([id, hospitalId])
+  @@index([hospitalId, branchId])
+}
+
+model Role {
+  id              String           @id @default(uuid())
+  name            String           @unique // e.g. DOCTOR, NURSE, SUPER_ADMIN
+  description     String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
+  hospitalPolicies HospitalRolePolicy[]
+}
+
+model HospitalRolePolicy {
+  hospitalId String @db.Uuid
+  hospital Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  roleId String
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  grants String[]
+  updatedAt DateTime @updatedAt
+
+  @@id([hospitalId, roleId])
+  @@index([roleId])
+}
+
+enum AccountAccessPurpose {
+  INVITATION
+  RESET
+}
+
+model AccountAccessToken {
+  id String @id @default(uuid())
+  digest String @unique
+  hospitalId String @db.Uuid
+  userId String
+  user User @relation("AccessTokenRecipient", fields: [userId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  issuedById String?
+  issuedBy User? @relation("AccessTokenIssuer", fields: [issuedById, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  purpose AccountAccessPurpose
+  expiresAt DateTime
+  redeemedAt DateTime?
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId, purpose])
+  @@index([issuedById])
+}
+
+model Permission {
+  id              String           @id @default(uuid())
+  resource        String           // e.g. PATIENTS, PRESCRIPTIONS
+  action          String           // e.g. VIEW, CREATE, APPROVE, RELEASE
+  description     String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  rolePermissions RolePermission[]
+
+  @@unique([resource, action])
+}
+
+model UserRole {
+  id           String   @id @default(uuid())
+  hospitalId   String @db.Uuid
+  hospital     Hospital @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  userId       String
+  user         User     @relation(fields: [userId, hospitalId], references: [id, hospitalId], onDelete: Cascade)
+  roleId       String
+  role         Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  // NULL scope is permitted only for SUPER_ADMIN and HOSPITAL_ADMIN; enforced by SQL trigger.
+  branchId     String?
+  branch       Branch?  @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  departmentId String?
+  department   Department? @relation(fields: [departmentId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  scopeKey     String
+  createdAt    DateTime @default(now())
+
+  @@unique([userId, roleId, scopeKey])
+  @@index([hospitalId, branchId, departmentId])
+
+
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([roleId, permissionId])
+
+}
+
+model RefreshToken {
+  id           String   @id @default(uuid())
+  userId       String
+  hospitalId   String @db.Uuid
+  user         User     @relation(fields: [userId, hospitalId], references: [id, hospitalId], onDelete: Cascade)
+  tokenHash    String   @unique
+  familyId     String
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?  @unique
+  replacedBy   RefreshToken? @relation("RefreshRotation", fields: [replacedById], references: [id], onDelete: SetNull)
+  replaces     RefreshToken? @relation("RefreshRotation")
+  createdAt    DateTime @default(now())
+
+  @@index([userId, revokedAt, expiresAt])
+  @@index([familyId, revokedAt])
+}
+
+// ==========================================
+// 3. EMPLOYEES & DOCTORS
+// ==========================================
+
+model Employee {
+  id               String          @id @default(uuid())
+  hospitalId String @db.Uuid
+  userId           String          @unique
+  user             User            @relation(fields: [userId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  branchId         String?
+  branch           Branch?         @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  departmentId     String?
+  department       Department?     @relation(fields: [departmentId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  employeeCode     String
+  designation      String
+  employmentType   String          @default("FULL_TIME") // FULL_TIME, PART_TIME, CONTRACT
+  dateOfJoining    DateTime
+  salary           Decimal?        @db.Decimal(12, 2)
+  status           String          @default("ACTIVE")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  doctor           Doctor?
+  nursingProfile   NursingStaff?
+  ambulanceDriver  AmbulanceDriver?
+
+  @@unique([hospitalId, employeeCode])
+  @@index([employeeCode])
+  @@unique([id, hospitalId])
+  @@unique([id, hospitalId, branchId])
+  @@index([hospitalId, branchId])
+  @@unique([userId, hospitalId])
+}
+
+model Doctor {
+  id                     String                 @id @default(uuid())
+  hospitalId String @db.Uuid
+  // Required: every Doctor has exactly one operating branch.
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  employeeId             String                 @unique
+  employee               Employee               @relation(fields: [employeeId, hospitalId, branchId], references: [id, hospitalId, branchId], onDelete: Restrict)
+  departmentId           String
+  department             Department             @relation(fields: [departmentId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  designation            String                 // GENERAL_PHYSICIAN, SPECIALIST, SURGEON, DUTY_DOCTOR, RESIDENT_DOCTOR, INTERN
+  licenseNumber          String                 @unique
+  specialization         String
+  subSpecialization      String?
+  experienceYears        Int                    @default(0)
+  consultationFee        Decimal                @default(500.00) @db.Decimal(10, 2)
+  followUpFee            Decimal                @default(300.00) @db.Decimal(10, 2)
+  opdFee                 Decimal                @default(500.00) @db.Decimal(10, 2)
+  ipdAvailable           Boolean                @default(true)
+  consultationDurationMin Int                   @default(15)
+  availableDays          String[]               // e.g. ["MON", "TUE", "WED", "THU", "FRI", "SAT"]
+  shift                  String                 @default("MORNING") // MORNING, EVENING, NIGHT, ROTATING
+  isAvailableToday       Boolean                @default(true)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+
+  qualifications         DoctorQualification[]
+  schedules              DoctorSchedule[]
+  leaves                 DoctorLeave[]
+  appointments           Appointment[]
+  consultations          Consultation[]
+  prescriptions          Prescription[]
+  labOrders              LabOrder[]
+  radiologyOrders        RadiologyOrder[]
+  admissions             Admission[]
+
+  @@index([departmentId])
+  @@index([designation])
+  @@unique([id, hospitalId, branchId])
+  @@index([hospitalId, branchId])
+  @@unique([employeeId, hospitalId, branchId])
+}
+
+model DoctorQualification {
+  id          String   @id @default(uuid())
+  doctorId    String
+  doctor      Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  degree      String   // MBBS, MD, MS, DM, MCh, DNB
+  institution String
+  yearPassed  Int
+  createdAt   DateTime @default(now())
+
+  @@index([doctorId])
+}
+
+model DoctorSchedule {
+  id          String   @id @default(uuid())
+  doctorId    String
+  doctor      Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  dayOfWeek   String   // MONDAY, TUESDAY...
+  startTime   String   // "09:00"
+  endTime     String   // "13:00"
+  maxPatients Int      @default(25)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([doctorId])
+}
+
+model DoctorLeave {
+  id        String   @id @default(uuid())
+  doctorId  String
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  startDate DateTime
+  endDate   DateTime
+  reason    String
+  isApproved Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([doctorId])
+}
+
+// ==========================================
+// 4. PATIENT MANAGEMENT & RECORDS
+// ==========================================
+
+model Patient {
+  id                       String               @id @default(uuid())
+  uhid                     String               @unique // hospital-issued unique identifier
+  userId                   String?              @unique
+  user                     User?                @relation(fields: [userId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  hospitalId               String @db.Uuid
+  hospital                 Hospital             @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  registrationBranchId     String
+  registrationBranch       Branch @relation("PatientRegistrationBranch", fields: [registrationBranchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  firstName                String
+  lastName                 String
+  dateOfBirth              DateTime
+  gender                   String               // MALE, FEMALE, OTHER
+  bloodGroup               String?              // A_POSITIVE, O_POSITIVE etc.
+  phone                    String
+  email                    String?
+  nationalId               String?              // Aadhaar / Passport
+  addressLine1             String
+  addressLine2             String?
+  city                     String
+  state                    String
+  postalCode               String
+  country                  String               @default("India")
+  emergencyContactName     String
+  emergencyContactPhone    String
+  emergencyContactRelation String
+  allergies                String[]
+  medicalHistoryNotes      String?
+  createdAt                DateTime             @default(now())
+  updatedAt                DateTime             @updatedAt
+  deletedAt                DateTime?
+
+  appointments             Appointment[]
+  consultations            Consultation[]
+  prescriptions            Prescription[]
+  vitalsRecords            VitalsRecord[]
+  nursingTasks             NursingTask[]
+  labOrders                LabOrder[]
+  radiologyOrders          RadiologyOrder[]
+  admissions               Admission[]
+  invoices                 Invoice[]
+  insuranceClaims          InsuranceClaim[]
+  patientDocuments         PatientDocument[]
+
+
+  @@index([phone])
+  @@index([hospitalId])
+  @@unique([id, hospitalId])
+  @@unique([userId, hospitalId])
+}
+
+model PatientDocument {
+  id           String   @id @default(uuid())
+  patientId    String
+  patient      Patient  @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  title        String
+  documentType String   // ID_PROOF, DISCHARGE_SUMMARY, LAB_REPORT, SCAN, OTHER
+  fileUrl      String
+  uploadedBy   String
+  uploader User @relation("PatientDocumentUploader", fields: [uploadedBy, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt    DateTime @default(now())
+
+  @@index([patientId])
+  @@index([hospitalId, branchId])
+}
+
+// ==========================================
+// 5. APPOINTMENTS & QUEUE
+// ==========================================
+
+model Appointment {
+  id                String         @id @default(uuid())
+  appointmentNumber String         @unique // APT-YYYY-XXXX
+  patientId         String
+  patient           Patient        @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctorId          String
+  doctor            Doctor         @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  departmentId      String
+  department        Department     @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  appointmentDate   DateTime       @db.Date
+  appointmentTime   String         // "10:30"
+  tokenNumber       Int
+  status            String         @default("SCHEDULED") // SCHEDULED, CHECKED_IN, IN_PROGRESS, COMPLETED, CANCELLED
+  type              String         @default("OPD") // OPD, FOLLOW_UP, EMERGENCY
+  priority          String         @default("ROUTINE") // ROUTINE, URGENT, STAT_EMERGENCY
+  reasonForVisit    String
+  consultationFee   Decimal        @db.Decimal(10, 2)
+  isPaid            Boolean        @default(false)
+  checkInAt         DateTime?
+  completedAt       DateTime?
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  consultation      Consultation?
+  invoices          Invoice[]
+
+  @@index([patientId])
+  @@unique([branchId, doctorId, appointmentDate, tokenNumber])
+  @@index([doctorId, appointmentDate])
+
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+// ==========================================
+// 6. CLINICAL: CONSULTATIONS & PRESCRIPTIONS
+// ==========================================
+
+model Consultation {
+  id                       String         @id @default(uuid())
+  appointmentId            String         @unique
+  appointment              Appointment    @relation(fields: [appointmentId], references: [id], onDelete: Restrict)
+  patientId                String
+  patient                  Patient        @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctorId                 String
+  doctor                   Doctor         @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  chiefComplaint           String
+  historyOfPresentIllness  String?
+  physicalExamNotes        String?
+  diagnosisNotes           String
+  icd10Codes               String[]
+  treatmentPlan            String
+  followUpDate             DateTime?      @db.Date
+  status                   String         @default("COMPLETED")
+  admissionRecommended    Boolean        @default(false)
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+
+  prescriptions            Prescription[]
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+model Prescription {
+  id                 String             @id @default(uuid())
+  prescriptionNumber String             @unique // RX-YYYY-XXXX
+  patientId          String
+  patient            Patient            @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctorId           String
+  doctor             Doctor             @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  consultationId     String?
+  consultation       Consultation?      @relation(fields: [consultationId], references: [id], onDelete: SetNull)
+  notes              String?
+  dispensingStatus   String             @default("PENDING") // PENDING, PARTIALLY_DISPENSED, DISPENSED
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  items              PrescriptionItem[]
+  dispensingRecords  DispensingRecord[]
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+model PrescriptionItem {
+  id                 String       @id @default(uuid())
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  prescriptionId     String
+  prescription       Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Restrict)
+  medicineId         String
+  medicine           Medicine     @relation(fields: [medicineId], references: [id], onDelete: Restrict)
+  dosage             String       // e.g. "650 mg"
+  frequency          String       // e.g. "1-0-1"
+  durationDays       Int          // e.g. 5
+  instructions       String       // e.g. "After food"
+  route              String       @default("Oral")
+  dispensedQuantity  Int          @default(0)
+  createdAt          DateTime     @default(now())
+
+  medicationAdmins   MedicationAdministration[]
+
+  @@index([prescriptionId])
+  @@index([medicineId])
+  @@unique([id, hospitalId, branchId])
+  @@index([hospitalId, branchId])
+}
+
+// ==========================================
+// 7. NURSING & VITALS
+// ==========================================
+
+model NursingStaff {
+  id           String              @id @default(uuid())
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  employeeId   String              @unique
+  employee     Employee            @relation(fields: [employeeId, hospitalId, branchId], references: [id, hospitalId, branchId], onDelete: Restrict)
+  isHeadNurse  Boolean             @default(false)
+  shift        String              @default("DAY") // DAY, NIGHT, ROTATING
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  assignments  NursingAssignment[]
+  nursingTasks NursingTask[]
+  medicationAdministrations MedicationAdministration[]
+
+
+  @@unique([id, hospitalId, branchId])
+  @@index([hospitalId, branchId])
+  @@unique([employeeId, hospitalId, branchId])
+}
+
+model NursingAssignment {
+  id           String       @id @default(uuid())
+  nurseId      String
+  nurse        NursingStaff @relation(fields: [nurseId], references: [id], onDelete: Restrict)
+  wardId       String
+  ward         Ward         @relation(fields: [wardId], references: [id], onDelete: Restrict)
+  assignedDate DateTime     @db.Date
+  shift        String
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt    DateTime     @default(now())
+
+  @@index([nurseId])
+  @@index([wardId])
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+model VitalsRecord {
+  id               String     @id @default(uuid())
+  patientId        String
+  patient          Patient    @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  admissionId      String?
+  admission        Admission? @relation(fields: [admissionId], references: [id], onDelete: SetNull)
+  recordedByUserId String
+  recorder User @relation("VitalsRecorder", fields: [recordedByUserId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  temperature      Decimal?   @db.Decimal(5, 2) // Fahrenheit
+  systolicBp       Int?       // mmHg
+  diastolicBp      Int?       // mmHg
+  pulseRate        Int?       // bpm
+  respiratoryRate  Int?       // breaths/min
+  oxygenSaturation Int?       // %
+  bloodSugarMgDl   Int?       // mg/dL
+  weightKg         Decimal?   @db.Decimal(5, 2)
+  heightCm         Decimal?   @db.Decimal(5, 2)
+  isAbnormal       Boolean    @default(false)
+  notes            String?
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt        DateTime   @default(now())
+
+  @@index([patientId])
+  @@index([admissionId])
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+model NursingTask {
+  id              String        @id @default(uuid())
+  patientId       String
+  patient         Patient       @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  admissionId     String
+  admission       Admission     @relation(fields: [admissionId], references: [id], onDelete: Restrict)
+  assignedNurseId String?
+  assignedNurse   NursingStaff? @relation(fields: [assignedNurseId], references: [id], onDelete: SetNull)
+  taskTitle       String
+  taskDescription String
+  dueTime         DateTime
+  isCompleted     Boolean       @default(false)
+  completedAt     DateTime?
+  priority        String        @default("ROUTINE")
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt       DateTime      @default(now())
+
+  @@index([patientId])
+  @@index([admissionId])
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+model MedicationAdministration {
+  id                 String           @id @default(uuid())
+  prescriptionItemId String
+  prescriptionItem   PrescriptionItem @relation(fields: [prescriptionItemId], references: [id], onDelete: Restrict)
+  admissionId        String
+  admission          Admission        @relation(fields: [admissionId], references: [id], onDelete: Restrict)
+  nurseId            String
+  nurse NursingStaff @relation(fields: [nurseId], references: [id], onDelete: Restrict)
+  administeredDose   String
+  administeredAt     DateTime         @default(now())
+  notes              String?
+
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  @@index([prescriptionItemId])
+  @@index([admissionId])
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+// ==========================================
+// 8. LABORATORY & DIAGNOSTICS
+// ==========================================
+
+model LabTest {
+  id           String          @id @default(uuid())
+  testCode     String          @unique
+  name         String
+  category     String          // HEMATOLOGY, BIOCHEMISTRY, MICROBIOLOGY...
+  sampleType   String          // BLOOD, URINE, SERUM, CSF
+  price        Decimal         @db.Decimal(10, 2)
+  tatHours     Int             @default(24) // Turnaround time in hours
+  isActive     Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+
+  parameters   TestParameter[]
+  orderItems   LabOrderItem[]
+}
+
+model TestParameter {
+  id             String      @id @default(uuid())
+  labTestId      String
+  labTest        LabTest     @relation(fields: [labTestId], references: [id], onDelete: Restrict)
+  parameterName  String
+  unit           String
+  referenceLow   Decimal?    @db.Decimal(8, 2)
+  referenceHigh  Decimal?    @db.Decimal(8, 2)
+  criticalLow    Decimal?    @db.Decimal(8, 2)
+  criticalHigh   Decimal?    @db.Decimal(8, 2)
+  normalRangeStr String?
+
+  results        LabResult[]
+
+  @@index([labTestId])
+}
+
+model LabOrder {
+  id               String         @id @default(uuid())
+  orderNumber      String         @unique // LAB-YYYY-XXXX
+  patientId        String
+  patient          Patient        @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctorId         String
+  doctor           Doctor         @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  status           String         @default("ORDERED") // ORDERED, COLLECTED, RECEIVED_IN_LAB, PROCESSING, COMPLETED, REJECTED
+  priority         String         @default("ROUTINE")
+  barcode          String         @unique
+  sampleCollectedAt DateTime?
+  reportReleasedAt DateTime?
+  releasedByUserId String?
+  releasedBy User? @relation("LabOrderReleaser", fields: [releasedByUserId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  clinicalNotes    String?
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  orderItems       LabOrderItem[]
+  results          LabResult[]
+
+  @@index([patientId])
+
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+model LabOrderItem {
+  id         String   @id @default(uuid())
+  labOrderId String
+  labOrder   LabOrder @relation(fields: [labOrderId], references: [id], onDelete: Restrict)
+  labTestId  String
+  labTest    LabTest  @relation(fields: [labTestId], references: [id], onDelete: Restrict)
+  createdAt  DateTime @default(now())
+
+  @@index([labOrderId])
+  @@index([labTestId])
+}
+
+model LabResult {
+  id              String        @id @default(uuid())
+  labOrderId      String
+  labOrder        LabOrder      @relation(fields: [labOrderId], references: [id], onDelete: Restrict)
+  parameterId     String
+  parameter       TestParameter @relation(fields: [parameterId], references: [id], onDelete: Restrict)
+  measuredValue   String
+  unit            String
+  referenceRange  String
+  isAbnormal      Boolean       @default(false)
+  isCritical      Boolean       @default(false)
+  remarks         String?
+  technicianNotes String?
+  enteredAt       DateTime      @default(now())
+
+  @@index([labOrderId])
+}
+
+// ==========================================
+// 9. PHARMACY & INVENTORY
+// ==========================================
+
+model Medicine {
+  id                String             @id @default(uuid())
+  code              String             @unique
+  brandName         String
+  genericName       String
+  category          String             // ANTIBIOTIC, ANALGESIC, ANTIHYPERTENSIVE...
+  strength          String             // 500mg, 10ml, etc.
+  dosageForm        String             // TABLET, CAPSULE, SYRUP, INJECTION, OINTMENT
+  manufacturer      String
+  unitPrice         Decimal            @db.Decimal(10, 2)
+  // Hospital-wide aggregate cache; source balances are MedicineBatch.quantity.
+  currentStock      Int                @default(0)
+  reorderLevel      Int                @default(20)
+  isActive          Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  batches           MedicineBatch[]
+  prescriptionItems PrescriptionItem[]
+  inventoryMovements InventoryMovement[]
+
+  @@index([brandName])
+  @@index([genericName])
+}
+
+model MedicineBatch {
+  id                String             @id @default(uuid())
+  medicineId        String
+  medicine          Medicine           @relation(fields: [medicineId], references: [id], onDelete: Restrict)
+  batchNumber       String
+  expiryDate        DateTime           @db.Date
+  // Authoritative branch balance; opening value is snapshotted at ledger cutover.
+  quantity          Int
+  purchasePrice     Decimal            @db.Decimal(10, 2)
+  sellingPrice      Decimal            @db.Decimal(10, 2)
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt         DateTime           @default(now())
+
+  dispensingRecords DispensingRecord[]
+  inventoryMovements InventoryMovement[]
+
+  @@unique([branchId, medicineId, batchNumber])
+  @@index([medicineId])
+  @@index([expiryDate])
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+model DispensingRecord {
+  id                String        @id @default(uuid())
+  prescriptionId    String
+  prescription      Prescription  @relation(fields: [prescriptionId], references: [id], onDelete: Restrict)
+  batchId           String
+  batch             MedicineBatch @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  dispensedQuantity Int
+  pharmacistUserId  String
+  pharmacist User @relation("DispensingPharmacist", fields: [pharmacistUserId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  dispensedAt       DateTime      @default(now())
+
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  inventoryMovement InventoryMovement?
+  @@index([prescriptionId])
+  @@index([batchId])
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+// ==========================================
+// 10. RADIOLOGY & IMAGING
+// ==========================================
+
+model RadiologyTest {
+  id         String           @id @default(uuid())
+  testCode   String           @unique
+  name       String           // Chest X-Ray, Brain MRI, CT Abdomen...
+  modality   String           // XRAY, CT, MRI, ULTRASOUND, PET
+  price      Decimal          @db.Decimal(10, 2)
+  isActive   Boolean          @default(true)
+  createdAt  DateTime         @default(now())
+
+  orders     RadiologyOrder[]
+}
+
+model RadiologyOrder {
+  id                 String        @id @default(uuid())
+  orderNumber        String        @unique // RAD-YYYY-XXXX
+  patientId          String
+  patient            Patient       @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctorId           String
+  doctor             Doctor        @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  testId             String
+  test               RadiologyTest @relation(fields: [testId], references: [id], onDelete: Restrict)
+  priority           String        @default("ROUTINE")
+  status             String        @default("ORDERED") // ORDERED, SCHEDULED, PROCEDURE_COMPLETED, REPORT_RELEASED
+  clinicalIndication String
+  findings           String?
+  impression         String?
+  criticalAlert      Boolean       @default(false)
+  imageUrl           String?
+  reportReleasedAt   DateTime?
+  releasedByUserId   String?
+  releasedBy User? @relation("RadiologyOrderReleaser", fields: [releasedByUserId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@index([patientId])
+
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+// ==========================================
+// 11. WARDS, ROOMS & ADMISSIONS
+// ==========================================
+
+model Ward {
+  id            String              @id @default(uuid())
+  hospitalId    String @db.Uuid
+  hospital      Hospital            @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  departmentId  String?
+  department    Department?         @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  name          String
+  code          String
+  genderAllowed String              @default("ANY") // MALE, FEMALE, ANY
+  floorNumber   Int                 @default(1)
+  totalBeds     Int                 @default(0)
+  occupiedBeds  Int                 @default(0)
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  beds          Bed[]
+  admissions    Admission[]
+  nurseAssigns  NursingAssignment[]
+
+  @@unique([hospitalId, code])
+
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+model Bed {
+  id                 String      @id @default(uuid())
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  wardId             String
+  ward               Ward        @relation(fields: [wardId], references: [id], onDelete: Restrict)
+  roomNumber         String
+  bedNumber          String
+  type               String      @default("STANDARD") // STANDARD, SEMI_PRIVATE, PRIVATE, DELUXE, ICU, CCU
+  status             String      @default("AVAILABLE") // AVAILABLE, OCCUPIED, RESERVED, MAINTENANCE, CLEANING
+  dailyRate          Decimal     @default(1000.00) @db.Decimal(10, 2)
+  currentPatientId   String?
+  currentPatientName String?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  admissions         Admission[]
+
+  @@unique([wardId, roomNumber, bedNumber])
+  @@index([wardId])
+  @@index([status])
+  @@unique([id, hospitalId, branchId])
+  @@unique([id, wardId, hospitalId, branchId])
+  @@index([hospitalId, branchId])
+}
+
+model Admission {
+  id                 String                     @id @default(uuid())
+  admissionNumber    String                     @unique // ADM-YYYY-XXXX
+  patientId          String
+  patient            Patient                    @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  admittingDoctorId  String
+  admittingDoctor    Doctor                     @relation(fields: [admittingDoctorId], references: [id], onDelete: Restrict)
+  wardId             String
+  ward               Ward                       @relation(fields: [wardId], references: [id], onDelete: Restrict)
+  bedId              String
+  bed                Bed                        @relation(fields: [bedId], references: [id], onDelete: Restrict)
+  status             String                     @default("ADMITTED") // ADMITTED, DISCHARGED, TRANSFERRED
+  admissionReason    String
+  initialDiagnosis   String
+  admittedAt         DateTime                   @default(now())
+  dischargedAt       DateTime?
+  dischargeSummary   String?
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+
+  vitals             VitalsRecord[]
+  nursingTasks       NursingTask[]
+  medicationAdmins   MedicationAdministration[]
+  invoices           Invoice[]
+
+  @@index([patientId])
+  @@index([bedId])
+
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+// ==========================================
+// 12. BILLING & INSURANCE
+// ==========================================
+
+model Invoice {
+  id             String           @id @default(uuid())
+  invoiceNumber  String           @unique // INV-YYYY-XXXX
+  patientId      String
+  patient        Patient          @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  admissionId    String?
+  admission      Admission?       @relation(fields: [admissionId], references: [id], onDelete: SetNull)
+  appointmentId  String?
+  appointment    Appointment?     @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  subTotal       Decimal          @db.Decimal(12, 2)
+  taxAmount      Decimal          @default(0.00) @db.Decimal(12, 2)
+  discountAmount Decimal          @default(0.00) @db.Decimal(12, 2)
+  totalAmount    Decimal          @db.Decimal(12, 2)
+  paidAmount     Decimal          @default(0.00) @db.Decimal(12, 2)
+  status         String           @default("PENDING") // PENDING, PARTIALLY_PAID, PAID, CANCELLED
+  notes          String?
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  items          InvoiceItem[]
+  payments       Payment[]
+  claims         InsuranceClaim[]
+
+  @@index([patientId])
+  @@index([invoiceNumber])
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+model InvoiceItem {
+  id                 String   @id @default(uuid())
+  invoiceId          String
+  invoice            Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  description        String
+  category           String   // CONSULTATION, LAB, RADIOLOGY, PHARMACY, ROOM, PROCEDURE
+  quantity           Int      @default(1)
+  unitPrice          Decimal  @db.Decimal(10, 2)
+  discountPercentage Decimal  @default(0.00) @db.Decimal(5, 2)
+  totalPrice         Decimal  @db.Decimal(10, 2)
+  createdAt          DateTime @default(now())
+
+  @@index([invoiceId])
+}
+
+model Payment {
+  id                   String   @id @default(uuid())
+  invoiceId            String
+  invoice              Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  amount               Decimal  @db.Decimal(12, 2)
+  paymentMethod        String   // CASH, CARD, UPI, NET_BANKING, INSURANCE
+  transactionReference String?
+  paymentStatus        String   @default("SUCCESS")
+  receivedByUserId     String
+  receivedBy User @relation("PaymentReceiver", fields: [receivedByUserId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  idempotencyKey String @unique
+  requestFingerprint String
+  notes                String?
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt            DateTime @default(now())
+
+  @@index([invoiceId])
+  @@index([hospitalId, branchId])
+}
+
+model InsuranceClaim {
+  id             String    @id @default(uuid())
+  claimNumber    String    @unique
+  invoiceId      String
+  invoice        Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  patientId      String
+  patient        Patient   @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  providerName   String    // Star Health, Medi Assist, ICICI Lombard...
+  policyNumber   String
+  preAuthCode    String?
+  claimAmount    Decimal   @db.Decimal(12, 2)
+  approvedAmount Decimal?  @db.Decimal(12, 2)
+  status         String    @default("SUBMITTED") // SUBMITTED, UNDER_REVIEW, APPROVED, REJECTED, SETTLED
+  submittedAt    DateTime  @default(now())
+  settledAt      DateTime?
+
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  @@index([invoiceId])
+  @@index([patientId])
+  @@index([hospitalId, branchId])
+}
+
+// ==========================================
+// 13. AMBULANCE & EMERGENCY DISPATCH
+// ==========================================
+
+model Ambulance {
+  id             String          @id @default(uuid())
+  hospitalId     String @db.Uuid
+  hospital       Hospital        @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  vehicleNumber  String          @unique // e.g. TN-58-AB-1234
+  model          String
+  type           String          @default("ADVANCED_LIFE_SUPPORT") // BASIC, ADVANCED_LIFE_SUPPORT
+  isAvailable    Boolean         @default(true)
+  currentGpsLat  Decimal?        @db.Decimal(10, 6)
+  currentGpsLng  Decimal?        @db.Decimal(10, 6)
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  trips          AmbulanceTrip[]
+
+
+  @@index([hospitalId, branchId])
+  @@unique([id, hospitalId, branchId])
+}
+
+model AmbulanceDriver {
+  id            String          @id @default(uuid())
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  employeeId    String          @unique
+  employee      Employee        @relation(fields: [employeeId, hospitalId, branchId], references: [id, hospitalId, branchId], onDelete: Restrict)
+  licenseNumber String          @unique
+  phone         String
+  isOnDuty      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  trips         AmbulanceTrip[]
+
+
+  @@unique([id, hospitalId, branchId])
+  @@index([hospitalId, branchId])
+  @@unique([employeeId, hospitalId, branchId])
+}
+
+model AmbulanceTrip {
+  id                      String           @id @default(uuid())
+  tripCode                String           @unique // AMB-YYYY-XXXX
+  ambulanceId             String
+  ambulance               Ambulance        @relation(fields: [ambulanceId], references: [id], onDelete: Restrict)
+  driverId                String
+  driver                  AmbulanceDriver  @relation(fields: [driverId], references: [id], onDelete: Restrict)
+  callerName              String
+  callerPhone             String
+  pickupLocation          String
+  destinationHospital     String
+  severity                String           @default("CRITICAL") // CRITICAL, HIGH, MODERATE, LOW
+  status                  String           @default("DISPATCHED") // DISPATCHED, EN_ROUTE_PICKUP, ARRIVED_AT_SCENE, PATIENT_LOADED, EN_ROUTE_HOSPITAL, ARRIVED_HOSPITAL, HANDOVER_COMPLETE
+  patientConditionSummary String
+  handoverNotes           String?
+  dispatchedAt            DateTime         @default(now())
+  arrivedSceneAt          DateTime?
+  arrivedHospitalAt       DateTime?
+  completedAt             DateTime?
+  hospitalId String @db.Uuid
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt               DateTime         @default(now())
+  updatedAt               DateTime         @updatedAt
+
+
+  @@index([ambulanceId])
+  @@index([driverId])
+  @@index([hospitalId, branchId])
+}
+
+// ==========================================
+// 14. NOTIFICATIONS & AUDIT LOGS
+// ==========================================
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId, hospitalId], references: [id, hospitalId], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   // APPOINTMENT, LAB_RESULT, EMERGENCY, ADMISSION, PRESCRIPTION
+  isRead    Boolean  @default(false)
+  linkUrl   String?
+  hospitalId String @db.Uuid
+  branchId String?
+  branch Branch? @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+    createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([hospitalId, branchId])
+}
+
+model AuditLog {
+  id         String    @id @default(uuid())
+  hospitalId String? @db.Uuid
+  hospital   Hospital? @relation(fields: [hospitalId], references: [id], onDelete: SetNull)
+  userId     String?
+  user       User?     @relation(fields: [userId, hospitalId], references: [id, hospitalId], onDelete: SetNull)
+  userEmail  String
+  userRole   String
+  action     String    // LOGIN, LOGOUT, CREATE, UPDATE, DELETE, APPROVE, RELEASE, EXPORT
+  resource   String    // PATIENT, CONSULTATION, PRESCRIPTION, BILLING, USER...
+  resourceId String?
+  ipAddress  String?
+  userAgent  String?
+  details    Json?
+  createdAt  DateTime  @default(now())
+  branchId   String?
+  branch     Branch? @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([action])
+  @@index([resource])
+  @@index([createdAt])
+  @@index([hospitalId, branchId])
+}
+
+enum MasterDataScope {
+  SYSTEM
+  HOSPITAL
+}
+enum ReportExportStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+enum InventoryMovementType {
+  // One audit snapshot per pre-cutover batch; this is an opening event, not fabricated history.
+  OPENING_BALANCE
+  DISPENSE
+  DISPENSE_REVERSAL
+}
+
+model PasswordResetChallenge {
+  id String @id @default(uuid())
+  hospitalId String @db.Uuid
+  hospital Hospital @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  userId String
+  user User @relation(fields: [userId, hospitalId], references: [id, hospitalId], onDelete: Cascade)
+  purpose AccountAccessPurpose @default(RESET)
+  channel String
+  destinationHash String
+  otpHash String
+  expiresAt DateTime
+  attemptCount Int @default(0)
+  verifiedAt DateTime?
+  consumedAt DateTime?
+  revokedAt DateTime?
+  requestedAt DateTime @default(now())
+  requestIp String?
+  @@index([hospitalId, userId, purpose, expiresAt])
+  @@index([expiresAt, consumedAt])
+}
+
+model MasterDataSet {
+  id String @id @default(uuid())
+  scope MasterDataScope
+  hospitalId String? @db.Uuid
+  hospital Hospital? @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  key String
+  name String
+  description String?
+  isSystem Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  items MasterDataItem[]
+  @@unique([scope, key])
+  @@index([scope, hospitalId])
+}
+
+model MasterDataItem {
+  id String @id @default(uuid())
+  setId String
+  dataSet MasterDataSet @relation(fields: [setId], references: [id], onDelete: Restrict)
+  code String
+  name String
+  description String?
+  status String @default("ACTIVE")
+  sortOrder Int @default(0)
+  metadata Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  @@unique([setId, code])
+  @@index([setId, status, sortOrder])
+}
+
+model InventoryMovement {
+  id String @id @default(uuid())
+  hospitalId String @db.Uuid
+  hospital Hospital @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  branchId String
+  branch Branch @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  batchId String
+  batch MedicineBatch @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  medicineId String
+  medicine Medicine @relation(fields: [medicineId], references: [id], onDelete: Restrict)
+  // Present only for the original dispense movement; reversals point to that movement instead.
+  dispensingRecordId String? @unique
+  dispensingRecord DispensingRecord? @relation(fields: [dispensingRecordId], references: [id], onDelete: Restrict)
+  // A unique self-link permits at most one full reversal for an original movement.
+  reversesMovementId String? @unique
+  reversesMovement InventoryMovement? @relation("InventoryMovementReversal", fields: [reversesMovementId], references: [id], onDelete: Restrict)
+  reversal InventoryMovement? @relation("InventoryMovementReversal")
+  movementType InventoryMovementType
+  // OPENING_BALANCE is positive and one-per-batch at ledger cutover; DISPENSE is
+  // negative and linked to a DispensingRecord; DISPENSE_REVERSAL is the exact
+  // positive inverse linked to its original DISPENSE movement.
+  quantityDelta Int
+  idempotencyKey String @unique
+  requestFingerprint String
+  performedByUserId String
+  performedBy User @relation("InventoryPerformer", fields: [performedByUserId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  createdAt DateTime @default(now())
+  @@index([hospitalId, branchId, medicineId, createdAt])
+  @@index([batchId, createdAt])
+
+}
+
+model ReportExportJob {
+  id String @id @default(uuid())
+  hospitalId String @db.Uuid
+  hospital Hospital @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  branchId String?
+  branch Branch? @relation(fields: [branchId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  requestedById String
+  requestedBy User @relation(fields: [requestedById, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  reportKey String
+  format String
+  filters Json?
+  status ReportExportStatus @default(QUEUED)
+  storageKey String?
+  createdAt DateTime @default(now())
+  startedAt DateTime?
+  completedAt DateTime?
+  expiresAt DateTime?
+  failureCode String?
+  @@index([hospitalId, branchId, status, createdAt])
+  @@index([requestedById, createdAt])
+
+}

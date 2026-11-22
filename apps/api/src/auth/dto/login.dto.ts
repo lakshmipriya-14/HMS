@@ -1,40 +1,49 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
-import { Role } from '@multispeciality-hms/contracts';
+import { IsEmail, IsOptional, IsString, Length, Matches, MaxLength, MinLength } from 'class-validator';
+import { Transform } from 'class-transformer';
 
-export class LoginDto {
-  @IsEmail({}, { message: 'Please provide a valid hospital email address' })
-  @IsNotEmpty()
+export class RecoveryEmailDto {
+  @IsEmail()
+  @MaxLength(254)
   email: string;
-
+}
+export class LoginDto extends RecoveryEmailDto {
   @IsString()
-  @MinLength(6, { message: 'Password must be at least 6 characters' })
-  @IsNotEmpty()
+  @Length(1, 72)
   password: string;
-
-  @IsOptional()
-  @IsEnum(Role, { message: 'Invalid role selected' })
-  selectedRole?: Role;
 }
-
-export class SwitchRoleDto {
-  @IsEnum(Role, { message: 'Invalid role selected' })
-  @IsNotEmpty()
-  role: Role;
-}
-
 export class RefreshTokenDto {
-  @IsString()
-  @IsNotEmpty()
-  refreshToken: string;
+  @IsOptional()
+  @Matches(/^[A-Za-z0-9_-]{43}$/)
+  refreshToken?: string;
 }
-
-export class ChangePasswordDto {
+export class NewPasswordDto {
   @IsString()
-  @IsNotEmpty()
-  currentPassword: string;
-
-  @IsString()
-  @MinLength(8, { message: 'New password must be at least 8 characters' })
-  @IsNotEmpty()
+  @MinLength(12)
+  @MaxLength(72)
   newPassword: string;
+}
+export class ChangePasswordDto extends NewPasswordDto {
+  @IsString()
+  @Length(1, 72)
+  currentPassword: string;
+}
+export class VerifyOtpDto extends RecoveryEmailDto {
+  @Matches(/^\d{6}$/)
+  otp: string;
+}
+export class ResetPasswordDto extends NewPasswordDto {
+  @IsString()
+  @Length(1, 128)
+  challengeId: string;
+
+  @Transform(({ value }) => (typeof value === 'string' ? value.replace(/\s+/g, '') : value))
+  @IsString()
+  @Matches(/^[A-Za-z0-9_-]{43}$/)
+  resetToken: string;
+}
+export class RedeemAccessDto extends NewPasswordDto {
+  @Transform(({ value }) => (typeof value === 'string' ? value.replace(/\s+/g, '') : value))
+  @IsString()
+  @Matches(/^[A-Za-z0-9_-]{43}$/)
+  code: string;
 }

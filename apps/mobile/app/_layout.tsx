@@ -3,15 +3,17 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '../hooks/useAuth';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform, useWindowDimensions } from 'react-native';
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
+  const { width, height } = useWindowDimensions();
   const content = (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="(auth)/login" />
+      <Stack.Screen name="(super-admin)" />
       <Stack.Screen name="(admin)" />
       <Stack.Screen name="(doctor)" />
       <Stack.Screen name="(nurse)" />
@@ -29,12 +31,14 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <StatusBar style="light" backgroundColor="#0F766E" />
-        {Platform.OS === 'web' ? (
+        {Platform.OS === 'web' && width > 500 ? (
           <View style={styles.webWrapper}>
-            <View style={styles.phoneFrame}>
+            <View style={[styles.phoneFrame, { maxHeight: Math.min(height - 24, 920) }]}>
               {content}
             </View>
           </View>
+        ) : Platform.OS === 'web' ? (
+          <View style={styles.webMobileWrapper}>{content}</View>
         ) : (
           content
         )}
@@ -44,6 +48,12 @@ export default function RootLayout() {
 }
 
 const styles = StyleSheet.create({
+  webMobileWrapper: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#F7F7F7',
+  },
   webWrapper: {
     flex: 1,
     width: '100%',
@@ -51,20 +61,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#0F172A',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 12,
   },
   phoneFrame: {
     width: '100%',
-    maxWidth: 420,
+    maxWidth: 430,
     height: '100%',
-    maxHeight: 900,
     backgroundColor: '#FFFFFF',
-    borderRadius: 32,
+    borderRadius: 20,
     overflow: 'hidden',
-    borderWidth: 6,
+    borderWidth: 2,
     borderColor: '#334155',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.35,
-    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
   },
 });

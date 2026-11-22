@@ -1,9 +1,11 @@
+import { WorkspaceGate } from '../../components/WorkspaceGate';
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Pill, Boxes, User } from 'lucide-react-native';
 
 export default function PharmacyTabsLayout() {
   return (
+    <WorkspaceGate home="/(pharmacy)">
     <Tabs
       screenOptions={{
         headerShown: true,
@@ -36,5 +38,6 @@ export default function PharmacyTabsLayout() {
         }}
       />
     </Tabs>
+    </WorkspaceGate>
   );
 }

@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { AdmitPatientDto, DischargePatientDto, TransferBedDto } from '@multispeciality-hms/contracts';
+import { AdmitPatientDto, DischargePatientDto, AuthUserDto } from '@multispeciality-hms/contracts';
+import { resolveOperationalScope, assertBranchAccess } from '../common/utils/operational-scope';
 
 @Injectable()
 export class WardsService {
@@ -13,8 +14,18 @@ export class WardsService {
     return `ADM-${year}-${sequence}`;
   }
 
-  async findAllWards() {
+  async findAllWards(actor?: AuthUserDto, branchId?: string) {
+    const where: any = {};
+    if (actor) {
+      const scope = resolveOperationalScope(actor, branchId);
+      where.hospitalId = scope.hospitalId;
+      if (scope.branchId) where.branchId = scope.branchId;
+    } else if (branchId) {
+      where.branchId = branchId;
+    }
+
     return this.prisma.ward.findMany({
+      where,
       include: {
         beds: true,
         department: { select: { name: true, code: true } },
@@ -23,22 +34,31 @@ export class WardsService {
     });
   }
 
-  async getBeds(wardId: string) {
+  async getBeds(wardId: string, actor?: AuthUserDto) {
+    if (actor) {
+      const ward: any = await this.prisma.ward.findUnique({ where: { id: wardId }, select: { hospitalId: true, branchId: true } });
+      if (!ward) throw new NotFoundException('Ward not found');
+      assertBranchAccess(actor, ward.branchId);
+    }
     return this.prisma.bed.findMany({
       where: { wardId },
       orderBy: [{ roomNumber: 'asc' }, { bedNumber: 'asc' }],
     });
   }
 
-  async admitPatient(dto: AdmitPatientDto) {
+  async admitPatient(dto: AdmitPatientDto, actor?: AuthUserDto) {
     return this.prisma.$transaction(async (tx) => {
       // Check bed availability
-      const bed = await tx.bed.findUnique({
+      const bed: any = await tx.bed.findUnique({
         where: { id: dto.bedId },
       });
 
       if (!bed || bed.status !== 'AVAILABLE') {
         throw new BadRequestException('Selected bed is not currently available for admission');
+      }
+
+      if (actor) {
+        assertBranchAccess(actor, bed.branchId);
       }
 
       const patient = await tx.patient.findUnique({ where: { id: dto.patientId } });
@@ -58,6 +78,8 @@ export class WardsService {
           admissionReason: dto.admissionReason,
           initialDiagnosis: dto.initialDiagnosis,
           admittedAt: new Date(),
+          hospitalId: bed.hospitalId,
+          branchId: bed.branchId,
         },
       });
 
@@ -81,13 +103,17 @@ export class WardsService {
     });
   }
 
-  async dischargePatient(admissionId: string, dto: DischargePatientDto) {
+  async dischargePatient(admissionId: string, dto: DischargePatientDto, actor?: AuthUserDto) {
     return this.prisma.$transaction(async (tx) => {
       const admission = await tx.admission.findUnique({
         where: { id: admissionId },
       });
       if (!admission || admission.status !== 'ADMITTED') {
         throw new BadRequestException('Admission record is not currently active');
+      }
+
+      if (actor) {
+        assertBranchAccess(actor, admission.branchId);
       }
 
       // Mark admission discharged
@@ -100,17 +126,17 @@ export class WardsService {
         },
       });
 
-      // Release bed to CLEANING status for turnover
+      // Release bed for housekeeping
       await tx.bed.update({
         where: { id: admission.bedId },
         data: {
-          status: 'CLEANING',
+          status: 'HOUSEKEEPING',
           currentPatientId: null,
           currentPatientName: null,
         },
       });
 
-      // Decrement ward occupancy
+      // Decrement occupied bed count in ward
       await tx.ward.update({
         where: { id: admission.wardId },
         data: { occupiedBeds: { decrement: 1 } },

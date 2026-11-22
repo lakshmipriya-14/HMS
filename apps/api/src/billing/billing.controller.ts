@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { BillingService } from './billing.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { CollectPaymentDto, CreateInvoiceDto } from '@multispeciality-hms/contracts';
+import { CollectPaymentDto, CreateInvoiceDto, AuthUserDto } from '@multispeciality-hms/contracts';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Billing, Invoicing & Insurance')
@@ -11,8 +11,12 @@ export class BillingController {
 
   @Get('invoices')
   @ApiOperation({ summary: 'List invoices with optional patient filter' })
-  async getInvoices(@Query('patientId') patientId?: string) {
-    const data = await this.service.getInvoices(patientId);
+  async getInvoices(
+    @CurrentUser() actor?: AuthUserDto,
+    @Query('patientId') patientId?: string,
+    @Query('branchId') branchId?: string,
+  ) {
+    const data = await this.service.getInvoices(actor, patientId, branchId);
     return {
       message: 'Invoices retrieved successfully',
       data,
@@ -21,8 +25,8 @@ export class BillingController {
 
   @Get('invoices/:id')
   @ApiOperation({ summary: 'Get invoice details with items and payment history' })
-  async findOne(@Param('id') id: string) {
-    const data = await this.service.findOne(id);
+  async findOne(@Param('id') id: string, @CurrentUser() actor?: AuthUserDto) {
+    const data = await this.service.findOne(id, actor);
     return {
       message: 'Invoice details retrieved',
       data,
@@ -44,9 +48,10 @@ export class BillingController {
   async collectPayment(
     @Param('id') id: string,
     @Body() dto: CollectPaymentDto,
-    @CurrentUser('id') cashierUserId: string
+    @CurrentUser('id') cashierUserId: string,
+    @CurrentUser() actor?: AuthUserDto
   ) {
-    const data = await this.service.collectPayment(id, dto, cashierUserId);
+    const data = await this.service.collectPayment(id, dto, cashierUserId, actor);
     return {
       message: 'Payment collected and recorded on invoice',
       data,
@@ -55,8 +60,11 @@ export class BillingController {
 
   @Get('insurance-claims')
   @ApiOperation({ summary: 'List active insurance claims and TPA statuses' })
-  async getInsuranceClaims() {
-    const data = await this.service.getInsuranceClaims();
+  async getInsuranceClaims(
+    @CurrentUser() actor?: AuthUserDto,
+    @Query('branchId') branchId?: string
+  ) {
+    const data = await this.service.getInsuranceClaims(actor, branchId);
     return {
       message: 'Insurance claims retrieved',
       data,

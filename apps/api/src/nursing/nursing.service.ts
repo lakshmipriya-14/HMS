@@ -51,11 +51,27 @@ export class NursingService {
     if (dto.oxygenSaturation && dto.oxygenSaturation < 95) isAbnormal = true;
     if (dto.bloodSugarMgDl && (dto.bloodSugarMgDl > 200 || dto.bloodSugarMgDl < 70)) isAbnormal = true;
 
+    let hospitalId: string;
+    let branchId: string;
+    if (dto.admissionId) {
+      const admission = await this.prisma.admission.findUnique({ where: { id: dto.admissionId } });
+      if (!admission) throw new NotFoundException('Admission not found');
+      hospitalId = admission.hospitalId;
+      branchId = admission.branchId;
+    } else {
+      const patient = await this.prisma.patient.findUnique({ where: { id: dto.patientId } });
+      if (!patient) throw new NotFoundException('Patient not found');
+      hospitalId = patient.hospitalId;
+      branchId = patient.registrationBranchId;
+    }
+
     const vitals = await this.prisma.vitalsRecord.create({
       data: {
         patientId: dto.patientId,
         admissionId: dto.admissionId,
         recordedByUserId: userId,
+        hospitalId,
+        branchId,
         temperature: dto.temperature,
         systolicBp: dto.systolicBp,
         diastolicBp: dto.diastolicBp,
@@ -86,10 +102,26 @@ export class NursingService {
   }
 
   async createTask(dto: CreateNursingTaskDto) {
+    let hospitalId: string;
+    let branchId: string;
+    if (dto.admissionId) {
+      const admission = await this.prisma.admission.findUnique({ where: { id: dto.admissionId } });
+      if (!admission) throw new NotFoundException('Admission not found');
+      hospitalId = admission.hospitalId;
+      branchId = admission.branchId;
+    } else {
+      const patient = await this.prisma.patient.findUnique({ where: { id: dto.patientId } });
+      if (!patient) throw new NotFoundException('Patient not found');
+      hospitalId = patient.hospitalId;
+      branchId = patient.registrationBranchId;
+    }
+
     return this.prisma.nursingTask.create({
       data: {
         patientId: dto.patientId,
         admissionId: dto.admissionId,
+        hospitalId,
+        branchId,
         taskTitle: dto.taskTitle,
         taskDescription: dto.taskDescription,
         dueTime: new Date(dto.dueTime),
@@ -109,11 +141,18 @@ export class NursingService {
   }
 
   async administerMedication(data: { prescriptionItemId: string; admissionId: string; dose: string; notes?: string }, nurseId: string) {
+    const admission = await this.prisma.admission.findUnique({
+      where: { id: data.admissionId },
+    });
+    if (!admission) throw new NotFoundException('Admission not found');
+
     return this.prisma.medicationAdministration.create({
       data: {
         prescriptionItemId: data.prescriptionItemId,
         admissionId: data.admissionId,
         nurseId,
+        hospitalId: admission.hospitalId,
+        branchId: admission.branchId,
         administeredDose: data.dose,
         notes: data.notes,
       },
