@@ -10,7 +10,7 @@ export class PatientsService {
     const year = new Date().getFullYear();
     const count = await this.prisma.patient.count();
     const sequence = (count + 1).toString().padStart(4, '0');
-    return `ALY-${year}-${sequence}`;
+    return `KZN-${year}-${sequence}`;
   }
 
   async checkDuplicate(phone: string, email?: string) {
@@ -236,5 +236,51 @@ export class PatientsService {
 
     if (!patient) throw new NotFoundException('Patient not found');
     return patient;
+  }
+
+  async update(id: string, dto: any, actor?: AuthUserDto) {
+    const existing = await this.findOne(id, actor);
+
+    const data: any = {};
+    if (dto.firstName) data.firstName = dto.firstName;
+    if (dto.lastName) data.lastName = dto.lastName;
+    if (dto.phone) data.phone = dto.phone;
+    if (dto.email !== undefined) data.email = dto.email || null;
+    if (dto.dateOfBirth) data.dateOfBirth = new Date(dto.dateOfBirth);
+    if (dto.gender) data.gender = dto.gender;
+    if (dto.bloodGroup) data.bloodGroup = dto.bloodGroup;
+    if (dto.addressLine1) data.addressLine1 = dto.addressLine1;
+    if (dto.addressLine2 !== undefined) data.addressLine2 = dto.addressLine2;
+    if (dto.city) data.city = dto.city;
+    if (dto.state) data.state = dto.state;
+    if (dto.postalCode) data.postalCode = dto.postalCode;
+    if (dto.emergencyContactName) data.emergencyContactName = dto.emergencyContactName;
+    if (dto.emergencyContactPhone) data.emergencyContactPhone = dto.emergencyContactPhone;
+    if (dto.emergencyContactRelation) data.emergencyContactRelation = dto.emergencyContactRelation;
+    if (dto.allergies) data.allergies = dto.allergies;
+    if (dto.medicalHistoryNotes !== undefined) data.medicalHistoryNotes = dto.medicalHistoryNotes;
+
+    const updated = await this.prisma.patient.update({
+      where: { id },
+      data,
+    });
+
+    if (actor) {
+      await this.prisma.auditLog.create({
+        data: {
+          hospitalId: actor.hospitalId || undefined,
+          branchId: actor.branchId || undefined,
+          userId: actor.id,
+          userEmail: actor.email,
+          userRole: actor.role,
+          action: 'UPDATE',
+          resource: 'PATIENT',
+          resourceId: updated.id,
+          details: { uhid: updated.uhid, updatedFields: Object.keys(data) },
+        },
+      });
+    }
+
+    return updated;
   }
 }

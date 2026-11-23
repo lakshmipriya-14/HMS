@@ -30,6 +30,7 @@ describe('Scope Architecture & Branch Isolation Specifications (Phase 1B Securit
     lastName: 'Admin',
     hospitalId,
     role: Role.SUPER_ADMIN,
+    roles: [Role.SUPER_ADMIN],
     permissions: ['*'],
   };
 
@@ -40,6 +41,7 @@ describe('Scope Architecture & Branch Isolation Specifications (Phase 1B Securit
     lastName: 'Admin',
     hospitalId,
     role: Role.HOSPITAL_ADMIN,
+    roles: [Role.HOSPITAL_ADMIN],
     branchId: chennaiBranchId,
     permissions: ['USERS:VIEW', 'REPORTS:VIEW', 'AUDIT_LOGS:VIEW'],
   };
@@ -51,6 +53,7 @@ describe('Scope Architecture & Branch Isolation Specifications (Phase 1B Securit
     lastName: 'Admin',
     hospitalId,
     role: Role.HOSPITAL_ADMIN,
+    roles: [Role.HOSPITAL_ADMIN],
     branchId: maduraiBranchId,
     permissions: ['USERS:VIEW', 'REPORTS:VIEW', 'AUDIT_LOGS:VIEW'],
   };
@@ -62,6 +65,7 @@ describe('Scope Architecture & Branch Isolation Specifications (Phase 1B Securit
     lastName: 'Admin',
     hospitalId,
     role: Role.DEPARTMENT_ADMIN,
+    roles: [Role.DEPARTMENT_ADMIN],
     branchId: chennaiBranchId,
     departmentId: cardioDeptId,
     permissions: ['USERS:VIEW', 'DEPARTMENTS:VIEW'],
@@ -74,6 +78,7 @@ describe('Scope Architecture & Branch Isolation Specifications (Phase 1B Securit
     lastName: 'Doctor',
     hospitalId,
     role: Role.DOCTOR,
+    roles: [Role.DOCTOR],
     branchId: chennaiBranchId,
     departmentId: cardioDeptId,
     doctorProfileId: 'doc-profile-1',
@@ -87,6 +92,7 @@ describe('Scope Architecture & Branch Isolation Specifications (Phase 1B Securit
     lastName: 'Nurse',
     hospitalId,
     role: Role.NURSE,
+    roles: [Role.NURSE],
     permissions: ['PATIENTS:VIEW'],
   };
 
@@ -251,6 +257,7 @@ describe('Scope Architecture & Branch Isolation Specifications (Phase 1B Securit
         { registrationBranchId: chennaiBranchId },
         { appointments: { some: { branchId: chennaiBranchId } } },
         { admissions: { some: { branchId: chennaiBranchId } } },
+        { consultations: { some: { appointment: { branchId: chennaiBranchId } } } },
       ]);
 
       // Verify nested relations strictly filtered to Chennai branch only

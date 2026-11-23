@@ -20,8 +20,8 @@ export default function PatientProfileScreen() {
           <User size={36} color="#0F766E" />
         </View>
         <Text style={styles.name}>{user?.firstName || 'Muthuvel'} {user?.lastName || 'Karuppiah'}</Text>
-        <Text style={styles.uhidBadge}>UHID: ALY-2026-0001</Text>
-        <Text style={styles.email}>{user?.email || 'patient@aalayamhospital.com'}</Text>
+        <Text style={styles.uhidBadge}>UHID: KZN-2026-0001</Text>
+        <Text style={styles.email}>{user?.email || 'patient@kizunahospital.com'}</Text>
 
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Blood Group</Text>

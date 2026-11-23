@@ -13,7 +13,7 @@ import {
   createInvoiceSchema,
 } from '@multispeciality-hms/validation';
 
-describe('Aalayam HMS - Cross-Module Integrated Patient Journey', () => {
+describe('Kizuna HMS - Cross-Module Integrated Patient Journey', () => {
   it('Phase 1: Validates Patient Registration at Reception', () => {
     const patientInput = {
       firstName: 'Karthik',

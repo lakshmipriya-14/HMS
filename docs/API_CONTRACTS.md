@@ -1,4 +1,4 @@
-# Aalayam HMS — REST API Contracts & Endpoints Specification
+# Kizuna HMS — REST API Contracts & Endpoints Specification
 
 All backend endpoints are prefixed with `/api/v1`.
 Live interactive Swagger documentation is hosted at: `http://localhost:4000/api/docs`.
@@ -14,7 +14,7 @@ Live interactive Swagger documentation is hosted at: `http://localhost:4000/api/
   "message": "Patient registered successfully. UHID issued.",
   "data": {
     "id": "c1f7a0b3-9e41-4c6e-8e8e-d9124483812a",
-    "uhid": "ALY-2026-0001",
+    "uhid": "KZN-2026-0001",
     "firstName": "Muthuvel",
     "lastName": "Karuppiah"
   },

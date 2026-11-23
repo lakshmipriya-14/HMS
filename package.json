@@ -2,8 +2,8 @@
   "name": "multispeciality-hms",
   "version": "1.0.0",
   "private": true,
-  "description": "Enterprise Multispeciality Hospital Management System for Aalayam Multispeciality Hospitals",
-  "author": "Aalayam Engineering Team",
+  "description": "Enterprise Multispeciality Hospital Management System for Kizuna Multispeciality Hospitals",
+  "author": "Kizuna Engineering Team",
   "license": "UNLICENSED",
   "scripts": {
     "dev": "pnpm --parallel --filter @multispeciality-hms/api --filter @multispeciality-hms/web dev",

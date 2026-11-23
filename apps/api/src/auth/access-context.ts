@@ -112,6 +112,8 @@ export async function resolveAccess(db: Prisma.TransactionClient, userId: string
     select: { grants: true },
   });
 
+  const assignedRoles = userRoles.map((a: any) => a.role?.name as Role).filter(Boolean);
+
   return {
     id: user.id,
     email: user.email,
@@ -119,6 +121,7 @@ export async function resolveAccess(db: Prisma.TransactionClient, userId: string
     lastName: user.lastName,
     hospitalId: user.hospitalId,
     role,
+    roles: assignedRoles.length > 0 ? assignedRoles : [role],
     permissions: policy?.grants ? defaults.filter((grant: string) => policy.grants.includes(grant)) : defaults,
     branchId: branchId || undefined,
     departmentId: departmentId || undefined,

@@ -1,7 +1,7 @@
 import { Role, ROLE_PERMISSIONS_MATRIX, PermissionAction, Resource } from '@multispeciality-hms/contracts';
 import { loginSchema, registerPatientSchema } from '@multispeciality-hms/validation';
 
-describe('Aalayam HMS - Auth & RBAC Security Suite', () => {
+describe('Kizuna HMS - Auth & RBAC Security Suite', () => {
   it('should verify all 16 system roles are configured with active permissions', () => {
     const roles = Object.values(Role);
     expect(roles.length).toBe(16);
@@ -24,7 +24,7 @@ describe('Aalayam HMS - Auth & RBAC Security Suite', () => {
 
   it('should validate valid hospital staff login inputs with Zod', () => {
     const valid = {
-      email: 'doctor@aalayamhospital.com',
+      email: 'doctor@kizunahospital.com',
       password: 'Password@123',
     };
     const parsed = loginSchema.safeParse(valid);

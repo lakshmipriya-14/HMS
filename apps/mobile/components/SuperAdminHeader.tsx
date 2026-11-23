@@ -88,7 +88,7 @@ export function SuperAdminHeader({
           <View style={styles.leftCol}>
             <TouchableOpacity
               style={styles.brandRow}
-              onPress={() => router.push('/(super-admin)/index')}
+              onPress={() => router.push('/(super-admin)/index' as any)}
               activeOpacity={0.8}
             >
               <View style={styles.logoBadge}>
@@ -102,7 +102,7 @@ export function SuperAdminHeader({
 
             {(breadcrumbs || currentTitle) && (
               <View style={styles.breadcrumbsRow}>
-                <TouchableOpacity onPress={() => router.push('/(super-admin)/index')}>
+                <TouchableOpacity onPress={() => router.push('/(super-admin)/index' as any)}>
                   <Text style={styles.breadcrumbLink}>Dashboard</Text>
                 </TouchableOpacity>
                 {breadcrumbs?.map((crumb, idx) => (

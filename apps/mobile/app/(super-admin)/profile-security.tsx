@@ -42,7 +42,7 @@ export default function ProfileSecurity() {
     try { await logout(); } catch { /* Local sign-out takes effect in the workspace gate. */ }
   }
   return <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-    <TouchableOpacity onPress={() => router.replace('/(super-admin)/more')}><Text>‹ More</Text></TouchableOpacity>
+    <TouchableOpacity onPress={() => router.replace('/(super-admin)/more' as any)}><Text>‹ More</Text></TouchableOpacity>
     <Text style={styles.title}>Profile &amp; Security</Text>
     <Text>{user?.firstName} {user?.lastName}</Text>
     <Text>{user?.email}</Text>

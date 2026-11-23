@@ -86,28 +86,28 @@ export default function SuperAdminHome() {
         <View style={styles.quickNav}>
           <TouchableOpacity
             style={styles.quickNavBtn}
-            onPress={() => router.push('/(super-admin)/branches')}
+            onPress={() => router.push('/(super-admin)/branches' as any)}
           >
             <Building2 size={16} color={theme.colors.primary} />
             <Text style={styles.quickNavText}>Branches</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.quickNavBtn}
-            onPress={() => router.push('/(super-admin)/admins')}
+            onPress={() => router.push('/(super-admin)/admins' as any)}
           >
             <UserCheck size={16} color={theme.colors.primary} />
             <Text style={styles.quickNavText}>Admins</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.quickNavBtn}
-            onPress={() => router.push('/(super-admin)/users')}
+            onPress={() => router.push('/(super-admin)/users' as any)}
           >
             <Users size={16} color={theme.colors.primary} />
             <Text style={styles.quickNavText}>All Users</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.quickNavBtn}
-            onPress={() => router.push('/(super-admin)/reports')}
+            onPress={() => router.push('/(super-admin)/reports' as any)}
           >
             <FileText size={16} color={theme.colors.primary} />
             <Text style={styles.quickNavText}>Reports</Text>
@@ -140,7 +140,7 @@ export default function SuperAdminHome() {
               {/* Branches Card */}
               <TouchableOpacity
                 style={[styles.kpiCard, { width: kpiCardWidth }]}
-                onPress={() => router.push('/(super-admin)/branches')}
+                onPress={() => router.push('/(super-admin)/branches' as any)}
                 activeOpacity={0.7}
               >
                 <View style={styles.kpiTop}>
@@ -168,7 +168,7 @@ export default function SuperAdminHome() {
               {/* Administrators Card */}
               <TouchableOpacity
                 style={[styles.kpiCard, { width: kpiCardWidth }]}
-                onPress={() => router.push('/(super-admin)/admins')}
+                onPress={() => router.push('/(super-admin)/admins' as any)}
                 activeOpacity={0.7}
               >
                 <View style={styles.kpiTop}>
@@ -196,7 +196,7 @@ export default function SuperAdminHome() {
               {/* Total Users Card */}
               <TouchableOpacity
                 style={[styles.kpiCard, { width: kpiCardWidth }]}
-                onPress={() => router.push('/(super-admin)/users')}
+                onPress={() => router.push('/(super-admin)/users' as any)}
                 activeOpacity={0.7}
               >
                 <View style={styles.kpiTop}>
@@ -213,7 +213,7 @@ export default function SuperAdminHome() {
               {/* Specialist Doctors Card */}
               <TouchableOpacity
                 style={[styles.kpiCard, { width: kpiCardWidth }]}
-                onPress={() => router.push('/(super-admin)/doctors')}
+                onPress={() => router.push('/(super-admin)/doctors' as any)}
                 activeOpacity={0.7}
               >
                 <View style={styles.kpiTop}>
@@ -230,7 +230,7 @@ export default function SuperAdminHome() {
               {/* Clinical Departments Card */}
               <TouchableOpacity
                 style={[styles.kpiCard, { width: kpiCardWidth }]}
-                onPress={() => router.push('/(super-admin)/departments')}
+                onPress={() => router.push('/(super-admin)/departments' as any)}
                 activeOpacity={0.7}
               >
                 <View style={styles.kpiTop}>
@@ -247,7 +247,7 @@ export default function SuperAdminHome() {
               {/* Registered Patients Card */}
               <TouchableOpacity
                 style={[styles.kpiCard, { width: kpiCardWidth }]}
-                onPress={() => router.push('/(super-admin)/patients')}
+                onPress={() => router.push('/(super-admin)/patients' as any)}
                 activeOpacity={0.7}
               >
                 <View style={styles.kpiTop}>
@@ -293,7 +293,7 @@ export default function SuperAdminHome() {
                     <Text style={styles.cardTitle}>Branch-Wise Statistics</Text>
                   </View>
                   <TouchableOpacity
-                    onPress={() => router.push('/(super-admin)/branches')}
+                    onPress={() => router.push('/(super-admin)/branches' as any)}
                   >
                     <Text style={styles.viewAllLink}>View All Branches</Text>
                   </TouchableOpacity>
@@ -318,7 +318,7 @@ export default function SuperAdminHome() {
                         style={styles.tableRow}
                         onPress={() =>
                           router.push({
-                            pathname: '/(super-admin)/[section]',
+                            pathname: '/(super-admin)/[section]' as any,
                             params: { section: 'branch-details', id: branch.id },
                           })
                         }
@@ -383,7 +383,7 @@ export default function SuperAdminHome() {
                       </View>
                       <TouchableOpacity
                         style={styles.pendingActionBtn}
-                        onPress={() => router.push('/(super-admin)/branches')}
+                        onPress={() => router.push('/(super-admin)/branches' as any)}
                       >
                         <Text style={styles.pendingActionText}>Review</Text>
                       </TouchableOpacity>
@@ -403,7 +403,7 @@ export default function SuperAdminHome() {
                       </View>
                       <TouchableOpacity
                         style={styles.pendingActionBtn}
-                        onPress={() => router.push('/(super-admin)/admins')}
+                        onPress={() => router.push('/(super-admin)/admins' as any)}
                       >
                         <Text style={styles.pendingActionText}>Assign</Text>
                       </TouchableOpacity>
@@ -446,7 +446,7 @@ export default function SuperAdminHome() {
                   <Text style={styles.cardTitle}>Recent Activity (Latest 3)</Text>
                 </View>
                 <TouchableOpacity
-                  onPress={() => router.push('/(super-admin)/audit-logs')}
+                  onPress={() => router.push('/(super-admin)/audit-logs' as any)}
                 >
                   <Text style={styles.viewAllLink}>View Complete Audit Log</Text>
                 </TouchableOpacity>

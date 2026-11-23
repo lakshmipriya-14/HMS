@@ -1,4 +1,4 @@
-# Aalayam HMS — 10-Member Team Structure & Folder Ownership Matrix
+# Kizuna HMS — 10-Member Team Structure & Folder Ownership Matrix
 
 To facilitate parallel development without merge conflicts, each of the 10 members owns dedicated feature directories across backend, web, and mobile.
 
@@ -11,7 +11,7 @@ To facilitate parallel development without merge conflicts, each of the 10 membe
 | **M1** | **Hospital Admin & System Foundation** | `auth/`, `users/`, `rbac/`, `hospitals/`, `branches/`, `departments/`, `employees/`, `audit/` | `admin/` (Super Admin, Hospital Admin, Dept Admin Dashboards) | — | Root config, Prisma Schema Lead, Shared migrations, Base dependencies |
 | **M2** | **Doctor Clinical Module** | `doctors/`, `consultations/`, `prescriptions/` | `doctor/` (OPD Queue, Consultation encounter, Digital Rx generator) | — | ICD-10 diagnosis mappings, Clinical encounter flow |
 | **M3** | **Nursing & Inpatient Care** | `nursing/` | `nursing/` (Inpatient census, Vitals chart, MAR, Nursing task delegation) | `(nurse)/` (Nurse Mobile App Tabs) | Vitals threshold alert logic, Head Nurse coordination |
-| **M4** | **Reception & Registration** | `patients/`, `appointments/` | `reception/` (Patient registration, UHID generator, Token Queue, Doctor search) | — | UHID formatting (`ALY-YYYY-XXXX`), Walk-in check-in tokens |
+| **M4** | **Reception & Registration** | `patients/`, `appointments/` | `reception/` (Patient registration, UHID generator, Token Queue, Doctor search) | — | UHID formatting (`KZN-YYYY-XXXX`), Walk-in check-in tokens |
 | **M5** | **Laboratory Diagnostics** | `laboratory/` | `laboratory/` (Test catalogue, Specimen barcodes, Result entry, Report release) | — | Critical laboratory value notification triggers |
 | **M6** | **Pharmacy & Formulary** | `pharmacy/` | `pharmacy/` (Dispense queue, Medicine batches, Expiry surveillance, Low stock) | — | FEFO stock deduction transaction safety |
 | **M7** | **Radiology & Imaging** | `radiology/` | `radiology/` (Scan worklist, Procedure status, Findings & Report release) | — | Imaging modality workflows (X-Ray, CT, MRI, USG) |

@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Query } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
-import { AuthUserDto, CreateAppointmentDto } from '@multispeciality-hms/contracts';
+import { AuthUserDto, CreateAppointmentDto, RescheduleAppointmentDto, CancelAppointmentDto } from '@multispeciality-hms/contracts';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { RequirePermissions, Scoped } from '../common/decorators/roles.decorator';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
@@ -58,6 +58,55 @@ export class AppointmentsController {
     const data = await this.service.checkIn(id);
     return {
       message: 'Patient checked in successfully',
+      data,
+    };
+  }
+
+  @Patch(':id/reschedule')
+  @ApiOperation({ summary: 'Reschedule appointment date and time slot' })
+  async reschedule(
+    @Param('id') id: string,
+    @Body() dto: RescheduleAppointmentDto
+  ) {
+    const data = await this.service.reschedule(id, dto.appointmentDate, dto.appointmentTime);
+    return {
+      message: 'Appointment rescheduled successfully',
+      data,
+    };
+  }
+
+  @Patch(':id/cancel')
+  @ApiOperation({ summary: 'Cancel appointment' })
+  async cancel(
+    @Param('id') id: string,
+    @Body() dto: CancelAppointmentDto
+  ) {
+    const data = await this.service.cancel(id, dto.reason);
+    return {
+      message: 'Appointment cancelled',
+      data,
+    };
+  }
+
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Update appointment queue status' })
+  async updateStatus(
+    @Param('id') id: string,
+    @Body('status') status: string
+  ) {
+    const data = await this.service.updateStatus(id, status);
+    return {
+      message: `Appointment status updated to ${status}`,
+      data,
+    };
+  }
+
+  @Get('patient/:patientId')
+  @ApiOperation({ summary: 'Get appointment history for a patient' })
+  async findByPatient(@Param('patientId') patientId: string) {
+    const data = await this.service.findByPatient(patientId);
+    return {
+      message: 'Patient appointment history retrieved',
       data,
     };
   }

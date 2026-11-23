@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthUserDto, CreateAppointmentDto, Role } from '@multispeciality-hms/contracts';
@@ -48,6 +48,19 @@ export class AppointmentsService {
     if (!doctor) throw new NotFoundException('Doctor not found');
 
     const appointmentDate = new Date(dto.appointmentDate);
+
+    // Check slot conflict for the same doctor, date, and time
+    const conflict = await this.prisma.appointment.findFirst({
+      where: {
+        doctorId: dto.doctorId,
+        appointmentDate,
+        appointmentTime: dto.appointmentTime,
+        status: { not: 'CANCELLED' },
+      },
+    });
+    if (conflict) {
+      throw new BadRequestException('This time slot is already booked for this doctor. Please select another time slot.');
+    }
 
     // Get today's token count for this doctor
     const existingCount = await this.prisma.appointment.count({
@@ -143,6 +156,90 @@ export class AppointmentsService {
       data: {
         status: 'CHECKED_IN',
         checkInAt: new Date(),
+      },
+    });
+  }
+
+  async reschedule(id: string, newDate: string, newTime: string) {
+    const appointment = await this.prisma.appointment.findUnique({ where: { id } });
+    if (!appointment) throw new NotFoundException('Appointment not found');
+
+    const appointmentDate = new Date(newDate);
+
+    // Conflict check
+    const conflict = await this.prisma.appointment.findFirst({
+      where: {
+        doctorId: appointment.doctorId,
+        appointmentDate,
+        appointmentTime: newTime,
+        id: { not: id },
+        status: { not: 'CANCELLED' },
+      },
+    });
+    if (conflict) {
+      throw new BadRequestException('The requested slot is already booked for this doctor. Please choose a different time.');
+    }
+
+    return this.prisma.appointment.update({
+      where: { id },
+      data: {
+        appointmentDate,
+        appointmentTime: newTime,
+        status: 'SCHEDULED',
+      },
+      include: {
+        patient: { select: { id: true, uhid: true, firstName: true, lastName: true } },
+        doctor: {
+          include: {
+            employee: { include: { user: { select: { firstName: true, lastName: true } } } },
+          },
+        },
+      },
+    });
+  }
+
+  async cancel(id: string, reason?: string) {
+    const appointment = await this.prisma.appointment.findUnique({ where: { id } });
+    if (!appointment) throw new NotFoundException('Appointment not found');
+
+    return this.prisma.appointment.update({
+      where: { id },
+      data: {
+        status: 'CANCELLED',
+        reasonForVisit: reason ? `${appointment.reasonForVisit || ''} [Cancelled: ${reason}]` : appointment.reasonForVisit,
+      },
+    });
+  }
+
+  async updateStatus(id: string, status: string) {
+    const appointment = await this.prisma.appointment.findUnique({ where: { id } });
+    if (!appointment) throw new NotFoundException('Appointment not found');
+
+    const data: any = { status };
+    if (status === 'CHECKED_IN' && !appointment.checkInAt) {
+      data.checkInAt = new Date();
+    } else if (status === 'COMPLETED' && !appointment.completedAt) {
+      data.completedAt = new Date();
+    }
+
+    return this.prisma.appointment.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async findByPatient(patientId: string) {
+    return this.prisma.appointment.findMany({
+      where: { patientId },
+      orderBy: { appointmentDate: 'desc' },
+      include: {
+        doctor: {
+          include: {
+            employee: { include: { user: { select: { firstName: true, lastName: true } } } },
+            department: { select: { name: true } },
+          },
+        },
+        consultation: true,
       },
     });
   }

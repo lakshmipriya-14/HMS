@@ -187,7 +187,7 @@ export default function ReceptionDoctorsScreen() {
 
               <TouchableOpacity
                 style={styles.bookBtn}
-                onPress={() => router.push('/(reception)/appointments')}
+                onPress={() => router.push('/(reception)/appointments' as any)}
               >
                 <Calendar size={14} color="#fff" />
                 <Text style={styles.bookBtnText}>Book Appointment with {item.name}</Text>

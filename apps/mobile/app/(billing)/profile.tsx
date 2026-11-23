@@ -20,7 +20,7 @@ export default function BillingProfileScreen() {
           <CreditCard size={36} color="#059669" />
         </View>
         <Text style={styles.name}>Hospital Billing Officer</Text>
-        <Text style={styles.sub}>billing@aalayamhospital.com</Text>
+        <Text style={styles.sub}>billing@kizunahospital.com</Text>
         <Text style={styles.deskTag}>Central Cashier Counter 02</Text>
       </View>
 
