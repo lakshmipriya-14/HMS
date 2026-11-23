@@ -1,13 +1,55 @@
 import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { PharmacyService } from './pharmacy.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { DispensePrescriptionDto, AuthUserDto } from '@multispeciality-hms/contracts';
+import { DispensePrescriptionDto, AdjustStockDto, AuthUserDto } from '@multispeciality-hms/contracts';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Pharmacy & Inventory')
 @Controller('pharmacy')
 export class PharmacyController {
   constructor(private service: PharmacyService) {}
+
+  @Get('prescriptions')
+  @ApiOperation({ summary: 'Get active prescription dispensing queue (alias)' })
+  async getPrescriptions(
+    @CurrentUser() actor?: AuthUserDto,
+    @Query('branchId') branchId?: string
+  ) {
+    const data = await this.service.getDispenseQueue(actor, branchId);
+    return {
+      message: 'Prescriptions awaiting dispensing retrieved',
+      data,
+    };
+  }
+
+  @Post('dispense')
+  @ApiOperation({ summary: 'Dispense prescription medications (direct endpoint)' })
+  async dispenseDirect(
+    @Body() dto: DispensePrescriptionDto,
+    @CurrentUser('id') pharmacistId: string,
+    @CurrentUser() actor?: AuthUserDto
+  ) {
+    const id = dto.prescriptionId;
+    const data = await this.service.dispense(id, dto, pharmacistId || 'pharmacist-default', actor);
+    return {
+      message: 'Medications dispensed and inventory updated successfully',
+      data,
+    };
+  }
+
+  @Post('inventory/adjust')
+  @ApiOperation({ summary: 'Adjust stock inventory' })
+  async adjustStock(
+    @Body() dto: AdjustStockDto,
+    @CurrentUser('id') userId: string,
+    @CurrentUser() actor?: AuthUserDto
+  ) {
+    const data = await this.service.adjustStock(dto, userId, actor);
+    return {
+      message: 'Inventory adjusted successfully',
+      data,
+    };
+  }
 
   @Get('medicines')
   @ApiOperation({ summary: 'Search medicine formulary catalogue and stock' })
