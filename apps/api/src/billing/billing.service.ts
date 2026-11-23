@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CollectPaymentDto, CreateInvoiceDto, AuthUserDto } from '@multispeciality-hms/contracts';
+import { CollectPaymentDto, CreateInvoiceDto, AdvancePaymentDto, AuthUserDto } from '@multispeciality-hms/contracts';
 import { resolveOperationalScope, assertBranchAccess } from '../common/utils/operational-scope';
 
 @Injectable()
@@ -118,7 +118,7 @@ export class BillingService {
           create: items,
         },
       },
-      include: { items: true, patient: true },
+      include: { items: true, patient: true, payments: true },
     });
   }
 
@@ -187,5 +187,75 @@ export class BillingService {
         invoice: { select: { invoiceNumber: true, totalAmount: true } },
       },
     });
+  }
+
+  async calculateIPDCharges(admissionId: string, actor?: AuthUserDto) {
+    const admission = await this.prisma.admission.findUnique({
+      where: { id: admissionId },
+      include: {
+        patient: true,
+        ward: true,
+        bed: true,
+        invoices: { include: { items: true, payments: true } },
+      },
+    });
+    if (!admission) throw new NotFoundException('Admission record not found');
+    if (actor) assertBranchAccess(actor, admission.branchId);
+
+    const admittedAt = new Date(admission.admittedAt);
+    const endAt = admission.dischargedAt ? new Date(admission.dischargedAt) : new Date();
+    const diffMs = Math.max(0, endAt.getTime() - admittedAt.getTime());
+    const daysStayed = Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+    const roomDailyRate = Number(admission.bed.dailyRate || 1000);
+
+    let invoice = admission.invoices?.[0];
+    if (!invoice) {
+      invoice = await this.createInvoice({
+        patientId: admission.patientId,
+        admissionId: admission.id,
+        hospitalId: admission.hospitalId,
+        branchId: admission.branchId,
+        items: [
+          {
+            description: `Room Rent (${admission.ward.name} Bed ${admission.bed.bedNumber}) - ${daysStayed} Day(s)`,
+            category: 'ROOM',
+            quantity: daysStayed,
+            unitPrice: roomDailyRate,
+          },
+          {
+            description: 'Inpatient Nursing & Bedside Care Charges',
+            category: 'PROCEDURE',
+            quantity: daysStayed,
+            unitPrice: 250,
+          },
+        ],
+        notes: `Auto-generated IPD Inpatient Billing for ${admission.admissionNumber}`,
+      });
+    }
+
+    return this.findOne(invoice.id, actor);
+  }
+
+  async recordAdvancePayment(dto: AdvancePaymentDto, cashierUserId: string, actor?: AuthUserDto) {
+    let invoice = await this.prisma.invoice.findFirst({
+      where: { admissionId: dto.admissionId },
+    });
+
+    if (!invoice) {
+      invoice = await this.calculateIPDCharges(dto.admissionId, actor);
+    }
+
+    return this.collectPayment(
+      invoice.id,
+      {
+        invoiceId: invoice.id,
+        amount: dto.amount,
+        paymentMethod: dto.paymentMethod,
+        transactionReference: dto.transactionReference,
+        notes: dto.notes ? `[Advance Payment] ${dto.notes}` : '[Advance Payment]',
+      },
+      cashierUserId,
+      actor
+    );
   }
 }

@@ -485,3 +485,6 @@ export class AalayamApiClient {
 export function createAalayamApiClient(config: ApiClientConfig): AalayamApiClient {
   return new AalayamApiClient(config);
 }
+
+export const createKizunaApiClient = createAalayamApiClient;
+export const KizunaApiClient = AalayamApiClient;

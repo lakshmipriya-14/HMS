@@ -51,7 +51,7 @@ export default function ReceptionProfileScreen() {
 
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => router.push('/(reception)/search')}
+          onPress={() => router.push('/(reception)/search' as any)}
         >
           <View style={styles.menuLeft}>
             <Search size={18} color="#0284C7" />
@@ -62,7 +62,7 @@ export default function ReceptionProfileScreen() {
 
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => router.push('/(reception)/doctors')}
+          onPress={() => router.push('/(reception)/doctors' as any)}
         >
           <View style={styles.menuLeft}>
             <Stethoscope size={18} color="#0284C7" />
@@ -73,7 +73,7 @@ export default function ReceptionProfileScreen() {
 
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => router.push('/(reception)/reports')}
+          onPress={() => router.push('/(reception)/reports' as any)}
         >
           <View style={styles.menuLeft}>
             <FileBarChart size={18} color="#0284C7" />

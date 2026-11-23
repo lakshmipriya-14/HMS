@@ -107,7 +107,7 @@ export default function ReceptionDashboardScreen() {
       <View style={styles.actionGrid}>
         <TouchableOpacity
           style={styles.actionCard}
-          onPress={() => router.push('/(reception)/register')}
+          onPress={() => router.push('/(reception)/register' as any)}
         >
           <View style={[styles.actionIcon, { backgroundColor: '#E0F2FE' }]}>
             <UserPlus size={22} color="#0284C7" />
@@ -118,7 +118,7 @@ export default function ReceptionDashboardScreen() {
 
         <TouchableOpacity
           style={styles.actionCard}
-          onPress={() => router.push('/(reception)/search')}
+          onPress={() => router.push('/(reception)/search' as any)}
         >
           <View style={[styles.actionIcon, { backgroundColor: '#CCFBF1' }]}>
             <Search size={22} color="#0F766E" />
@@ -129,7 +129,7 @@ export default function ReceptionDashboardScreen() {
 
         <TouchableOpacity
           style={styles.actionCard}
-          onPress={() => router.push('/(reception)/appointments')}
+          onPress={() => router.push('/(reception)/appointments' as any)}
         >
           <View style={[styles.actionIcon, { backgroundColor: '#FEF3C7' }]}>
             <Calendar size={22} color="#D97706" />
@@ -140,7 +140,7 @@ export default function ReceptionDashboardScreen() {
 
         <TouchableOpacity
           style={styles.actionCard}
-          onPress={() => router.push('/(reception)/checkin')}
+          onPress={() => router.push('/(reception)/checkin' as any)}
         >
           <View style={[styles.actionIcon, { backgroundColor: '#DCFCE7' }]}>
             <CheckCircle2 size={22} color="#059669" />
@@ -154,7 +154,7 @@ export default function ReceptionDashboardScreen() {
       <View style={styles.secondaryRow}>
         <TouchableOpacity
           style={styles.secondaryBtn}
-          onPress={() => router.push('/(reception)/queue')}
+          onPress={() => router.push('/(reception)/queue' as any)}
         >
           <Ticket size={18} color="#0284C7" />
           <Text style={styles.secondaryBtnText}>OPD Live Queue</Text>
@@ -162,7 +162,7 @@ export default function ReceptionDashboardScreen() {
 
         <TouchableOpacity
           style={styles.secondaryBtn}
-          onPress={() => router.push('/(reception)/doctors')}
+          onPress={() => router.push('/(reception)/doctors' as any)}
         >
           <Stethoscope size={18} color="#0284C7" />
           <Text style={styles.secondaryBtnText}>Doctor Availability</Text>
@@ -170,7 +170,7 @@ export default function ReceptionDashboardScreen() {
 
         <TouchableOpacity
           style={styles.secondaryBtn}
-          onPress={() => router.push('/(reception)/reports')}
+          onPress={() => router.push('/(reception)/reports' as any)}
         >
           <FileBarChart size={18} color="#0284C7" />
           <Text style={styles.secondaryBtnText}>Daily Reports</Text>
@@ -180,7 +180,7 @@ export default function ReceptionDashboardScreen() {
       {/* Live OPD Queue Snapshot */}
       <View style={styles.sectionHeaderRow}>
         <Text style={styles.sectionTitle}>OPD Live Queue Snapshot</Text>
-        <TouchableOpacity onPress={() => router.push('/(reception)/queue')}>
+        <TouchableOpacity onPress={() => router.push('/(reception)/queue' as any)}>
           <Text style={styles.linkText}>View Full Queue</Text>
         </TouchableOpacity>
       </View>

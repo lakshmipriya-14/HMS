@@ -142,7 +142,7 @@ export default function ReceptionSearchScreen() {
             <View style={styles.actionsRow}>
               <TouchableOpacity
                 style={styles.bookBtn}
-                onPress={() => router.push('/(reception)/appointments')}
+                onPress={() => router.push('/(reception)/appointments' as any)}
               >
                 <Calendar size={13} color="#fff" />
                 <Text style={styles.bookBtnText}>Book Appointment</Text>
@@ -150,7 +150,7 @@ export default function ReceptionSearchScreen() {
 
               <TouchableOpacity
                 style={styles.tokenBtn}
-                onPress={() => router.push('/(reception)/checkin')}
+                onPress={() => router.push('/(reception)/checkin' as any)}
               >
                 <Ticket size={13} color="#0284C7" />
                 <Text style={styles.tokenBtnText}>Check In</Text>

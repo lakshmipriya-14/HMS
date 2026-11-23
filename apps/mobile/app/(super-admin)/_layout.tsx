@@ -10,7 +10,7 @@ export default function SuperAdminTabsLayout() {
   const tabHeight = Platform.OS === 'web' ? 64 : 70;
 
   return (
-    <WorkspaceGate home="/(super-admin)/index">
+    <WorkspaceGate home={"/(super-admin)/index" as any}>
     <Tabs
       screenOptions={{
         headerShown: false,

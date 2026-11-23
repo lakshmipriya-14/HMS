@@ -150,6 +150,26 @@ export interface PatientSearchQueryDto {
   limit?: number;
 }
 
+export interface UpdatePatientDto {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  email?: string;
+  dateOfBirth?: string;
+  gender?: Gender;
+  bloodGroup?: BloodGroup;
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  emergencyContactRelation?: string;
+  allergies?: string[];
+  medicalHistoryNotes?: string;
+}
+
 // Appointment DTOs
 export interface CreateAppointmentDto {
   patientId: string;
@@ -162,6 +182,16 @@ export interface CreateAppointmentDto {
   appointmentType: AppointmentType;
   reasonForVisit: string;
   priority?: Priority;
+}
+
+export interface RescheduleAppointmentDto {
+  appointmentDate: string;
+  appointmentTime: string;
+  reason?: string;
+}
+
+export interface CancelAppointmentDto {
+  reason?: string;
 }
 
 export interface CheckInAppointmentDto {
@@ -325,6 +355,28 @@ export interface DischargePatientDto {
   dischargeSummary: string;
   followUpInstructions?: string;
   medicationOnDischarge?: string;
+  dischargeType?: 'NORMAL' | 'LAMA' | 'REFERRED' | 'DEATH';
+  finalDiagnosis?: string;
+}
+
+export interface DoctorRoundNoteDto {
+  admissionId: string;
+  progressNote: string;
+  diagnosisUpdate?: string;
+  treatmentPlanUpdate?: string;
+  followUpInstructions?: string;
+}
+
+export interface AdvancePaymentDto {
+  admissionId: string;
+  amount: number;
+  paymentMethod: PaymentMethod;
+  transactionReference?: string;
+  notes?: string;
+}
+
+export interface IPDBillingCalculationDto {
+  admissionId: string;
 }
 
 // Billing & Insurance DTOs

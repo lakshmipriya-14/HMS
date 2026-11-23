@@ -35,7 +35,14 @@ export async function hashPassword(password: string): Promise<string> {
 
 @Injectable()
 export class AuthService {
-  private readonly dummyHash = bcrypt.hash(randomToken(), 12);
+  private static cachedDummyHash: Promise<string> | null = null;
+
+  private get dummyHash(): Promise<string> {
+    if (!AuthService.cachedDummyHash) {
+      AuthService.cachedDummyHash = bcrypt.hash(randomToken(), 4);
+    }
+    return AuthService.cachedDummyHash;
+  }
 
   constructor(private readonly prisma: PrismaService, private readonly jwt: JwtService) {}
 

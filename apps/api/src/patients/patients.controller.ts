@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { PatientsService } from './patients.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { RegisterPatientDto, AuthUserDto } from '@multispeciality-hms/contracts';
+import { RegisterPatientDto, AuthUserDto, UpdatePatientDto } from '@multispeciality-hms/contracts';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Patients')
@@ -56,6 +56,20 @@ export class PatientsController {
     const data = await this.service.findOne(id, actor);
     return {
       message: 'Patient record retrieved',
+      data,
+    };
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update patient demographic and emergency contact details' })
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdatePatientDto,
+    @CurrentUser() actor?: AuthUserDto
+  ) {
+    const data = await this.service.update(id, dto, actor);
+    return {
+      message: 'Patient profile updated successfully',
       data,
     };
   }

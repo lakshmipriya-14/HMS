@@ -9,19 +9,19 @@ const postgresTest = testUrl ? describe : describe.skip;
 postgresTest('appointment request persistence on an isolated test database', () => {
   it('commits one unassigned pending row and returns the same reference on retry', async () => {
     const url = new URL(testUrl!);
-    if (url.pathname !== '/uyirinai_hms_test'
+    if (!['kizuna_hms_test', 'uyirinai_hms_test'].includes(url.pathname.replace('/', ''))
       || !['postgresql:', 'postgres:'].includes(url.protocol)
       || !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
       || [...url.searchParams.keys()].some(key => key !== 'schema')
       || url.searchParams.getAll('schema').some(schema => schema !== 'public')) {
-      throw new Error('Use an isolated local uyirinai_hms_test database.');
+      throw new Error('Use an isolated local kizuna_hms_test database.');
     }
 
-    const prisma = new PrismaClient({ datasourceUrl: testUrl });
+    const prisma = new PrismaClient({ datasources: { db: { url: testUrl } } });
     let reference: string | undefined;
     try {
       const [target] = await prisma.$queryRaw<{ db: string }[]>`SELECT current_database() AS db`;
-      if (target?.db !== 'uyirinai_hms_test') throw new Error('Unexpected test database.');
+      if (!['kizuna_hms_test', 'uyirinai_hms_test'].includes(target?.db)) throw new Error('Unexpected test database.');
       const service = new AppointmentRequestsService(prisma as PrismaService);
       const suffix = [...randomBytes(12)].map(byte => String.fromCharCode(97 + byte % 26)).join('');
       const input = {

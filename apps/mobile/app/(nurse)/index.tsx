@@ -92,7 +92,7 @@ export default function NurseDashboardScreen() {
           </View>
           <TouchableOpacity
             style={styles.notifBadge}
-            onPress={() => router.push('/(nurse)/notifications')}
+            onPress={() => router.push('/(nurse)/notifications' as any)}
             accessibilityLabel="Notifications"
           >
             <BellRing size={20} color="#fff" />
@@ -140,7 +140,7 @@ export default function NurseDashboardScreen() {
           <Text style={styles.metricSub}>Active Bed Admissions</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.metricCard} onPress={() => router.push('/(nurse)/vitals')}>
+        <TouchableOpacity style={styles.metricCard} onPress={() => router.push('/(nurse)/vitals' as any)}>
           <View style={[styles.iconCircle, { backgroundColor: '#FEE2E2' }]}>
             <HeartPulse size={18} color="#DC2626" />
           </View>
@@ -175,7 +175,7 @@ export default function NurseDashboardScreen() {
       <View style={styles.actionRow}>
         <TouchableOpacity
           style={styles.actionBtn}
-          onPress={() => router.push('/(nurse)/vitals')}
+          onPress={() => router.push('/(nurse)/vitals' as any)}
         >
           <HeartPulse size={20} color="#0F766E" />
           <Text style={styles.actionBtnText}>Record Vitals</Text>
@@ -199,7 +199,7 @@ export default function NurseDashboardScreen() {
 
         <TouchableOpacity
           style={styles.actionBtn}
-          onPress={() => router.push('/(nurse)/handover')}
+          onPress={() => router.push('/(nurse)/handover' as any)}
         >
           <RotateCcw size={20} color="#0F766E" />
           <Text style={styles.actionBtnText}>Shift Handover</Text>
@@ -210,7 +210,7 @@ export default function NurseDashboardScreen() {
       {isHeadNurse && (
         <TouchableOpacity
           style={styles.supervisorCard}
-          onPress={() => router.push('/(nurse)/supervisor')}
+          onPress={() => router.push('/(nurse)/supervisor' as any)}
         >
           <View style={styles.supervisorLeft}>
             <UserCheck size={24} color="#7C3AED" />
@@ -243,7 +243,7 @@ export default function NurseDashboardScreen() {
           </View>
           <TouchableOpacity
             style={styles.chartBtn}
-            onPress={() => router.push('/(nurse)/vitals')}
+            onPress={() => router.push('/(nurse)/vitals' as any)}
           >
             <Text style={styles.chartBtnText}>Chart</Text>
           </TouchableOpacity>

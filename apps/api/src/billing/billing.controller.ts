@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { BillingService } from './billing.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { CollectPaymentDto, CreateInvoiceDto, AuthUserDto } from '@multispeciality-hms/contracts';
+import { CollectPaymentDto, CreateInvoiceDto, AdvancePaymentDto, AuthUserDto } from '@multispeciality-hms/contracts';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Billing, Invoicing & Insurance')
@@ -67,6 +67,33 @@ export class BillingController {
     const data = await this.service.getInsuranceClaims(actor, branchId);
     return {
       message: 'Insurance claims retrieved',
+      data,
+    };
+  }
+
+  @Post('ipd-charges')
+  @ApiOperation({ summary: 'Calculate or generate IPD room rent & nursing charges' })
+  async calculateIPDCharges(
+    @Body('admissionId') admissionId: string,
+    @CurrentUser() actor?: AuthUserDto
+  ) {
+    const data = await this.service.calculateIPDCharges(admissionId, actor);
+    return {
+      message: 'IPD charges calculated successfully',
+      data,
+    };
+  }
+
+  @Post('advance-payments')
+  @ApiOperation({ summary: 'Record advance deposit payment for IPD admission' })
+  async recordAdvancePayment(
+    @Body() dto: AdvancePaymentDto,
+    @CurrentUser('id') cashierUserId: string,
+    @CurrentUser() actor?: AuthUserDto
+  ) {
+    const data = await this.service.recordAdvancePayment(dto, cashierUserId, actor);
+    return {
+      message: 'Advance payment recorded successfully',
       data,
     };
   }

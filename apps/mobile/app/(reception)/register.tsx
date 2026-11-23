@@ -69,7 +69,7 @@ export default function ReceptionRegisterScreen() {
             { text: 'Cancel', style: 'cancel' },
             {
               text: 'View Existing Patient',
-              onPress: () => router.push('/(reception)/search'),
+              onPress: () => router.push('/(reception)/search' as any),
             },
           ]
         );
@@ -189,7 +189,7 @@ export default function ReceptionRegisterScreen() {
           <View style={styles.receiptActions}>
             <TouchableOpacity
               style={styles.bookNowBtn}
-              onPress={() => router.push('/(reception)/appointments')}
+              onPress={() => router.push('/(reception)/appointments' as any)}
             >
               <Calendar size={14} color="#fff" />
               <Text style={styles.bookNowText}>Book OPD Doctor Appointment</Text>

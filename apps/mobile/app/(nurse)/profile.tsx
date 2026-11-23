@@ -58,7 +58,7 @@ export default function NurseProfileScreen() {
 
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => router.push('/(nurse)/handover')}
+          onPress={() => router.push('/(nurse)/handover' as any)}
         >
           <View style={styles.menuLeft}>
             <RotateCcw size={18} color="#0F766E" />
@@ -70,7 +70,7 @@ export default function NurseProfileScreen() {
         {isHeadNurse && (
           <TouchableOpacity
             style={styles.menuItem}
-            onPress={() => router.push('/(nurse)/supervisor')}
+            onPress={() => router.push('/(nurse)/supervisor' as any)}
           >
             <View style={styles.menuLeft}>
               <UserCheck size={18} color="#7C3AED" />
@@ -82,7 +82,7 @@ export default function NurseProfileScreen() {
 
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => router.push('/(nurse)/notifications')}
+          onPress={() => router.push('/(nurse)/notifications' as any)}
         >
           <View style={styles.menuLeft}>
             <BellRing size={18} color="#0F766E" />
@@ -93,7 +93,7 @@ export default function NurseProfileScreen() {
 
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => router.push('/(nurse)/vitals')}
+          onPress={() => router.push('/(nurse)/vitals' as any)}
         >
           <View style={styles.menuLeft}>
             <HeartPulse size={18} color="#0F766E" />
