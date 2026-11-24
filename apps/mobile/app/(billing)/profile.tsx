@@ -20,7 +20,7 @@ export default function BillingProfileScreen() {
           <CreditCard size={36} color="#059669" />
         </View>
         <Text style={styles.name}>Hospital Billing Officer</Text>
-        <Text style={styles.sub}>billing@kizunahospital.com</Text>
+        <Text style={styles.sub}>billing@Uyirinaihospital.com</Text>
         <Text style={styles.deskTag}>Central Cashier Counter 02</Text>
       </View>
 
@@ -42,3 +42,4 @@ const styles = StyleSheet.create({
   logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEE2E2', paddingVertical: 14, borderRadius: 10, gap: 8 },
   logoutText: { color: '#DC2626', fontSize: 14, fontWeight: '700' },
 });
+

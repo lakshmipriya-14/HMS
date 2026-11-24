@@ -251,3 +251,4 @@ const styles = StyleSheet.create({
   alreadyCheckedInBox: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#ECFDF5', padding: 12, borderRadius: 8, marginTop: 14, gap: 6 },
   alreadyCheckedInText: { fontSize: 12, fontWeight: '700', color: '#065F46' },
 });
+

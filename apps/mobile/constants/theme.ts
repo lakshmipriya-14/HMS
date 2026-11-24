@@ -37,3 +37,4 @@ export const UyirinaiTheme = {
     full: 9999,
   },
 };
+

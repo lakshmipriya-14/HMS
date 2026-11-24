@@ -137,3 +137,4 @@ const styles = StyleSheet.create({
   link: { color: UyirinaiTheme.colors.primary, paddingVertical: 5, fontWeight: '700' },
   error: { color: UyirinaiTheme.colors.accentRed },
 });
+

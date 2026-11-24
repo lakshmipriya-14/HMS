@@ -264,3 +264,4 @@ const styles = StyleSheet.create({
   },
   logoutText: { color: UyirinaiTheme.colors.accentRed, fontSize: 13, fontWeight: '700' },
 });
+

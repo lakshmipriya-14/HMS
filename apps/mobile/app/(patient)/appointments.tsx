@@ -562,3 +562,4 @@ const styles = StyleSheet.create({
   },
   confirmAptBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
 });
+

@@ -267,3 +267,4 @@ const styles = StyleSheet.create({
   callBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#E0F2FE', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
   callBtnText: { fontSize: 11, fontWeight: '700', color: '#0284C7' },
 });
+

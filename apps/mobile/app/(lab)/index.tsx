@@ -1643,3 +1643,4 @@ const styles = StyleSheet.create({
   releaseNowBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#059669', paddingVertical: 12, borderRadius: 8 },
   releaseNowBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
 });
+

@@ -313,3 +313,4 @@ const styles = StyleSheet.create({
   emergencyTitle: { fontSize: 14, fontWeight: '800', color: '#DC2626' },
   emergencySub: { fontSize: 11, color: '#991B1B', marginTop: 2 },
 });
+

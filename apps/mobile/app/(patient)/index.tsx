@@ -622,3 +622,4 @@ const styles = StyleSheet.create({
   },
   driverCallText: { color: '#fff', fontSize: 13, fontWeight: '700' },
 });
+

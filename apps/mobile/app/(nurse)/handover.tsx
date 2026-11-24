@@ -292,3 +292,4 @@ const styles = StyleSheet.create({
   ackBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#ECFDF5', padding: 8, borderRadius: 8, marginTop: 8 },
   ackText: { fontSize: 11, fontWeight: '700', color: '#065F46' },
 });
+

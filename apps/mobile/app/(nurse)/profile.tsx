@@ -48,7 +48,7 @@ export default function NurseProfileScreen() {
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Clinical Hospital</Text>
-          <Text style={styles.infoVal}>Aalayam / Uyirinai Multispeciality</Text>
+          <Text style={styles.infoVal}>Uyirinai Multispeciality Hospital</Text>
         </View>
       </View>
 
@@ -176,3 +176,4 @@ const styles = StyleSheet.create({
   },
   logoutText: { color: '#DC2626', fontWeight: '800', fontSize: 13 },
 });
+

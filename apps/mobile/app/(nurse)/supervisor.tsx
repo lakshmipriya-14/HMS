@@ -316,3 +316,4 @@ const styles = StyleSheet.create({
   sendEscBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#7C3AED', paddingVertical: 12, borderRadius: 10, marginTop: 16, gap: 6 },
   sendEscText: { color: '#fff', fontSize: 13, fontWeight: '800' },
 });
+

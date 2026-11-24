@@ -1007,3 +1007,4 @@ const styles = StyleSheet.create({
   confirmDisabled: { opacity: 0.5 },
   confirmDispenseText: { color: '#fff', fontSize: 13, fontWeight: '800' },
 });
+

@@ -460,3 +460,4 @@ const styles = StyleSheet.create({
   modalReceiveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#059669', paddingVertical: 12, borderRadius: 8, marginTop: 16 },
   modalReceiveBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
 });
+

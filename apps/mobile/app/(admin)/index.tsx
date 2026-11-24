@@ -6,7 +6,7 @@ export default function AdminMobileDashboard() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.banner}>
-        <Text style={styles.hospitalName}>Kizuna Multispeciality Hospital</Text>
+        <Text style={styles.hospitalName}>Uyirinai Multispeciality Hospital</Text>
         <Text style={styles.bannerTitle}>Executive Hospital Command</Text>
         <Text style={styles.bannerSub}>Daily Census & Operational Metrics</Text>
       </View>
@@ -78,3 +78,4 @@ const styles = StyleSheet.create({
   infoBox: { backgroundColor: '#fff', padding: 14, borderRadius: 10, gap: 8 },
   infoText: { fontSize: 13, color: '#334155', fontWeight: '500' },
 });
+
