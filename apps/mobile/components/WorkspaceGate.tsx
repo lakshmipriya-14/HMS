@@ -8,7 +8,9 @@ export function WorkspaceGate({ home, children }: { home: Href; children?: React
   const { user, isLoading } = useAuth();
   if (isLoading) return <ActivityIndicator accessibilityLabel="Restoring session" />;
   if (!user) return <Redirect href="/(auth)/login" />;
-  if (roleHome[user.role] !== home) return <Redirect href={roleHome[user.role]} />;
+  const normalizedRoleHome = String(roleHome[user.role] || '').replace(/\/index$/, '');
+  const normalizedHome = String(home || '').replace(/\/index$/, '');
+  if (normalizedRoleHome !== normalizedHome) return <Redirect href={roleHome[user.role]} />;
   return <>{children}</>;
 }
 

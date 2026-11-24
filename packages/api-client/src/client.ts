@@ -456,7 +456,7 @@ export class AalayamApiClient {
   };
 
   public superAdmin = {
-    request: async <T>(path: string, method: 'GET' | 'POST' | 'PATCH' = 'GET', data?: object, params?: object) => {
+    request: async <T>(path: string, method: 'GET' | 'POST' | 'PATCH' | 'DELETE' = 'GET', data?: object, params?: object) => {
       const response = await this.instance.request<ApiResponse<T>>({ url: '/super-admin/' + path, method, data, params });
       return response.data;
     },

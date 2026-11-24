@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Header, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthUserDto, Role } from '@multispeciality-hms/contracts';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { RequirePermissions, Roles, Scoped } from '../common/decorators/roles.decorator';
@@ -61,6 +61,13 @@ export class SuperAdminController {
   async branchStatus(@CurrentUser() actor: AuthUserDto, @Param('id') id: string, @Body() input: StatusInput) {
     const result = await this.service.editBranch(actor, id, input);
     return { message: 'Request completed.', data: result };
+  }
+
+  @Delete('branches/:id')
+  @RequirePermissions('HOSPITALS:DELETE')
+  async deleteBranch(@CurrentUser() actor: AuthUserDto, @Param('id') id: string) {
+    const result = await this.service.deleteBranch(actor, id);
+    return { message: 'Branch deleted.', data: result };
   }
 
   @Get('departments')

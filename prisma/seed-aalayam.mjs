@@ -105,6 +105,23 @@ async function seed() {
         },
       });
 
+      const demoBranches = [
+        { code: 'DEMO-NORTH', name: 'Madurai North Branch', address: 'North Madurai', isActive: true },
+        { code: 'DEMO-SOUTH', name: 'Madurai South Branch', address: 'South Madurai', isActive: true },
+        { code: 'DEMO-WEST', name: 'Madurai West Branch', address: 'West Madurai', isActive: false },
+      ];
+      await tx.branch.createMany({
+        data: demoBranches.map(demoBranch => ({
+          ...demoBranch,
+          hospitalId: hospital.id,
+          city: 'Madurai',
+          state: 'Tamil Nadu',
+          country: 'India',
+          phone: '0000000000',
+        })),
+        skipDuplicates: true,
+      });
+
       // 4. Departments
       const deptGenMed = await tx.department.upsert({
         where: { hospitalId_code: { hospitalId: hospital.id, code: 'GEN_MED' } },
@@ -178,7 +195,7 @@ async function seed() {
       // 2. Hospital Admin
       await setupRoleAliases(
         ['admin@uyirinai.com', 'hospitaladmin@kizunahospital.com', 'admin@aalayamhospital.com'],
-        'Hospital', 'Admin', Role.HOSPITAL_ADMIN, null, null, 'GLOBAL'
+        'Hospital', 'Admin', Role.HOSPITAL_ADMIN, branch.id, null, `branch:${branch.id}`
       );
 
       // 3. Doctor (Dr. Rajesh Kumar)

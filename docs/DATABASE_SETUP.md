@@ -1,8 +1,86 @@
 # Local database setup
 
-Each developer uses a separate local PostgreSQL database named `uyirinai_hms_new`. Keep local credentials and database backups outside version control.
+The team demo uses `uyirinai_hms_team`. The reference-only setup later in this guide uses `uyirinai_hms_new`. Keep local credentials and database backups outside version control.
 
-## Install PostgreSQL and dependencies
+## Shared team database and demo logins
+
+Use a separate local PostgreSQL database named **`uyirinai_hms_team`**. Each teammate creates their own copy. The same Git revision supplies the schema and synthetic data, including five accounts for each of the 16 application roles.
+
+Install Node.js 22 or later, the repository's pinned pnpm version, and PostgreSQL with its command-line tools. With PostgreSQL running and its tools on PATH, run this from the repository root:
+
+```powershell
+git pull --ff-only
+npm install --global pnpm@12.21.0
+pnpm --version
+pnpm install --frozen-lockfile
+psql -h localhost -p 5432 -U postgres -W -d postgres -v ON_ERROR_STOP=1
+```
+
+At the `psql` prompt, create a role and database once. Reuse `uyirinai_local` if you already created that role. Substitute your local PostgreSQL administrator for `postgres` in the connection command if needed.
+
+```sql
+CREATE ROLE uyirinai_local LOGIN;
+\password uyirinai_local
+CREATE DATABASE uyirinai_hms_team OWNER uyirinai_local;
+\q
+```
+
+Create or edit the root `.env`:
+
+```powershell
+if (-not (Test-Path -LiteralPath .env)) {
+    Copy-Item -LiteralPath .env.example -Destination .env
+}
+notepad .env
+```
+
+Set `DATABASE_URL` to the connection below. Replace `ENCODED_PASSWORD` with the URL-encoded PostgreSQL role password. Set `NODE_ENV=development`, `API_HOST=127.0.0.1`, and a private `JWT_SECRET` of at least 32 random characters. To generate the JWT secret, run `node -p "require('node:crypto').randomBytes(32).toString('hex')"` and paste the result into `.env`.
+
+```dotenv
+DATABASE_URL="postgresql://uyirinai_local:ENCODED_PASSWORD@localhost:5432/uyirinai_hms_team?schema=public"
+```
+
+If you already have an `apps/api/.env`, update its `DATABASE_URL` too. The API uses its local file first and falls back to the root file.
+
+Then run:
+
+```powershell
+Remove-Item Env:DATABASE_URL -ErrorAction SilentlyContinue
+pnpm db:team:setup
+pnpm build:packages
+pnpm dev:api
+```
+
+Start the web UI in another terminal with `pnpm dev:web`. All 80 accounts start with the password **`UyirinaiTeamDemo!24`**. The PostgreSQL role password is only for the database connection.
+
+The first account keeps its original email. Accounts ending in `-02` through `-05` have matching sample records in their scenario's branch. Super Admin and Patient roles use hospital-wide account assignments.
+
+| Workspace role | Account 1 | Account 2 | Account 3 | Account 4 | Account 5 |
+| --- | --- | --- | --- | --- | --- |
+| Super admin | `super_admin@demo.uyirinai.test` | `super_admin-02@demo.uyirinai.test` | `super_admin-03@demo.uyirinai.test` | `super_admin-04@demo.uyirinai.test` | `super_admin-05@demo.uyirinai.test` |
+| Hospital admin | `hospital_admin@demo.uyirinai.test` | `hospital_admin-02@demo.uyirinai.test` | `hospital_admin-03@demo.uyirinai.test` | `hospital_admin-04@demo.uyirinai.test` | `hospital_admin-05@demo.uyirinai.test` |
+| Department admin | `department_admin@demo.uyirinai.test` | `department_admin-02@demo.uyirinai.test` | `department_admin-03@demo.uyirinai.test` | `department_admin-04@demo.uyirinai.test` | `department_admin-05@demo.uyirinai.test` |
+| Doctor | `doctor@demo.uyirinai.test` | `doctor-02@demo.uyirinai.test` | `doctor-03@demo.uyirinai.test` | `doctor-04@demo.uyirinai.test` | `doctor-05@demo.uyirinai.test` |
+| Nurse | `nurse@demo.uyirinai.test` | `nurse-02@demo.uyirinai.test` | `nurse-03@demo.uyirinai.test` | `nurse-04@demo.uyirinai.test` | `nurse-05@demo.uyirinai.test` |
+| Head nurse | `head_nurse@demo.uyirinai.test` | `head_nurse-02@demo.uyirinai.test` | `head_nurse-03@demo.uyirinai.test` | `head_nurse-04@demo.uyirinai.test` | `head_nurse-05@demo.uyirinai.test` |
+| Receptionist | `receptionist@demo.uyirinai.test` | `receptionist-02@demo.uyirinai.test` | `receptionist-03@demo.uyirinai.test` | `receptionist-04@demo.uyirinai.test` | `receptionist-05@demo.uyirinai.test` |
+| Lab technician | `lab_technician@demo.uyirinai.test` | `lab_technician-02@demo.uyirinai.test` | `lab_technician-03@demo.uyirinai.test` | `lab_technician-04@demo.uyirinai.test` | `lab_technician-05@demo.uyirinai.test` |
+| Pharmacist | `pharmacist@demo.uyirinai.test` | `pharmacist-02@demo.uyirinai.test` | `pharmacist-03@demo.uyirinai.test` | `pharmacist-04@demo.uyirinai.test` | `pharmacist-05@demo.uyirinai.test` |
+| Radiology staff | `radiology_staff@demo.uyirinai.test` | `radiology_staff-02@demo.uyirinai.test` | `radiology_staff-03@demo.uyirinai.test` | `radiology_staff-04@demo.uyirinai.test` | `radiology_staff-05@demo.uyirinai.test` |
+| Billing staff | `billing_staff@demo.uyirinai.test` | `billing_staff-02@demo.uyirinai.test` | `billing_staff-03@demo.uyirinai.test` | `billing_staff-04@demo.uyirinai.test` | `billing_staff-05@demo.uyirinai.test` |
+| Insurance staff | `insurance_staff@demo.uyirinai.test` | `insurance_staff-02@demo.uyirinai.test` | `insurance_staff-03@demo.uyirinai.test` | `insurance_staff-04@demo.uyirinai.test` | `insurance_staff-05@demo.uyirinai.test` |
+| Ward manager | `ward_manager@demo.uyirinai.test` | `ward_manager-02@demo.uyirinai.test` | `ward_manager-03@demo.uyirinai.test` | `ward_manager-04@demo.uyirinai.test` | `ward_manager-05@demo.uyirinai.test` |
+| Patient | `patient@demo.uyirinai.test` | `patient-02@demo.uyirinai.test` | `patient-03@demo.uyirinai.test` | `patient-04@demo.uyirinai.test` | `patient-05@demo.uyirinai.test` |
+| Ambulance coordinator | `ambulance_coordinator@demo.uyirinai.test` | `ambulance_coordinator-02@demo.uyirinai.test` | `ambulance_coordinator-03@demo.uyirinai.test` | `ambulance_coordinator-04@demo.uyirinai.test` | `ambulance_coordinator-05@demo.uyirinai.test` |
+| Ambulance driver | `ambulance_driver@demo.uyirinai.test` | `ambulance_driver-02@demo.uyirinai.test` | `ambulance_driver-03@demo.uyirinai.test` | `ambulance_driver-04@demo.uyirinai.test` | `ambulance_driver-05@demo.uyirinai.test` |
+
+The schema stage is available separately as `pnpm db:team:schema`. It deploys the actual [PostgreSQL migrations](../prisma/migrations) in order, checks their status, and generates Prisma Client. The baseline contains 55 application tables plus `_prisma_migrations`. The migration files include database triggers and constraints alongside the tables and indexes.
+
+The data stage is available separately as `pnpm db:team:seed`. It installs default permissions and reference lists and adds five linked workflow scenarios. Each scenario has its own branch accounts, two patients, two appointments, a public appointment request, an admission, pharmacy and diagnostic records, two invoices, and sample insurance, ambulance, nursing, notification, audit, and report-export data. The five receptionist accounts each have a completed and a scheduled appointment in their branch. Login, password recovery, and invitation flows create their own session and token records. The patient document rows use placeholder URLs.
+
+If you previously installed the single-scenario seed, run `pnpm db:team:seed` to add scenarios 2–5. Rerunning the seed preserves installed scenarios and any passwords changed during testing. Clinical dates are set when each scenario is installed. To recover a changed demo password, use the app's local recovery flow. Existing teammate credentials and their local patient records remain in their own databases. Use the demo credentials only on local developer instances. Old Hospital Admin assignments without a branch require an explicitly chosen branch before those users can sign in.
+
+## Reference-only database setup
 
 Install PostgreSQL with the command-line tools and start its Windows service. Add PostgreSQL's `bin` directory to your PATH so PowerShell can find `psql`. Install Node.js with npm, then install pnpm `12.21.0`, as pinned in `package.json`. Run the following from the repository root.
 
@@ -64,7 +142,7 @@ pnpm exec prisma generate --schema prisma/schema.prisma
 psql -h localhost -p 5432 -U uyirinai_local -W -d uyirinai_hms_new -v ON_ERROR_STOP=1 -c 'SELECT current_database();' -c '\dt public.*'
 ```
 
-The table list should include 55 application tables and `_prisma_migrations` once the public appointment request migration is approved and deployed. This procedure creates the database structure without provisioning a Hospital, creating users, or seeding records.
+The table list should include 55 application tables and `_prisma_migrations` after the migrations are applied. This procedure creates the database structure without provisioning a Hospital, creating users, or seeding records.
 
 ## Public appointment requests
 

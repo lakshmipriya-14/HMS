@@ -195,6 +195,19 @@ export class SuperAdminService {
     });
   }
 
+  async deleteBranch(actor: AuthUserDto, id: string) {
+    const hospitalId = this.scope(actor);
+    return this.write(async tx => {
+      const result = await tx.branch.updateMany({
+        where: { id, hospitalId, deletedAt: null },
+        data: { isActive: false, deletedAt: new Date() },
+      });
+      if (!result.count) throw new NotFoundException('Branch not found.');
+      await this.audit(tx, actor, 'DELETE', 'BRANCH', id, {}, id);
+      return { id };
+    });
+  }
+
   async departments(actor: AuthUserDto, query: ListQuery) {
     const hospitalId = this.scope(actor), { page, limit, skip, search, order } = pageInput(query);
     const ids = identifiers(query.branchIds);

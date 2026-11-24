@@ -6,52 +6,24 @@ Follow this guide to get the Kizuna Multispeciality Hospital Management System r
 
 ## 1. Prerequisites
 
-- **Node.js**: `v20+` or `v22+` recommended
-- **Package Manager**: `pnpm` (`v9+` or `v12+`)
-- **Database**: PostgreSQL 15+ running locally (or hosted via Supabase / Neon / Render)
+- **Node.js** 22 or later
+- **Package manager** `pnpm@12.21.0`
+- **Database** PostgreSQL 15 or later running locally
 - **Mobile Development (Optional)**: Expo Go app on iOS/Android or Android Studio Emulator
 
 ---
 
-## 2. Environment Configuration
+## 2. Environment and database
 
-Copy `.env.example` to `.env` in the repository root:
-```bash
-cp .env.example .env
-```
+Create the local `uyirinai_hms_team` database and configure the root `.env` using the [team database setup guide](DATABASE_SETUP.md#shared-team-database-and-demo-logins). Then run these commands from the repository root:
 
-Verify your database connection URL in `.env`:
-```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/kizuna_hms?schema=public"
-JWT_SECRET="kizuna-enterprise-hms-jwt-access-secret-key-2026-very-secure"
-JWT_REFRESH_SECRET="kizuna-enterprise-hms-jwt-refresh-secret-key-2026-very-secure"
-API_PORT=4000
-WEB_PORT=3000
-```
-
----
-
-## 3. Installation & Database Setup
-
-Run the following commands in the monorepo root:
-
-```bash
-# 1. Install all workspace dependencies
-pnpm install
-
-# 2. Build the shared contracts, validation & API client packages
+```powershell
+pnpm install --frozen-lockfile
+pnpm db:team:setup
 pnpm build:packages
-
-# 3. Generate Prisma client & apply database migrations
-pnpm db:migrate
-
-# 4. Populate realistic hospital seed data (Departments, Doctors, Wards, Medicines, Invoices & All 16 Demo Accounts)
-pnpm db:seed
 ```
 
----
-
-## 4. Running Applications
+## 3. Running Applications
 
 ### Run Full Stack (Backend API + Web Dashboard concurrently)
 ```bash
@@ -61,39 +33,17 @@ pnpm dev
 - **Backend REST API**: `http://localhost:4000/api/v1`
 - **Interactive Swagger Docs**: `http://localhost:4000/api/docs`
 
-### Run Services Individually
-```bash
-# Start Backend API only
-pnpm dev:api
+### Run the Android app
 
-# Start Web Application only
-pnpm dev:web
+Mobile uses the same API and PostgreSQL database as the web dashboard. Follow the [team database setup](DATABASE_SETUP.md#shared-team-database-and-demo-logins) once. The mobile app connects to the API, so PostgreSQL credentials belong only in the server configuration.
 
-# Start Mobile Expo Terminal
-pnpm dev:mobile
-```
+If the API is already running on port 4000, keep it running. Otherwise, start it from the repository root with `pnpm dev:api`. In a separate terminal at the repository root, start Expo with `pnpm dev:mobile`.
 
----
+- **Android emulator**. Start the emulator in Android Studio, then press `a` in the Expo terminal. The app defaults to `http://10.0.2.2:4000/api/v1`. Use [Expo Go for SDK 52](https://expo.dev/go?sdkVersion=52&platform=android&device=false).
+- **Physical Android phone**. Connect your phone and PC to the same Wi-Fi. In the terminal where you start Expo, set `$env:EXPO_PUBLIC_API_URL = "http://YOUR_PC_WIFI_IP:4000/api/v1"` before running `pnpm dev:mobile`. Find the address using `ipconfig` and scan the Expo QR code with [Expo Go for SDK 52 on Android](https://expo.dev/go?sdkVersion=52&platform=android&device=true). The API must be reachable from the phone. Set `API_HOST=0.0.0.0` in the server's local environment for LAN testing.
 
-## 5. Seeded Demo Accounts (Password: `Password@123`)
+Use a [team demo login](DATABASE_SETUP.md#shared-team-database-and-demo-logins). The initial password is `UyirinaiTeamDemo!24`.
 
-| Role | Demo Email Address | Initial Portal |
-| :--- | :--- | :--- |
-| **Super Admin** | `superadmin@kizunahospital.com` | Hospital Executive Dashboard |
-| **Hospital Admin** | `hospitaladmin@kizunahospital.com` | Organization Command |
-| **Doctor (Surgeon)** | `doctor@kizunahospital.com` | OPD Queue & Clinical Workspace |
-| **Doctor (Physician)**| `doctor.physician@kizunahospital.com` | OPD Consultation Queue |
-| **Staff Nurse** | `nurse@kizunahospital.com` | Inpatient Care & Vitals Board |
-| **Head Nurse** | `headnurse@kizunahospital.com` | Ward Superintendent View |
-| **Receptionist** | `reception@kizunahospital.com` | Patient Registration & Tokens |
-| **Lab Technician** | `lab@kizunahospital.com` | Analyzer Worklist & Reports |
-| **Pharmacist** | `pharmacy@kizunahospital.com` | Prescription Queue & Dispensary |
-| **Radiology Staff** | `radiology@kizunahospital.com` | Imaging Studies & Findings |
-| **Billing Staff** | `billing@kizunahospital.com` | Invoices & Cashier POS |
-| **Insurance Staff** | `insurance@kizunahospital.com` | TPA Claims Settlement |
-| **Ward Manager** | `wardmanager@kizunahospital.com` | Bed Census Map & Housekeeping |
-| **Ambulance Coordinator** | `ambulance@kizunahospital.com` | Emergency Dispatch Radar |
-| **Ambulance Driver** | `driver@kizunahospital.com` | Mobile Driver Run Terminal |
-| **Patient Portal** | `patient@kizunahospital.com` | Digital Health Card & My Records |
+### Run the web app separately
 
-*Tip: The web login screen includes a 1-click role switcher button for every role!*
+Run `pnpm dev:web` with the API running, then open `http://localhost:3000`.
