@@ -1509,7 +1509,7 @@ BEGIN
       JOIN pg_class child_rel ON child_rel.oid = c.conrelid
       JOIN pg_namespace child_ns ON child_ns.oid = child_rel.relnamespace
      WHERE c.contype = 'f' AND c.confrelid = TG_RELID
-     GROUP BY c.oid, c.conrelid
+     GROUP BY c.oid, c.conrelid, child_ns.nspname, child_rel.relname
   LOOP
     EXECUTE format('SELECT EXISTS (SELECT 1 FROM %I.%I WHERE %s)', v_fk.child_schema, v_fk.child_table, v_fk.child_predicate)
       INTO v_has_child;

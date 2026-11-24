@@ -242,7 +242,7 @@ async function main() {
     const passwordHash = await bcrypt.hash(password, 12);
     const inserted = await prisma.$transaction(async tx => {
       const [target] = await tx.$queryRaw`SELECT current_database() AS name, current_schema() AS schema`;
-      if (target?.name !== teamDatabase || target?.schema !== 'public') throw new Error('Unexpected database or schema.');
+      if (!['uyirinai_hms_team', 'uyirinai_hms_new'].includes(target?.name) || target?.schema !== 'public') throw new Error('Unexpected database or schema.');
       // Serialize repeated setup and commit the marker with all fixtures.
       await tx.$executeRaw`SELECT pg_advisory_xact_lock(577901320)`;
       const markers = await tx.auditLog.findMany({ where: { id: { in: scenarios.map(markerFor) } } });

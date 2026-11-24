@@ -29,12 +29,15 @@ export const Topbar: React.FC = () => {
 
         <div className="h-6 w-px bg-slate-200"></div>
 
-        {/* Profile Pill */}
-        <div className="flex items-center space-x-2 text-xs">
-          <span className="px-2 py-0.5 rounded bg-teal-50 text-teal-700 font-semibold border border-teal-200 text-[11px]">
+        {/* Profile Pill with Hover Name */}
+        <div
+          className="flex items-center space-x-2 text-xs cursor-pointer group"
+          title={`Name: ${user?.firstName} ${user?.lastName}\nRole: ${user?.role}\nEmail: ${user?.email}`}
+        >
+          <span className="px-2 py-0.5 rounded bg-teal-50 text-teal-700 font-semibold border border-teal-200 text-[11px] group-hover:bg-teal-100 transition-colors">
             {user?.role}
           </span>
-          <span className="font-semibold text-slate-700 hidden md:inline">
+          <span className="font-semibold text-slate-700 hidden md:inline group-hover:text-teal-700 transition-colors">
             {user?.firstName} {user?.lastName}
           </span>
         </div>
