@@ -12,7 +12,7 @@ export default function PatientHomeScreen() {
     <ScrollView style={styles.container}>
       {/* UHID Welcome Card */}
       <View style={styles.uhidCard}>
-        <Text style={styles.hospital}>Kizuna Multispeciality Hospital</Text>
+        <Text style={styles.hospital}>Uyirinai Multispeciality Hospital</Text>
         <Text style={styles.patientName}>{user?.firstName || 'Muthuvel'} {user?.lastName || 'Karuppiah'}</Text>
         <View style={styles.uhidRow}>
           <Text style={styles.uhidLabel}>UHID:</Text>
@@ -111,3 +111,4 @@ const styles = StyleSheet.create({
   docDept: { fontSize: 12, color: '#64748B', marginTop: 1 },
   aptTime: { fontSize: 11, color: '#0F766E', fontWeight: 'bold', marginTop: 4 },
 });
+

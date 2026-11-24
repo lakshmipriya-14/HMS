@@ -1,4 +1,4 @@
-import { createKizunaApiClient } from '@multispeciality-hms/api-client';
+import { createUyirinaiApiClient } from '@multispeciality-hms/api-client';
 import { Platform } from 'react-native';
 
 // In Android emulator 10.0.2.2 points to host localhost; for iOS / web localhost works.
@@ -13,7 +13,7 @@ let refreshToken: string | null = null;
 let unauthorized: (() => void) | undefined;
 export const setMobileUnauthorizedHandler = (handler?: () => void) => { unauthorized = handler; };
 
-export const mobileApiClient = createKizunaApiClient({
+export const mobileApiClient = createUyirinaiApiClient({
   baseURL: API_BASE_URL,
   cookieSession: Platform.OS === 'web',
   getAccessToken: () => accessToken,
@@ -86,3 +86,4 @@ export async function apiRequest<T = any>(
   }
   return json;
 }
+

@@ -20,7 +20,7 @@ export default function RadiologyProfileScreen() {
           <Scan size={36} color="#334155" />
         </View>
         <Text style={styles.name}>Radiology Diagnostic Staff</Text>
-        <Text style={styles.sub}>radiology@kizunahospital.com</Text>
+        <Text style={styles.sub}>radiology@Uyirinaihospital.com</Text>
         <Text style={styles.deskTag}>Department of Radio-Diagnosis & Imaging</Text>
       </View>
 
@@ -42,3 +42,4 @@ const styles = StyleSheet.create({
   logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEE2E2', paddingVertical: 14, borderRadius: 10, gap: 8 },
   logoutText: { color: '#DC2626', fontSize: 14, fontWeight: '700' },
 });
+

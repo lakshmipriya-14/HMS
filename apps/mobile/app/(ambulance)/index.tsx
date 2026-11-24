@@ -158,3 +158,4 @@ const styles = StyleSheet.create({
   },
   completeText: { color: '#065F46', fontWeight: 'bold', fontSize: 12 },
 });
+

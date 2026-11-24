@@ -89,3 +89,4 @@ const styles = StyleSheet.create({
   submitBtn: { flexDirection: 'row', backgroundColor: '#0F766E', paddingVertical: 14, borderRadius: 10, alignItems: 'center', justifyContent: 'center', gap: 8 },
   submitBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
 });
+

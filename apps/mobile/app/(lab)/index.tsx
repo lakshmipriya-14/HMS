@@ -78,3 +78,4 @@ const styles = StyleSheet.create({
   btn: { backgroundColor: '#EA580C', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 },
   btnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
 });
+

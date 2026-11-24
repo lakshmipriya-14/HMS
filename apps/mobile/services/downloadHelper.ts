@@ -343,3 +343,4 @@ export function openPrintableReport(
   }
   return false;
 }
+

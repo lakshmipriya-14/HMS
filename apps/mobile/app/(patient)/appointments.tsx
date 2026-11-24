@@ -75,3 +75,4 @@ const styles = StyleSheet.create({
   btn: { backgroundColor: '#0F766E', marginTop: 10, paddingVertical: 8, borderRadius: 8, alignItems: 'center' },
   btnText: { color: '#fff', fontSize: 12, fontWeight: 'bold' },
 });
+

@@ -21,7 +21,7 @@ export default function PatientProfileScreen() {
         </View>
         <Text style={styles.name}>{user?.firstName || 'Muthuvel'} {user?.lastName || 'Karuppiah'}</Text>
         <Text style={styles.uhidBadge}>UHID: KZN-2026-0001</Text>
-        <Text style={styles.email}>{user?.email || 'patient@kizunahospital.com'}</Text>
+        <Text style={styles.email}>{user?.email || 'patient@Uyirinaihospital.com'}</Text>
 
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Blood Group</Text>
@@ -103,3 +103,4 @@ const styles = StyleSheet.create({
   },
   logoutText: { color: '#DC2626', fontWeight: 'bold', fontSize: 13 },
 });
+

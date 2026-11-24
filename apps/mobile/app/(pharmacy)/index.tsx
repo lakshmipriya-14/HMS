@@ -81,3 +81,4 @@ const styles = StyleSheet.create({
   dispenseBtn: { backgroundColor: '#7C3AED', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 },
   btnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
 });
+

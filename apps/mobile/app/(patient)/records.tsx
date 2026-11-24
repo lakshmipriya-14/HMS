@@ -66,3 +66,4 @@ const styles = StyleSheet.create({
   desc: { fontSize: 11, color: '#475569', marginTop: 2 },
   date: { fontSize: 10, color: '#0F766E', fontWeight: '600', marginTop: 4 },
 });
+

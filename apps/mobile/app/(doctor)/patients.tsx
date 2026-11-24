@@ -73,3 +73,4 @@ const styles = StyleSheet.create({
   roundBtn: { backgroundColor: '#0F766E', paddingVertical: 8, borderRadius: 8, alignItems: 'center' },
   roundBtnText: { color: '#fff', fontSize: 12, fontWeight: '600' },
 });
+

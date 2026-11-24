@@ -176,3 +176,4 @@ const styles = StyleSheet.create({
   },
   logoutText: { color: '#DC2626', fontWeight: '800', fontSize: 13 },
 });
+

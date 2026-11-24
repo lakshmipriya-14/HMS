@@ -483,3 +483,4 @@ const styles = StyleSheet.create({
   submitBtnEmergency: { backgroundColor: '#DC2626' },
   submitBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
 });
+

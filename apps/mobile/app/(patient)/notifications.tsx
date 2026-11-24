@@ -52,3 +52,4 @@ const styles = StyleSheet.create({
   msg: { fontSize: 11, color: '#475569', marginTop: 2 },
   time: { fontSize: 10, color: '#94A3B8', marginTop: 4 },
 });
+

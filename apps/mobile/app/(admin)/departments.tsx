@@ -49,3 +49,4 @@ const styles = StyleSheet.create({
   statsRow: { flexDirection: 'row', gap: 8, marginTop: 10 },
   statPill: { fontSize: 11, fontWeight: '600', backgroundColor: '#CCFBF1', color: '#0F766E', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
 });
+

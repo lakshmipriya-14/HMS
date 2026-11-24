@@ -56,3 +56,4 @@ const styles = StyleSheet.create({
   sev: { fontSize: 10, fontWeight: 'bold', color: '#DC2626' },
   time: { fontSize: 10, color: '#94A3B8' },
 });
+

@@ -21,7 +21,7 @@ export default function AmbulanceDriverProfileScreen() {
         </View>
         <Text style={styles.name}>{user?.firstName || 'Velu'} {user?.lastName || 'Pandian'}</Text>
         <Text style={styles.role}>Emergency Response Driver</Text>
-        <Text style={styles.email}>{user?.email || 'driver@kizunahospital.com'}</Text>
+        <Text style={styles.email}>{user?.email || 'driver@Uyirinaihospital.com'}</Text>
 
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Assigned Ambulance</Text>
@@ -37,7 +37,7 @@ export default function AmbulanceDriverProfileScreen() {
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Dispatch Base</Text>
-          <Text style={styles.infoVal}>Kizuna Trauma Center</Text>
+          <Text style={styles.infoVal}>Uyirinai Trauma Center</Text>
         </View>
 
         <TouchableOpacity style={styles.logoutBtn} onPress={handleSignOut}>
@@ -93,3 +93,4 @@ const styles = StyleSheet.create({
   },
   logoutText: { color: '#DC2626', fontWeight: 'bold', fontSize: 13 },
 });
+

@@ -186,3 +186,4 @@ const styles = StyleSheet.create({
   dispNum: { fontSize: 18, fontWeight: '900', color: '#0F172A', marginTop: 4 },
   dispLabel: { fontSize: 10, fontWeight: '700', color: '#64748B', marginTop: 2 },
 });
+

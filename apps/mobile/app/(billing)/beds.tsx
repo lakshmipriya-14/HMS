@@ -50,3 +50,4 @@ const styles = StyleSheet.create({
   pillOcc: { fontSize: 11, fontWeight: '600', backgroundColor: '#FEE2E2', color: '#DC2626', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   pillFree: { fontSize: 11, fontWeight: '700', backgroundColor: '#D1FAE5', color: '#059669', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
 });
+

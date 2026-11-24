@@ -1091,3 +1091,4 @@ const styles = StyleSheet.create({
   saveVitalsText: { color: '#fff', fontSize: 13, fontWeight: '800' },
   noteInput: { borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, padding: 12, fontSize: 13, height: 100, textAlignVertical: 'top', backgroundColor: '#F8FAFC', marginBottom: 14 },
 });
+

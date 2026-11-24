@@ -9,3 +9,4 @@ export const roleHome: Record<Role, Href> = {
   WARD_MANAGER: '/(billing)', AMBULANCE_COORDINATOR: '/(ambulance)', AMBULANCE_DRIVER: '/(ambulance)',
   PATIENT: '/(patient)',
 };
+

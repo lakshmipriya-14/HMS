@@ -48,3 +48,4 @@ const styles = StyleSheet.create({
   tag: { backgroundColor: '#FFEDD5', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, alignSelf: 'flex-start', marginTop: 8 },
   tagText: { fontSize: 11, fontWeight: '700', color: '#EA580C' },
 });
+

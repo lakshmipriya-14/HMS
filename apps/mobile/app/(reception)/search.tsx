@@ -232,3 +232,4 @@ const styles = StyleSheet.create({
   },
   tokenBtnText: { color: '#0284C7', fontSize: 11, fontWeight: '700' },
 });
+

@@ -9,3 +9,4 @@ export function DeferredScreen({ title, onBack }: { title: string; onBack?: () =
     <Text>This management screen is scheduled for a later phase.</Text>
   </View>;
 }
+

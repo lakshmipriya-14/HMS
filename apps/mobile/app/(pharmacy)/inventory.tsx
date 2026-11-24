@@ -58,3 +58,4 @@ const styles = StyleSheet.create({
   qtyVal: { fontSize: 13, fontWeight: '800', color: '#0F766E' },
   qtyAlert: { color: '#DC2626' },
 });
+
