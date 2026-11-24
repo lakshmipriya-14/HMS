@@ -46,7 +46,7 @@ export class AuthService {
 
   constructor(private readonly prisma: PrismaService, private readonly jwt: JwtService) {}
 
-  async login(dto: LoginDto): Promise<LoginResponseDto> {
+  async login(dto: LoginDto, ipAddress?: string): Promise<LoginResponseDto> {
     const account = await this.prisma.user.findUnique({
       where: { email: dto.email.trim().toLowerCase() }, select: { id: true, passwordHash: true },
     });
@@ -62,6 +62,7 @@ export class AuthService {
       await tx.auditLog.create({ data: {
         hospitalId: user.hospitalId, branchId: user.branchId, userId: user.id,
         userEmail: user.email, userRole: user.role, action: 'LOGIN', resource: 'AUTH', resourceId: user.id,
+        ipAddress: ipAddress || '127.0.0.1',
       } });
       return (await this.issue(tx, user, randomUUID(), new Date(Date.now() + REFRESH_TOKEN_MS))).response;
     });

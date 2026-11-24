@@ -61,6 +61,26 @@ export const Sidebar: React.FC = () => {
         })}
       </div>
 
+      {/* Active User Profile Hover Footer */}
+      {user && (
+        <div
+          className="p-3 mx-3 mb-2 bg-slate-800/90 rounded-xl border border-slate-700/60 flex items-center space-x-3 cursor-pointer hover:bg-slate-800 hover:border-teal-500/40 transition-all group relative"
+          title={`Name: ${user.firstName} ${user.lastName}\nRole: ${user.role}\nEmail: ${user.email}`}
+        >
+          <div className="w-8 h-8 rounded-full bg-teal-600/30 border border-teal-500/50 flex items-center justify-center text-teal-300 font-bold text-xs uppercase group-hover:scale-105 transition-transform">
+            {user.firstName?.[0] || 'U'}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-white truncate group-hover:text-teal-300 transition-colors">
+              {user.firstName} {user.lastName}
+            </p>
+            <p className="text-[10px] text-teal-400 font-mono truncate">
+              {user.role}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Hospital Footer Info */}
       <div className="p-4 border-t border-slate-800 text-[11px] text-slate-500 flex flex-col space-y-1">
         <div className="flex items-center justify-between">

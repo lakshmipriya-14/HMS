@@ -12,7 +12,7 @@ export function teamDatabaseUrl() {
   if (
     !['postgresql:', 'postgres:'].includes(url.protocol) ||
     !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname) ||
-    url.pathname !== `/${teamDatabase}` ||
+    !['/uyirinai_hms_team', '/uyirinai_hms_new'].includes(url.pathname) ||
     [...url.searchParams].some(([key, schema]) => key !== 'schema' || schema !== 'public')
   ) {
     throw new Error(`Use a local PostgreSQL database named ${teamDatabase} with the public schema.`);

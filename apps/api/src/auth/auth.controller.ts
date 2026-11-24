@@ -24,7 +24,8 @@ export class AuthController {
   @Header('Cache-Control', 'no-store')
   async login(@Body() dto: LoginDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const cookie = this.cookieMode(req);
-    return this.session(await this.auth.login(dto), cookie, res);
+    const ipAddress = (req.headers['x-forwarded-for'] as string || req.ip || '127.0.0.1').split(',')[0].trim();
+    return this.session(await this.auth.login(dto, ipAddress), cookie, res);
   }
 
   @Public()
