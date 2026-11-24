@@ -70,7 +70,7 @@ export default function NursePatientsScreen() {
       if (res?.data && res.data.length > 0) {
         setPatients(res.data);
       } else {
-        // High-fidelity fallback admitted inpatient dataset for Aalayam HMS
+        // High-fidelity fallback admitted inpatient dataset for Uyirinai HMS
         setPatients([
           {
             id: 'adm-001',

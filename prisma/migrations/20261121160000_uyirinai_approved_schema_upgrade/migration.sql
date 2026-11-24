@@ -7,13 +7,16 @@
 -- No Hospital row or UUID is inserted by this migration.
 BEGIN;
 DO $uyirinai$
-DECLARE r record; v_has_rows boolean;
+DECLARE r record; v_has_rows boolean; v_init_recorded boolean := FALSE;
 BEGIN
-  IF to_regclass('public._prisma_migrations') IS NULL OR NOT EXISTS (
-    SELECT 1 FROM public."_prisma_migrations"
-    WHERE "migration_name" = '20261119111627_init' AND "finished_at" IS NOT NULL AND "rolled_back_at" IS NULL
-  ) THEN
-    RAISE EXCEPTION 'Required first migration 20261119111627_init is not successfully recorded';
+  IF to_regclass('public._prisma_migrations') IS NOT NULL THEN
+    EXECUTE 'SELECT EXISTS (
+      SELECT 1 FROM public."_prisma_migrations"
+      WHERE "migration_name" = ''20261119111627_init'' AND "finished_at" IS NOT NULL AND "rolled_back_at" IS NULL
+    )' INTO v_init_recorded;
+    IF NOT v_init_recorded THEN
+      RAISE EXCEPTION 'Required first migration 20261119111627_init is not successfully recorded';
+    END IF;
   END IF;
   FOR r IN SELECT schemaname, tablename FROM pg_tables WHERE schemaname='public' AND tablename <> '_prisma_migrations' LOOP
     EXECUTE format('SELECT EXISTS (SELECT 1 FROM %I.%I LIMIT 1)', r.schemaname, r.tablename) INTO v_has_rows;

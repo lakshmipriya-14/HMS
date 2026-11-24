@@ -32,12 +32,12 @@ export default function ReceptionProfileScreen() {
         </View>
         <Text style={styles.name}>{user?.firstName || 'Front Desk'} {user?.lastName || 'Receptionist'}</Text>
         <Text style={styles.role}>Patient Registration & OPD Front Desk</Text>
-        <Text style={styles.sub}>{user?.email || 'receptionist@aalayamhospital.com'}</Text>
+        <Text style={styles.sub}>{user?.email || 'receptionist@uyirinaihospital.com'}</Text>
         <Text style={styles.deskTag}>Terminal 01 • Ground Floor Main Atrium</Text>
 
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Hospital Facility</Text>
-          <Text style={styles.infoVal}>Aalayam / Uyirinai Hospital</Text>
+          <Text style={styles.infoVal}>Uyirinai Multispeciality Hospital</Text>
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Assigned Counter</Text>

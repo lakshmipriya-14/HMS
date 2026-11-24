@@ -174,7 +174,7 @@ export default function ReceptionRegisterScreen() {
             <CheckCircle2 size={24} color="#059669" />
             <View style={{ flex: 1, marginLeft: 10 }}>
               <Text style={styles.receiptTitle}>Official Patient Registration Receipt</Text>
-              <Text style={styles.receiptSub}>Aalayam Multispeciality Hospital • Ground Floor Front Desk</Text>
+              <Text style={styles.receiptSub}>Uyirinai Multispeciality Hospital • Ground Floor Front Desk</Text>
             </View>
           </View>
 

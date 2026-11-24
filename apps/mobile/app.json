@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "UYIRINAI MULTISPECIALITY HOSPITAL",
-    "slug": "aalayam-hms-mobile",
+    "slug": "uyirinai-hms-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,14 +13,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.aalayam.hospital.hms"
+      "bundleIdentifier": "com.uyirinai.hospital.hms"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0F766E"
       },
-      "package": "com.aalayam.hospital.hms"
+      "package": "com.uyirinai.hospital.hms"
     },
     "web": {
       "bundler": "metro",
@@ -30,7 +30,7 @@
     "experiments": {
       "typedRoutes": true
     },
-    "scheme": "aalayamhms"
+    "scheme": "uyirinaihms"
   }
 }
 
