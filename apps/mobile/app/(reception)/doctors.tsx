@@ -248,3 +248,4 @@ const styles = StyleSheet.create({
   },
   bookBtnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
 });
+

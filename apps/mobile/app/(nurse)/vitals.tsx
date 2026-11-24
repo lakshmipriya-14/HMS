@@ -307,3 +307,4 @@ const styles = StyleSheet.create({
   },
   submitBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
 });
+

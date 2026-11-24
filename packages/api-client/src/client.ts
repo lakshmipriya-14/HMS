@@ -488,3 +488,5 @@ export function createAalayamApiClient(config: ApiClientConfig): AalayamApiClien
 
 export const createKizunaApiClient = createAalayamApiClient;
 export const KizunaApiClient = AalayamApiClient;
+export const createUyirinaiApiClient = createAalayamApiClient;
+export const UyirinaiApiClient = AalayamApiClient;

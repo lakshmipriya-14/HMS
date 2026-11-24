@@ -71,3 +71,4 @@ const styles = StyleSheet.create({
   button: { padding: 12, alignItems: 'center', backgroundColor: theme.colors.primary, borderRadius: 8 },
   buttonText: { color: 'white', fontWeight: '700' },
 });
+

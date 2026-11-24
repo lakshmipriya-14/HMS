@@ -63,32 +63,8 @@ async function seed() {
         skipDuplicates: true,
       });
 
-      // 2. Hospitals (Aalayam & Uyirinai)
+      // 2. Hospital (Uyirinai)
       const hospital = await tx.hospital.upsert({
-        where: { code: 'AALAYAM' },
-        update: {
-          name: 'Aalayam Multispeciality Hospital',
-          verificationStatus: 'VERIFIED',
-          isActive: true,
-        },
-        create: {
-          name: 'Aalayam Multispeciality Hospital',
-          code: 'AALAYAM',
-          tamilName: 'ஆலயம் பல்நோக்கு மருத்துவமனை',
-          addressLine1: '123 Healthcare Ave',
-          city: 'Madurai',
-          state: 'Tamil Nadu',
-          postalCode: '625001',
-          country: 'India',
-          phone: '+91 9876543210',
-          email: 'admin@aalayamhospital.com',
-          licenseNumber: 'HOSP-TN-2026-001',
-          verificationStatus: 'VERIFIED',
-          isActive: true,
-        },
-      });
-
-      const uyirinai = await tx.hospital.upsert({
         where: { code: 'UYIRINAI' },
         update: {
           name: 'Uyirinai Multispeciality Hospital',
@@ -106,7 +82,7 @@ async function seed() {
           country: 'India',
           phone: '+91 9876543210',
           email: 'admin@uyirinai.com',
-          licenseNumber: 'HOSP-TN-2026-002',
+          licenseNumber: 'HOSP-TN-2026-001',
           verificationStatus: 'VERIFIED',
           isActive: true,
         },
@@ -135,16 +111,14 @@ async function seed() {
         { code: 'DEMO-WEST', name: 'Madurai West Branch', address: 'West Madurai', isActive: false },
       ];
       await tx.branch.createMany({
-        data: [hospital.id, uyirinai.id].flatMap(hospitalId =>
-          demoBranches.map(branch => ({
-            ...branch,
-            hospitalId,
-            city: 'Madurai',
-            state: 'Tamil Nadu',
-            country: 'India',
-            phone: '0000000000',
-          }))
-        ),
+        data: demoBranches.map(demoBranch => ({
+          ...demoBranch,
+          hospitalId: hospital.id,
+          city: 'Madurai',
+          state: 'Tamil Nadu',
+          country: 'India',
+          phone: '0000000000',
+        })),
         skipDuplicates: true,
       });
 
@@ -202,40 +176,35 @@ async function seed() {
 
       // --- Staff Accounts ---
 
+      // Helper for role aliases
+      async function setupRoleAliases(emails, firstName, lastName, role, branchId = null, departmentId = null, scopeKey = 'GLOBAL') {
+        let primaryUser = null;
+        for (const email of emails) {
+          const u = await setupStaffUser({ email, firstName, lastName, role, branchId, departmentId, scopeKey });
+          if (!primaryUser) primaryUser = u;
+        }
+        return primaryUser;
+      }
+
       // 1. Super Admin
-      await setupStaffUser({
-        email: 'superadmin@aalayamhospital.com',
-        firstName: 'Super',
-        lastName: 'Admin',
-        role: Role.SUPER_ADMIN,
-        branchId: null,
-        departmentId: null,
-        scopeKey: 'GLOBAL',
-      });
+      await setupRoleAliases(
+        ['superadmin@uyirinai.com', 'superadmin@kizunahospital.com', 'superadmin@aalayamhospital.com'],
+        'Super', 'Admin', Role.SUPER_ADMIN, null, null, 'GLOBAL'
+      );
 
       // 2. Hospital Admin
-      await setupStaffUser({
-        email: 'admin@aalayamhospital.com',
-        firstName: 'Hospital',
-        lastName: 'Admin',
-        role: Role.HOSPITAL_ADMIN,
-        branchId: branch.id,
-        departmentId: null,
-        scopeKey: branch.id,
-      });
+      await setupRoleAliases(
+        ['admin@uyirinai.com', 'hospitaladmin@kizunahospital.com', 'admin@aalayamhospital.com'],
+        'Hospital', 'Admin', Role.HOSPITAL_ADMIN, branch.id, null, `branch:${branch.id}`
+      );
 
       // 3. Doctor (Dr. Rajesh Kumar)
-      const doctorUser = await setupStaffUser({
-        email: 'doctor@aalayamhospital.com',
-        firstName: 'Rajesh',
-        lastName: 'Kumar',
-        role: Role.DOCTOR,
-        branchId: branch.id,
-        departmentId: deptGenMed.id,
-        scopeKey: `${branch.id}:${deptGenMed.id}`,
-      });
+      const doctorUser = await setupRoleAliases(
+        ['doctor@uyirinai.com', 'doctor@kizunahospital.com', 'doctor@aalayamhospital.com', 'doctor.physician@kizunahospital.com'],
+        'Rajesh', 'Kumar', Role.DOCTOR, branch.id, deptGenMed.id, `${branch.id}:${deptGenMed.id}`
+      );
 
-      let doctorEmp = await tx.employee.findUnique({ where: { userId: doctorUser.id } });
+      let doctorEmp = await tx.employee.findFirst({ where: { employeeCode: 'EMP-DOC-001' } });
       if (!doctorEmp) {
         doctorEmp = await tx.employee.create({
           data: {
@@ -273,17 +242,12 @@ async function seed() {
       }
 
       // 4. Staff Nurse (Kavitha Murugan)
-      const nurseUser = await setupStaffUser({
-        email: 'nurse@aalayamhospital.com',
-        firstName: 'Kavitha',
-        lastName: 'Murugan',
-        role: Role.NURSE,
-        branchId: branch.id,
-        departmentId: deptGenMed.id,
-        scopeKey: `${branch.id}:${deptGenMed.id}`,
-      });
+      const nurseUser = await setupRoleAliases(
+        ['nurse@uyirinai.com', 'nurse@kizunahospital.com', 'nurse@aalayamhospital.com'],
+        'Kavitha', 'Murugan', Role.NURSE, branch.id, deptGenMed.id, `${branch.id}:${deptGenMed.id}`
+      );
 
-      let nurseEmp = await tx.employee.findUnique({ where: { userId: nurseUser.id } });
+      let nurseEmp = await tx.employee.findFirst({ where: { employeeCode: 'EMP-NUR-001' } });
       if (!nurseEmp) {
         nurseEmp = await tx.employee.create({
           data: {
@@ -313,17 +277,12 @@ async function seed() {
       }
 
       // 5. Head Nurse (Priya Natarajan)
-      const headNurseUser = await setupStaffUser({
-        email: 'headnurse@aalayamhospital.com',
-        firstName: 'Priya',
-        lastName: 'Natarajan',
-        role: Role.HEAD_NURSE,
-        branchId: branch.id,
-        departmentId: deptGenMed.id,
-        scopeKey: `${branch.id}:${deptGenMed.id}`,
-      });
+      const headNurseUser = await setupRoleAliases(
+        ['headnurse@uyirinai.com', 'headnurse@kizunahospital.com', 'headnurse@aalayamhospital.com'],
+        'Priya', 'Natarajan', Role.HEAD_NURSE, branch.id, deptGenMed.id, `${branch.id}:${deptGenMed.id}`
+      );
 
-      let headNurseEmp = await tx.employee.findUnique({ where: { userId: headNurseUser.id } });
+      let headNurseEmp = await tx.employee.findFirst({ where: { employeeCode: 'EMP-HN-001' } });
       if (!headNurseEmp) {
         headNurseEmp = await tx.employee.create({
           data: {
@@ -353,17 +312,12 @@ async function seed() {
       }
 
       // 6. Receptionist (Priya Dharshini)
-      const recUser = await setupStaffUser({
-        email: 'receptionist@aalayamhospital.com',
-        firstName: 'Priya',
-        lastName: 'Dharshini',
-        role: Role.RECEPTIONIST,
-        branchId: branch.id,
-        departmentId: null,
-        scopeKey: branch.id,
-      });
+      const recUser = await setupRoleAliases(
+        ['reception@uyirinai.com', 'reception@kizunahospital.com', 'receptionist@aalayamhospital.com'],
+        'Priya', 'Dharshini', Role.RECEPTIONIST, branch.id, null, branch.id
+      );
 
-      let recEmp = await tx.employee.findUnique({ where: { userId: recUser.id } });
+      let recEmp = await tx.employee.findFirst({ where: { employeeCode: 'EMP-REC-001' } });
       if (!recEmp) {
         await tx.employee.create({
           data: {
@@ -380,37 +334,58 @@ async function seed() {
       }
 
       // 7. Pharmacist
-      await setupStaffUser({
-        email: 'pharmacist@aalayamhospital.com',
-        firstName: 'Karthik',
-        lastName: 'Raja',
-        role: Role.PHARMACIST,
-        branchId: branch.id,
-        departmentId: null,
-        scopeKey: branch.id,
-      });
+      await setupRoleAliases(
+        ['pharmacy@uyirinai.com', 'pharmacy@kizunahospital.com', 'pharmacist@aalayamhospital.com'],
+        'Karthik', 'Raja', Role.PHARMACIST, branch.id, null, branch.id
+      );
 
       // 8. Lab Technician
-      await setupStaffUser({
-        email: 'lab@aalayamhospital.com',
-        firstName: 'Suresh',
-        lastName: 'Babu',
-        role: Role.LAB_TECHNICIAN,
-        branchId: branch.id,
-        departmentId: null,
-        scopeKey: branch.id,
-      });
+      await setupRoleAliases(
+        ['lab@uyirinai.com', 'lab@kizunahospital.com', 'lab@aalayamhospital.com'],
+        'Suresh', 'Babu', Role.LAB_TECHNICIAN, branch.id, null, branch.id
+      );
 
-      // 9. Patients
-      const patientUser1 = await setupStaffUser({
-        email: 'patient@aalayamhospital.com',
-        firstName: 'Ramesh',
-        lastName: 'Kannan',
-        role: Role.PATIENT,
-        branchId: null,
-        departmentId: null,
-        scopeKey: 'GLOBAL',
-      });
+      // 9. Radiology Staff
+      await setupRoleAliases(
+        ['radiology@uyirinai.com', 'radiology@kizunahospital.com'],
+        'Anand', 'Kumar', Role.RADIOLOGY_STAFF, branch.id, null, branch.id
+      );
+
+      // 10. Billing Staff
+      await setupRoleAliases(
+        ['billing@uyirinai.com', 'billing@kizunahospital.com'],
+        'Sonia', 'Gandhi', Role.BILLING_STAFF, branch.id, null, branch.id
+      );
+
+      // 11. Insurance Staff
+      await setupRoleAliases(
+        ['insurance@uyirinai.com', 'insurance@kizunahospital.com'],
+        'Deepak', 'Sharma', Role.INSURANCE_STAFF, branch.id, null, branch.id
+      );
+
+      // 12. Ward Manager
+      await setupRoleAliases(
+        ['wardmanager@uyirinai.com', 'wardmanager@kizunahospital.com'],
+        'Vijay', 'Kanth', Role.WARD_MANAGER, branch.id, null, branch.id
+      );
+
+      // 13. Ambulance Coordinator
+      await setupRoleAliases(
+        ['ambulance@uyirinai.com', 'ambulance@kizunahospital.com'],
+        'Saravanan', 'M', Role.AMBULANCE_COORDINATOR, branch.id, null, branch.id
+      );
+
+      // 14. Ambulance Driver
+      await setupRoleAliases(
+        ['driver@uyirinai.com', 'driver@kizunahospital.com'],
+        'Murugan', 'D', Role.AMBULANCE_DRIVER, branch.id, null, branch.id
+      );
+
+      // 15. Patients
+      const patientUser1 = await setupRoleAliases(
+        ['patient@uyirinai.com', 'patient@kizunahospital.com', 'patient@aalayamhospital.com'],
+        'Ramesh', 'Kannan', Role.PATIENT, null, null, 'GLOBAL'
+      );
 
       let patient1 = await tx.patient.findUnique({ where: { uhid: 'UHID-2026-0001' } });
       if (!patient1) {

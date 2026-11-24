@@ -962,3 +962,4 @@ const styles = StyleSheet.create({
   },
   printBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
 });
+

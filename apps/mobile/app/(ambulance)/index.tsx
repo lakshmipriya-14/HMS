@@ -549,3 +549,4 @@ const styles = StyleSheet.create({
   handoverCompletedBox: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#ECFDF5', borderRadius: 12, paddingVertical: 14, marginTop: 16, borderWidth: 1, borderColor: '#A7F3D0' },
   handoverCompletedText: { color: '#065F46', fontSize: 13, fontWeight: '800' },
 });
+

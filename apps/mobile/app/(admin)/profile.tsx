@@ -20,7 +20,7 @@ export default function AdminProfileScreen() {
           <ShieldCheck size={36} color="#0F766E" />
         </View>
         <Text style={styles.title}>Hospital Administrator</Text>
-        <Text style={styles.sub}>admin@kizunahospital.com</Text>
+        <Text style={styles.sub}>admin@Uyirinaihospital.com</Text>
         <Text style={styles.roleTag}>SUPER ADMIN PRIVILEGES</Text>
       </View>
 
@@ -42,3 +42,4 @@ const styles = StyleSheet.create({
   logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEE2E2', paddingVertical: 14, borderRadius: 10, gap: 8 },
   logoutText: { color: '#DC2626', fontSize: 14, fontWeight: '700' },
 });
+

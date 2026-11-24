@@ -13,3 +13,4 @@ export function WorkspaceGate({ home, children }: { home: Href; children?: React
   if (normalizedRoleHome !== normalizedHome) return <Redirect href={roleHome[user.role]} />;
   return <>{children}</>;
 }
+

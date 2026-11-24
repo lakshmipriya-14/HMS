@@ -452,3 +452,4 @@ const styles = StyleSheet.create({
   chartBtnText: { color: '#fff', fontSize: 11, fontWeight: '700' },
   careDivider: { height: 1, backgroundColor: '#F1F5F9', marginVertical: 10 },
 });
+

@@ -20,7 +20,7 @@ export default function LabProfileScreen() {
           <FlaskConical size={36} color="#EA580C" />
         </View>
         <Text style={styles.name}>Laboratory Technician</Text>
-        <Text style={styles.sub}>labtech@kizunahospital.com</Text>
+        <Text style={styles.sub}>labtech@Uyirinaihospital.com</Text>
         <Text style={styles.deskTag}>NABL Accredited Pathology Lab</Text>
       </View>
 
@@ -42,3 +42,4 @@ const styles = StyleSheet.create({
   logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEE2E2', paddingVertical: 14, borderRadius: 10, gap: 8 },
   logoutText: { color: '#DC2626', fontSize: 14, fontWeight: '700' },
 });
+

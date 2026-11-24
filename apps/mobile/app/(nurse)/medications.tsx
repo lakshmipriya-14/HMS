@@ -561,3 +561,4 @@ const styles = StyleSheet.create({
   submitExceptionBtn: { backgroundColor: '#DC2626', paddingVertical: 12, borderRadius: 10, alignItems: 'center', marginTop: 14 },
   submitExceptionText: { color: '#fff', fontSize: 12, fontWeight: '800' },
 });
+

@@ -1043,3 +1043,4 @@ const styles = StyleSheet.create({
   completeBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0F766E', paddingVertical: 14, borderRadius: 10, gap: 8 },
   completeBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
 });
+

@@ -775,3 +775,4 @@ const styles = StyleSheet.create({
   submitFeedbackBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0F766E', borderRadius: 10, paddingVertical: 12, marginTop: 14, gap: 6 },
   submitFeedbackBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
 });
+

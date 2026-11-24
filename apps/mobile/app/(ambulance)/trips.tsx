@@ -257,3 +257,4 @@ const styles = StyleSheet.create({
   driverText: { fontSize: 11, color: '#475569' },
   time: { fontSize: 11, color: '#94A3B8' },
 });
+
