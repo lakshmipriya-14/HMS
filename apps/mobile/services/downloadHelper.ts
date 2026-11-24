@@ -344,3 +344,24 @@ export function openPrintableReport(
   return false;
 }
 
+/**
+ * Universal text/document file downloader
+ */
+export function downloadFile(options: { filename: string; content: string; mimeType?: string }): boolean {
+  if (typeof document !== 'undefined') {
+    const blob = new Blob([options.content], { type: options.mimeType || 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = options.filename;
+    link.target = '_self';
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    return true;
+  }
+  return false;
+}
+

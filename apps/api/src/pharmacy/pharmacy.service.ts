@@ -1,11 +1,39 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { DispensePrescriptionDto, AuthUserDto, Role } from '@multispeciality-hms/contracts';
+import { DispensePrescriptionDto, AdjustStockDto, AuthUserDto, Role } from '@multispeciality-hms/contracts';
 import { resolveOperationalScope, assertBranchAccess } from '../common/utils/operational-scope';
 
 @Injectable()
 export class PharmacyService {
   constructor(private prisma: PrismaService) {}
+
+  async adjustStock(dto: AdjustStockDto, userId?: string, actor?: AuthUserDto) {
+    return this.prisma.$transaction(async (tx) => {
+      const medicine = await tx.medicine.findUnique({
+        where: { id: dto.medicineId },
+      });
+      if (!medicine) throw new NotFoundException('Medicine not found');
+
+      if (dto.batchId) {
+        const batch = await tx.medicineBatch.findUnique({
+          where: { id: dto.batchId },
+        });
+        if (batch) {
+          const newQty = Math.max(0, batch.quantity + dto.quantityChange);
+          await tx.medicineBatch.update({
+            where: { id: dto.batchId },
+            data: { quantity: newQty },
+          });
+        }
+      }
+
+      return tx.medicine.update({
+        where: { id: dto.medicineId },
+        data: { currentStock: { increment: dto.quantityChange } },
+        include: { batches: true },
+      });
+    });
+  }
 
   async getMedicines(actor?: AuthUserDto, search?: string, branchId?: string) {
     const where: any = { isActive: true };
