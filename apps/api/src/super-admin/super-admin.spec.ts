@@ -11,7 +11,11 @@ const branch = { name: 'North', code: 'north', address: 'North Road', city: 'Cit
 
 function fixture() {
   const tx = {
-    branch: { create: jest.fn().mockResolvedValue({ id: 'branch', code: 'NORTH' }), findFirst: jest.fn().mockResolvedValue(null) },
+    branch: {
+      create: jest.fn().mockResolvedValue({ id: 'branch', code: 'NORTH' }),
+      findFirst: jest.fn().mockResolvedValue(null),
+      updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+    },
     auditLog: { create: jest.fn().mockResolvedValue({ id: 'audit' }) },
     role: { findUnique: jest.fn().mockResolvedValue({ id: 'role', rolePermissions: [{ permission: { resource: 'USERS', action: 'VIEW' } }] }) },
     hospitalRolePolicy: { upsert: jest.fn().mockResolvedValue({ grants: [] }) },
@@ -51,6 +55,28 @@ describe('Super Admin boundaries', () => {
     const { service, tx } = fixture();
     tx.auditLog.create.mockRejectedValueOnce(new Error('Audit unavailable'));
     await expect(service.createBranch(actor, branch)).rejects.toThrow('Audit unavailable');
+  });
+
+  it('soft-deletes a branch in the caller hospital and audits it in the same transaction', async () => {
+    const { service, transaction, tx } = fixture();
+    await expect(service.deleteBranch(actor, 'branch')).resolves.toEqual({ id: 'branch' });
+    expect(transaction).toHaveBeenCalledTimes(1);
+    expect(tx.branch.updateMany).toHaveBeenCalledWith({
+      where: { id: 'branch', hospitalId: actor.hospitalId, deletedAt: null },
+      data: { isActive: false, deletedAt: expect.any(Date) },
+    });
+    expect(tx.auditLog.create).toHaveBeenCalledWith({ data: expect.objectContaining({
+      action: 'DELETE', resource: 'BRANCH', branchId: 'branch',
+    }) });
+    expect(Reflect.getMetadata(PERMISSIONS_KEY, SuperAdminController.prototype.deleteBranch))
+      .toEqual(['HOSPITALS:DELETE']);
+  });
+
+  it('does not audit a delete when the branch is outside the caller hospital or already deleted', async () => {
+    const { service, tx } = fixture();
+    tx.branch.updateMany.mockResolvedValueOnce({ count: 0 });
+    await expect(service.deleteBranch(actor, 'missing')).rejects.toBeInstanceOf(NotFoundException);
+    expect(tx.auditLog.create).not.toHaveBeenCalled();
   });
 
   it('requires a department and a branch for Department Admin', async () => {

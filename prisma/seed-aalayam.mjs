@@ -88,7 +88,7 @@ async function seed() {
         },
       });
 
-      await tx.hospital.upsert({
+      const uyirinai = await tx.hospital.upsert({
         where: { code: 'UYIRINAI' },
         update: {
           name: 'Uyirinai Multispeciality Hospital',
@@ -127,6 +127,25 @@ async function seed() {
           email: 'main@aalayamhospital.com',
           isActive: true,
         },
+      });
+
+      const demoBranches = [
+        { code: 'DEMO-NORTH', name: 'Madurai North Branch', address: 'North Madurai', isActive: true },
+        { code: 'DEMO-SOUTH', name: 'Madurai South Branch', address: 'South Madurai', isActive: true },
+        { code: 'DEMO-WEST', name: 'Madurai West Branch', address: 'West Madurai', isActive: false },
+      ];
+      await tx.branch.createMany({
+        data: [hospital.id, uyirinai.id].flatMap(hospitalId =>
+          demoBranches.map(branch => ({
+            ...branch,
+            hospitalId,
+            city: 'Madurai',
+            state: 'Tamil Nadu',
+            country: 'India',
+            phone: '0000000000',
+          }))
+        ),
+        skipDuplicates: true,
       });
 
       // 4. Departments

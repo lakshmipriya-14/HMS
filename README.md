@@ -58,80 +58,28 @@ multispeciality-hms/
 
 ## 🚀 Quick Start Guide
 
-### 1. Prerequisites
-- Node.js `v20+` or `v22+`
-- `pnpm` installed globally: `npm install -g pnpm`
-- PostgreSQL instance running locally (or cloud PostgreSQL)
+Follow the [shared PostgreSQL setup](docs/DATABASE_SETUP.md#shared-team-database-and-demo-logins) to create the local team database, apply the full schema, and load synthetic fixtures. The guide lists all 80 demo logins and the commands to start the API and web UI.
 
-### 2. Setup Environment
-```bash
-# Clone the repository
-git clone https://github.com/organization/multispeciality-hms.git
-cd multispeciality-hms
+After configuring the root `.env`, run these commands from the repository root:
 
-# Copy environment variables
-cp .env.example .env
-```
-
-### 3. Install & Seed Database
-```bash
-# Install workspace dependencies
-pnpm install
-
-# Build shared contracts, validation & API client packages
+```powershell
+pnpm install --frozen-lockfile
+pnpm db:team:setup
 pnpm build:packages
-
-# Run database migrations
-pnpm db:migrate
-
-# Seed realistic hospital data & demo accounts
-pnpm db:seed
-```
-
-### 4. Run the Applications
-```bash
-# Start Backend API & Web Application concurrently
 pnpm dev
-
-# Or run individual applications:
-pnpm dev:api       # Starts NestJS API on http://localhost:4000/api/v1
-pnpm dev:web       # Starts React Web App on http://localhost:3000
-pnpm dev:mobile    # Starts Expo Mobile App on http://localhost:8081
 ```
 
-- **Web Dashboard**: [http://localhost:3000](http://localhost:3000)
-- **Backend API**: [http://localhost:4000/api/v1](http://localhost:4000/api/v1)
-- **Interactive Swagger Documentation**: [http://localhost:4000/api/docs](http://localhost:4000/api/docs)
+- **Web dashboard** [localhost:3000](http://localhost:3000)
+- **Backend API** [localhost:4000/api/v1](http://localhost:4000/api/v1)
+- **Swagger** [localhost:4000/api/docs](http://localhost:4000/api/docs)
+
+### Demo login
+
+Use `super_admin@demo.uyirinai.test` with `UyirinaiTeamDemo!24`, or choose a different account from the [demo role list](docs/DATABASE_SETUP.md#shared-team-database-and-demo-logins).
 
 ---
 
-## 🔑 Demo Accounts (Password: `Password@123`)
-
-*Note: The web and mobile login screens include a 1-click role switcher to instantly populate credentials for any role!*
-
-| Role Group | Email Address | Portal Features |
-| :--- | :--- | :--- |
-| **SUPER_ADMIN** | `superadmin@kizunahospital.com` | Hospital Executive Command & Global User Directory |
-| **HOSPITAL_ADMIN** | `hospitaladmin@kizunahospital.com` | Organization Operations & Audit Trail |
-| **DEPARTMENT_ADMIN** | `departmentadmin@kizunahospital.com` | Departmental Rosters & Clinical Queues |
-| **DOCTOR** | `doctor@kizunahospital.com` | Today's OPD Queue, Consultation Notes & Digital Rx |
-| **DOCTOR (Physician)**| `doctor.physician@kizunahospital.com` | General Medicine & Diabetes Follow-ups |
-| **NURSE** | `nurse@kizunahospital.com` | Inpatient Bed Census, Vitals Recording & MAR |
-| **HEAD_NURSE** | `headnurse@kizunahospital.com` | Ward Supervision & Nursing Task Delegation |
-| **RECEPTIONIST** | `reception@kizunahospital.com` | Patient Registration, UHID Issuance & Token Queue |
-| **LAB_TECHNICIAN** | `lab@kizunahospital.com` | Specimen Barcodes, Analyzer Results & Reports |
-| **PHARMACIST** | `pharmacy@kizunahospital.com` | Prescription Queue, Batch Tracking & FEFO Dispensing |
-| **RADIOLOGY_STAFF** | `radiology@kizunahospital.com` | CT/MRI/X-Ray Worklists, Findings & Report Release |
-| **BILLING_STAFF** | `billing@kizunahospital.com` | Consolidated Invoices, Cashier POS (Cash/UPI/Cards) |
-| **INSURANCE_STAFF** | `insurance@kizunahospital.com` | Cashless TPA Claims & Pre-authorization Tracking |
-| **WARD_MANAGER** | `wardmanager@kizunahospital.com` | Visual Bed Layout Map & Housekeeping Turnover |
-| **PATIENT** | `patient@kizunahospital.com` | Digital Health Card, My Prescriptions & Lab Results |
-| **AMBULANCE_COORD** | `ambulance@kizunahospital.com` | 108 Emergency Dispatch & Fleet Tracking |
-| **AMBULANCE_DRIVER** | `driver@kizunahospital.com` | Mobile Driver Run Navigation & ER Trauma Handover |
-
----
-
-## 👥 10-Member Team Ownership
+## 10-Member Team Ownership
 
 | Member | Focus Module | Frontend Directory | Backend Directory | Mobile Directory |
 | :--- | :--- | :--- | :--- | :--- |

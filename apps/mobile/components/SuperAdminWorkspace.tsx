@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
@@ -11,7 +11,7 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import { Href, useRouter } from 'expo-router';
+import { Href, useFocusEffect, useRouter } from 'expo-router';
 import {
   Role,
   SUPER_ADMIN_REPORTS,
@@ -30,7 +30,8 @@ import {
   Square,
   Search,
   X,
-  Filter,
+  ChevronDown,
+  MapPin,
   Download,
   Printer,
   ChevronLeft,
@@ -239,7 +240,8 @@ function useLoad<T>(load: () => Promise<T>, dependencies: string) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dependencies, version]);
-  return { ...state, reload: () => refresh((n) => n + 1) };
+  const reload = useCallback(() => refresh((n) => n + 1), []);
+  return { ...state, reload };
 }
 
 function Notice({ error }: { error?: string }) {
@@ -345,25 +347,36 @@ function Input({
   );
 }
 
-const branchOptions = async () => {
-  const options: [string, string][] = [];
+const loadBranches = async (includeInactive = false) => {
+  const rows: Row[] = [];
   let totalPages = 1;
   for (let page = 1; page <= totalPages; page++) {
     const response = await req<Row[]>('branches', 'GET', undefined, {
-      status: 'ACTIVE',
+      status: includeInactive ? undefined : 'ACTIVE',
       limit: 100,
       page,
     });
-    options.push(
-      ...(response.data ?? []).map((row): [string, string] => [
-        idOf(row),
-        label(row),
-      ])
-    );
+    rows.push(...(response.data ?? []));
     totalPages = response.meta?.totalPages ?? 1;
   }
-  return options;
+  return rows;
 };
+
+const toBranchOptions = (rows: Row[]) =>
+  rows.map((row): [string, string] => [idOf(row), label(row)]);
+
+const branchOptions = async () => toBranchOptions(await loadBranches());
+
+const branchStatuses: [string, string][] = [['', 'All statuses'], ['ACTIVE', 'Active'], ['INACTIVE', 'Inactive']];
+
+function BranchFilterButton({ title, expanded, onPress }: { title: string; expanded: boolean; onPress: () => void }) {
+  return (
+    <Pressable style={styles.branchFilterButton} accessibilityRole="button" accessibilityState={{ expanded }} onPress={onPress}>
+      <Text style={styles.branchFilterLabel} numberOfLines={1}>{title}</Text>
+      <ChevronDown size={16} color="#475569" />
+    </Pressable>
+  );
+}
 
 function Editor({
   fields,
@@ -564,13 +577,18 @@ function Directory({
   section: string;
   navigate: Navigate;
 }) {
+  const isBranchDirectory = section === 'branches';
   const [draft, setDraft] = useState('');
   const [search, setSearch] = useState('');
   const [resource, setResource] = useState('');
   const [resourceFilter, setResourceFilter] = useState('');
   const [status, setStatus] = useState('');
   const [scope, setScope] = useState('');
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [sortOrder, setSortOrder] = useState(isBranchDirectory ? 'asc' : 'desc');
+  const [branchFilters, setBranchFilters] = useState<string[]>([]);
+  const [city, setCity] = useState('');
+  const [branchMenu, setBranchMenu] = useState<'status' | 'city' | 'branches' | 'more' | null>(null);
+  const toggleBranchMenu = (menu: typeof branchMenu) => setBranchMenu((current) => current === menu ? null : menu);
   const [role, setRole] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -579,12 +597,12 @@ function Directory({
   const [editing, setEditing] = useState<Row>();
   const action = useAction();
 
-  const branches = useLoad(
+  const branches = useLoad<Row[]>(
     async () =>
       ['branches', 'admins', 'users', 'departments', 'doctors', 'patients', 'audit-logs'].includes(
         section
       )
-        ? branchOptions()
+        ? loadBranches(isBranchDirectory)
         : [],
     section
   );
@@ -597,7 +615,8 @@ function Directory({
       limit: pageSize,
       search: search || undefined,
       status: status || undefined,
-      branchIds: scope || undefined,
+      city: city || undefined,
+      branchIds: (isBranchDirectory ? branchFilters.join(',') : scope) || undefined,
       sortOrder,
       role: role || undefined,
     };
@@ -622,12 +641,41 @@ function Directory({
       undefined,
       unpaged ? undefined : params
     );
-  }, JSON.stringify([section, page, pageSize, search, status, scope, sortOrder, resourceFilter, role]));
+  }, JSON.stringify([section, page, pageSize, search, status, scope, sortOrder, resourceFilter, role, branchFilters, city]));
+
+  const hasFocused = useRef(false);
+  const { reload: reloadDirectory } = data;
+  const { reload: reloadBranches } = branches;
+  useFocusEffect(useCallback(() => {
+    if (!isBranchDirectory) return;
+    if (hasFocused.current) {
+      reloadDirectory();
+      reloadBranches();
+    }
+    hasFocused.current = true;
+  }, [isBranchDirectory, reloadDirectory, reloadBranches]));
 
   const rows: Row[] = data.value?.data ?? [];
   const meta = data.value?.meta ?? { total: rows.length, totalPages: 1 };
   const max = meta.totalPages ?? 1;
   const totalRecords = meta.total ?? rows.length;
+
+  useEffect(() => {
+    if (isBranchDirectory && branches.value) {
+      const available = new Set(branches.value.map(idOf));
+      const validFilters = branchFilters.filter((id) => available.has(id));
+      if (validFilters.length !== branchFilters.length) {
+        setBranchFilters(validFilters);
+        setPage(1);
+      }
+    }
+  }, [isBranchDirectory, branches.value, branchFilters]);
+
+  useEffect(() => {
+    if (isBranchDirectory && data.value && page > Math.max(max, 1)) {
+      setPage(Math.max(max, 1));
+    }
+  }, [isBranchDirectory, data.value, max, page]);
 
   // Clear all filters back to default
   const clearFilters = () => {
@@ -637,6 +685,13 @@ function Directory({
     setResourceFilter('');
     setStatus('');
     setScope('');
+    setBranchFilters([]);
+    setCity('');
+    setBranchMenu(null);
+    if (isBranchDirectory) {
+      setSortOrder('asc');
+      setPageSize(20);
+    }
     setRole('');
     setPage(1);
     setSelectedIds([]);
@@ -665,15 +720,9 @@ function Directory({
       `${actionLabel} ${selectedIds.length} selected record(s)? This will update status in the database.`,
       async () => {
         for (const id of selectedIds) {
-          if (section === 'branches') {
-            await req(`branches/${segment(id)}/status`, 'PATCH', {
-              isActive: activate,
-            });
-          } else if (section === 'admins' || section === 'users') {
-            await req(`users/${segment(id)}/status`, 'PATCH', {
-              isActive: activate,
-            });
-          }
+          await req(`users/${segment(id)}/status`, 'PATCH', {
+            isActive: activate,
+          });
         }
         setSelectedIds([]);
         data.reload();
@@ -689,7 +738,8 @@ function Directory({
         limit: 1000,
         search: search || undefined,
         status: status || undefined,
-        branchIds: scope || undefined,
+        city: city || undefined,
+        branchIds: (isBranchDirectory ? branchFilters.join(',') : scope) || undefined,
         sortOrder,
         role: role || undefined,
       };
@@ -706,6 +756,17 @@ function Directory({
           sortOrder,
         });
         allRows = (res as any)?.data ?? [];
+      } else if (isBranchDirectory) {
+        let totalPages = 1;
+        for (let exportPage = 1; exportPage <= totalPages; exportPage++) {
+          const response = await req<Row[]>('branches', 'GET', undefined, {
+            ...exportParams,
+            page: exportPage,
+            limit: 100,
+          });
+          allRows.push(...(response.data ?? []));
+          totalPages = response.meta?.totalPages ?? 1;
+        }
       } else {
         const res = await req<Row[]>(
           section === 'master-settings' ? 'master-items' : section,
@@ -829,10 +890,117 @@ function Directory({
     else setEditing(row);
   };
 
+  useEffect(() => {
+    if (!isBranchDirectory) return;
+    const query = draft.trim();
+    if (query === search) return;
+    const timer = setTimeout(() => {
+      setSearch(query);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [draft, search, isBranchDirectory]);
+
+  const cities = [...new Set(branches.value?.map((row) => String(row.city ?? '')).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b));
+
   return (
     <>
+      {isBranchDirectory && (
+        <View style={styles.branchControls}>
+          <View style={styles.branchAdd}>
+            <Button title="+ Add Branch" onPress={() => navigate('add-branch')} />
+          </View>
+          <View style={styles.branchSearch}>
+            <Search size={19} color="#64748b" />
+            <TextInput
+              style={styles.branchSearchInput}
+              accessibilityLabel="Search branches by name, code or city"
+              placeholder="Search branches"
+              placeholderTextColor="#64748b"
+              value={draft}
+              onChangeText={setDraft}
+              returnKeyType="search"
+              onSubmitEditing={() => { setSearch(draft.trim()); setPage(1); }}
+            />
+            {!!draft && (
+              <Pressable accessibilityRole="button" accessibilityLabel="Clear search" hitSlop={8} onPress={() => {
+                setDraft('');
+                setSearch('');
+                setPage(1);
+              }}>
+                <X size={18} color="#64748b" />
+              </Pressable>
+            )}
+          </View>
+          <View style={styles.branchFilterRow}>
+            <BranchFilterButton title={branchStatuses.find(([value]) => value === status)?.[1] ?? 'All statuses'} expanded={branchMenu === 'status'} onPress={() => toggleBranchMenu('status')} />
+            <BranchFilterButton title={city || 'All locations'} expanded={branchMenu === 'city'} onPress={() => toggleBranchMenu('city')} />
+          </View>
+          <View style={styles.branchFilterRow}>
+            <BranchFilterButton title={branchFilters.length ? `Branches (${branchFilters.length})` : 'All branches'} expanded={branchMenu === 'branches'} onPress={() => toggleBranchMenu('branches')} />
+            <BranchFilterButton title="More options" expanded={branchMenu === 'more'} onPress={() => toggleBranchMenu('more')} />
+          </View>
+          {(branchMenu === 'status' || branchMenu === 'city') && (
+            <ScrollView nestedScrollEnabled style={styles.branchMenu} keyboardShouldPersistTaps="handled">
+              {(branchMenu === 'status' ? branchStatuses : [['', 'All locations'], ...cities.map((value) => [value, value])]).map(([value, title]) => {
+                const selected = value === (branchMenu === 'status' ? status : city);
+                return (
+                  <Pressable key={value} style={styles.branchMenuOption} accessibilityRole="radio" accessibilityState={{ checked: selected }} onPress={() => {
+                    if (branchMenu === 'status') setStatus(value);
+                    else setCity(value);
+                    setPage(1);
+                    setBranchMenu(null);
+                  }}>
+                    <Text style={styles.branchFilterLabel}>{title}</Text>
+                    {selected && <CheckCircle2 size={16} color={theme.colors.primary} />}
+                  </Pressable>
+                );
+              })}
+              {branchMenu === 'city' && !branches.value && <Notice error={branches.error} />}
+            </ScrollView>
+          )}
+          {branchMenu === 'branches' && (
+            <ScrollView nestedScrollEnabled style={styles.branchMenu} keyboardShouldPersistTaps="handled">
+              {!branches.value && <Notice error={branches.error} />}
+              {branchFilters.length === 100 && <Text style={styles.muted}>You can select up to 100 branches.</Text>}
+              {branches.value?.map((branch) => {
+                const id = idOf(branch);
+                const checked = branchFilters.includes(id);
+                const disabled = !checked && branchFilters.length >= 100;
+                const Icon = checked ? CheckSquare : Square;
+                return (
+                  <Pressable key={id} style={[styles.branchMenuOption, disabled && styles.disabled]} accessibilityRole="checkbox" accessibilityState={{ checked, disabled }} disabled={disabled} onPress={() => {
+                    setBranchFilters((current) => checked ? current.filter((value) => value !== id) : [...current, id]);
+                    setPage(1);
+                  }}>
+                    <Icon size={18} color={checked ? theme.colors.primary : '#64748b'} />
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.branchFilterLabel}>{label(branch)}</Text>
+                      {!!branch.city && <Text style={styles.branchLocation}>{String(branch.city)}</Text>}
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          )}
+          {branchMenu === 'more' && (
+            <View style={styles.branchOptions}>
+              <Text style={styles.inputLabel}>Sort by name</Text>
+              <Choices options={[['asc', 'A to Z'], ['desc', 'Z to A']]} value={sortOrder} onChange={(value) => { setSortOrder(value); setPage(1); }} />
+              <Text style={styles.inputLabel}>Rows per page</Text>
+              <Choices options={['10', '20', '50', '100'].map((value): [string, string] => [value, value])} value={String(pageSize)} onChange={(value) => { setPageSize(Number(value)); setPage(1); }} />
+            </View>
+          )}
+          {!!(draft || status || city || branchFilters.length || sortOrder !== 'asc' || pageSize !== 20) && (
+            <Pressable accessibilityRole="button" style={styles.branchClear} onPress={clearFilters}>
+              <Text style={styles.branchClearText}>Clear filters</Text>
+            </Pressable>
+          )}
+        </View>
+      )}
       {/* Search & Dynamic Filter Panel */}
-      {!unpaged && (
+      {!unpaged && !isBranchDirectory && (
         <View style={styles.card}>
           <View style={styles.searchRow}>
             <View style={{ flex: 1 }}>
@@ -874,7 +1042,7 @@ function Directory({
           )}
 
           {/* Status Filters */}
-          {['branches', 'admins', 'users', 'departments', 'doctors'].includes(section) && (
+          {['admins', 'users', 'departments', 'doctors'].includes(section) && (
             <View style={{ gap: 4 }}>
               <Text style={styles.inputLabel}>Filter by Status</Text>
               <Choices
@@ -932,12 +1100,11 @@ function Directory({
             </View>
           )}
 
-          {/* Branch Dynamic Dropdown Filter */}
-          {!!branches.value?.length && (
+          {!isBranchDirectory && !!branches.value?.length && (
             <View style={{ gap: 4 }}>
               <Text style={styles.inputLabel}>Filter by Branch</Text>
               <Choices
-                options={[['', 'All branches'], ...branches.value]}
+                options={[['', 'All branches'], ...toBranchOptions(branches.value)]}
                 value={scope}
                 onChange={(value) => {
                   setScope(value);
@@ -978,7 +1145,14 @@ function Directory({
 
       {/* Primary Actions & Export Toolbar */}
       <View style={styles.actions}>
-        <Button title="Refresh" variant="secondary" onPress={data.reload} />
+        <Button
+          title="Refresh"
+          variant="secondary"
+          onPress={() => {
+            reloadDirectory();
+            if (isBranchDirectory) reloadBranches();
+          }}
+        />
 
         {['doctors', 'patients', 'audit-logs', 'branches', 'admins', 'users'].includes(
           section
@@ -1001,12 +1175,6 @@ function Directory({
           </>
         )}
 
-        {section === 'branches' && (
-          <Button
-            title="+ Add Branch"
-            onPress={() => navigate('add-branch')}
-          />
-        )}
         {section === 'admins' && (
           <Button
             title="+ Create Administrator"
@@ -1031,7 +1199,7 @@ function Directory({
       </View>
 
       {/* Bulk Actions Bar (When items are selected) */}
-      {['branches', 'admins', 'users'].includes(section) && rows.length > 0 && (
+      {['admins', 'users'].includes(section) && rows.length > 0 && (
         <View style={styles.bulkActionBar}>
           <TouchableOpacity
             style={styles.selectAllBtn}
@@ -1081,7 +1249,7 @@ function Directory({
               key={idOf(editing)}
               fields={departmentFields}
               initial={editing.id ? editing : undefined}
-              choices={{ branchId: branches.value }}
+              choices={{ branchId: toBranchOptions(branches.value) }}
               onSave={async (body) => {
                 await req(
                   'departments' + (editing.id ? '/' + segment(idOf(editing)) : ''),
@@ -1247,6 +1415,26 @@ function Directory({
           </Text>
           <Button title="Reset Filters" variant="outline" onPress={clearFilters} />
         </View>
+      ) : isBranchDirectory ? (
+        rows.map((row) => (
+          <Pressable
+            key={idOf(row)}
+            accessibilityRole="button"
+            style={[styles.rowCard, styles.branchCard]}
+            onPress={() => open(row)}
+          >
+            <View style={styles.branchCardContent}>
+              <Text style={styles.branchName}>{label(row)}</Text>
+              <View style={styles.branchLocationRow}>
+                <MapPin size={14} color="#64748b" />
+                <Text style={styles.branchLocation}>
+                  {[row.address, row.city].filter(Boolean).join(', ') || 'Location unavailable'}
+                </Text>
+              </View>
+            </View>
+            <ChevronRight size={18} color="#64748b" />
+          </Pressable>
+        ))
       ) : (
         rows.map((row) => {
           const rowId = idOf(row);
@@ -1259,7 +1447,7 @@ function Directory({
               style={[styles.rowCard, isSelected && styles.rowCardSelected]}
             >
               <View style={styles.rowCardTop}>
-                {['branches', 'admins', 'users'].includes(section) && (
+                {['admins', 'users'].includes(section) && (
                   <TouchableOpacity
                     onPress={() => toggleSelect(rowId)}
                     style={{ padding: 4 }}
@@ -1405,6 +1593,8 @@ function Branch({
   id: string;
   navigate: Navigate;
 }) {
+  const router = useRouter();
+  const { user } = useAuth();
   const { width } = useWindowDimensions();
   const isNarrow = width < 480;
   const data = useLoad(
@@ -1442,7 +1632,9 @@ function Branch({
     );
 
   const departments = (row.departments as Row[] | undefined) ?? [];
-  const assignedAdmins = (row.assignedAdmins as Row[] | undefined) ?? [];
+  const assignedAdmin = row.assignedAdmin as Row | undefined;
+  const otherAdmins = ((row.assignedAdmins as Row[] | undefined) ?? [])
+    .filter((admin) => admin.id !== assignedAdmin?.id);
   const doctors = (row.doctors as Row[] | undefined) ?? [];
   const auditHistory = (row.auditHistory as Row[] | undefined) ?? [];
 
@@ -1503,15 +1695,52 @@ function Branch({
               )
             }
           />
+          {user?.permissions.includes('HOSPITALS:DELETE') && (
+            <Button
+              title="Delete Branch"
+              variant="danger"
+              disabled={action.busy}
+              onPress={() =>
+                action.confirm(
+                  `Delete ${label(row)} from the branch directory? Historical records will be preserved.`,
+                  async () => {
+                    await req('branches/' + segment(id), 'DELETE');
+                    router.dismissTo('/(super-admin)/branches');
+                  }
+                )
+              }
+            />
+          )}
         </View>
       </View>
 
       <Feedback action={action} />
 
+      <View style={styles.card}>
+        <Text style={styles.cardHeaderTitle}>Branch Administrator</Text>
+        {assignedAdmin ? (
+          <Pressable
+            accessibilityRole="button"
+            style={styles.adminRowCard}
+            onPress={() => navigate('admin-details', idOf(assignedAdmin))}
+          >
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text style={styles.adminNameLink}>{label(assignedAdmin)}</Text>
+              <Text style={styles.subItemDesc}>
+                {[assignedAdmin.email, assignedAdmin.phone].map(display).filter(Boolean).join(' · ')}
+              </Text>
+            </View>
+            <ExternalLink size={16} color={theme.colors.primary} />
+          </Pressable>
+        ) : (
+          <Text style={styles.muted}>No branch administrator assigned.</Text>
+        )}
+      </View>
+
       {/* Complete Branch Data Card */}
       <View style={styles.card}>
         <Text style={styles.cardHeaderTitle}>Branch Contact & Identity</Text>
-        <Card row={row} />
+        <Card row={Object.fromEntries(branchFields.map(([key]) => [key, row[key]]))} />
       </View>
 
       {/* Departments in this Branch */}
@@ -1544,16 +1773,13 @@ function Branch({
         )}
       </View>
 
-      {/* Assigned Administrators (With Clickable Link to Profile!) */}
-      <View style={styles.card}>
-        <Text style={styles.cardHeaderTitle}>
-          Assigned Administrators ({assignedAdmins.length})
-        </Text>
-        {assignedAdmins.length === 0 ? (
-          <Text style={styles.muted}>No administrator assigned yet.</Text>
-        ) : (
+      {otherAdmins.length > 0 && (
+        <View style={styles.card}>
+          <Text style={styles.cardHeaderTitle}>
+            Other Assigned Administrators ({otherAdmins.length})
+          </Text>
           <View style={{ gap: 8 }}>
-            {assignedAdmins.map((adm) => {
+            {otherAdmins.map((adm) => {
               const rolesStr = Array.isArray(adm.userRoles)
                 ? adm.userRoles.map((r: any) => r.role?.name || r.name).join(', ')
                 : 'Hospital Admin';
@@ -1576,8 +1802,8 @@ function Branch({
               );
             })}
           </View>
-        )}
-      </View>
+        </View>
+      )}
 
       {/* Assigned Specialist Doctors */}
       <View style={styles.card}>
@@ -2405,6 +2631,23 @@ const styles = StyleSheet.create({
   },
   inputClearBtn: { position: 'absolute', right: 10, padding: 4 },
   searchRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
+  branchControls: { gap: 8 },
+  branchAdd: { alignItems: 'flex-start' },
+  branchSearch: { flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 12, minHeight: 46, borderWidth: 1, borderColor: '#d8e0e8', borderRadius: 10, backgroundColor: '#ffffff' },
+  branchSearchInput: { flex: 1, minHeight: 44, fontSize: 14, color: '#111827' },
+  branchFilterRow: { flexDirection: 'row', gap: 8 },
+  branchFilterButton: { flex: 1, minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 6, paddingHorizontal: 11, borderWidth: 1, borderColor: '#d8e0e8', borderRadius: 9, backgroundColor: '#ffffff' },
+  branchFilterLabel: { color: '#111827', fontSize: 13, fontWeight: '600', flexShrink: 1 },
+  branchMenu: { maxHeight: 240, borderWidth: 1, borderColor: '#d8e0e8', borderRadius: 10, backgroundColor: '#ffffff' },
+  branchMenuOption: { flexDirection: 'row', alignItems: 'center', gap: 9, minHeight: 44, paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#e2e8f0' },
+  branchOptions: { padding: 12, gap: 8, borderWidth: 1, borderColor: '#d8e0e8', borderRadius: 10, backgroundColor: '#ffffff' },
+  branchClear: { alignSelf: 'flex-start', paddingVertical: 6 },
+  branchClearText: { color: theme.colors.primary, fontSize: 13, fontWeight: '700' },
+  branchCard: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  branchCardContent: { flex: 1, gap: 5 },
+  branchName: { color: '#111827', fontSize: 16, fontWeight: '800' },
+  branchLocationRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 5 },
+  branchLocation: { flexShrink: 1, color: '#475569', fontSize: 13, lineHeight: 17 },
   filterMetaRow: {
     flexDirection: 'row',
     alignItems: 'center',
