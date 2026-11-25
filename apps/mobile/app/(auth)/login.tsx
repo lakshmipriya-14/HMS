@@ -6,7 +6,7 @@ import type { PasswordResetProof } from '@multispeciality-hms/contracts';
 import { useAuth } from '../../hooks/useAuth';
 import { roleHome } from '../../constants/role-home';
 import { UyirinaiTheme } from '../../constants/theme';
-import { mobileApiClient } from '../../services/api';
+import { mobileApiClient, API_BASE_URL } from '../../services/api';
 
 type Screen = 'login' | 'request' | 'verify' | 'reset' | 'redeem';
 const titles = {
@@ -60,8 +60,17 @@ export default function MobileLogin() {
         }
         change('login'); setFeedback('Password saved. Sign in to continue.');
       }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'The request could not be completed.');
+    } catch (e: any) {
+      const msg = e instanceof Error ? e.message : 'The request could not be completed.';
+      if (
+        msg.toLowerCase().includes('network error') ||
+        e?.code === 'ERR_NETWORK' ||
+        (e?.isAxiosError && !e?.response)
+      ) {
+        setError(`Network Error: Cannot connect to API at ${API_BASE_URL}. Ensure the backend server is running with 'pnpm dev:api'.`);
+      } else {
+        setError(msg);
+      }
     } finally { setBusy(false); }
   }
 

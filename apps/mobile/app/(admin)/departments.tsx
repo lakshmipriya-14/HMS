@@ -20,6 +20,9 @@ import {
   CheckCircle,
   XCircle,
   X,
+  Edit2,
+  Archive,
+  Filter,
 } from 'lucide-react-native';
 import { mobileApiClient } from '../../services/api';
 import { AdminHeader } from '../../components/AdminHeader';
@@ -31,15 +34,19 @@ export default function AdminDepartmentsScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
 
   // Modals
   const [createModal, setCreateModal] = useState(false);
+  const [editModal, setEditModal] = useState<any | null>(null);
   const [assignModal, setAssignModal] = useState<{ type: 'hod' | 'admin'; dept: any } | null>(null);
 
   // Form states
   const [formName, setFormName] = useState('');
   const [formCode, setFormCode] = useState('');
   const [formDesc, setFormDesc] = useState('');
+  const [editName, setEditName] = useState('');
+  const [editDesc, setEditDesc] = useState('');
   const [selectedPersonId, setSelectedPersonId] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -91,6 +98,53 @@ export default function AdminDepartmentsScreen() {
     }
   };
 
+  const handleEdit = async () => {
+    if (!editModal || !editName) {
+      Alert.alert('Required', 'Department name is required.');
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await mobileApiClient.hospitalAdmin.updateDepartment(editModal.id, {
+        name: editName,
+        description: editDesc,
+      });
+      setEditModal(null);
+      await loadData();
+      Alert.alert('Success', 'Department updated successfully.');
+    } catch (err: any) {
+      Alert.alert('Update Failed', err.message || 'Failed to update department');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleArchive = (dept: any) => {
+    Alert.alert(
+      'Archive Department',
+      `Are you sure you want to archive "${dept.name}" (${dept.code})? This check ensures no active doctors or inpatients are dependent on it.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Archive',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setSubmitting(true);
+              await mobileApiClient.hospitalAdmin.archiveDepartment(dept.id);
+              await loadData();
+              Alert.alert('Archived', `Department ${dept.name} has been archived.`);
+            } catch (err: any) {
+              Alert.alert('Cannot Archive', err.message || 'Department has active dependencies.');
+            } finally {
+              setSubmitting(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleAssign = async () => {
     if (!assignModal || !selectedPersonId) {
       Alert.alert('Selection Required', 'Please select an individual to assign.');
@@ -124,14 +178,20 @@ export default function AdminDepartmentsScreen() {
     }
   };
 
-  const filtered = departments.filter((d) =>
-    d.name.toLowerCase().includes(search.toLowerCase()) ||
-    d.code.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = departments.filter((d) => {
+    const matchesSearch =
+      d.name.toLowerCase().includes(search.toLowerCase()) ||
+      d.code.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === 'ALL' ||
+      (statusFilter === 'ACTIVE' && d.isActive) ||
+      (statusFilter === 'INACTIVE' && !d.isActive);
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Management" subtitle="Clinical Governance" />
+      <AdminHeader title="Department Management" subtitle="Clinical Governance & Units" />
 
       {/* Action Bar */}
       <View style={styles.actionBar}>
@@ -154,6 +214,26 @@ export default function AdminDepartmentsScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Filter Tabs */}
+      <View style={styles.filterRow}>
+        {(['ALL', 'ACTIVE', 'INACTIVE'] as const).map((tab) => (
+          <TouchableOpacity
+            key={tab}
+            style={[styles.filterChip, statusFilter === tab && styles.filterChipActive]}
+            onPress={() => setStatusFilter(tab)}
+          >
+            <Text
+              style={[
+                styles.filterChipText,
+                statusFilter === tab && styles.filterChipTextActive,
+              ]}
+            >
+              {tab === 'ALL' ? `All (${departments.length})` : tab}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       {loading ? (
         <View style={styles.centerLoading}>
           <ActivityIndicator size="large" color="#0F766E" />
@@ -166,83 +246,111 @@ export default function AdminDepartmentsScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#0F766E" />
           }
         >
-          {filtered.map((dept) => {
-            const admin = dept.departmentAdmins?.[0]?.user;
-            return (
-              <View key={dept.id} style={styles.card}>
-                <View style={styles.cardHeader}>
-                  <View style={styles.codeBadge}>
-                    <Text style={styles.codeText}>{dept.code}</Text>
-                  </View>
-                  <View style={{ flex: 1, marginLeft: 10 }}>
-                    <Text style={styles.cardTitle}>{dept.name}</Text>
-                    <Text style={styles.cardDesc} numberOfLines={1}>
-                      {dept.description || 'Clinical speciality unit'}
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    style={[
-                      styles.statusPill,
-                      { backgroundColor: dept.isActive ? '#D1FAE5' : '#FEE2E2' },
-                    ]}
-                    onPress={() => handleToggleStatus(dept.id)}
-                  >
-                    <Text
+          {filtered.length === 0 ? (
+            <View style={styles.emptyCard}>
+              <Text style={styles.emptyText}>No departments match the criteria.</Text>
+            </View>
+          ) : (
+            filtered.map((dept) => {
+              const admin = dept.departmentAdmins?.[0]?.user;
+              return (
+                <View key={dept.id} style={styles.card}>
+                  <View style={styles.cardHeader}>
+                    <View style={styles.codeBadge}>
+                      <Text style={styles.codeText}>{dept.code}</Text>
+                    </View>
+                    <View style={{ flex: 1, marginLeft: 10 }}>
+                      <Text style={styles.cardTitle}>{dept.name}</Text>
+                      <Text style={styles.cardDesc} numberOfLines={1}>
+                        {dept.description || 'Clinical speciality unit'}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
                       style={[
-                        styles.statusText,
-                        { color: dept.isActive ? '#059669' : '#DC2626' },
+                        styles.statusPill,
+                        { backgroundColor: dept.isActive ? '#D1FAE5' : '#FEE2E2' },
                       ]}
+                      onPress={() => handleToggleStatus(dept.id)}
                     >
-                      {dept.isActive ? 'ACTIVE' : 'INACTIVE'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* HOD & Admin Details */}
-                <View style={styles.metaBox}>
-                  <View style={styles.metaRow}>
-                    <UserCheck size={14} color="#0F766E" />
-                    <Text style={styles.metaLabel}>Head of Dept:</Text>
-                    <Text style={styles.metaVal}>
-                      {dept.hod?.user?.name || 'Unassigned'}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => setAssignModal({ type: 'hod', dept })}
-                    >
-                      <Text style={styles.changeLink}>Change</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  <View style={styles.metaRow}>
-                    <Shield size={14} color="#2563EB" />
-                    <Text style={styles.metaLabel}>Dept Admin:</Text>
-                    <Text style={styles.metaVal}>
-                      {admin?.name || 'Unassigned (Required)'}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => setAssignModal({ type: 'admin', dept })}
-                    >
-                      <Text style={[styles.changeLink, { color: '#2563EB' }]}>
-                        {admin ? 'Replace' : 'Assign'}
+                      <Text
+                        style={[
+                          styles.statusText,
+                          { color: dept.isActive ? '#059669' : '#DC2626' },
+                        ]}
+                      >
+                        {dept.isActive ? 'ACTIVE' : 'INACTIVE'}
                       </Text>
                     </TouchableOpacity>
                   </View>
-                </View>
 
-                <View style={styles.cardFooter}>
-                  <Text style={styles.footerStat}>
-                    👨‍⚕️ {dept.doctors?.length || 0} Doctors
-                  </Text>
-                  <Text style={styles.footerStat}>
-                    🛏️ {dept.wards?.length || 0} Wards
-                  </Text>
-                  <Text style={styles.footerStat}>
-                    🏥 Branch: {dept.branch?.name || 'Main Campus'}
-                  </Text>
+                  {/* HOD & Admin Details */}
+                  <View style={styles.metaBox}>
+                    <View style={styles.metaRow}>
+                      <UserCheck size={14} color="#0F766E" />
+                      <Text style={styles.metaLabel}>Head of Dept:</Text>
+                      <Text style={styles.metaVal}>
+                        {dept.hod?.user?.name || 'Unassigned'}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => setAssignModal({ type: 'hod', dept })}
+                      >
+                        <Text style={styles.changeLink}>Change</Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.metaRow}>
+                      <Shield size={14} color="#2563EB" />
+                      <Text style={styles.metaLabel}>Dept Admin:</Text>
+                      <Text style={styles.metaVal}>
+                        {admin?.name || 'Unassigned (Required)'}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => setAssignModal({ type: 'admin', dept })}
+                      >
+                        <Text style={[styles.changeLink, { color: '#2563EB' }]}>
+                          {admin ? 'Replace' : 'Assign'}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  {/* Actions & Stats */}
+                  <View style={styles.cardFooter}>
+                    <View style={styles.footerStats}>
+                      <Text style={styles.footerStat}>
+                        👨‍⚕️ {dept.doctors?.length || 0} Doctors
+                      </Text>
+                      <Text style={styles.footerStat}>
+                        🛏️ {dept.wards?.length || 0} Wards
+                      </Text>
+                    </View>
+
+                    <View style={styles.cardActions}>
+                      <TouchableOpacity
+                        style={styles.actionIconBtn}
+                        onPress={() => {
+                          setEditModal(dept);
+                          setEditName(dept.name);
+                          setEditDesc(dept.description || '');
+                        }}
+                      >
+                        <Edit2 size={15} color="#0F766E" />
+                        <Text style={styles.actionIconText}>Edit</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={[styles.actionIconBtn, { borderColor: '#FECDD3' }]}
+                        onPress={() => handleArchive(dept)}
+                      >
+                        <Archive size={15} color="#E11D48" />
+                        <Text style={[styles.actionIconText, { color: '#E11D48' }]}>Archive</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </View>
-              </View>
-            );
-          })}
+              );
+            })
+          )}
         </ScrollView>
       )}
 
@@ -298,6 +406,49 @@ export default function AdminDepartmentsScreen() {
         </View>
       </Modal>
 
+      {/* Edit Department Modal */}
+      <Modal visible={!!editModal} transparent animationType="slide">
+        <View style={styles.modalBg}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHead}>
+              <Text style={styles.modalTitle}>Edit Department ({editModal?.code})</Text>
+              <TouchableOpacity onPress={() => setEditModal(null)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.fieldLabel}>Department Name</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="Department Name"
+              value={editName}
+              onChangeText={setEditName}
+            />
+
+            <Text style={styles.fieldLabel}>Description</Text>
+            <TextInput
+              style={[styles.fieldInput, { height: 70 }]}
+              placeholder="Description & Clinical Scope"
+              multiline
+              value={editDesc}
+              onChangeText={setEditDesc}
+            />
+
+            <TouchableOpacity
+              style={styles.submitBtn}
+              onPress={handleEdit}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.submitBtnText}>Save Changes</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {/* Assign Modal */}
       <Modal visible={!!assignModal} transparent animationType="slide">
         <View style={styles.modalBg}>
@@ -332,7 +483,7 @@ export default function AdminDepartmentsScreen() {
                   >
                     <View style={{ flex: 1 }}>
                       <Text style={styles.personName}>
-                        {p.user?.name || p.name}
+                        {p.user?.name || `${p.firstName || ''} ${p.lastName || ''}`.trim() || p.name}
                       </Text>
                       <Text style={styles.personSub}>
                         {p.specialization || p.employee?.designation || p.email}
@@ -401,8 +552,46 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
   },
+  filterRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+    gap: 8,
+  },
+  filterChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 20,
+    backgroundColor: '#F1F5F9',
+  },
+  filterChipActive: {
+    backgroundColor: '#0F766E',
+  },
+  filterChipText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#64748B',
+  },
+  filterChipTextActive: {
+    color: '#FFFFFF',
+  },
   scroll: { flex: 1 },
   scrollContent: { padding: 14, paddingBottom: 30 },
+  emptyCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 24,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  emptyText: {
+    color: '#64748B',
+    fontSize: 13,
+  },
   card: {
     backgroundColor: '#FFFFFF',
     borderRadius: 14,
@@ -476,15 +665,39 @@ const styles = StyleSheet.create({
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginTop: 10,
     paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: '#F1F5F9',
   },
+  footerStats: {
+    flexDirection: 'row',
+    gap: 12,
+  },
   footerStat: {
-    fontSize: 10,
+    fontSize: 11,
     color: '#64748B',
     fontWeight: '600',
+  },
+  cardActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  actionIconBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#CCFBF1',
+    gap: 4,
+  },
+  actionIconText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#0F766E',
   },
   modalBg: {
     flex: 1,
@@ -502,50 +715,60 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 16,
   },
   modalTitle: {
-    fontSize: 16,
-    fontWeight: '800',
+    fontSize: 17,
+    fontWeight: '700',
     color: '#0F172A',
   },
   fieldLabel: {
     fontSize: 12,
-    fontWeight: '700',
-    color: '#334155',
+    fontWeight: '600',
+    color: '#475569',
+    marginBottom: 6,
     marginTop: 10,
-    marginBottom: 4,
   },
   fieldInput: {
     backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 10,
+    borderColor: '#CBD5E1',
+    borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    fontSize: 13,
+    fontSize: 14,
     color: '#0F172A',
+  },
+  submitBtn: {
+    backgroundColor: '#0F766E',
+    borderRadius: 10,
+    paddingVertical: 13,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  submitBtnText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
   },
   noticeText: {
     fontSize: 12,
     color: '#64748B',
-    backgroundColor: '#F1F5F9',
-    padding: 10,
-    borderRadius: 8,
-    lineHeight: 16,
+    lineHeight: 18,
+    marginBottom: 8,
   },
   personOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
+    padding: 12,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    borderRadius: 10,
     marginBottom: 8,
   },
   personOptionSelected: {
     borderColor: '#0F766E',
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#F0FDFA',
   },
   personName: {
     fontSize: 13,
@@ -556,17 +779,5 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#64748B',
     marginTop: 2,
-  },
-  submitBtn: {
-    backgroundColor: '#0F766E',
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  submitBtnText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
   },
 });

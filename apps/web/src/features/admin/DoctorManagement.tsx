@@ -17,6 +17,7 @@ import {
   AlertCircle,
   Phone,
   Mail,
+  Power,
 } from 'lucide-react';
 
 export const DoctorManagement: React.FC = () => {
@@ -130,6 +131,21 @@ export const DoctorManagement: React.FC = () => {
       await loadData();
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to toggle availability');
+    }
+  };
+
+  const handleToggleDoctorStatus = async (doc: any) => {
+    try {
+      setErrorMessage('');
+      const isCurrentlyActive = doc.employee?.user?.isActive;
+      if (isCurrentlyActive && !window.confirm(`Are you sure you want to deactivate Dr. ${doc.employee?.user?.lastName || ''}? This checks for active appointments.`)) {
+        return;
+      }
+      await apiClient.hospitalAdmin.toggleDoctorStatus(doc.id);
+      setSuccessMessage(`Dr. ${doc.employee?.user?.lastName || ''} account status updated.`);
+      await loadData();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to update doctor status');
     }
   };
 
@@ -343,20 +359,35 @@ export const DoctorManagement: React.FC = () => {
                     </span>
                   </div>
 
-                  <button
-                    onClick={() => {
-                      setSelectedDoctor(doc);
-                      setScheduleData({
-                        availableDays: doc.availableDays || ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
-                        shift: doc.shift || 'MORNING',
-                        isAvailableToday: doc.isAvailableToday,
-                      });
-                      setScheduleModalOpen(true);
-                    }}
-                    className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs transition-all"
-                  >
-                    Set Schedule
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleToggleDoctorStatus(doc)}
+                      className={`flex items-center gap-1 px-2.5 py-1 font-semibold rounded-lg text-xs transition-all ${
+                        doc.employee?.user?.isActive
+                          ? 'bg-rose-50 text-rose-700 hover:bg-rose-100'
+                          : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                      }`}
+                      title={doc.employee?.user?.isActive ? 'Deactivate Doctor' : 'Activate Doctor'}
+                    >
+                      <Power className="w-3.5 h-3.5" />
+                      {doc.employee?.user?.isActive ? 'Deactivate' : 'Activate'}
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setSelectedDoctor(doc);
+                        setScheduleData({
+                          availableDays: doc.availableDays || ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
+                          shift: doc.shift || 'MORNING',
+                          isAvailableToday: doc.isAvailableToday,
+                        });
+                        setScheduleModalOpen(true);
+                      }}
+                      className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs transition-all"
+                    >
+                      Set Schedule
+                    </button>
+                  </div>
                 </div>
               </div>
             );

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthUserDto } from '@multispeciality-hms/contracts';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { RequirePermissions, Scoped } from '../common/decorators/roles.decorator';
@@ -112,6 +112,17 @@ export class DepartmentsController {
     const data = await this.service.getDepartmentStats(actor, id);
     return {
       message: 'Department statistics retrieved',
+      data,
+    };
+  }
+
+  @Delete(':id')
+  @RequirePermissions('DEPARTMENTS:DELETE')
+  @ApiOperation({ summary: 'Archive department (enforces no active doctors or inpatients)' })
+  async archive(@Param('id') id: string, @CurrentUser() actor: AuthUserDto) {
+    const data = await this.service.archiveDepartment(actor, id);
+    return {
+      message: 'Department archived successfully',
       data,
     };
   }

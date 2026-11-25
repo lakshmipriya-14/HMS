@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { apiClient } from '../../services/api';
 import {
   Settings,
   Building2,
@@ -9,10 +10,14 @@ import {
   Shield,
   Save,
   CheckCircle2,
+  AlertCircle,
 } from 'lucide-react';
 
 export const HospitalSettings: React.FC = () => {
+  const [hospitalId, setHospitalId] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
   const [saved, setSaved] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
     name: 'Kizuna Multispeciality Hospital',
     tamilName: 'கிஜுனா பன்னோக்கு மருத்துவமனை',
@@ -30,10 +35,49 @@ export const HospitalSettings: React.FC = () => {
     emergencyHours: '24 Hours / 7 Days (Continuous Emergency Care)',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        setLoading(true);
+        const me = await apiClient.auth.getMe();
+        const userHospId = me.data?.hospitalId;
+        if (userHospId) {
+          setHospitalId(userHospId);
+        }
+      } catch (err: any) {
+        console.error('Failed to load user hospital:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadSettings();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    if (!hospitalId) {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+      return;
+    }
+    try {
+      setErrorMessage('');
+      await apiClient.hospitalAdmin.updateHospitalSettings(hospitalId, {
+        name: formData.name,
+        tamilName: formData.tamilName,
+        addressLine1: formData.addressLine1,
+        city: formData.city,
+        state: formData.state,
+        postalCode: formData.postalCode,
+        phone: formData.phone,
+        emergencyPhone: formData.emergencyPhone,
+        email: formData.email,
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to update hospital settings');
+    }
   };
 
   return (

@@ -243,4 +243,69 @@ export class AppointmentsService {
       },
     });
   }
+
+  async findAll(
+    actor: AuthUserDto,
+    params?: {
+      date?: string;
+      departmentId?: string;
+      doctorId?: string;
+      status?: string;
+      search?: string;
+      requestedBranchId?: string;
+    }
+  ) {
+    const scope = appointmentReadScope(actor, params?.requestedBranchId);
+    const andClauses: Prisma.AppointmentWhereInput[] = [scope];
+
+    if (params?.date) {
+      const d = new Date(params.date);
+      d.setHours(0, 0, 0, 0);
+      const nextDay = new Date(d);
+      nextDay.setDate(nextDay.getDate() + 1);
+      andClauses.push({
+        appointmentDate: { gte: d, lt: nextDay },
+      });
+    }
+
+    if (params?.departmentId) {
+      andClauses.push({ departmentId: params.departmentId });
+    }
+
+    if (params?.doctorId) {
+      andClauses.push({ doctorId: params.doctorId });
+    }
+
+    if (params?.status) {
+      andClauses.push({ status: params.status });
+    }
+
+    if (params?.search) {
+      andClauses.push({
+        OR: [
+          { appointmentNumber: { contains: params.search, mode: 'insensitive' } },
+          { patient: { firstName: { contains: params.search, mode: 'insensitive' } } },
+          { patient: { lastName: { contains: params.search, mode: 'insensitive' } } },
+          { patient: { uhid: { contains: params.search, mode: 'insensitive' } } },
+          { patient: { phone: { contains: params.search, mode: 'insensitive' } } },
+        ],
+      });
+    }
+
+    return this.prisma.appointment.findMany({
+      where: { AND: andClauses },
+      orderBy: [{ appointmentDate: 'desc' }, { tokenNumber: 'asc' }],
+      include: {
+        patient: { select: { id: true, uhid: true, firstName: true, lastName: true, phone: true, gender: true, dateOfBirth: true } },
+        doctor: {
+          include: {
+            employee: { include: { user: { select: { firstName: true, lastName: true } } } },
+            department: { select: { id: true, name: true, code: true } },
+          },
+        },
+        department: { select: { id: true, name: true, code: true } },
+      },
+      take: 100,
+    });
+  }
 }

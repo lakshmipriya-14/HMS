@@ -280,4 +280,54 @@ export class DepartmentsService {
       wardsCount,
     };
   }
+
+  async archiveDepartment(actor: AuthUserDto, id: string) {
+    const department = await this.findOne(actor, id);
+    const scope = resolveOperationalScope(actor, department.branchId || undefined);
+
+    const [doctorCount, activeAdmissions] = await Promise.all([
+      this.prisma.doctor.count({
+        where: { departmentId: id, employee: { user: { isActive: true } } },
+      }),
+      this.prisma.admission.count({
+        where: { ward: { departmentId: id }, status: 'ADMITTED' },
+      }),
+    ]);
+
+    if (activeAdmissions > 0) {
+      throw new BadRequestException(
+        `Cannot archive department with ${activeAdmissions} active admitted patients. Reassign or discharge patients first.`
+      );
+    }
+
+    if (doctorCount > 0) {
+      throw new BadRequestException(
+        `Cannot archive department with ${doctorCount} active doctors assigned. Reassign doctors first.`
+      );
+    }
+
+    const updated = await this.prisma.department.update({
+      where: { id },
+      data: {
+        isActive: false,
+        deletedAt: new Date(),
+      },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        hospitalId: scope.hospitalId,
+        branchId: department.branchId,
+        userId: actor.id,
+        userEmail: actor.email,
+        userRole: actor.role,
+        action: 'ARCHIVE',
+        resource: 'DEPARTMENT',
+        resourceId: id,
+        details: { name: department.name, code: department.code },
+      },
+    });
+
+    return updated;
+  }
 }

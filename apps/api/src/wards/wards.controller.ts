@@ -215,4 +215,39 @@ export class WardsController {
       data,
     };
   }
+
+  @Patch('beds/:bedId')
+  @RequirePermissions('BEDS:UPDATE')
+  @ApiOperation({ summary: 'Update bed number, room number, type, or daily rate' })
+  async updateBed(
+    @Param('bedId') bedId: string,
+    @CurrentUser() actor: AuthUserDto,
+    @Body()
+    dto: {
+      roomNumber?: string;
+      bedNumber?: string;
+      type?: string;
+      dailyRate?: number;
+    }
+  ) {
+    const data = await this.service.updateBed(actor, bedId, dto);
+    return {
+      message: 'Bed details updated successfully',
+      data,
+    };
+  }
+
+  @Post('beds/bulk-status')
+  @RequirePermissions('BEDS:UPDATE')
+  @ApiOperation({ summary: 'Bulk update bed statuses' })
+  async bulkUpdateBedStatus(
+    @CurrentUser() actor: AuthUserDto,
+    @Body() dto: { bedIds: string[]; status: string }
+  ) {
+    const data = await this.service.bulkUpdateBedStatus(actor, dto.bedIds, dto.status);
+    return {
+      message: `Successfully updated ${data.updatedCount} beds to ${data.status}`,
+      data,
+    };
+  }
 }

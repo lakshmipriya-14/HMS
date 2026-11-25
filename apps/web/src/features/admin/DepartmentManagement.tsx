@@ -16,6 +16,7 @@ import {
   BedDouble,
   CheckCircle2,
   AlertCircle,
+  Archive,
 } from 'lucide-react';
 
 export const DepartmentManagement: React.FC = () => {
@@ -135,6 +136,23 @@ export const DepartmentManagement: React.FC = () => {
       setErrorMessage(err.message || 'Failed to assign HOD');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleArchiveDepartment = async (dept: any) => {
+    if (!window.confirm(`Are you sure you want to archive department "${dept.name}"? This requires no active inpatients or assigned doctors.`)) {
+      return;
+    }
+    try {
+      setLoading(true);
+      setErrorMessage('');
+      await apiClient.hospitalAdmin.archiveDepartment(dept.id);
+      setSuccessMessage(`Department "${dept.name}" archived successfully.`);
+      await loadData();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to archive department');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -356,17 +374,26 @@ export const DepartmentManagement: React.FC = () => {
                     className="flex items-center gap-1 font-semibold text-slate-600 hover:text-slate-900"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
-                    Edit Info
+                    Edit
                   </button>
 
                   <button
                     onClick={() => handleToggleStatus(dept)}
                     className={`flex items-center gap-1 font-semibold ${
-                      dept.isActive ? 'text-rose-600 hover:text-rose-800' : 'text-emerald-600 hover:text-emerald-800'
+                      dept.isActive ? 'text-amber-600 hover:text-amber-800' : 'text-emerald-600 hover:text-emerald-800'
                     }`}
                   >
                     <Power className="w-3.5 h-3.5" />
                     {dept.isActive ? 'Deactivate' : 'Activate'}
+                  </button>
+
+                  <button
+                    onClick={() => handleArchiveDepartment(dept)}
+                    className="flex items-center gap-1 font-semibold text-rose-600 hover:text-rose-800"
+                    title="Archive Department"
+                  >
+                    <Archive className="w-3.5 h-3.5" />
+                    Archive
                   </button>
                 </div>
               </div>

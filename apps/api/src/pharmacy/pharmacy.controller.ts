@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { PharmacyService } from './pharmacy.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { RequirePermissions, Scoped } from '../common/decorators/roles.decorator';
@@ -128,6 +128,108 @@ export class PharmacyController {
     const data = await this.service.getExpiryAlerts(actor, branchId);
     return {
       message: 'Expiry alerts retrieved',
+      data,
+    };
+  }
+
+  @Post('medicines')
+  @RequirePermissions('PHARMACY_INVENTORY:CREATE')
+  @ApiOperation({ summary: 'Add a new medicine to catalogue formulary' })
+  async createMedicine(
+    @CurrentUser() actor: AuthUserDto,
+    @Body()
+    dto: {
+      code?: string;
+      brandName: string;
+      genericName: string;
+      category: string;
+      strength: string;
+      dosageForm: string;
+      manufacturer: string;
+      unitPrice: number;
+      reorderLevel?: number;
+      initialStock?: number;
+      batchNumber?: string;
+      expiryDate?: string;
+      branchId?: string;
+    }
+  ) {
+    const data = await this.service.createMedicine(actor, dto);
+    return {
+      message: 'Medicine added to formulary catalogue successfully',
+      data,
+    };
+  }
+
+  @Patch('medicines/:id')
+  @RequirePermissions('PHARMACY_INVENTORY:UPDATE')
+  @ApiOperation({ summary: 'Update medicine formulary details' })
+  async updateMedicine(
+    @Param('id') id: string,
+    @CurrentUser() actor: AuthUserDto,
+    @Body()
+    dto: {
+      brandName?: string;
+      genericName?: string;
+      category?: string;
+      strength?: string;
+      dosageForm?: string;
+      manufacturer?: string;
+      unitPrice?: number;
+      reorderLevel?: number;
+    }
+  ) {
+    const data = await this.service.updateMedicine(actor, id, dto);
+    return {
+      message: 'Medicine details updated successfully',
+      data,
+    };
+  }
+
+  @Patch('medicines/:id/status')
+  @RequirePermissions('PHARMACY_INVENTORY:UPDATE')
+  @ApiOperation({ summary: 'Toggle medicine active status' })
+  async toggleMedicineStatus(@Param('id') id: string, @CurrentUser() actor: AuthUserDto) {
+    const data = await this.service.toggleMedicineStatus(actor, id);
+    return {
+      message: 'Medicine status updated',
+      data,
+    };
+  }
+
+  @Post('medicines/:id/batches')
+  @RequirePermissions('PHARMACY_INVENTORY:CREATE')
+  @ApiOperation({ summary: 'Receive new stock batch for a medicine' })
+  async addBatch(
+    @Param('id') id: string,
+    @CurrentUser() actor: AuthUserDto,
+    @Body()
+    dto: {
+      batchNumber: string;
+      quantity: number;
+      expiryDate: string;
+      costPrice?: number;
+      sellingPrice?: number;
+      branchId?: string;
+    }
+  ) {
+    const data = await this.service.addBatch(actor, id, dto);
+    return {
+      message: 'Stock batch added successfully',
+      data,
+    };
+  }
+
+  @Get('inventory/movements')
+  @RequirePermissions('PHARMACY_INVENTORY:VIEW')
+  @ApiOperation({ summary: 'Get stock audit ledger movements' })
+  async getMovements(
+    @CurrentUser() actor: AuthUserDto,
+    @Query('branchId') branchId?: string
+  ) {
+    const data = await this.service.getInventoryMovements(actor, branchId);
+    return {
+      message: 'Inventory movements retrieved',
       data,
     };
   }

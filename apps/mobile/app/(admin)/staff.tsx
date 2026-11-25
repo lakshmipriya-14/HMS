@@ -20,6 +20,11 @@ import {
   XCircle,
   X,
   ChevronLeft,
+  Edit2,
+  KeyRound,
+  Power,
+  CheckSquare,
+  Square,
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { mobileApiClient } from '../../services/api';
@@ -44,16 +49,30 @@ export default function AdminStaffScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedRole, setSelectedRole] = useState('ALL');
+  const [selectedDeptId, setSelectedDeptId] = useState('ALL');
 
-  // Add modal
+  // Bulk Selection
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectionMode, setSelectionMode] = useState(false);
+
+  // Modals
   const [addModal, setAddModal] = useState(false);
+  const [editModal, setEditModal] = useState<any | null>(null);
+  const [resetModal, setResetModal] = useState<any | null>(null);
+  const [newPassword, setNewPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  // Form states
   const [formName, setFormName] = useState('');
   const [formEmail, setFormEmail] = useState('');
   const [formPassword, setFormPassword] = useState('Staff@123');
   const [formRole, setFormRole] = useState('NURSE');
   const [formDeptId, setFormDeptId] = useState('');
   const [formDesig, setFormDesig] = useState('');
+
+  // Edit states
+  const [editDesig, setEditDesig] = useState('');
+  const [editDeptId, setEditDeptId] = useState('');
 
   const loadData = async () => {
     try {
@@ -76,13 +95,60 @@ export default function AdminStaffScreen() {
     loadData();
   }, []);
 
-  const handleToggleStatus = async (id: string) => {
-    try {
-      await mobileApiClient.hospitalAdmin.toggleStaffStatus(id);
-      await loadData();
-    } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to toggle account status');
-    }
+  const handleToggleStatus = async (id: string, currentStatus: boolean, name: string) => {
+    Alert.alert(
+      currentStatus ? 'Suspend Account' : 'Activate Account',
+      `Are you sure you want to ${currentStatus ? 'suspend' : 'activate'} ${name}'s login access?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: currentStatus ? 'Suspend' : 'Activate',
+          style: currentStatus ? 'destructive' : 'default',
+          onPress: async () => {
+            try {
+              await mobileApiClient.hospitalAdmin.toggleStaffStatus(id);
+              await loadData();
+            } catch (err: any) {
+              Alert.alert('Error', err.message || 'Failed to toggle account status');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleBulkStatus = async (isActive: boolean) => {
+    if (selectedIds.length === 0) return;
+    Alert.alert(
+      isActive ? 'Bulk Activate' : 'Bulk Deactivate',
+      `Update login status for ${selectedIds.length} selected employee(s)?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Confirm',
+          onPress: async () => {
+            try {
+              setSubmitting(true);
+              await mobileApiClient.hospitalAdmin.bulkUpdateStaffStatus(selectedIds, isActive);
+              setSelectedIds([]);
+              setSelectionMode(false);
+              await loadData();
+              Alert.alert('Success', `Updated status for ${selectedIds.length} employee accounts.`);
+            } catch (err: any) {
+              Alert.alert('Bulk Action Failed', err.message || 'Failed to update accounts');
+            } finally {
+              setSubmitting(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const toggleSelectId = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
   };
 
   const handleAddStaff = async () => {
@@ -112,23 +178,68 @@ export default function AdminStaffScreen() {
     }
   };
 
+  const handleEditStaff = async () => {
+    if (!editModal) return;
+    try {
+      setSubmitting(true);
+      await mobileApiClient.hospitalAdmin.updateStaff(editModal.id, {
+        designation: editDesig,
+        departmentId: editDeptId || undefined,
+      });
+      setEditModal(null);
+      await loadData();
+      Alert.alert('Updated', 'Employee details saved.');
+    } catch (err: any) {
+      Alert.alert('Update Failed', err.message || 'Failed to update employee');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!resetModal) return;
+    try {
+      setSubmitting(true);
+      await mobileApiClient.hospitalAdmin.resetStaffPassword(
+        resetModal.id,
+        newPassword || undefined
+      );
+      setResetModal(null);
+      setNewPassword('');
+      Alert.alert(
+        'Password Reset',
+        newPassword
+          ? 'Password updated to specified value.'
+          : 'Password reset to default credentials (Staff@123).'
+      );
+    } catch (err: any) {
+      Alert.alert('Reset Failed', err.message || 'Failed to reset password');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const filtered = staff.filter((s) => {
     const roleMatches =
       selectedRole === 'ALL' ||
       s.role === selectedRole ||
       s.userRoles?.some((r: any) => r.role === selectedRole || r.role?.name === selectedRole);
+    const deptMatches =
+      selectedDeptId === 'ALL' ||
+      s.employee?.departmentId === selectedDeptId ||
+      s.departmentId === selectedDeptId;
     const fullName = `${s.firstName || ''} ${s.lastName || ''}`.toLowerCase();
     const searchMatches =
       fullName.includes(search.toLowerCase()) ||
       (s.email || '').toLowerCase().includes(search.toLowerCase());
-    return roleMatches && searchMatches;
+    return roleMatches && deptMatches && searchMatches;
   });
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Staff & HR Directory" subtitle="Hospital Workforce" />
+      <AdminHeader title="Staff & HR Directory" subtitle="Hospital Workforce & Accounts" />
 
-      {/* Back button & Action Bar */}
+      {/* Action Bar */}
       <View style={styles.actionBar}>
         <TouchableOpacity
           style={styles.backBtn}
@@ -146,6 +257,19 @@ export default function AdminStaffScreen() {
             onChangeText={setSearch}
           />
         </View>
+        <TouchableOpacity
+          style={[styles.selectToggleBtn, selectionMode && styles.selectToggleBtnActive]}
+          onPress={() => {
+            setSelectionMode(!selectionMode);
+            if (selectionMode) setSelectedIds([]);
+          }}
+        >
+          {selectionMode ? (
+            <CheckSquare size={18} color="#FFFFFF" />
+          ) : (
+            <Square size={18} color="#0F766E" />
+          )}
+        </TouchableOpacity>
         <TouchableOpacity style={styles.addBtn} onPress={() => setAddModal(true)}>
           <Plus size={18} color="#FFFFFF" />
         </TouchableOpacity>
@@ -168,6 +292,45 @@ export default function AdminStaffScreen() {
         ))}
       </ScrollView>
 
+      {/* Bulk Operations Toolbar */}
+      {selectionMode && (
+        <View style={styles.bulkToolbar}>
+          <Text style={styles.bulkCountText}>
+            {selectedIds.length} selected
+          </Text>
+          <View style={styles.bulkActions}>
+            <TouchableOpacity
+              style={[styles.bulkBtn, { backgroundColor: '#059669' }]}
+              onPress={() => handleBulkStatus(true)}
+              disabled={selectedIds.length === 0 || submitting}
+            >
+              <Text style={styles.bulkBtnText}>Activate</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.bulkBtn, { backgroundColor: '#DC2626' }]}
+              onPress={() => handleBulkStatus(false)}
+              disabled={selectedIds.length === 0 || submitting}
+            >
+              <Text style={styles.bulkBtnText}>Deactivate</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.bulkBtn, { backgroundColor: '#64748B' }]}
+              onPress={() => {
+                if (selectedIds.length === filtered.length) {
+                  setSelectedIds([]);
+                } else {
+                  setSelectedIds(filtered.map((u) => u.id));
+                }
+              }}
+            >
+              <Text style={styles.bulkBtnText}>
+                {selectedIds.length === filtered.length ? 'None' : 'All'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
       {loading ? (
         <View style={styles.centerLoading}>
           <ActivityIndicator size="large" color="#0F766E" />
@@ -180,44 +343,125 @@ export default function AdminStaffScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#0F766E" />
           }
         >
-          {filtered.map((user) => {
-            const role = user.role || user.userRoles?.[0]?.role?.name || user.userRoles?.[0]?.role || 'STAFF';
-            const staffName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email;
-            return (
-              <View key={user.id} style={styles.card}>
-                <View style={styles.cardHeader}>
-                  <View style={styles.avatar}>
-                    <Text style={styles.avatarText}>
-                      {staffName.charAt(0).toUpperCase()}
-                    </Text>
+          {filtered.length === 0 ? (
+            <View style={styles.emptyCard}>
+              <Text style={styles.emptyText}>No staff members found.</Text>
+            </View>
+          ) : (
+            filtered.map((user) => {
+              const role =
+                user.role ||
+                user.userRoles?.[0]?.role?.name ||
+                user.userRoles?.[0]?.role ||
+                'STAFF';
+              const staffName =
+                `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email;
+              const isSelected = selectedIds.includes(user.id);
+              const isActive = user.isActive !== false;
+
+              return (
+                <TouchableOpacity
+                  key={user.id}
+                  style={[
+                    styles.card,
+                    isSelected && styles.cardSelected,
+                  ]}
+                  onPress={() => {
+                    if (selectionMode) toggleSelectId(user.id);
+                  }}
+                  activeOpacity={selectionMode ? 0.7 : 1}
+                >
+                  <View style={styles.cardHeader}>
+                    {selectionMode ? (
+                      <TouchableOpacity
+                        style={{ marginRight: 8 }}
+                        onPress={() => toggleSelectId(user.id)}
+                      >
+                        {isSelected ? (
+                          <CheckSquare size={20} color="#0F766E" />
+                        ) : (
+                          <Square size={20} color="#CBD5E1" />
+                        )}
+                      </TouchableOpacity>
+                    ) : (
+                      <View style={styles.avatar}>
+                        <Text style={styles.avatarText}>
+                          {staffName.charAt(0).toUpperCase()}
+                        </Text>
+                      </View>
+                    )}
+
+                    <View style={{ flex: 1, marginLeft: 8 }}>
+                      <Text style={styles.userName}>{staffName}</Text>
+                      <Text style={styles.userEmail}>{user.email}</Text>
+                      <View style={styles.roleTag}>
+                        <Text style={styles.roleTagText}>{role.replace('_', ' ')}</Text>
+                      </View>
+                    </View>
+
+                    <TouchableOpacity
+                      style={[
+                        styles.statusBtn,
+                        { backgroundColor: isActive ? '#D1FAE5' : '#FEE2E2' },
+                      ]}
+                      onPress={() => handleToggleStatus(user.id, isActive, staffName)}
+                    >
+                      <Text
+                        style={[
+                          styles.statusBtnText,
+                          { color: isActive ? '#059669' : '#DC2626' },
+                        ]}
+                      >
+                        {isActive ? 'ACTIVE' : 'SUSPENDED'}
+                      </Text>
+                    </TouchableOpacity>
                   </View>
-                  <View style={{ flex: 1, marginLeft: 10 }}>
-                    <Text style={styles.userName}>{staffName}</Text>
-                    <Text style={styles.userEmail}>{user.email}</Text>
-                    <View style={styles.roleTag}>
-                      <Text style={styles.roleTagText}>{role.replace('_', ' ')}</Text>
+
+                  {/* Actions Footer */}
+                  <View style={styles.cardFooter}>
+                    <Text style={styles.desigText}>
+                      {user.employee?.designation || user.designation || 'Staff Member'}
+                    </Text>
+
+                    <View style={styles.cardActions}>
+                      <TouchableOpacity
+                        style={styles.actionBtn}
+                        onPress={() => {
+                          setEditModal(user);
+                          setEditDesig(user.employee?.designation || user.designation || '');
+                          setEditDeptId(user.employee?.departmentId || user.departmentId || '');
+                        }}
+                      >
+                        <Edit2 size={13} color="#0F766E" />
+                        <Text style={styles.actionBtnText}>Edit</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={[styles.actionBtn, { borderColor: '#E2E8F0' }]}
+                        onPress={() => {
+                          setResetModal(user);
+                          setNewPassword('');
+                        }}
+                      >
+                        <KeyRound size={13} color="#2563EB" />
+                        <Text style={[styles.actionBtnText, { color: '#2563EB' }]}>Reset</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={[
+                          styles.actionBtn,
+                          { borderColor: isActive ? '#FECDD3' : '#A7F3D0' },
+                        ]}
+                        onPress={() => handleToggleStatus(user.id, isActive, staffName)}
+                      >
+                        <Power size={13} color={isActive ? '#E11D48' : '#059669'} />
+                      </TouchableOpacity>
                     </View>
                   </View>
-                  <TouchableOpacity
-                    style={[
-                      styles.statusBtn,
-                      { backgroundColor: user.isActive ? '#D1FAE5' : '#FEE2E2' },
-                    ]}
-                    onPress={() => handleToggleStatus(user.id)}
-                  >
-                    <Text
-                      style={[
-                        styles.statusBtnText,
-                        { color: user.isActive ? '#059669' : '#DC2626' },
-                      ]}
-                    >
-                      {user.isActive ? 'ACTIVE' : 'SUSPENDED'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            );
-          })}
+                </TouchableOpacity>
+              );
+            })
+          )}
         </ScrollView>
       )}
 
@@ -249,6 +493,14 @@ export default function AdminStaffScreen() {
                 autoCapitalize="none"
                 value={formEmail}
                 onChangeText={setFormEmail}
+              />
+
+              <Text style={styles.fieldLabel}>Designation</Text>
+              <TextInput
+                style={styles.fieldInput}
+                placeholder="e.g. Senior Staff Nurse"
+                value={formDesig}
+                onChangeText={setFormDesig}
               />
 
               <Text style={styles.fieldLabel}>Role Assignment</Text>
@@ -306,6 +558,99 @@ export default function AdminStaffScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* Edit Staff Modal */}
+      <Modal visible={!!editModal} transparent animationType="slide">
+        <View style={styles.modalBg}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHead}>
+              <Text style={styles.modalTitle}>Edit Staff Details</Text>
+              <TouchableOpacity onPress={() => setEditModal(null)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.fieldLabel}>Designation</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="Designation"
+              value={editDesig}
+              onChangeText={setEditDesig}
+            />
+
+            <Text style={styles.fieldLabel}>Department Assignment</Text>
+            <View style={styles.roleGrid}>
+              {departments.map((d) => (
+                <TouchableOpacity
+                  key={d.id}
+                  style={[styles.roleSelectChip, editDeptId === d.id && styles.roleSelectChipActive]}
+                  onPress={() => setEditDeptId(d.id)}
+                >
+                  <Text
+                    style={[
+                      styles.roleSelectChipText,
+                      editDeptId === d.id && styles.roleSelectChipTextActive,
+                    ]}
+                  >
+                    {d.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TouchableOpacity
+              style={styles.submitBtn}
+              onPress={handleEditStaff}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.submitBtnText}>Save Changes</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Reset Password Modal */}
+      <Modal visible={!!resetModal} transparent animationType="slide">
+        <View style={styles.modalBg}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHead}>
+              <Text style={styles.modalTitle}>Reset Staff Password</Text>
+              <TouchableOpacity onPress={() => setResetModal(null)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.fieldLabel}>
+              Resetting password for: {resetModal?.firstName} {resetModal?.lastName} ({resetModal?.email})
+            </Text>
+
+            <Text style={styles.fieldLabel}>New Password (Optional, leave blank for Staff@123)</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="Staff@123"
+              secureTextEntry
+              value={newPassword}
+              onChangeText={setNewPassword}
+            />
+
+            <TouchableOpacity
+              style={styles.submitBtn}
+              onPress={handleResetPassword}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.submitBtnText}>Confirm Reset</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -342,6 +687,19 @@ const styles = StyleSheet.create({
     color: '#0F172A',
     paddingVertical: 8,
   },
+  selectToggleBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#0F766E',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F0FDFA',
+  },
+  selectToggleBtnActive: {
+    backgroundColor: '#0F766E',
+  },
   addBtn: {
     backgroundColor: '#0F766E',
     width: 36,
@@ -376,8 +734,47 @@ const styles = StyleSheet.create({
   roleChipTextActive: {
     color: '#FFFFFF',
   },
+  bulkToolbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    backgroundColor: '#0F172A',
+  },
+  bulkCountText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  bulkActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  bulkBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 6,
+  },
+  bulkBtnText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '700',
+  },
   scroll: { flex: 1 },
   scrollContent: { padding: 14, paddingBottom: 30 },
+  emptyCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 24,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  emptyText: {
+    color: '#64748B',
+    fontSize: 13,
+  },
   card: {
     backgroundColor: '#FFFFFF',
     borderRadius: 14,
@@ -385,6 +782,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E2E8F0',
     marginBottom: 10,
+  },
+  cardSelected: {
+    borderColor: '#0F766E',
+    backgroundColor: '#F0FDFA',
   },
   cardHeader: {
     flexDirection: 'row',
@@ -435,6 +836,39 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: '800',
   },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#F8FAFC',
+  },
+  desigText: {
+    fontSize: 11,
+    color: '#64748B',
+    fontWeight: '500',
+  },
+  cardActions: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  actionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#CCFBF1',
+    gap: 4,
+  },
+  actionBtnText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#0F766E',
+  },
   modalBg: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -451,51 +885,51 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 16,
   },
   modalTitle: {
-    fontSize: 16,
-    fontWeight: '800',
+    fontSize: 17,
+    fontWeight: '700',
     color: '#0F172A',
   },
   fieldLabel: {
     fontSize: 12,
-    fontWeight: '700',
-    color: '#334155',
+    fontWeight: '600',
+    color: '#475569',
+    marginBottom: 6,
     marginTop: 10,
-    marginBottom: 4,
   },
   fieldInput: {
     backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 10,
+    borderColor: '#CBD5E1',
+    borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    fontSize: 13,
+    fontSize: 14,
     color: '#0F172A',
   },
   roleGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 6,
-    marginVertical: 4,
+    marginTop: 4,
   },
   roleSelectChip: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: 6,
+    backgroundColor: '#F1F5F9',
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    backgroundColor: '#F8FAFC',
   },
   roleSelectChipActive: {
-    borderColor: '#0F766E',
     backgroundColor: '#CCFBF1',
+    borderColor: '#0F766E',
   },
   roleSelectChipText: {
-    fontSize: 10,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '600',
     color: '#64748B',
   },
   roleSelectChipTextActive: {
@@ -503,10 +937,10 @@ const styles = StyleSheet.create({
   },
   submitBtn: {
     backgroundColor: '#0F766E',
-    paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 10,
+    paddingVertical: 13,
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: 20,
   },
   submitBtnText: {
     color: '#FFFFFF',

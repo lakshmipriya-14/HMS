@@ -97,6 +97,21 @@ export class UsersController {
     };
   }
 
+  @Post('bulk-status')
+  @Roles(Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN)
+  @RequirePermissions('USERS:UPDATE')
+  @ApiOperation({ summary: 'Bulk activate or deactivate staff accounts' })
+  async bulkStatus(
+    @CurrentUser() actor: AuthUserDto,
+    @Body() dto: { userIds: string[]; isActive: boolean }
+  ) {
+    const data = await this.service.bulkToggleStatus(actor, dto.userIds, dto.isActive);
+    return {
+      message: `Successfully updated ${data.updatedCount} accounts to ${data.isActive ? 'Active' : 'Inactive'}`,
+      data,
+    };
+  }
+
   @Post(':id/reset-password')
   @Roles(Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN)
   @RequirePermissions('USERS:UPDATE')

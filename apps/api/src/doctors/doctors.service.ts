@@ -357,4 +357,57 @@ export class DoctorsService {
       recordedAt: new Date().toISOString(),
     };
   }
+
+  async toggleDoctorStatus(actor: AuthUserDto, id: string, status?: string) {
+    const doctor = await this.prisma.doctor.findUnique({
+      where: { id },
+      include: { employee: { include: { user: true } } },
+    });
+    if (!doctor) throw new NotFoundException('Doctor not found');
+    assertBranchAccess(actor, doctor.branchId);
+
+    const currentUserActive = doctor.employee.user.isActive;
+    const newActiveState = status ? status === 'ACTIVE' : !currentUserActive;
+    const newEmployeeStatus = status || (newActiveState ? 'ACTIVE' : 'INACTIVE');
+
+    if (!newActiveState) {
+      const activeAppts = await this.prisma.appointment.count({
+        where: {
+          doctorId: id,
+          status: { in: ['SCHEDULED', 'CHECKED_IN', 'IN_PROGRESS'] },
+        },
+      });
+      if (activeAppts > 0) {
+        throw new BadRequestException(
+          `Cannot deactivate doctor with ${activeAppts} active appointments. Please reassign or cancel appointments first.`
+        );
+      }
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: doctor.employee.userId },
+        data: { isActive: newActiveState },
+      }),
+      this.prisma.employee.update({
+        where: { id: doctor.employeeId },
+        data: { status: newEmployeeStatus },
+      }),
+      this.prisma.auditLog.create({
+        data: {
+          hospitalId: doctor.hospitalId,
+          branchId: doctor.branchId,
+          userId: actor.id,
+          userEmail: actor.email || 'hospital_admin@demo.uyirinai.test',
+          userRole: actor.role,
+          action: newActiveState ? 'ACTIVATE' : 'DEACTIVATE',
+          resource: 'DOCTOR',
+          resourceId: id,
+          details: { isActive: newActiveState, employeeStatus: newEmployeeStatus },
+        },
+      }),
+    ]);
+
+    return { id, isActive: newActiveState, status: newEmployeeStatus };
+  }
 }

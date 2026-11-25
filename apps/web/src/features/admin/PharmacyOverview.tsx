@@ -26,9 +26,21 @@ export const PharmacyOverview: React.FC = () => {
 
   // Stock Adjustment Modal
   const [adjustModalOpen, setAdjustModalOpen] = useState(false);
+  const [addMedModalOpen, setAddMedModalOpen] = useState(false);
   const [selectedMed, setSelectedMed] = useState<any>(null);
   const [adjustmentQuantity, setAdjustmentQuantity] = useState(50);
   const [adjustmentReason, setAdjustmentReason] = useState('Stock Replenishment');
+  const [newMedForm, setNewMedForm] = useState({
+    brandName: '',
+    genericName: '',
+    category: 'ANTIBIOTIC',
+    strength: '500mg',
+    dosageForm: 'TABLET',
+    manufacturer: 'Aalayam Pharma',
+    unitPrice: 15,
+    reorderLevel: 20,
+    initialStock: 100,
+  });
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -79,6 +91,44 @@ export const PharmacyOverview: React.FC = () => {
     }
   };
 
+  const handleCreateMedicine = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setSubmitting(true);
+      setErrorMessage('');
+      await apiClient.hospitalAdmin.createMedicine(newMedForm);
+      setSuccessMessage(`Medicine ${newMedForm.brandName} added to formulary.`);
+      setAddMedModalOpen(false);
+      setNewMedForm({
+        brandName: '',
+        genericName: '',
+        category: 'ANTIBIOTIC',
+        strength: '500mg',
+        dosageForm: 'TABLET',
+        manufacturer: 'Aalayam Pharma',
+        unitPrice: 15,
+        reorderLevel: 20,
+        initialStock: 100,
+      });
+      await loadData();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to add medicine');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleToggleMedStatus = async (med: any) => {
+    try {
+      setErrorMessage('');
+      await apiClient.hospitalAdmin.toggleMedicineStatus(med.id);
+      setSuccessMessage(`Medicine ${med.brandName || med.name} status updated.`);
+      await loadData();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to toggle status');
+    }
+  };
+
   if (loading) return <LoadingState message="Loading hospital pharmacy formulary and stock alerts..." />;
 
   const filteredMedicines = medicines.filter((m) => {
@@ -125,32 +175,43 @@ export const PharmacyOverview: React.FC = () => {
           </div>
         </div>
 
-        {/* Tab switcher */}
-        <div className="inline-flex p-1 bg-slate-100 rounded-xl text-xs font-semibold text-slate-600 border border-slate-200">
+        {/* Header Actions */}
+        <div className="flex flex-wrap items-center gap-3">
           <button
-            onClick={() => setActiveTab('INVENTORY')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
-              activeTab === 'INVENTORY' ? 'bg-white text-teal-700 shadow-sm' : 'hover:text-slate-900'
-            }`}
+            onClick={() => setAddMedModalOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-all"
           >
-            Formulary Stock ({medicines.length})
+            <Plus className="w-4 h-4" />
+            Add Medicine
           </button>
-          <button
-            onClick={() => setActiveTab('LOW_STOCK')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
-              activeTab === 'LOW_STOCK' ? 'bg-white text-amber-700 shadow-sm' : 'hover:text-slate-900'
-            }`}
-          >
-            Low-Stock Alerts ({lowStockMeds.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('QUEUE')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
-              activeTab === 'QUEUE' ? 'bg-white text-sky-700 shadow-sm' : 'hover:text-slate-900'
-            }`}
-          >
-            Dispense Queue ({prescriptions.length})
-          </button>
+
+          {/* Tab switcher */}
+          <div className="inline-flex p-1 bg-slate-100 rounded-xl text-xs font-semibold text-slate-600 border border-slate-200">
+            <button
+              onClick={() => setActiveTab('INVENTORY')}
+              className={`px-3 py-1.5 rounded-lg transition-all ${
+                activeTab === 'INVENTORY' ? 'bg-white text-teal-700 shadow-sm' : 'hover:text-slate-900'
+              }`}
+            >
+              Formulary Stock ({medicines.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('LOW_STOCK')}
+              className={`px-3 py-1.5 rounded-lg transition-all ${
+                activeTab === 'LOW_STOCK' ? 'bg-white text-amber-700 shadow-sm' : 'hover:text-slate-900'
+              }`}
+            >
+              Low-Stock Alerts ({lowStockMeds.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('QUEUE')}
+              className={`px-3 py-1.5 rounded-lg transition-all ${
+                activeTab === 'QUEUE' ? 'bg-white text-sky-700 shadow-sm' : 'hover:text-slate-900'
+              }`}
+            >
+              Dispense Queue ({prescriptions.length})
+            </button>
+          </div>
         </div>
       </div>
 
@@ -362,6 +423,139 @@ export const PharmacyOverview: React.FC = () => {
               className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
             >
               {submitting ? 'Applying...' : 'Confirm Restock'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+      {/* ADD MEDICINE MODAL */}
+      <Modal isOpen={addMedModalOpen} onClose={() => setAddMedModalOpen(false)} title="Add Medicine to Formulary Catalogue">
+        <form onSubmit={handleCreateMedicine} className="space-y-4 max-h-[75vh] overflow-y-auto pr-1">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Brand Name *</label>
+              <input
+                type="text"
+                required
+                value={newMedForm.brandName}
+                onChange={(e) => setNewMedForm({ ...newMedForm, brandName: e.target.value })}
+                placeholder="e.g. Paracip 500"
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Generic Name *</label>
+              <input
+                type="text"
+                required
+                value={newMedForm.genericName}
+                onChange={(e) => setNewMedForm({ ...newMedForm, genericName: e.target.value })}
+                placeholder="e.g. Paracetamol"
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Category</label>
+              <select
+                value={newMedForm.category}
+                onChange={(e) => setNewMedForm({ ...newMedForm, category: e.target.value })}
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              >
+                <option value="ANALGESIC">Analgesic / Antipyretic</option>
+                <option value="ANTIBIOTIC">Antibiotic</option>
+                <option value="ANTIHYPERTENSIVE">Antihypertensive</option>
+                <option value="ANTIDIABETIC">Antidiabetic</option>
+                <option value="ANTIHISTAMINE">Antihistamine</option>
+                <option value="VITAMIN">Vitamins & Minerals</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Strength</label>
+              <input
+                type="text"
+                value={newMedForm.strength}
+                onChange={(e) => setNewMedForm({ ...newMedForm, strength: e.target.value })}
+                placeholder="e.g. 500mg"
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Dosage Form</label>
+              <select
+                value={newMedForm.dosageForm}
+                onChange={(e) => setNewMedForm({ ...newMedForm, dosageForm: e.target.value })}
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              >
+                <option value="TABLET">Tablet</option>
+                <option value="CAPSULE">Capsule</option>
+                <option value="SYRUP">Syrup</option>
+                <option value="INJECTION">Injection</option>
+                <option value="OINTMENT">Ointment</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Unit Price (₹) *</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                required
+                value={newMedForm.unitPrice}
+                onChange={(e) => setNewMedForm({ ...newMedForm, unitPrice: parseFloat(e.target.value) || 0 })}
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Reorder Level</label>
+              <input
+                type="number"
+                min="1"
+                value={newMedForm.reorderLevel}
+                onChange={(e) => setNewMedForm({ ...newMedForm, reorderLevel: parseInt(e.target.value) || 20 })}
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Initial Stock Batch</label>
+              <input
+                type="number"
+                min="0"
+                value={newMedForm.initialStock}
+                onChange={(e) => setNewMedForm({ ...newMedForm, initialStock: parseInt(e.target.value) || 0 })}
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Manufacturer</label>
+            <input
+              type="text"
+              value={newMedForm.manufacturer}
+              onChange={(e) => setNewMedForm({ ...newMedForm, manufacturer: e.target.value })}
+              className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => setAddMedModalOpen(false)}
+              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
+            >
+              {submitting ? 'Adding...' : 'Add Medicine'}
             </button>
           </div>
         </form>

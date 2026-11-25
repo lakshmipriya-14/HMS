@@ -28,6 +28,7 @@ export const StaffManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('');
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 
   // Modals
   const [addModalOpen, setAddModalOpen] = useState(false);
@@ -150,6 +151,39 @@ export const StaffManagement: React.FC = () => {
     }
     return true;
   });
+
+  const handleToggleSelectAll = () => {
+    if (selectedUserIds.length === visibleStaff.length) {
+      setSelectedUserIds([]);
+    } else {
+      setSelectedUserIds(visibleStaff.map((u) => u.id));
+    }
+  };
+
+  const handleToggleSelectUser = (id: string) => {
+    setSelectedUserIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkStatus = async (isActive: boolean) => {
+    if (selectedUserIds.length === 0) return;
+    const actionText = isActive ? 'activate' : 'deactivate';
+    if (!window.confirm(`Are you sure you want to ${actionText} ${selectedUserIds.length} selected employee accounts?`)) {
+      return;
+    }
+    try {
+      setLoading(true);
+      const res = await apiClient.hospitalAdmin.bulkUpdateStaffStatus(selectedUserIds, isActive);
+      setSuccessMessage(res.message || `Successfully updated ${selectedUserIds.length} accounts.`);
+      setSelectedUserIds([]);
+      await loadData();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to update accounts');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleExportCSV = () => {
     exportToCSV({
@@ -294,12 +328,49 @@ export const StaffManagement: React.FC = () => {
         </select>
       </div>
 
+      {/* Bulk Actions Banner */}
+      {selectedUserIds.length > 0 && (
+        <div className="bg-teal-50 border border-teal-200 rounded-xl px-4 py-2.5 flex items-center justify-between text-xs animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-teal-900">{selectedUserIds.length} staff selected</span>
+            <button
+              onClick={() => setSelectedUserIds([])}
+              className="text-teal-700 underline hover:text-teal-900"
+            >
+              Clear selection
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleBulkStatus(true)}
+              className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm"
+            >
+              Bulk Activate
+            </button>
+            <button
+              onClick={() => handleBulkStatus(false)}
+              className="px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-lg shadow-sm"
+            >
+              Bulk Deactivate
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Staff Table */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+                <th className="py-3 px-3 w-8">
+                  <input
+                    type="checkbox"
+                    checked={visibleStaff.length > 0 && selectedUserIds.length === visibleStaff.length}
+                    onChange={handleToggleSelectAll}
+                    className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                  />
+                </th>
                 <th className="py-3 px-4">Employee</th>
                 <th className="py-3 px-4">Role & Designation</th>
                 <th className="py-3 px-4">Department</th>
@@ -311,13 +382,21 @@ export const StaffManagement: React.FC = () => {
             <tbody className="divide-y divide-slate-100">
               {visibleStaff.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-10 text-slate-400">
+                  <td colSpan={7} className="text-center py-10 text-slate-400">
                     No employees matching the current filters.
                   </td>
                 </tr>
               ) : (
                 visibleStaff.map((u) => (
                   <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="py-3.5 px-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedUserIds.includes(u.id)}
+                        onChange={() => handleToggleSelectUser(u.id)}
+                        className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                      />
+                    </td>
                     <td className="py-3.5 px-4">
                       <div className="font-bold text-slate-800">
                         {u.firstName} {u.lastName}

@@ -21,6 +21,9 @@ import {
   Clock,
   IndianRupee,
   X,
+  Edit2,
+  Power,
+  Filter,
 } from 'lucide-react-native';
 import { mobileApiClient } from '../../services/api';
 import { AdminHeader } from '../../components/AdminHeader';
@@ -31,10 +34,16 @@ export default function AdminDoctorsScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState('');
+  const [selectedDeptId, setSelectedDeptId] = useState<string>('ALL');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
+  const [dutyFilter, setDutyFilter] = useState<'ALL' | 'ON_DUTY' | 'OFF_DUTY'>('ALL');
 
   // Add doctor modal
   const [addModal, setAddModal] = useState(false);
+  const [editModal, setEditModal] = useState<any | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Form states
   const [formName, setFormName] = useState('');
   const [formEmail, setFormEmail] = useState('');
   const [formPassword, setFormPassword] = useState('Doctor@123');
@@ -43,6 +52,11 @@ export default function AdminDoctorsScreen() {
   const [formSpec, setFormSpec] = useState('');
   const [formDeptId, setFormDeptId] = useState('');
   const [formFee, setFormFee] = useState('500');
+
+  // Edit states
+  const [editFee, setEditFee] = useState('500');
+  const [editSpec, setEditSpec] = useState('');
+  const [editShift, setEditShift] = useState('GENERAL');
 
   const loadData = async () => {
     try {
@@ -68,7 +82,6 @@ export default function AdminDoctorsScreen() {
   const handleToggleAvailability = async (doctor: any) => {
     const nextVal = !doctor.isAvailableToday;
     try {
-      // optimistic update
       setDoctors((prev) =>
         prev.map((d) => (d.id === doctor.id ? { ...d, isAvailableToday: nextVal } : d))
       );
@@ -79,6 +92,37 @@ export default function AdminDoctorsScreen() {
       Alert.alert('Error', err.message || 'Failed to update schedule');
       await loadData();
     }
+  };
+
+  const handleToggleDoctorStatus = (doctor: any) => {
+    const isCurrentlyActive = doctor.user?.isActive !== false && doctor.employee?.user?.isActive !== false;
+    const docName = doctor.employee?.user
+      ? `${doctor.employee.user.firstName} ${doctor.employee.user.lastName}`.trim()
+      : (doctor.user?.name || doctor.name || 'Doctor');
+
+    Alert.alert(
+      isCurrentlyActive ? 'Deactivate Doctor' : 'Activate Doctor',
+      `Are you sure you want to ${isCurrentlyActive ? 'deactivate' : 'activate'} ${docName}? This validates that no pending appointments will be disrupted.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: isCurrentlyActive ? 'Deactivate' : 'Activate',
+          style: isCurrentlyActive ? 'destructive' : 'default',
+          onPress: async () => {
+            try {
+              setSubmitting(true);
+              await mobileApiClient.hospitalAdmin.toggleDoctorStatus(doctor.id);
+              await loadData();
+              Alert.alert('Status Updated', `${docName} status has been updated.`);
+            } catch (err: any) {
+              Alert.alert('Conflict', err.message || 'Cannot change doctor status.');
+            } finally {
+              setSubmitting(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleAddDoctor = async () => {
@@ -112,20 +156,56 @@ export default function AdminDoctorsScreen() {
     }
   };
 
+  const handleEditDoctor = async () => {
+    if (!editModal) return;
+    try {
+      setSubmitting(true);
+      await mobileApiClient.hospitalAdmin.updateDoctor(editModal.id, {
+        consultationFee: parseFloat(editFee) || 500,
+        specialization: editSpec,
+        shift: editShift,
+      });
+      setEditModal(null);
+      await loadData();
+      Alert.alert('Updated', 'Doctor profile and fees updated.');
+    } catch (err: any) {
+      Alert.alert('Update Failed', err.message || 'Failed to update doctor profile');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const filtered = doctors.filter((doc) => {
     const name = doc.employee?.user
       ? `${doc.employee.user.firstName} ${doc.employee.user.lastName}`.trim()
       : (doc.user?.name || doc.name || '');
     const spec = doc.specialization || '';
-    return (
+    const license = doc.licenseNumber || '';
+    const searchMatches =
       name.toLowerCase().includes(search.toLowerCase()) ||
-      spec.toLowerCase().includes(search.toLowerCase())
-    );
+      spec.toLowerCase().includes(search.toLowerCase()) ||
+      license.toLowerCase().includes(search.toLowerCase());
+
+    const deptMatches = selectedDeptId === 'ALL' || doc.departmentId === selectedDeptId;
+
+    const isActive = doc.user?.isActive !== false && doc.employee?.user?.isActive !== false;
+    const statusMatches =
+      statusFilter === 'ALL' ||
+      (statusFilter === 'ACTIVE' && isActive) ||
+      (statusFilter === 'INACTIVE' && !isActive);
+
+    const isAvail = doc.isAvailableToday !== false;
+    const dutyMatches =
+      dutyFilter === 'ALL' ||
+      (dutyFilter === 'ON_DUTY' && isAvail) ||
+      (dutyFilter === 'OFF_DUTY' && !isAvail);
+
+    return searchMatches && deptMatches && statusMatches && dutyMatches;
   });
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Doctor Directory" subtitle="Medical Staff Rostering" />
+      <AdminHeader title="Doctor Directory" subtitle="Medical Staff Rostering & Status" />
 
       {/* Action Bar */}
       <View style={styles.actionBar}>
@@ -133,7 +213,7 @@ export default function AdminDoctorsScreen() {
           <Search size={16} color="#64748B" />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search doctors or speciality..."
+            placeholder="Search name, speciality, license..."
             placeholderTextColor="#94A3B8"
             value={search}
             onChangeText={setSearch}
@@ -148,6 +228,47 @@ export default function AdminDoctorsScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Filter Tabs */}
+      <View style={styles.filterSection}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll}>
+          {/* Status Filters */}
+          {(['ALL', 'ACTIVE', 'INACTIVE'] as const).map((tab) => (
+            <TouchableOpacity
+              key={tab}
+              style={[styles.chip, statusFilter === tab && styles.chipActive]}
+              onPress={() => setStatusFilter(tab)}
+            >
+              <Text style={[styles.chipText, statusFilter === tab && styles.chipTextActive]}>
+                {tab === 'ALL' ? 'All Status' : tab}
+              </Text>
+            </TouchableOpacity>
+          ))}
+
+          {/* Duty Filters */}
+          <TouchableOpacity
+            style={[styles.chip, dutyFilter === 'ON_DUTY' && styles.chipActive]}
+            onPress={() => setDutyFilter(dutyFilter === 'ON_DUTY' ? 'ALL' : 'ON_DUTY')}
+          >
+            <Text style={[styles.chipText, dutyFilter === 'ON_DUTY' && styles.chipTextActive]}>
+              On Duty
+            </Text>
+          </TouchableOpacity>
+
+          {/* Department Chips */}
+          {departments.map((dept) => (
+            <TouchableOpacity
+              key={dept.id}
+              style={[styles.chip, selectedDeptId === dept.id && styles.chipActive]}
+              onPress={() => setSelectedDeptId(selectedDeptId === dept.id ? 'ALL' : dept.id)}
+            >
+              <Text style={[styles.chipText, selectedDeptId === dept.id && styles.chipTextActive]}>
+                {dept.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
       {loading ? (
         <View style={styles.centerLoading}>
           <ActivityIndicator size="large" color="#0F766E" />
@@ -160,53 +281,112 @@ export default function AdminDoctorsScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#0F766E" />
           }
         >
-          {filtered.map((doc) => {
-            const isAvail = doc.isAvailableToday !== false;
-            const docName = doc.employee?.user
-              ? `Dr. ${doc.employee.user.firstName} ${doc.employee.user.lastName}`.trim()
-              : (doc.user?.name || doc.name || 'Dr. Consultant');
-            return (
-              <View key={doc.id} style={styles.card}>
-                <View style={styles.cardHeader}>
-                  <View style={styles.avatar}>
-                    <Stethoscope size={18} color="#0F766E" />
-                  </View>
-                  <View style={{ flex: 1, marginLeft: 10 }}>
-                    <Text style={styles.docName}>{docName}</Text>
-                    <Text style={styles.docSpec}>
-                      {doc.specialization} • {doc.department?.name || 'Medical Dept'}
-                    </Text>
-                  </View>
-                  <View style={styles.switchWrapper}>
-                    <Text style={[styles.switchLabel, { color: isAvail ? '#059669' : '#94A3B8' }]}>
-                      {isAvail ? 'ON DUTY' : 'OFF'}
-                    </Text>
-                    <Switch
-                      value={isAvail}
-                      onValueChange={() => handleToggleAvailability(doc)}
-                      trackColor={{ false: '#E2E8F0', true: '#CCFBF1' }}
-                      thumbColor={isAvail ? '#0F766E' : '#94A3B8'}
-                    />
-                  </View>
-                </View>
+          {filtered.length === 0 ? (
+            <View style={styles.emptyCard}>
+              <Text style={styles.emptyText}>No doctors match current filters.</Text>
+            </View>
+          ) : (
+            filtered.map((doc) => {
+              const isAvail = doc.isAvailableToday !== false;
+              const isActive = doc.user?.isActive !== false && doc.employee?.user?.isActive !== false;
+              const docName = doc.employee?.user
+                ? `Dr. ${doc.employee.user.firstName} ${doc.employee.user.lastName}`.trim()
+                : (doc.user?.name || doc.name || 'Dr. Consultant');
 
-                <View style={styles.detailRow}>
-                  <View style={styles.detailItem}>
-                    <Award size={12} color="#64748B" />
-                    <Text style={styles.detailText}>Reg: {doc.licenseNumber}</Text>
+              return (
+                <View key={doc.id} style={styles.card}>
+                  <View style={styles.cardHeader}>
+                    <View style={styles.avatar}>
+                      <Stethoscope size={18} color="#0F766E" />
+                    </View>
+                    <View style={{ flex: 1, marginLeft: 10 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                        <Text style={styles.docName}>{docName}</Text>
+                        <View
+                          style={[
+                            styles.statusTag,
+                            { backgroundColor: isActive ? '#D1FAE5' : '#FEE2E2' },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.statusTagText,
+                              { color: isActive ? '#059669' : '#DC2626' },
+                            ]}
+                          >
+                            {isActive ? 'ACTIVE' : 'INACTIVE'}
+                          </Text>
+                        </View>
+                      </View>
+                      <Text style={styles.docSpec}>
+                        {doc.specialization} • {doc.department?.name || 'Medical Dept'}
+                      </Text>
+                    </View>
+                    <View style={styles.switchWrapper}>
+                      <Text style={[styles.switchLabel, { color: isAvail ? '#059669' : '#94A3B8' }]}>
+                        {isAvail ? 'ON DUTY' : 'OFF'}
+                      </Text>
+                      <Switch
+                        value={isAvail}
+                        onValueChange={() => handleToggleAvailability(doc)}
+                        trackColor={{ false: '#E2E8F0', true: '#CCFBF1' }}
+                        thumbColor={isAvail ? '#0F766E' : '#94A3B8'}
+                      />
+                    </View>
                   </View>
-                  <View style={styles.detailItem}>
-                    <IndianRupee size={12} color="#64748B" />
-                    <Text style={styles.detailText}>Fee: ₹ {doc.consultationFee || 500}</Text>
+
+                  <View style={styles.detailRow}>
+                    <View style={styles.detailItem}>
+                      <Award size={12} color="#64748B" />
+                      <Text style={styles.detailText}>Reg: {doc.licenseNumber}</Text>
+                    </View>
+                    <View style={styles.detailItem}>
+                      <IndianRupee size={12} color="#64748B" />
+                      <Text style={styles.detailText}>Fee: ₹ {doc.consultationFee || 500}</Text>
+                    </View>
+                    <View style={styles.detailItem}>
+                      <Clock size={12} color="#64748B" />
+                      <Text style={styles.detailText}>{doc.shift || 'General Shift'}</Text>
+                    </View>
                   </View>
-                  <View style={styles.detailItem}>
-                    <Clock size={12} color="#64748B" />
-                    <Text style={styles.detailText}>{doc.shift || 'General Shift'}</Text>
+
+                  {/* Actions Row */}
+                  <View style={styles.cardFooter}>
+                    <TouchableOpacity
+                      style={styles.actionBtn}
+                      onPress={() => {
+                        setEditModal(doc);
+                        setEditFee(String(doc.consultationFee || 500));
+                        setEditSpec(doc.specialization || '');
+                        setEditShift(doc.shift || 'GENERAL');
+                      }}
+                    >
+                      <Edit2 size={13} color="#0F766E" />
+                      <Text style={styles.actionBtnText}>Edit Profile</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[
+                        styles.actionBtn,
+                        { borderColor: isActive ? '#FECDD3' : '#A7F3D0' },
+                      ]}
+                      onPress={() => handleToggleDoctorStatus(doc)}
+                    >
+                      <Power size={13} color={isActive ? '#E11D48' : '#059669'} />
+                      <Text
+                        style={[
+                          styles.actionBtnText,
+                          { color: isActive ? '#E11D48' : '#059669' },
+                        ]}
+                      >
+                        {isActive ? 'Deactivate' : 'Activate'}
+                      </Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
-              </View>
-            );
-          })}
+              );
+            })
+          )}
         </ScrollView>
       )}
 
@@ -221,7 +401,7 @@ export default function AdminDoctorsScreen() {
               </TouchableOpacity>
             </View>
 
-            <ScrollView style={{ maxHeight: 400 }}>
+            <ScrollView style={{ maxHeight: 420 }}>
               <Text style={styles.fieldLabel}>Full Name</Text>
               <TextInput
                 style={styles.fieldInput}
@@ -303,6 +483,57 @@ export default function AdminDoctorsScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* Edit Doctor Modal */}
+      <Modal visible={!!editModal} transparent animationType="slide">
+        <View style={styles.modalBg}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHead}>
+              <Text style={styles.modalTitle}>Edit Doctor Profile</Text>
+              <TouchableOpacity onPress={() => setEditModal(null)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.fieldLabel}>Specialization</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="Specialization"
+              value={editSpec}
+              onChangeText={setEditSpec}
+            />
+
+            <Text style={styles.fieldLabel}>Consultation Fee (₹)</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="500"
+              keyboardType="numeric"
+              value={editFee}
+              onChangeText={setEditFee}
+            />
+
+            <Text style={styles.fieldLabel}>Shift Timing</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="e.g. MORNING / EVENING / ROTATIONAL"
+              value={editShift}
+              onChangeText={setEditShift}
+            />
+
+            <TouchableOpacity
+              style={styles.submitBtn}
+              onPress={handleEditDoctor}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.submitBtnText}>Save Changes</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -346,15 +577,54 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
   },
+  filterSection: {
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+    paddingVertical: 8,
+  },
+  filterScroll: {
+    paddingHorizontal: 14,
+    gap: 8,
+  },
+  chip: {
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 20,
+    backgroundColor: '#F1F5F9',
+  },
+  chipActive: {
+    backgroundColor: '#0F766E',
+  },
+  chipText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#64748B',
+  },
+  chipTextActive: {
+    color: '#FFFFFF',
+  },
   scroll: { flex: 1 },
   scrollContent: { padding: 14, paddingBottom: 30 },
+  emptyCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 24,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  emptyText: {
+    color: '#64748B',
+    fontSize: 13,
+  },
   card: {
     backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 14,
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    marginBottom: 10,
+    marginBottom: 12,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -363,20 +633,29 @@ const styles = StyleSheet.create({
   avatar: {
     width: 38,
     height: 38,
-    borderRadius: 12,
+    borderRadius: 19,
     backgroundColor: '#CCFBF1',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
   },
   docName: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '700',
     color: '#0F172A',
   },
+  statusTag: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  statusTagText: {
+    fontSize: 9,
+    fontWeight: '800',
+  },
   docSpec: {
-    fontSize: 11,
+    fontSize: 12,
     color: '#64748B',
-    marginTop: 1,
+    marginTop: 2,
   },
   switchWrapper: {
     alignItems: 'center',
@@ -388,11 +667,11 @@ const styles = StyleSheet.create({
   },
   detailRow: {
     flexDirection: 'row',
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
     justifyContent: 'space-between',
-    backgroundColor: '#F8FAFC',
-    borderRadius: 8,
-    padding: 8,
-    marginTop: 10,
   },
   detailItem: {
     flexDirection: 'row',
@@ -401,8 +680,32 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 11,
-    color: '#475569',
-    fontWeight: '600',
+    color: '#64748B',
+    fontWeight: '500',
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 8,
+    marginTop: 10,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#F8FAFC',
+  },
+  actionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#CCFBF1',
+  },
+  actionBtnText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#0F766E',
   },
   modalBg: {
     flex: 1,
@@ -414,53 +717,53 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    maxHeight: '90%',
+    maxHeight: '85%',
   },
   modalHead: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 16,
   },
   modalTitle: {
-    fontSize: 16,
-    fontWeight: '800',
+    fontSize: 17,
+    fontWeight: '700',
     color: '#0F172A',
   },
   fieldLabel: {
     fontSize: 12,
-    fontWeight: '700',
-    color: '#334155',
+    fontWeight: '600',
+    color: '#475569',
+    marginBottom: 6,
     marginTop: 10,
-    marginBottom: 4,
   },
   fieldInput: {
     backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 10,
+    borderColor: '#CBD5E1',
+    borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    fontSize: 13,
+    fontSize: 14,
     color: '#0F172A',
   },
   deptOptions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 6,
     marginVertical: 4,
   },
   deptChip: {
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: 6,
+    backgroundColor: '#F1F5F9',
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    backgroundColor: '#F8FAFC',
   },
   deptChipSelected: {
-    borderColor: '#0F766E',
     backgroundColor: '#CCFBF1',
+    borderColor: '#0F766E',
   },
   deptChipText: {
     fontSize: 11,
@@ -469,14 +772,13 @@ const styles = StyleSheet.create({
   },
   deptChipTextSelected: {
     color: '#0F766E',
-    fontWeight: '700',
   },
   submitBtn: {
     backgroundColor: '#0F766E',
-    paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 10,
+    paddingVertical: 13,
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: 20,
   },
   submitBtnText: {
     color: '#FFFFFF',

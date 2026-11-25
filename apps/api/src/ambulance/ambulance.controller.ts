@@ -69,4 +69,54 @@ export class AmbulanceController {
       data,
     };
   }
+
+  @Post('vehicles')
+  @RequirePermissions('AMBULANCE:CREATE')
+  @ApiOperation({ summary: 'Add a new emergency ambulance vehicle to fleet' })
+  async createVehicle(
+    @CurrentUser() actor: AuthUserDto,
+    @Body()
+    dto: {
+      vehicleNumber: string;
+      model: string;
+      type?: string;
+      branchId?: string;
+    }
+  ) {
+    const data = await this.service.createVehicle(actor, dto);
+    return {
+      message: 'Ambulance vehicle registered successfully',
+      data,
+    };
+  }
+
+  @Patch('vehicles/:id')
+  @RequirePermissions('AMBULANCE:UPDATE')
+  @ApiOperation({ summary: 'Update ambulance vehicle configuration' })
+  async updateVehicle(
+    @Param('id') id: string,
+    @CurrentUser() actor: AuthUserDto,
+    @Body() dto: { model?: string; type?: string; isAvailable?: boolean }
+  ) {
+    const data = await this.service.updateVehicle(actor, id, dto);
+    return {
+      message: 'Ambulance vehicle updated successfully',
+      data,
+    };
+  }
+
+  @Patch('vehicles/:id/status')
+  @RequirePermissions('AMBULANCE:UPDATE')
+  @ApiOperation({ summary: 'Update vehicle operational availability status' })
+  async updateVehicleStatus(
+    @Param('id') id: string,
+    @CurrentUser() actor: AuthUserDto,
+    @Body('isAvailable') isAvailable: boolean
+  ) {
+    const data = await this.service.updateVehicleStatus(actor, id, isAvailable);
+    return {
+      message: 'Ambulance availability updated',
+      data,
+    };
+  }
 }

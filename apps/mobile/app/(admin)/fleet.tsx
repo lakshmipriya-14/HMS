@@ -21,6 +21,8 @@ import {
   MapPin,
   Phone,
   AlertTriangle,
+  Power,
+  Wrench,
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { mobileApiClient } from '../../services/api';
@@ -41,6 +43,13 @@ export default function AdminFleetScreen() {
   const [severity, setSeverity] = useState('CRITICAL');
   const [reason, setReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  // Add vehicle modal
+  const [addVehicleModal, setAddVehicleModal] = useState(false);
+  const [regNum, setRegNum] = useState('');
+  const [vehModel, setVehModel] = useState('');
+  const [vehType, setVehType] = useState('ADVANCED_LIFE_SUPPORT');
+  const [vehFuel, setVehFuel] = useState('100');
 
   const loadData = async () => {
     try {
@@ -92,6 +101,55 @@ export default function AdminFleetScreen() {
     }
   };
 
+  const handleCreateVehicle = async () => {
+    if (!regNum || !vehModel) {
+      Alert.alert('Required Fields', 'Please enter registration number and vehicle model.');
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await mobileApiClient.hospitalAdmin.createVehicle({
+        registrationNumber: regNum.toUpperCase(),
+        model: vehModel,
+        type: vehType,
+        fuelLevel: parseInt(vehFuel, 10) || 100,
+      });
+      setAddVehicleModal(false);
+      setRegNum('');
+      setVehModel('');
+      await loadData();
+      Alert.alert('Success', 'Ambulance unit added to hospital fleet.');
+    } catch (err: any) {
+      Alert.alert('Registration Error', err.message || 'Failed to register ambulance');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleToggleVehicleStatus = async (vehicle: any) => {
+    const isAvail = vehicle.status === 'AVAILABLE';
+    const nextStatus = isAvail ? 'MAINTENANCE' : 'AVAILABLE';
+    Alert.alert(
+      'Update Vehicle Status',
+      `Mark ambulance ${vehicle.registrationNumber} as ${nextStatus}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Confirm',
+          onPress: async () => {
+            try {
+              await mobileApiClient.hospitalAdmin.updateVehicleStatus(vehicle.id, !isAvail);
+              await loadData();
+              Alert.alert('Status Updated', `${vehicle.registrationNumber} is now ${nextStatus}.`);
+            } catch (err: any) {
+              Alert.alert('Error', err.message || 'Failed to update vehicle status');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
       <AdminHeader title="108 Emergency Fleet" subtitle="Rapid Response Logistics" />
@@ -105,13 +163,22 @@ export default function AdminFleetScreen() {
           <ChevronLeft size={20} color="#0F766E" />
         </TouchableOpacity>
         <Text style={styles.actionTitle}>Hospital Fleet & Active Radar</Text>
-        <TouchableOpacity
-          style={styles.dispatchBtn}
-          onPress={() => setDispatchModal(true)}
-        >
-          <Radio size={16} color="#FFFFFF" />
-          <Text style={styles.dispatchBtnText}>Dispatch</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', gap: 6 }}>
+          <TouchableOpacity
+            style={[styles.dispatchBtn, { backgroundColor: '#0F766E' }]}
+            onPress={() => setAddVehicleModal(true)}
+          >
+            <Plus size={16} color="#FFFFFF" />
+            <Text style={styles.dispatchBtnText}>Vehicle</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.dispatchBtn}
+            onPress={() => setDispatchModal(true)}
+          >
+            <Radio size={16} color="#FFFFFF" />
+            <Text style={styles.dispatchBtnText}>Dispatch</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {loading ? (
@@ -198,6 +265,20 @@ export default function AdminFleetScreen() {
                     <MapPin size={12} color="#64748B" />
                     <Text style={styles.vMetaText}>Station: Hospital Bay</Text>
                   </View>
+                  <TouchableOpacity
+                    style={styles.vActionBtn}
+                    onPress={() => handleToggleVehicleStatus(v)}
+                  >
+                    <Power size={12} color={isAvail ? '#DC2626' : '#059669'} />
+                    <Text
+                      style={[
+                        styles.vActionBtnText,
+                        { color: isAvail ? '#DC2626' : '#059669' },
+                      ]}
+                    >
+                      {isAvail ? 'Maint' : 'Ready'}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             );
@@ -282,6 +363,86 @@ export default function AdminFleetScreen() {
                 <ActivityIndicator color="#fff" />
               ) : (
                 <Text style={styles.submitBtnText}>Trigger 108 Dispatch</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Add Vehicle Modal */}
+      <Modal visible={addVehicleModal} transparent animationType="slide">
+        <View style={styles.modalBg}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHead}>
+              <Text style={styles.modalTitle}>Register Ambulance Vehicle</Text>
+              <TouchableOpacity onPress={() => setAddVehicleModal(false)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.fieldLabel}>Registration Number</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="e.g. TN-01-AMB-108"
+              autoCapitalize="characters"
+              value={regNum}
+              onChangeText={setRegNum}
+            />
+
+            <Text style={styles.fieldLabel}>Vehicle Model / Make</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="e.g. Force Traveller 3350"
+              value={vehModel}
+              onChangeText={setVehModel}
+            />
+
+            <Text style={styles.fieldLabel}>Ambulance Type</Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginVertical: 4 }}>
+              {[
+                { label: 'ALS', val: 'ADVANCED_LIFE_SUPPORT' },
+                { label: 'BLS', val: 'BASIC_LIFE_SUPPORT' },
+                { label: 'Patient Transport', val: 'PATIENT_TRANSPORT' },
+                { label: 'Neonatal', val: 'NEONATAL_CARE' },
+              ].map((t) => (
+                <TouchableOpacity
+                  key={t.val}
+                  style={[
+                    styles.severityChip,
+                    vehType === t.val && styles.severityChipActive,
+                  ]}
+                  onPress={() => setVehType(t.val)}
+                >
+                  <Text
+                    style={[
+                      styles.severityChipText,
+                      vehType === t.val && styles.severityChipTextActive,
+                    ]}
+                  >
+                    {t.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.fieldLabel}>Initial Fuel Level (%)</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="100"
+              keyboardType="numeric"
+              value={vehFuel}
+              onChangeText={setVehFuel}
+            />
+
+            <TouchableOpacity
+              style={styles.submitBtn}
+              onPress={handleCreateVehicle}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.submitBtnText}>Register Vehicle</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -433,6 +594,7 @@ const styles = StyleSheet.create({
   },
   vFooter: {
     flexDirection: 'row',
+    alignItems: 'center',
     gap: 16,
     marginTop: 10,
     paddingTop: 8,
@@ -447,6 +609,21 @@ const styles = StyleSheet.create({
   vMetaText: {
     fontSize: 11,
     color: '#64748B',
+  },
+  vActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginLeft: 'auto',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  vActionBtnText: {
+    fontSize: 10,
+    fontWeight: '700',
   },
   modalBg: {
     flex: 1,

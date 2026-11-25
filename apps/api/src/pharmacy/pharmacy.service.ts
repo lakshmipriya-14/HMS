@@ -213,4 +213,222 @@ export class PharmacyService {
       orderBy: { expiryDate: 'asc' },
     });
   }
+
+  async createMedicine(
+    actor: AuthUserDto,
+    dto: {
+      code?: string;
+      brandName: string;
+      genericName: string;
+      category: string;
+      strength: string;
+      dosageForm: string;
+      manufacturer: string;
+      unitPrice: number;
+      reorderLevel?: number;
+      initialStock?: number;
+      batchNumber?: string;
+      expiryDate?: string;
+      branchId?: string;
+    }
+  ) {
+    const scope = resolveOperationalScope(actor, dto.branchId);
+    const code = dto.code || `MED-${Date.now().toString(36).toUpperCase()}`;
+
+    const medicine = await this.prisma.medicine.create({
+      data: {
+        code,
+        brandName: dto.brandName,
+        genericName: dto.genericName,
+        category: dto.category,
+        strength: dto.strength,
+        dosageForm: dto.dosageForm,
+        manufacturer: dto.manufacturer,
+        unitPrice: dto.unitPrice,
+        reorderLevel: dto.reorderLevel ?? 20,
+        currentStock: dto.initialStock ?? 0,
+        isActive: true,
+        ...(dto.initialStock && dto.initialStock > 0 && scope.branchId
+          ? {
+              batches: {
+                create: {
+                  batchNumber: dto.batchNumber || `BAT-${Date.now().toString(36).toUpperCase()}`,
+                  quantity: dto.initialStock,
+                  expiryDate: dto.expiryDate ? new Date(dto.expiryDate) : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+                  purchasePrice: dto.unitPrice * 0.7,
+                  sellingPrice: dto.unitPrice,
+                  hospitalId: scope.hospitalId,
+                  branchId: scope.branchId,
+                },
+              },
+            }
+          : {}),
+      },
+      include: { batches: true },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        hospitalId: scope.hospitalId,
+        branchId: scope.branchId,
+        userId: actor.id,
+        userEmail: actor.email || 'hospital_admin@demo.uyirinai.test',
+        userRole: actor.role,
+        action: 'CREATE',
+        resource: 'PHARMACY_MEDICINE',
+        resourceId: medicine.id,
+        details: { code: medicine.code, brandName: medicine.brandName },
+      },
+    });
+
+    return medicine;
+  }
+
+  async updateMedicine(
+    actor: AuthUserDto,
+    id: string,
+    dto: {
+      brandName?: string;
+      genericName?: string;
+      category?: string;
+      strength?: string;
+      dosageForm?: string;
+      manufacturer?: string;
+      unitPrice?: number;
+      reorderLevel?: number;
+    }
+  ) {
+    const scope = resolveOperationalScope(actor);
+    const existing = await this.prisma.medicine.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('Medicine not found');
+
+    const updated = await this.prisma.medicine.update({
+      where: { id },
+      data: {
+        ...(dto.brandName ? { brandName: dto.brandName } : {}),
+        ...(dto.genericName ? { genericName: dto.genericName } : {}),
+        ...(dto.category ? { category: dto.category } : {}),
+        ...(dto.strength ? { strength: dto.strength } : {}),
+        ...(dto.dosageForm ? { dosageForm: dto.dosageForm } : {}),
+        ...(dto.manufacturer ? { manufacturer: dto.manufacturer } : {}),
+        ...(dto.unitPrice !== undefined ? { unitPrice: dto.unitPrice } : {}),
+        ...(dto.reorderLevel !== undefined ? { reorderLevel: dto.reorderLevel } : {}),
+      },
+      include: { batches: true },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        hospitalId: scope.hospitalId,
+        branchId: scope.branchId,
+        userId: actor.id,
+        userEmail: actor.email || 'hospital_admin@demo.uyirinai.test',
+        userRole: actor.role,
+        action: 'UPDATE',
+        resource: 'PHARMACY_MEDICINE',
+        resourceId: id,
+        details: dto,
+      },
+    });
+
+    return updated;
+  }
+
+  async toggleMedicineStatus(actor: AuthUserDto, id: string) {
+    const scope = resolveOperationalScope(actor);
+    const existing = await this.prisma.medicine.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('Medicine not found');
+
+    const updated = await this.prisma.medicine.update({
+      where: { id },
+      data: { isActive: !existing.isActive },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        hospitalId: scope.hospitalId,
+        branchId: scope.branchId,
+        userId: actor.id,
+        userEmail: actor.email || 'hospital_admin@demo.uyirinai.test',
+        userRole: actor.role,
+        action: updated.isActive ? 'ACTIVATE' : 'DEACTIVATE',
+        resource: 'PHARMACY_MEDICINE',
+        resourceId: id,
+        details: { isActive: updated.isActive },
+      },
+    });
+
+    return updated;
+  }
+
+  async addBatch(
+    actor: AuthUserDto,
+    medicineId: string,
+    dto: {
+      batchNumber: string;
+      quantity: number;
+      expiryDate: string;
+      costPrice?: number;
+      sellingPrice?: number;
+      branchId?: string;
+    }
+  ) {
+    const scope = resolveOperationalScope(actor, dto.branchId);
+    if (!scope.branchId) throw new BadRequestException('Branch scope required for medicine batch');
+
+    const medicine = await this.prisma.medicine.findUnique({ where: { id: medicineId } });
+    if (!medicine) throw new NotFoundException('Medicine not found');
+
+    return this.prisma.$transaction(async (tx) => {
+      const batch = await tx.medicineBatch.create({
+        data: {
+          medicineId,
+          batchNumber: dto.batchNumber,
+          quantity: dto.quantity,
+          expiryDate: new Date(dto.expiryDate),
+          purchasePrice: dto.costPrice ?? (Number(medicine.unitPrice) * 0.7),
+          sellingPrice: dto.sellingPrice ?? Number(medicine.unitPrice),
+          hospitalId: scope.hospitalId,
+          branchId: scope.branchId!,
+        },
+      });
+
+      await tx.medicine.update({
+        where: { id: medicineId },
+        data: { currentStock: { increment: dto.quantity } },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          hospitalId: scope.hospitalId,
+          branchId: scope.branchId,
+          userId: actor.id,
+          userEmail: actor.email || 'hospital_admin@demo.uyirinai.test',
+          userRole: actor.role,
+          action: 'CREATE',
+          resource: 'MEDICINE_BATCH',
+          resourceId: batch.id,
+          details: { batchNumber: batch.batchNumber, quantity: dto.quantity },
+        },
+      });
+
+      return batch;
+    });
+  }
+
+  async getInventoryMovements(actor: AuthUserDto, branchId?: string) {
+    const scope = resolveOperationalScope(actor, branchId);
+    return this.prisma.inventoryMovement.findMany({
+      where: {
+        hospitalId: scope.hospitalId,
+        ...(scope.branchId ? { branchId: scope.branchId } : {}),
+      },
+      include: {
+        medicine: true,
+        batch: true,
+      },
+      orderBy: { id: 'desc' },
+      take: 50,
+    });
+  }
 }

@@ -25,6 +25,8 @@ import {
   Layers,
   Calendar,
   IndianRupee,
+  Trash2,
+  Edit2,
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { mobileApiClient } from '../../services/api';
@@ -47,6 +49,13 @@ export default function AdminWardsScreen() {
   const [bedNum, setBedNum] = useState('');
   const [bedType, setBedType] = useState('STANDARD');
   const [dailyRate, setDailyRate] = useState('1000');
+
+  // Edit bed modal
+  const [editBedModal, setEditBedModal] = useState<any>(null);
+  const [editRoomNum, setEditRoomNum] = useState('');
+  const [editBedNum, setEditBedNum] = useState('');
+  const [editBedType, setEditBedType] = useState('STANDARD');
+  const [editDailyRate, setEditDailyRate] = useState('1000');
 
   // Add ward modal
   const [addWardModal, setAddWardModal] = useState(false);
@@ -143,6 +152,91 @@ export default function AdminWardsScreen() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleDeleteBed = (bed: any) => {
+    if (bed.status === 'OCCUPIED') {
+      Alert.alert('Cannot Delete', 'Occupied beds cannot be removed while a patient is admitted.');
+      return;
+    }
+    Alert.alert(
+      'Delete Bed',
+      `Are you sure you want to permanently remove Bed ${bed.bedNumber} (Room ${bed.roomNumber})?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setSubmitting(true);
+              await mobileApiClient.hospitalAdmin.deleteBed(bed.id);
+              setSelectedBed(null);
+              await loadData();
+              Alert.alert('Deleted', `Bed ${bed.bedNumber} removed.`);
+            } catch (err: any) {
+              Alert.alert('Delete Failed', err.message || 'Cannot delete bed.');
+            } finally {
+              setSubmitting(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleEditBed = async () => {
+    if (!editBedModal) return;
+    try {
+      setSubmitting(true);
+      await mobileApiClient.hospitalAdmin.updateBed(editBedModal.id, {
+        roomNumber: editRoomNum,
+        bedNumber: editBedNum,
+        type: editBedType,
+        dailyRate: parseFloat(editDailyRate) || 1000,
+      });
+      setEditBedModal(null);
+      setSelectedBed(null);
+      await loadData();
+      Alert.alert('Updated', 'Bed details updated successfully.');
+    } catch (err: any) {
+      Alert.alert('Update Failed', err.message || 'Failed to update bed.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleBatchClean = (ward: any) => {
+    const unoccBeds = (ward.beds || []).filter((b: any) => b.status === 'AVAILABLE');
+    if (unoccBeds.length === 0) {
+      Alert.alert('No Available Beds', 'All beds in this ward are either occupied or already cleaning/maintenance.');
+      return;
+    }
+    Alert.alert(
+      'Batch Turnover',
+      `Mark all ${unoccBeds.length} unoccupied beds in ${ward.name} as CLEANING for housekeeping turnover?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Start Turnover',
+          onPress: async () => {
+            try {
+              setSubmitting(true);
+              await mobileApiClient.hospitalAdmin.bulkUpdateBedStatus(
+                unoccBeds.map((b: any) => b.id),
+                'CLEANING'
+              );
+              await loadData();
+              Alert.alert('Housekeeping Triggered', `${unoccBeds.length} beds marked for cleaning.`);
+            } catch (err: any) {
+              Alert.alert('Turnover Error', err.message || 'Failed to bulk update beds.');
+            } finally {
+              setSubmitting(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const summary = censusData?.summary || {};
@@ -293,8 +387,17 @@ export default function AdminWardsScreen() {
                     <Text style={styles.wardDept}>Department: {ward.department.name}</Text>
                   )}
                 </View>
-                <View style={styles.occBadge}>
-                  <Text style={styles.occBadgeText}>{ward.bedOccupancyRate}% Occ</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <TouchableOpacity
+                    style={styles.wardBatchBtn}
+                    onPress={() => handleBatchClean(ward)}
+                  >
+                    <Sparkles size={12} color="#D97706" />
+                    <Text style={styles.wardBatchBtnText}>Turnover</Text>
+                  </TouchableOpacity>
+                  <View style={styles.occBadge}>
+                    <Text style={styles.occBadgeText}>{ward.bedOccupancyRate}% Occ</Text>
+                  </View>
                 </View>
               </View>
 
@@ -462,6 +565,33 @@ export default function AdminWardsScreen() {
                 </View>
               </View>
             )}
+
+            {/* BED MANAGEMENT ACTIONS */}
+            <View style={styles.bedManageRow}>
+              <TouchableOpacity
+                style={styles.bedManageBtn}
+                onPress={() => {
+                  setEditBedModal(selectedBed);
+                  setEditRoomNum(selectedBed.roomNumber);
+                  setEditBedNum(selectedBed.bedNumber);
+                  setEditBedType(selectedBed.type || 'STANDARD');
+                  setEditDailyRate(String(selectedBed.dailyRate || 1000));
+                }}
+              >
+                <Edit2 size={14} color="#0F766E" />
+                <Text style={styles.bedManageBtnText}>Edit Bed Details</Text>
+              </TouchableOpacity>
+
+              {selectedBed?.status !== 'OCCUPIED' && (
+                <TouchableOpacity
+                  style={[styles.bedManageBtn, { borderColor: '#FECDD3' }]}
+                  onPress={() => handleDeleteBed(selectedBed)}
+                >
+                  <Trash2 size={14} color="#DC2626" />
+                  <Text style={[styles.bedManageBtnText, { color: '#DC2626' }]}>Delete Bed</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
         </View>
       </Modal>
@@ -593,6 +723,59 @@ export default function AdminWardsScreen() {
                 <ActivityIndicator color="#fff" />
               ) : (
                 <Text style={styles.submitBtnText}>Create Ward</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* EDIT BED MODAL */}
+      <Modal visible={!!editBedModal} transparent animationType="slide">
+        <View style={styles.modalBg}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHead}>
+              <Text style={styles.modalTitle}>
+                Edit Bed {editBedModal?.bedNumber}
+              </Text>
+              <TouchableOpacity onPress={() => setEditBedModal(null)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.fieldLabel}>Room Number</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="e.g. 102"
+              value={editRoomNum}
+              onChangeText={setEditRoomNum}
+            />
+
+            <Text style={styles.fieldLabel}>Bed Identifier</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="e.g. B-102-A"
+              value={editBedNum}
+              onChangeText={setEditBedNum}
+            />
+
+            <Text style={styles.fieldLabel}>Daily Rate (₹)</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="1000"
+              keyboardType="numeric"
+              value={editDailyRate}
+              onChangeText={setEditDailyRate}
+            />
+
+            <TouchableOpacity
+              style={styles.submitBtn}
+              onPress={handleEditBed}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.submitBtnText}>Save Bed Details</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -999,5 +1182,43 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '700',
+  },
+  wardBatchBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#FEF3C7',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  wardBatchBtnText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#D97706',
+  },
+  bedManageRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 16,
+    paddingTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  bedManageBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#CCFBF1',
+  },
+  bedManageBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#0F766E',
   },
 });

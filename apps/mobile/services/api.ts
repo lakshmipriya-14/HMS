@@ -5,7 +5,10 @@ import { Platform } from 'react-native';
 const getBaseUrl = (): string => {
   const envUrl = process.env.EXPO_PUBLIC_API_URL;
   if (Platform.OS === 'web') {
-    if (envUrl && !envUrl.includes('10.0.2.2')) {
+    if (envUrl) {
+      if (envUrl.includes('10.0.2.2')) {
+        return envUrl.replace('10.0.2.2', 'localhost');
+      }
       return envUrl;
     }
     if (typeof window !== 'undefined' && window.location && window.location.hostname) {
@@ -25,7 +28,7 @@ const getBaseUrl = (): string => {
   return envUrl || 'http://localhost:4000/api/v1';
 };
 
-const API_BASE_URL = getBaseUrl();
+export const API_BASE_URL = getBaseUrl();
 
 let accessToken: string | null = null;
 let refreshToken: string | null = null;

@@ -20,6 +20,33 @@ export class AppointmentsController {
     };
   }
 
+  @Get()
+  @Scoped()
+  @RequirePermissions('APPOINTMENTS:VIEW')
+  @ApiOperation({ summary: 'List and filter appointments' })
+  async findAll(
+    @CurrentUser() actor: AuthUserDto,
+    @Query('date') date?: string,
+    @Query('departmentId') departmentId?: string,
+    @Query('doctorId') doctorId?: string,
+    @Query('status') status?: string,
+    @Query('search') search?: string,
+    @Query('branchId') branchId?: string
+  ) {
+    const data = await this.service.findAll(actor, {
+      date,
+      departmentId,
+      doctorId,
+      status,
+      search,
+      requestedBranchId: branchId,
+    });
+    return {
+      message: 'Appointments retrieved successfully',
+      data,
+    };
+  }
+
   @Get('queue')
   @Scoped()
   @RequirePermissions('APPOINTMENTS:VIEW')

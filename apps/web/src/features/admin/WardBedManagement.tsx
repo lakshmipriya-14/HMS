@@ -15,6 +15,7 @@ import {
   DoorClosed,
   DollarSign,
   User,
+  Trash2,
 } from 'lucide-react';
 
 export const WardBedManagement: React.FC = () => {
@@ -155,6 +156,27 @@ export const WardBedManagement: React.FC = () => {
     }
   };
 
+  const handleDeleteBed = async (bed: any) => {
+    if (bed.status === 'OCCUPIED') {
+      setErrorMessage('Cannot delete an occupied bed. Discharge or transfer the patient first.');
+      return;
+    }
+    if (!window.confirm(`Are you sure you want to delete Bed ${bed.roomNumber}-${bed.bedNumber}?`)) {
+      return;
+    }
+    try {
+      setBedsLoading(true);
+      await apiClient.hospitalAdmin.deleteBed(bed.id);
+      setSuccessMessage(`Bed ${bed.roomNumber}-${bed.bedNumber} deleted successfully.`);
+      if (selectedWard) await loadBeds(selectedWard.id);
+      await loadWards();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to delete bed');
+    } finally {
+      setBedsLoading(false);
+    }
+  };
+
   if (loading) return <LoadingState message="Loading hospital wards layout and bed census..." />;
 
   return (
@@ -223,20 +245,18 @@ export const WardBedManagement: React.FC = () => {
             <button
               key={ward.id}
               onClick={() => setSelectedWard(ward)}
-              className={`px-4 py-3 rounded-2xl border text-left shrink-0 transition-all ${
-                isSelected
+              className={`px-4 py-3 rounded-2xl border text-left shrink-0 transition-all ${isSelected
                   ? 'bg-teal-700 text-white border-teal-800 shadow-md'
                   : 'bg-white text-slate-700 border-slate-200/80 hover:bg-slate-50'
-              }`}
+                }`}
             >
               <div className="flex items-center justify-between gap-3">
                 <span className={`font-bold text-xs ${isSelected ? 'text-white' : 'text-slate-900'}`}>
                   {ward.name}
                 </span>
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded font-bold ${
-                    isSelected ? 'bg-teal-800 text-teal-200' : 'bg-slate-100 text-slate-600'
-                  }`}
+                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded font-bold ${isSelected ? 'bg-teal-800 text-teal-200' : 'bg-slate-100 text-slate-600'
+                    }`}
                 >
                   Floor {ward.floorNumber}
                 </span>
@@ -334,15 +354,14 @@ export const WardBedManagement: React.FC = () => {
 
                       <div className="mt-2 text-center py-2">
                         <BedDouble
-                          className={`w-7 h-7 mx-auto ${
-                            isOccupied
+                          className={`w-7 h-7 mx-auto ${isOccupied
                               ? 'text-sky-600'
                               : isAvailable
-                              ? 'text-emerald-600'
-                              : isMaintenance
-                              ? 'text-rose-600'
-                              : 'text-amber-600'
-                          }`}
+                                ? 'text-emerald-600'
+                                : isMaintenance
+                                  ? 'text-rose-600'
+                                  : 'text-amber-600'
+                            }`}
                         />
                         <h4 className="font-bold text-sm text-slate-800 mt-1">{bed.bedNumber}</h4>
                         <span className="text-[10px] text-slate-500 font-medium uppercase">{bed.type}</span>
@@ -354,16 +373,27 @@ export const WardBedManagement: React.FC = () => {
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => {
-                        setSelectedBed(bed);
-                        setNewBedStatus(bed.status);
-                        setUpdateStatusModalOpen(true);
-                      }}
-                      className="mt-3 w-full py-1 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-lg text-[11px] transition-all shadow-2xs"
-                    >
-                      Status
-                    </button>
+                    <div className="mt-3 flex items-center gap-1.5">
+                      <button
+                        onClick={() => {
+                          setSelectedBed(bed);
+                          setNewBedStatus(bed.status);
+                          setUpdateStatusModalOpen(true);
+                        }}
+                        className="flex-1 py-1 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-lg text-[11px] transition-all shadow-2xs"
+                      >
+                        Status
+                      </button>
+                      {!isOccupied && (
+                        <button
+                          onClick={() => handleDeleteBed(bed)}
+                          className="p-1 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
+                          title="Delete Bed"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 );
               })}

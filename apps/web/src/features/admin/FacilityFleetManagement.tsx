@@ -24,6 +24,12 @@ export const FacilityFleetManagement: React.FC = () => {
 
   // Dispatch modal
   const [dispatchModalOpen, setDispatchModalOpen] = useState(false);
+  const [addVehicleModalOpen, setAddVehicleModalOpen] = useState(false);
+  const [vehicleForm, setVehicleForm] = useState({
+    vehicleNumber: '',
+    model: 'Force Traveller ALS',
+    type: 'ADVANCED_LIFE_SUPPORT',
+  });
   const [dispatchForm, setDispatchForm] = useState({
     patientName: '',
     contactPhone: '',
@@ -81,6 +87,38 @@ export const FacilityFleetManagement: React.FC = () => {
     }
   };
 
+  const handleCreateVehicle = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setSubmitting(true);
+      setErrorMessage('');
+      await apiClient.hospitalAdmin.createVehicle(vehicleForm);
+      setSuccessMessage(`Ambulance ${vehicleForm.vehicleNumber} registered to fleet.`);
+      setAddVehicleModalOpen(false);
+      setVehicleForm({
+        vehicleNumber: '',
+        model: 'Force Traveller ALS',
+        type: 'ADVANCED_LIFE_SUPPORT',
+      });
+      await loadFleetData();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to register ambulance vehicle');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleToggleVehicleAvailability = async (vehicle: any) => {
+    try {
+      setErrorMessage('');
+      await apiClient.hospitalAdmin.updateVehicleStatus(vehicle.id, !vehicle.isAvailable);
+      setSuccessMessage(`Vehicle ${vehicle.vehicleNumber} status updated.`);
+      await loadFleetData();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to update vehicle availability');
+    }
+  };
+
   if (loading) return <LoadingState message="Loading hospital emergency fleet and 108 radar..." />;
 
   const availableVehicles = vehicles.filter((v) => v.status === 'AVAILABLE');
@@ -121,24 +159,37 @@ export const FacilityFleetManagement: React.FC = () => {
           </div>
         </div>
 
-        <button
-          onClick={() => {
-            setDispatchForm({
-              patientName: '',
-              contactPhone: '',
-              pickupAddress: '',
-              severity: 'EMERGENCY',
-              reason: 'Acute Trauma / Cardiac Emergency',
-              vehicleId: availableVehicles[0]?.id || '',
-            });
-            setErrorMessage('');
-            setDispatchModalOpen(true);
-          }}
-          className="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
-        >
-          <Radio className="w-4 h-4 animate-pulse" />
-          Trigger 108 Dispatch
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              setErrorMessage('');
+              setAddVehicleModalOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold rounded-xl transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            Add Ambulance
+          </button>
+
+          <button
+            onClick={() => {
+              setDispatchForm({
+                patientName: '',
+                contactPhone: '',
+                pickupAddress: '',
+                severity: 'EMERGENCY',
+                reason: 'Acute Trauma / Cardiac Emergency',
+                vehicleId: availableVehicles[0]?.id || '',
+              });
+              setErrorMessage('');
+              setDispatchModalOpen(true);
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+          >
+            <Radio className="w-4 h-4 animate-pulse" />
+            Trigger 108 Dispatch
+          </button>
+        </div>
       </div>
 
       {/* Fleet Summary Cards */}
@@ -334,6 +385,64 @@ export const FacilityFleetManagement: React.FC = () => {
               className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-sm"
             >
               {submitting ? 'Dispatching...' : 'Dispatch Vehicle Now'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+      {/* ADD VEHICLE MODAL */}
+      <Modal isOpen={addVehicleModalOpen} onClose={() => setAddVehicleModalOpen(false)} title="Register Emergency Ambulance Vehicle">
+        <form onSubmit={handleCreateVehicle} className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Registration Number *</label>
+            <input
+              type="text"
+              required
+              value={vehicleForm.vehicleNumber}
+              onChange={(e) => setVehicleForm({ ...vehicleForm, vehicleNumber: e.target.value.toUpperCase() })}
+              placeholder="e.g. TN-58-AM-1081"
+              className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 font-mono font-bold"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Vehicle Model *</label>
+            <input
+              type="text"
+              required
+              value={vehicleForm.model}
+              onChange={(e) => setVehicleForm({ ...vehicleForm, model: e.target.value })}
+              placeholder="e.g. Force Traveller T2 Critical Care"
+              className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Ambulance Care Tier</label>
+            <select
+              value={vehicleForm.type}
+              onChange={(e) => setVehicleForm({ ...vehicleForm, type: e.target.value })}
+              className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+            >
+              <option value="ADVANCED_LIFE_SUPPORT">Advanced Life Support (ALS - Ventilator & Defibrillator)</option>
+              <option value="BASIC">Basic Life Support (BLS - Oxygen & Stretcher)</option>
+              <option value="NEONATAL">Neonatal Intensive Care Ambulance (NICU Incubator)</option>
+            </select>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => setAddVehicleModalOpen(false)}
+              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-sm"
+            >
+              {submitting ? 'Registering...' : 'Register Vehicle'}
             </button>
           </div>
         </form>

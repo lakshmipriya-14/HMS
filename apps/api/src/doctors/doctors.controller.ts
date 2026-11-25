@@ -148,4 +148,19 @@ export class DoctorsController {
       data,
     };
   }
+
+  @Patch(':id/status')
+  @RequirePermissions('DOCTORS:UPDATE')
+  @ApiOperation({ summary: 'Toggle doctor active or duty status' })
+  async toggleStatus(
+    @Param('id') id: string,
+    @CurrentUser() actor: AuthUserDto,
+    @Body('status') status?: string
+  ) {
+    const data = await this.service.toggleDoctorStatus(actor, id, status);
+    return {
+      message: 'Doctor status updated successfully',
+      data,
+    };
+  }
 }

@@ -172,4 +172,82 @@ export class AmbulanceService {
       });
     });
   }
+
+  async createVehicle(
+    actor: AuthUserDto,
+    dto: { vehicleNumber: string; model: string; type?: string; branchId?: string }
+  ) {
+    const scope = resolveOperationalScope(actor, dto.branchId);
+    if (!scope.branchId) throw new BadRequestException('Branch scope required for ambulance');
+
+    const existing = await this.prisma.ambulance.findUnique({
+      where: { vehicleNumber: dto.vehicleNumber },
+    });
+    if (existing) throw new BadRequestException('An ambulance with this vehicle number already exists');
+
+    const vehicle = await this.prisma.ambulance.create({
+      data: {
+        hospitalId: scope.hospitalId,
+        branchId: scope.branchId,
+        vehicleNumber: dto.vehicleNumber,
+        model: dto.model,
+        type: dto.type || 'ADVANCED_LIFE_SUPPORT',
+        isAvailable: true,
+      },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        hospitalId: scope.hospitalId,
+        branchId: scope.branchId,
+        userId: actor.id,
+        userEmail: actor.email || 'hospital_admin@demo.uyirinai.test',
+        userRole: actor.role,
+        action: 'CREATE',
+        resource: 'AMBULANCE',
+        resourceId: vehicle.id,
+        details: { vehicleNumber: vehicle.vehicleNumber },
+      },
+    });
+
+    return vehicle;
+  }
+
+  async updateVehicle(
+    actor: AuthUserDto,
+    id: string,
+    dto: { model?: string; type?: string; isAvailable?: boolean }
+  ) {
+    const vehicle = await this.prisma.ambulance.findUnique({ where: { id } });
+    if (!vehicle) throw new NotFoundException('Vehicle not found');
+
+    const updated = await this.prisma.ambulance.update({
+      where: { id },
+      data: {
+        ...(dto.model ? { model: dto.model } : {}),
+        ...(dto.type ? { type: dto.type } : {}),
+        ...(dto.isAvailable !== undefined ? { isAvailable: dto.isAvailable } : {}),
+      },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        hospitalId: vehicle.hospitalId,
+        branchId: vehicle.branchId,
+        userId: actor.id,
+        userEmail: actor.email || 'hospital_admin@demo.uyirinai.test',
+        userRole: actor.role,
+        action: 'UPDATE',
+        resource: 'AMBULANCE',
+        resourceId: id,
+        details: dto,
+      },
+    });
+
+    return updated;
+  }
+
+  async updateVehicleStatus(actor: AuthUserDto, id: string, isAvailable: boolean) {
+    return this.updateVehicle(actor, id, { isAvailable });
+  }
 }

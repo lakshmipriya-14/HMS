@@ -625,4 +625,107 @@ export class WardsService {
       data: { status },
     });
   }
+
+  async updateBed(
+    actor: AuthUserDto,
+    bedId: string,
+    dto: { roomNumber?: string; bedNumber?: string; type?: string; dailyRate?: number }
+  ) {
+    const bed = await this.prisma.bed.findUnique({ where: { id: bedId } });
+    if (!bed) throw new NotFoundException('Bed not found');
+    assertBranchAccess(actor, bed.branchId);
+
+    const updated = await this.prisma.bed.update({
+      where: { id: bedId },
+      data: {
+        ...(dto.roomNumber ? { roomNumber: dto.roomNumber } : {}),
+        ...(dto.bedNumber ? { bedNumber: dto.bedNumber } : {}),
+        ...(dto.type ? { type: dto.type } : {}),
+        ...(dto.dailyRate !== undefined ? { dailyRate: dto.dailyRate } : {}),
+      },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        hospitalId: bed.hospitalId,
+        branchId: bed.branchId,
+        userId: actor.id,
+        userEmail: actor.email || 'hospital_admin@demo.uyirinai.test',
+        userRole: actor.role,
+        action: 'UPDATE',
+        resource: 'BED',
+        resourceId: bedId,
+        details: dto,
+      },
+    });
+
+    return updated;
+  }
+
+  async deleteBed(actor: AuthUserDto, bedId: string) {
+    const bed = await this.prisma.bed.findUnique({
+      where: { id: bedId },
+      include: { admissions: { where: { status: 'ADMITTED' } } },
+    });
+    if (!bed) throw new NotFoundException('Bed not found');
+    assertBranchAccess(actor, bed.branchId);
+
+    if (bed.status === 'OCCUPIED' || bed.admissions.length > 0) {
+      throw new BadRequestException('Cannot delete an occupied bed with active inpatient admissions');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      await tx.bed.delete({ where: { id: bedId } });
+      await tx.ward.update({
+        where: { id: bed.wardId },
+        data: { totalBeds: { decrement: 1 } },
+      });
+      await tx.auditLog.create({
+        data: {
+          hospitalId: bed.hospitalId,
+          branchId: bed.branchId,
+          userId: actor.id,
+          userEmail: actor.email || 'hospital_admin@demo.uyirinai.test',
+          userRole: actor.role,
+          action: 'DELETE',
+          resource: 'BED',
+          resourceId: bedId,
+          details: { roomNumber: bed.roomNumber, bedNumber: bed.bedNumber },
+        },
+      });
+      return { message: 'Bed deleted successfully' };
+    });
+  }
+
+  async bulkUpdateBedStatus(actor: AuthUserDto, bedIds: string[], status: string) {
+    const beds = await this.prisma.bed.findMany({
+      where: { id: { in: bedIds } },
+    });
+
+    const occupiedBeds = beds.filter((b) => b.status === 'OCCUPIED' && status !== 'OCCUPIED');
+    if (occupiedBeds.length > 0) {
+      throw new BadRequestException('Some selected beds are currently occupied and cannot be changed.');
+    }
+
+    const targetIds = beds.map((b) => b.id);
+    await this.prisma.bed.updateMany({
+      where: { id: { in: targetIds } },
+      data: { status },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        hospitalId: actor.hospitalId,
+        branchId: actor.branchId,
+        userId: actor.id,
+        userEmail: actor.email || 'hospital_admin@demo.uyirinai.test',
+        userRole: actor.role,
+        action: 'UPDATE',
+        resource: 'BED_BULK',
+        details: { count: targetIds.length, status },
+      },
+    });
+
+    return { updatedCount: targetIds.length, status };
+  }
 }

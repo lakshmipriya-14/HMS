@@ -299,4 +299,38 @@ export class UsersService {
 
     return { message: 'Password has been reset successfully.' };
   }
+
+  async bulkToggleStatus(actor: AuthUserDto, userIds: string[], isActive: boolean) {
+    const scope = resolveOperationalScope(actor);
+    const users = await this.prisma.user.findMany({
+      where: {
+        id: { in: userIds },
+        hospitalId: scope.hospitalId,
+      },
+    });
+
+    // Hospital admin cannot deactivate themselves
+    const filtered = users.filter((u) => u.id !== actor.id);
+    const targetIds = filtered.map((u) => u.id);
+
+    await this.prisma.user.updateMany({
+      where: { id: { in: targetIds } },
+      data: { isActive },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        hospitalId: scope.hospitalId,
+        branchId: scope.branchId,
+        userId: actor.id,
+        userEmail: actor.email,
+        userRole: actor.role,
+        action: isActive ? 'ACTIVATE' : 'DEACTIVATE',
+        resource: 'USER_BULK',
+        details: { count: targetIds.length, isActive },
+      },
+    });
+
+    return { updatedCount: targetIds.length, isActive };
+  }
 }

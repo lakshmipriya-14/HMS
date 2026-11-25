@@ -1,12 +1,15 @@
-import { Controller, Get, Patch, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { Scoped } from '../common/decorators/roles.decorator';
+import { RequirePermissions, Scoped } from '../common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { AuthUserDto } from '@multispeciality-hms/contracts';
 
 @ApiTags('Notifications')
 @Controller('notifications')
 @Scoped()
+@UseGuards(RolesGuard)
 export class NotificationsController {
   constructor(private service: NotificationsService) {}
 
@@ -35,6 +38,20 @@ export class NotificationsController {
     await this.service.markAllAsRead(userId);
     return {
       message: 'All notifications marked as read',
+    };
+  }
+
+  @Post('broadcast')
+  @RequirePermissions('NOTIFICATIONS:VIEW')
+  @ApiOperation({ summary: 'Broadcast hospital announcement or operational notice' })
+  async broadcastAnnouncement(
+    @CurrentUser() actor: AuthUserDto,
+    @Body() dto: { title: string; message: string; targetRole?: string; branchId?: string }
+  ) {
+    const data = await this.service.broadcastAnnouncement(actor, dto);
+    return {
+      message: `Announcement broadcast to ${data.createdCount} hospital staff`,
+      data,
     };
   }
 }
