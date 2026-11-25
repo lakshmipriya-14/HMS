@@ -1,15 +1,20 @@
-import { Controller, Get, Post, Patch, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { AmbulanceService } from './ambulance.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { RequirePermissions, Scoped } from '../common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { CreateAmbulanceRequestDto, UpdateTripStatusDto, AuthUserDto } from '@multispeciality-hms/contracts';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Ambulance & Emergency Dispatch')
 @Controller('ambulance')
+@Scoped()
+@UseGuards(RolesGuard)
 export class AmbulanceController {
   constructor(private service: AmbulanceService) {}
 
   @Get('vehicles')
+  @RequirePermissions('AMBULANCE:VIEW')
   @ApiOperation({ summary: 'List ambulance fleet and real-time availability' })
   async getVehicles(
     @CurrentUser() actor?: AuthUserDto,
@@ -23,6 +28,7 @@ export class AmbulanceController {
   }
 
   @Get('active')
+  @RequirePermissions('AMBULANCE:VIEW')
   @ApiOperation({ summary: 'Get active emergency dispatches and trips' })
   async getActiveTrips(
     @CurrentUser() actor?: AuthUserDto,
@@ -36,6 +42,7 @@ export class AmbulanceController {
   }
 
   @Post('requests')
+  @RequirePermissions('AMBULANCE:CREATE')
   @ApiOperation({ summary: 'Create emergency dispatch request and assign vehicle' })
   async createRequest(
     @Body() dto: CreateAmbulanceRequestDto,
@@ -49,6 +56,7 @@ export class AmbulanceController {
   }
 
   @Patch('trips/:id/status')
+  @RequirePermissions('AMBULANCE:UPDATE')
   @ApiOperation({ summary: 'Update trip status from mobile driver terminal' })
   async updateTripStatus(
     @Param('id') id: string,

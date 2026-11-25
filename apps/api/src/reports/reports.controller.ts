@@ -32,4 +32,47 @@ export class ReportsController {
   async getSuperAdminDashboard(@CurrentUser() actor: AuthUserDto) {
     return { message: 'Dashboard statistics retrieved.', data: await this.service.getSuperAdminDashboard(actor.hospitalId) };
   }
+
+  @Get('hospital-admin-dashboard')
+  @Roles(Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN)
+  @ApiOperation({ summary: 'Get comprehensive executive hospital dashboard statistics with live database data' })
+  async getHospitalAdminDashboard(
+    @CurrentUser() actor: AuthUserDto,
+    @Query('branchId') requestedBranchId?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string
+  ) {
+    const scope = resolveOperationalScope(actor, requestedBranchId);
+    const data = await this.service.getHospitalAdminDashboard(scope.hospitalId, scope.branchId, startDate, endDate);
+    return {
+      message: 'Executive hospital dashboard statistics retrieved successfully',
+      data,
+    };
+  }
+
+  @Get('export')
+  @RequirePermissions('REPORTS:EXPORT')
+  @ApiOperation({ summary: 'Generate and export hospital operational and financial report data' })
+  async getHospitalReport(
+    @CurrentUser() actor: AuthUserDto,
+    @Query('type') type: string,
+    @Query('branchId') requestedBranchId?: string,
+    @Query('departmentId') departmentId?: string,
+    @Query('fromDate') fromDate?: string,
+    @Query('toDate') toDate?: string
+  ) {
+    const scope = resolveOperationalScope(actor, requestedBranchId);
+    const data = await this.service.getHospitalReport(
+      scope.hospitalId,
+      type || 'OPD',
+      scope.branchId,
+      departmentId,
+      fromDate,
+      toDate
+    );
+    return {
+      message: `${type || 'Operational'} report generated successfully`,
+      data,
+    };
+  }
 }

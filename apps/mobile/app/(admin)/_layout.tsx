@@ -1,44 +1,94 @@
-import { WorkspaceGate } from '../../components/WorkspaceGate';
 import React from 'react';
+import { WorkspaceGate } from '../../components/WorkspaceGate';
 import { Tabs } from 'expo-router';
-import { LayoutDashboard, Building2, User } from 'lucide-react-native';
+import {
+  LayoutDashboard,
+  Building2,
+  UserCheck,
+  BedDouble,
+  Menu,
+} from 'lucide-react-native';
+import { Platform } from 'react-native';
 
 export default function AdminTabsLayout() {
+  const bottomInset = Platform.OS === 'web' ? 10 : 12;
+  const tabHeight = Platform.OS === 'web' ? 64 : 70;
+
   return (
     <WorkspaceGate home="/(admin)">
-    <Tabs
-      screenOptions={{
-        headerShown: true,
-        headerStyle: { backgroundColor: '#1E293B' },
-        headerTintColor: '#fff',
-        tabBarActiveTintColor: '#0F766E',
-        tabBarInactiveTintColor: '#64748B',
-        tabBarStyle: { height: 60, paddingBottom: 8, paddingTop: 6 },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Executive',
-          tabBarIcon: ({ color, size }) => <LayoutDashboard color={color} size={size} />,
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: '#0F766E',
+          tabBarInactiveTintColor: '#64748B',
+          tabBarHideOnKeyboard: true,
+          tabBarStyle: {
+            height: tabHeight,
+            paddingBottom: bottomInset,
+            paddingTop: 6,
+            backgroundColor: '#FFFFFF',
+            borderTopWidth: 1,
+            borderTopColor: '#E2E8F0',
+            elevation: 8,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.06,
+            shadowRadius: 4,
+          },
+          tabBarLabelStyle: {
+            fontSize: 10,
+            fontWeight: '700',
+            marginBottom: 2,
+          },
+          tabBarItemStyle: {
+            paddingVertical: 2,
+          },
         }}
-      />
-      <Tabs.Screen
-        name="departments"
-        options={{
-          title: 'Departments',
-          tabBarIcon: ({ color, size }) => <Building2 color={color} size={size} />,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Admin',
-          tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: 'Executive',
+            tabBarIcon: ({ color }) => <LayoutDashboard color={color} size={20} />,
+          }}
+        />
+        <Tabs.Screen
+          name="departments"
+          options={{
+            title: 'Departments',
+            tabBarIcon: ({ color }) => <Building2 color={color} size={20} />,
+          }}
+        />
+        <Tabs.Screen
+          name="doctors"
+          options={{
+            title: 'Doctors',
+            tabBarIcon: ({ color }) => <UserCheck color={color} size={20} />,
+          }}
+        />
+        <Tabs.Screen
+          name="operations"
+          options={{
+            title: 'Operations',
+            tabBarIcon: ({ color }) => <BedDouble color={color} size={20} />,
+          }}
+        />
+        <Tabs.Screen
+          name="more"
+          options={{
+            title: 'More',
+            tabBarIcon: ({ color }) => <Menu color={color} size={20} />,
+          }}
+        />
+
+        {/* Sub-screens (hidden from tab bar) */}
+        <Tabs.Screen name="staff" options={{ href: null }} />
+        <Tabs.Screen name="wards" options={{ href: null }} />
+        <Tabs.Screen name="approvals" options={{ href: null }} />
+        <Tabs.Screen name="reports" options={{ href: null }} />
+        <Tabs.Screen name="fleet" options={{ href: null }} />
+        <Tabs.Screen name="profile" options={{ href: null }} />
+      </Tabs>
     </WorkspaceGate>
   );
 }
-

@@ -1,15 +1,20 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { BillingService } from './billing.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { RequirePermissions, Scoped } from '../common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { CollectPaymentDto, CreateInvoiceDto, AdvancePaymentDto, AuthUserDto } from '@multispeciality-hms/contracts';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Billing, Invoicing & Insurance')
 @Controller('billing')
+@Scoped()
+@UseGuards(RolesGuard)
 export class BillingController {
   constructor(private service: BillingService) {}
 
   @Get('invoices')
+  @RequirePermissions('BILLING:VIEW')
   @ApiOperation({ summary: 'List invoices with optional patient filter' })
   async getInvoices(
     @CurrentUser() actor?: AuthUserDto,
@@ -24,6 +29,7 @@ export class BillingController {
   }
 
   @Get('invoices/:id')
+  @RequirePermissions('BILLING:VIEW')
   @ApiOperation({ summary: 'Get invoice details with items and payment history' })
   async findOne(@Param('id') id: string, @CurrentUser() actor?: AuthUserDto) {
     const data = await this.service.findOne(id, actor);
@@ -34,6 +40,7 @@ export class BillingController {
   }
 
   @Post('invoices')
+  @RequirePermissions('BILLING:CREATE')
   @ApiOperation({ summary: 'Generate hospital billing invoice' })
   async createInvoice(@Body() dto: CreateInvoiceDto) {
     const data = await this.service.createInvoice(dto);
@@ -44,6 +51,7 @@ export class BillingController {
   }
 
   @Post('invoices/:id/payments')
+  @RequirePermissions('BILLING:CREATE')
   @ApiOperation({ summary: 'Collect cash, UPI, card, or insurance payment' })
   async collectPayment(
     @Param('id') id: string,
@@ -59,6 +67,7 @@ export class BillingController {
   }
 
   @Get('insurance-claims')
+  @RequirePermissions('BILLING:VIEW')
   @ApiOperation({ summary: 'List active insurance claims and TPA statuses' })
   async getInsuranceClaims(
     @CurrentUser() actor?: AuthUserDto,
@@ -72,6 +81,7 @@ export class BillingController {
   }
 
   @Post('ipd-charges')
+  @RequirePermissions('BILLING:CREATE')
   @ApiOperation({ summary: 'Calculate or generate IPD room rent & nursing charges' })
   async calculateIPDCharges(
     @Body('admissionId') admissionId: string,
@@ -85,6 +95,7 @@ export class BillingController {
   }
 
   @Post('advance-payments')
+  @RequirePermissions('BILLING:CREATE')
   @ApiOperation({ summary: 'Record advance deposit payment for IPD admission' })
   async recordAdvancePayment(
     @Body() dto: AdvancePaymentDto,

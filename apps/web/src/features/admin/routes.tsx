@@ -1,20 +1,51 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AdminDashboard } from './AdminDashboard';
-import { UserManagement } from './UserManagement';
+import { DepartmentManagement } from './DepartmentManagement';
+import { DoctorManagement } from './DoctorManagement';
+import { StaffManagement } from './StaffManagement';
+import { PatientOperations } from './PatientOperations';
+import { WardBedManagement } from './WardBedManagement';
+import { AppointmentManagement } from './AppointmentManagement';
+import { AdmissionManagement } from './AdmissionManagement';
+import { DiagnosticsOverview } from './DiagnosticsOverview';
+import { PharmacyOverview } from './PharmacyOverview';
+import { BillingFinanceManagement } from './BillingFinanceManagement';
+import { FacilityFleetManagement } from './FacilityFleetManagement';
+import { ApprovalsHub } from './ApprovalsHub';
+import { ReportsAnalytics } from './ReportsAnalytics';
+import { RolePermissionsView } from './RolePermissionsView';
 import { AuditLogs } from './AuditLogs';
+import { HospitalSettings } from './HospitalSettings';
+import { AdminProfile } from './AdminProfile';
 
 /**
- * Member 1 owns this file.
- * All admin sub-routes must be registered here.
- * Changes here will never conflict with Doctor, Nurse, or other member features.
+ * Hospital Admin Master Workspace Router:
+ * Mounts all clinical, operational, financial, and governance sub-modules
+ * strictly scoped to the operating branch.
  */
 export const AdminRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<AdminDashboard />} />
-      <Route path="users" element={<UserManagement />} />
+      <Route path="departments" element={<DepartmentManagement />} />
+      <Route path="doctors" element={<DoctorManagement />} />
+      <Route path="staff" element={<StaffManagement />} />
+      <Route path="patients" element={<PatientOperations />} />
+      <Route path="wards" element={<WardBedManagement />} />
+      <Route path="appointments" element={<AppointmentManagement />} />
+      <Route path="admissions" element={<AdmissionManagement />} />
+      <Route path="diagnostics" element={<DiagnosticsOverview />} />
+      <Route path="pharmacy" element={<PharmacyOverview />} />
+      <Route path="billing" element={<BillingFinanceManagement />} />
+      <Route path="facility" element={<FacilityFleetManagement />} />
+      <Route path="approvals" element={<ApprovalsHub />} />
+      <Route path="reports" element={<ReportsAnalytics />} />
+      <Route path="users" element={<StaffManagement />} />
+      <Route path="roles" element={<RolePermissionsView />} />
       <Route path="audit" element={<AuditLogs />} />
+      <Route path="settings" element={<HospitalSettings />} />
+      <Route path="profile" element={<AdminProfile />} />
     </Routes>
   );
 };

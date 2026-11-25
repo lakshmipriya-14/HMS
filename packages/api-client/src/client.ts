@@ -239,6 +239,26 @@ export class AalayamApiClient {
     },
   };
 
+  // --- Appointments Management ---
+  public appointments = {
+    list: async (params?: { date?: string; departmentId?: string; status?: string; doctorId?: string }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>('/appointments', { params });
+      return res.data;
+    },
+    cancel: async (id: string, reason?: string) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`/appointments/${id}/cancel`, { reason });
+      return res.data;
+    },
+  };
+
+  // --- Patients Management ---
+  public patients = {
+    search: async (q?: string) => {
+      const res = await this.instance.get<ApiResponse<any[]>>('/patients', { params: { search: q } });
+      return res.data;
+    },
+  };
+
   // --- MEMBER 2: Doctor Clinical Module ---
   public doctor = {
     getAppointments: async (doctorId?: string) => {
@@ -349,6 +369,22 @@ export class AalayamApiClient {
     },
     getLowStock: async () => {
       const res = await this.instance.get<ApiResponse<any>>(API_ENDPOINTS.PHARMACY.LOW_STOCK);
+      return res.data;
+    },
+    getLowStockAlerts: async () => {
+      const res = await this.instance.get<ApiResponse<any>>(API_ENDPOINTS.PHARMACY.LOW_STOCK);
+      return res.data;
+    },
+    getExpiryAlerts: async () => {
+      const res = await this.instance.get<ApiResponse<any>>('/pharmacy/alerts/expiring');
+      return res.data;
+    },
+    getDispenseQueue: async () => {
+      const res = await this.instance.get<ApiResponse<any>>(API_ENDPOINTS.PHARMACY.DISPENSE_QUEUE);
+      return res.data;
+    },
+    adjustStock: async (dto: { medicineId: string; quantityDelta: number; reason: string }) => {
+      const res = await this.instance.post<ApiResponse<any>>('/pharmacy/inventory/adjust', dto);
       return res.data;
     },
   };
@@ -463,6 +499,126 @@ export class AalayamApiClient {
     audit: async (params: object) => {
       const response = await this.instance.get<ApiResponse<Record<string, unknown>[]>>('/audit/logs', { params });
       return response.data;
+    },
+  };
+
+  // --- Hospital Admin Workspace Module ---
+  public hospitalAdmin = {
+    getDashboard: async (params?: { branchId?: string; startDate?: string; endDate?: string }) => {
+      const res = await this.instance.get<ApiResponse<any>>('/reports/hospital-admin-dashboard', { params });
+      return res.data;
+    },
+    getDepartments: async (branchId?: string) => {
+      const res = await this.instance.get<ApiResponse<any>>('/departments', { params: { branchId } });
+      return res.data;
+    },
+    createDepartment: async (data: any) => {
+      const res = await this.instance.post<ApiResponse<any>>('/departments', data);
+      return res.data;
+    },
+    updateDepartment: async (id: string, data: any) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`/departments/${id}`, data);
+      return res.data;
+    },
+    toggleDepartmentStatus: async (id: string) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`/departments/${id}/status`);
+      return res.data;
+    },
+    assignHod: async (id: string, doctorId: string | null) => {
+      const res = await this.instance.post<ApiResponse<any>>(`/departments/${id}/hod`, { doctorId });
+      return res.data;
+    },
+    assignDepartmentAdmin: async (id: string, userId: string) => {
+      const res = await this.instance.post<ApiResponse<any>>(`/departments/${id}/admin`, { userId });
+      return res.data;
+    },
+    getDepartmentStats: async (id: string) => {
+      const res = await this.instance.get<ApiResponse<any>>(`/departments/${id}/stats`);
+      return res.data;
+    },
+    getDoctors: async (params?: { departmentId?: string; designation?: string; branchId?: string }) => {
+      const res = await this.instance.get<ApiResponse<any>>('/doctors', { params });
+      return res.data;
+    },
+    createDoctor: async (data: any) => {
+      const res = await this.instance.post<ApiResponse<any>>('/doctors', data);
+      return res.data;
+    },
+    updateDoctor: async (id: string, data: any) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`/doctors/${id}`, data);
+      return res.data;
+    },
+    updateDoctorSchedule: async (id: string, data: any) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`/doctors/${id}/schedule`, data);
+      return res.data;
+    },
+    getStaff: async (params?: { role?: string; search?: string; branchId?: string }) => {
+      const res = await this.instance.get<ApiResponse<any>>('/users', { params });
+      return res.data;
+    },
+    createStaff: async (data: any) => {
+      const res = await this.instance.post<ApiResponse<any>>('/users', data);
+      return res.data;
+    },
+    updateStaff: async (id: string, data: any) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`/users/${id}`, data);
+      return res.data;
+    },
+    toggleStaffStatus: async (id: string) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`/users/${id}/status`);
+      return res.data;
+    },
+    resetStaffPassword: async (id: string, password?: string) => {
+      const res = await this.instance.post<ApiResponse<any>>(`/users/${id}/reset-password`, { password });
+      return res.data;
+    },
+    getWards: async (branchId?: string) => {
+      const res = await this.instance.get<ApiResponse<any>>('/wards', { params: { branchId } });
+      return res.data;
+    },
+    createWard: async (data: any) => {
+      const res = await this.instance.post<ApiResponse<any>>('/wards', data);
+      return res.data;
+    },
+    updateWard: async (id: string, data: any) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`/wards/${id}`, data);
+      return res.data;
+    },
+    createBed: async (wardId: string, data: any) => {
+      const res = await this.instance.post<ApiResponse<any>>(`/wards/${wardId}/beds`, data);
+      return res.data;
+    },
+    updateBedStatus: async (bedId: string, status: string) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`/wards/beds/${bedId}/status`, { status });
+      return res.data;
+    },
+    getAdmissions: async (params?: { patientId?: string; status?: string; branchId?: string }) => {
+      const res = await this.instance.get<ApiResponse<any>>('/wards/admissions', { params });
+      return res.data;
+    },
+    getBedCensus: async (branchId?: string) => {
+      const res = await this.instance.get<ApiResponse<any>>('/wards/census', { params: { branchId } });
+      return res.data;
+    },
+    getApprovals: async (branchId?: string) => {
+      const res = await this.instance.get<ApiResponse<any>>('/approvals/pending', { params: { branchId } });
+      return res.data;
+    },
+    processApproval: async (type: 'appointment-request' | 'doctor-leave' | 'bed-turnover', id: string, action: 'APPROVE' | 'REJECT', notes?: string) => {
+      const res = await this.instance.post<ApiResponse<any>>(`/approvals/${type}/${id}/action`, { action, notes });
+      return res.data;
+    },
+    getApprovalHistory: async (branchId?: string) => {
+      const res = await this.instance.get<ApiResponse<any>>('/approvals/history', { params: { branchId } });
+      return res.data;
+    },
+    getReports: async (params: { type: string; branchId?: string; departmentId?: string; fromDate?: string; toDate?: string }) => {
+      const res = await this.instance.get<ApiResponse<any>>('/reports/export', { params });
+      return res.data;
+    },
+    getAuditLogs: async (params?: any) => {
+      const res = await this.instance.get<ApiResponse<any>>('/audit/logs', { params });
+      return res.data;
     },
   };
 

@@ -1,15 +1,20 @@
 import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { PatientsService } from './patients.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { RequirePermissions, Scoped } from '../common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { RegisterPatientDto, AuthUserDto, UpdatePatientDto } from '@multispeciality-hms/contracts';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Patients')
 @Controller('patients')
+@Scoped()
+@UseGuards(RolesGuard)
 export class PatientsController {
   constructor(private service: PatientsService) {}
 
   @Post()
+  @RequirePermissions('PATIENTS:CREATE')
   @ApiOperation({ summary: 'Register a new patient & generate UHID' })
   async register(
     @Body() dto: RegisterPatientDto,
@@ -23,6 +28,7 @@ export class PatientsController {
   }
 
   @Get('search')
+  @RequirePermissions('PATIENTS:VIEW')
   @ApiOperation({ summary: 'Search patients by name, UHID, or phone' })
   async search(
     @CurrentUser() actor?: AuthUserDto,
@@ -38,6 +44,7 @@ export class PatientsController {
   }
 
   @Get('check-duplicate')
+  @RequirePermissions('PATIENTS:VIEW')
   @ApiOperation({ summary: 'Check if patient already exists by phone/email' })
   async checkDuplicate(
     @Query('phone') phone: string,
@@ -51,6 +58,7 @@ export class PatientsController {
   }
 
   @Get(':id')
+  @RequirePermissions('PATIENTS:VIEW')
   @ApiOperation({ summary: 'Get full patient clinical profile and history' })
   async findOne(@Param('id') id: string, @CurrentUser() actor?: AuthUserDto) {
     const data = await this.service.findOne(id, actor);
@@ -61,6 +69,7 @@ export class PatientsController {
   }
 
   @Patch(':id')
+  @RequirePermissions('PATIENTS:UPDATE')
   @ApiOperation({ summary: 'Update patient demographic and emergency contact details' })
   async update(
     @Param('id') id: string,

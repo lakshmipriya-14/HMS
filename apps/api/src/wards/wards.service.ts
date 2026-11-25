@@ -24,14 +24,163 @@ export class WardsService {
       where.branchId = branchId;
     }
 
-    return this.prisma.ward.findMany({
+    const wards = await this.prisma.ward.findMany({
       where,
       include: {
-        beds: true,
-        department: { select: { name: true, code: true } },
+        beds: {
+          include: {
+            admissions: {
+              where: { status: 'ADMITTED' },
+              take: 1,
+              include: {
+                patient: {
+                  select: {
+                    id: true,
+                    uhid: true,
+                    firstName: true,
+                    lastName: true,
+                    gender: true,
+                    dateOfBirth: true,
+                    phone: true,
+                  },
+                },
+                admittingDoctor: {
+                  include: {
+                    employee: {
+                      include: {
+                        user: { select: { firstName: true, lastName: true } },
+                      },
+                    },
+                    department: { select: { name: true } },
+                  },
+                },
+              },
+            },
+          },
+          orderBy: [{ roomNumber: 'asc' }, { bedNumber: 'asc' }],
+        },
+        department: { select: { id: true, name: true, code: true } },
       },
       orderBy: { floorNumber: 'asc' },
     });
+
+    return wards.map((w) => {
+      const totalBeds = w.beds.length;
+      const occupiedBeds = w.beds.filter((b) => b.status === 'OCCUPIED').length;
+      const availableBeds = w.beds.filter((b) => b.status === 'AVAILABLE').length;
+      const maintenanceBeds = w.beds.filter((b) => b.status === 'MAINTENANCE').length;
+      const cleaningBeds = w.beds.filter((b) => b.status === 'CLEANING').length;
+      const bedOccupancyRate = totalBeds > 0 ? Math.round((occupiedBeds / totalBeds) * 100) : 0;
+
+      const enrichedBeds = w.beds.map((b) => {
+        const activeAdm = b.admissions?.[0];
+        const patientName = activeAdm?.patient
+          ? `${activeAdm.patient.firstName} ${activeAdm.patient.lastName}`.trim()
+          : b.currentPatientName || null;
+        const doctorName = activeAdm?.admittingDoctor?.employee?.user
+          ? `Dr. ${activeAdm.admittingDoctor.employee.user.firstName} ${activeAdm.admittingDoctor.employee.user.lastName}`.trim()
+          : null;
+
+        return {
+          ...b,
+          dailyRate: Number(b.dailyRate),
+          currentPatientName: patientName,
+          patientDetails: activeAdm?.patient || null,
+          activeAdmission: activeAdm
+            ? {
+                id: activeAdm.id,
+                admissionNumber: activeAdm.admissionNumber,
+                admittedAt: activeAdm.admittedAt,
+                admissionReason: activeAdm.admissionReason,
+                initialDiagnosis: activeAdm.initialDiagnosis,
+                doctorName,
+                departmentName: activeAdm.admittingDoctor?.department?.name || null,
+              }
+            : null,
+        };
+      });
+
+      return {
+        ...w,
+        totalBeds,
+        occupiedBeds,
+        availableBeds,
+        maintenanceBeds,
+        cleaningBeds,
+        bedOccupancyRate,
+        beds: enrichedBeds,
+      };
+    });
+  }
+
+  async getBedCensus(actor: AuthUserDto, branchId?: string) {
+    const wards = await this.findAllWards(actor, branchId);
+
+    let totalBeds = 0;
+    let occupiedBeds = 0;
+    let availableBeds = 0;
+    let maintenanceBeds = 0;
+    let cleaningBeds = 0;
+
+    const deptMap = new Map<string, {
+      departmentId: string;
+      departmentName: string;
+      departmentCode: string;
+      totalBeds: number;
+      occupiedBeds: number;
+      availableBeds: number;
+      occupancyRate: number;
+    }>();
+
+    for (const w of wards) {
+      totalBeds += w.totalBeds;
+      occupiedBeds += w.occupiedBeds;
+      availableBeds += w.availableBeds;
+      maintenanceBeds += w.maintenanceBeds;
+      cleaningBeds += w.cleaningBeds;
+
+      const deptId = w.department?.id || 'UNASSIGNED';
+      const deptName = w.department?.name || 'General Facility';
+      const deptCode = w.department?.code || 'GEN';
+
+      if (!deptMap.has(deptId)) {
+        deptMap.set(deptId, {
+          departmentId: deptId,
+          departmentName: deptName,
+          departmentCode: deptCode,
+          totalBeds: 0,
+          occupiedBeds: 0,
+          availableBeds: 0,
+          occupancyRate: 0,
+        });
+      }
+
+      const d = deptMap.get(deptId)!;
+      d.totalBeds += w.totalBeds;
+      d.occupiedBeds += w.occupiedBeds;
+      d.availableBeds += w.availableBeds;
+    }
+
+    const departmentUtilization = Array.from(deptMap.values()).map((d) => ({
+      ...d,
+      occupancyRate: d.totalBeds > 0 ? Math.round((d.occupiedBeds / d.totalBeds) * 100) : 0,
+    }));
+
+    const bedOccupancyRate = totalBeds > 0 ? Math.round((occupiedBeds / totalBeds) * 100) : 0;
+
+    return {
+      summary: {
+        totalWards: wards.length,
+        totalBeds,
+        occupiedBeds,
+        availableBeds,
+        maintenanceBeds,
+        cleaningBeds,
+        bedOccupancyRate,
+      },
+      departmentUtilization,
+      wards,
+    };
   }
 
   async getBeds(wardId: string, actor?: AuthUserDto) {
@@ -335,6 +484,145 @@ export class WardsService {
       });
 
       return updated;
+    });
+  }
+
+  async createWard(
+    actor: AuthUserDto,
+    dto: {
+      name: string;
+      code: string;
+      genderAllowed?: string;
+      floorNumber?: number;
+      departmentId?: string;
+      branchId?: string;
+    }
+  ) {
+    const scope = resolveOperationalScope(actor, dto.branchId);
+    if (!scope.branchId) {
+      throw new BadRequestException('Branch ID is required to create a ward.');
+    }
+    assertBranchAccess(actor, scope.branchId);
+
+    const code = dto.code.trim().toUpperCase();
+    const existing = await this.prisma.ward.findFirst({
+      where: { code, hospitalId: scope.hospitalId },
+    });
+    if (existing) {
+      throw new BadRequestException(`Ward code "${code}" is already in use.`);
+    }
+
+    return this.prisma.ward.create({
+      data: {
+        hospitalId: scope.hospitalId,
+        branchId: scope.branchId,
+        departmentId: dto.departmentId || null,
+        name: dto.name.trim(),
+        code,
+        genderAllowed: dto.genderAllowed || 'ANY',
+        floorNumber: dto.floorNumber || 1,
+        totalBeds: 0,
+        occupiedBeds: 0,
+      },
+      include: {
+        department: true,
+        beds: true,
+      },
+    });
+  }
+
+  async updateWard(
+    actor: AuthUserDto,
+    id: string,
+    dto: {
+      name?: string;
+      genderAllowed?: string;
+      floorNumber?: number;
+      departmentId?: string;
+    }
+  ) {
+    const ward = await this.prisma.ward.findUnique({ where: { id } });
+    if (!ward) throw new NotFoundException('Ward not found');
+    assertBranchAccess(actor, ward.branchId);
+
+    return this.prisma.ward.update({
+      where: { id },
+      data: {
+        ...(dto.name ? { name: dto.name.trim() } : {}),
+        ...(dto.genderAllowed ? { genderAllowed: dto.genderAllowed } : {}),
+        ...(dto.floorNumber !== undefined ? { floorNumber: dto.floorNumber } : {}),
+        ...(dto.departmentId !== undefined ? { departmentId: dto.departmentId || null } : {}),
+      },
+      include: {
+        department: true,
+        beds: true,
+      },
+    });
+  }
+
+  async createBed(
+    actor: AuthUserDto,
+    wardId: string,
+    dto: {
+      roomNumber: string;
+      bedNumber: string;
+      type?: string;
+      dailyRate?: number;
+      status?: string;
+    }
+  ) {
+    const ward = await this.prisma.ward.findUnique({ where: { id: wardId } });
+    if (!ward) throw new NotFoundException('Ward not found');
+    assertBranchAccess(actor, ward.branchId);
+
+    const roomNumber = dto.roomNumber.trim().toUpperCase();
+    const bedNumber = dto.bedNumber.trim().toUpperCase();
+
+    const existingBed = await this.prisma.bed.findFirst({
+      where: { wardId, roomNumber, bedNumber },
+    });
+    if (existingBed) {
+      throw new BadRequestException(`Bed ${bedNumber} in room ${roomNumber} already exists in this ward.`);
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const bed = await tx.bed.create({
+        data: {
+          hospitalId: ward.hospitalId,
+          branchId: ward.branchId,
+          wardId,
+          roomNumber,
+          bedNumber,
+          type: dto.type || 'STANDARD',
+          dailyRate: dto.dailyRate ?? 1000.0,
+          status: dto.status || 'AVAILABLE',
+        },
+      });
+
+      await tx.ward.update({
+        where: { id: wardId },
+        data: { totalBeds: { increment: 1 } },
+      });
+
+      return bed;
+    });
+  }
+
+  async updateBedStatus(actor: AuthUserDto, bedId: string, status: string) {
+    const bed = await this.prisma.bed.findUnique({
+      where: { id: bedId },
+      include: { ward: true },
+    });
+    if (!bed) throw new NotFoundException('Bed not found');
+    assertBranchAccess(actor, bed.branchId);
+
+    if (bed.status === 'OCCUPIED' && status !== 'OCCUPIED') {
+      throw new BadRequestException('Cannot change status of occupied bed directly. Please discharge or transfer the patient.');
+    }
+
+    return this.prisma.bed.update({
+      where: { id: bedId },
+      data: { status },
     });
   }
 }

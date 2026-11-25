@@ -1,24 +1,139 @@
-import { LayoutDashboard, Users, ShieldAlert } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Building2,
+  UserCheck,
+  Users,
+  BedDouble,
+  CalendarCheck,
+  DoorOpen,
+  FlaskConical,
+  Pill,
+  CreditCard,
+  Ambulance,
+  CheckSquare,
+  BarChart3,
+  ShieldAlert,
+  ShieldCheck,
+  Settings,
+  User,
+  HeartPulse,
+} from 'lucide-react';
 import { Role } from '@multispeciality-hms/contracts';
 import { NavItem } from '../../types/navigation';
 
 export const adminNavItems: NavItem[] = [
   {
-    label: 'Hospital Admin',
+    label: 'Executive Command',
     path: '/admin',
     icon: LayoutDashboard,
     roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.DEPARTMENT_ADMIN],
   },
   {
-    label: 'User Management',
+    label: 'Departments',
+    path: '/admin/departments',
+    icon: Building2,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Doctor Directory',
+    path: '/admin/doctors',
+    icon: UserCheck,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Hospital Staff & HR',
+    path: '/admin/staff',
+    icon: Users,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Patient Census',
+    path: '/admin/patients',
+    icon: HeartPulse,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Wards & Beds',
+    path: '/admin/wards',
+    icon: BedDouble,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Appointments',
+    path: '/admin/appointments',
+    icon: CalendarCheck,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Admissions & IPD',
+    path: '/admin/admissions',
+    icon: DoorOpen,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Diagnostics Overview',
+    path: '/admin/diagnostics',
+    icon: FlaskConical,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Pharmacy & Stock',
+    path: '/admin/pharmacy',
+    icon: Pill,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Billing & Finance',
+    path: '/admin/billing',
+    icon: CreditCard,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Emergency & Fleet',
+    path: '/admin/facility',
+    icon: Ambulance,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Approvals Hub',
+    path: '/admin/approvals',
+    icon: CheckSquare,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Reports & Analytics',
+    path: '/admin/reports',
+    icon: BarChart3,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'User Accounts',
     path: '/admin/users',
     icon: Users,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Role Permissions',
+    path: '/admin/roles',
+    icon: ShieldCheck,
     roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
   },
   {
     label: 'Audit Trail',
     path: '/admin/audit',
     icon: ShieldAlert,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Hospital Settings',
+    path: '/admin/settings',
+    icon: Settings,
+    roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
+  },
+  {
+    label: 'Admin Profile',
+    path: '/admin/profile',
+    icon: User,
     roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
   },
 ];

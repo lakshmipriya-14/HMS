@@ -126,6 +126,12 @@ export class PatientsService {
       where.hospitalId = actor.hospitalId;
       if (actor.role === Role.SUPER_ADMIN) {
         // Super Admin has organization-wide scope across all branches
+      } else if (actor.role === Role.PATIENT) {
+        if (actor.patientProfileId) {
+          where.id = actor.patientProfileId;
+        } else {
+          where.userId = actor.id;
+        }
       } else {
         if (!actor.branchId) {
           throw new ForbiddenException('Operational staff requires branch scope.');
@@ -181,6 +187,12 @@ export class PatientsService {
       where.hospitalId = actor.hospitalId;
       if (actor.role === Role.SUPER_ADMIN) {
         // Super Admin has organization-wide scope across all branches
+      } else if (actor.role === Role.PATIENT) {
+        if (actor.patientProfileId) {
+          where.id = actor.patientProfileId;
+        } else {
+          where.userId = actor.id;
+        }
       } else {
         if (!actor.branchId) {
           throw new ForbiddenException('Operational staff requires branch scope.');

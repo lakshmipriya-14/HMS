@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { AuthUserDto, DoctorRoundNoteDto } from '@multispeciality-hms/contracts';
+import { AuthUserDto, DoctorRoundNoteDto, Role } from '@multispeciality-hms/contracts';
 import { resolveOperationalScope, assertBranchAccess } from '../common/utils/operational-scope';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class DoctorsService {
@@ -34,6 +35,7 @@ export class DoctorsService {
                 email: true,
                 phone: true,
                 avatarUrl: true,
+                isActive: true,
               },
             },
           },
@@ -41,6 +43,7 @@ export class DoctorsService {
         qualifications: true,
         schedules: { where: { isActive: true } },
       },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -62,6 +65,225 @@ export class DoctorsService {
       assertBranchAccess(actor, doctor.branchId);
     }
     return doctor;
+  }
+
+  async createDoctor(
+    actor: AuthUserDto,
+    dto: {
+      userId?: string;
+      email?: string;
+      password?: string;
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+      branchId?: string;
+      departmentId: string;
+      designation: string;
+      licenseNumber: string;
+      specialization: string;
+      subSpecialization?: string;
+      experienceYears?: number;
+      consultationFee?: number;
+      followUpFee?: number;
+      opdFee?: number;
+      ipdAvailable?: boolean;
+      consultationDurationMin?: number;
+      availableDays?: string[];
+      shift?: string;
+    }
+  ) {
+    const scope = resolveOperationalScope(actor, dto.branchId, dto.departmentId);
+    if (!scope.branchId) {
+      throw new BadRequestException('Branch ID is required.');
+    }
+    assertBranchAccess(actor, scope.branchId);
+
+    const licenseNumber = dto.licenseNumber.trim().toUpperCase();
+    const existingDoc = await this.prisma.doctor.findUnique({
+      where: { licenseNumber },
+    });
+    if (existingDoc) {
+      throw new ConflictException(`Doctor with license number "${licenseNumber}" already exists.`);
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      let userId = dto.userId;
+      let employeeId: string;
+
+      if (!userId) {
+        if (!dto.email || !dto.firstName || !dto.lastName) {
+          throw new BadRequestException('Email, first name, and last name are required if no existing user is linked.');
+        }
+        const email = dto.email.toLowerCase().trim();
+        const existingUser = await tx.user.findFirst({
+          where: { email, hospitalId: scope.hospitalId },
+        });
+        if (existingUser) {
+          throw new ConflictException(`User with email "${email}" already exists.`);
+        }
+
+        const password = dto.password || 'UyirinaiTeamDemo!24';
+        const passwordHash = await bcrypt.hash(password, 10);
+
+        const createdUser = await tx.user.create({
+          data: {
+            hospitalId: scope.hospitalId,
+            email,
+            passwordHash,
+            firstName: dto.firstName.trim(),
+            lastName: dto.lastName.trim(),
+            phone: dto.phone?.trim() || '0000000000',
+            isActive: true,
+          },
+        });
+        userId = createdUser.id;
+
+        const doctorRole = await tx.role.findFirst({ where: { name: Role.DOCTOR } });
+        if (doctorRole) {
+          await tx.userRole.create({
+            data: {
+              hospitalId: scope.hospitalId,
+              userId,
+              roleId: doctorRole.id,
+              branchId: scope.branchId,
+              departmentId: dto.departmentId,
+              scopeKey: `branch:${scope.branchId}:department:${dto.departmentId}`,
+            },
+          });
+        }
+
+        const employee = await tx.employee.create({
+          data: {
+            hospitalId: scope.hospitalId,
+            userId,
+            branchId: scope.branchId,
+            departmentId: dto.departmentId,
+            employeeCode: `DOC-${Date.now().toString().slice(-6)}`,
+            designation: dto.designation,
+            dateOfJoining: new Date(),
+            status: 'ACTIVE',
+          },
+        });
+        employeeId = employee.id;
+      } else {
+        const emp = await tx.employee.findFirst({
+          where: { userId, hospitalId: scope.hospitalId },
+        });
+        if (!emp) {
+          const employee = await tx.employee.create({
+            data: {
+              hospitalId: scope.hospitalId,
+              userId,
+              branchId: scope.branchId,
+              departmentId: dto.departmentId,
+              employeeCode: `DOC-${Date.now().toString().slice(-6)}`,
+              designation: dto.designation,
+              dateOfJoining: new Date(),
+              status: 'ACTIVE',
+            },
+          });
+          employeeId = employee.id;
+        } else {
+          employeeId = emp.id;
+        }
+      }
+
+      const doctor = await tx.doctor.create({
+        data: {
+          hospitalId: scope.hospitalId,
+          branchId: scope.branchId!,
+          employeeId,
+          departmentId: dto.departmentId,
+          designation: dto.designation,
+          licenseNumber,
+          specialization: dto.specialization,
+          subSpecialization: dto.subSpecialization || null,
+          experienceYears: dto.experienceYears || 0,
+          consultationFee: dto.consultationFee ?? 500,
+          followUpFee: dto.followUpFee ?? 300,
+          opdFee: dto.opdFee ?? 500,
+          ipdAvailable: dto.ipdAvailable ?? true,
+          consultationDurationMin: dto.consultationDurationMin ?? 15,
+          availableDays: dto.availableDays || ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
+          shift: dto.shift || 'MORNING',
+          isAvailableToday: true,
+        },
+        include: {
+          department: true,
+          employee: { include: { user: true } },
+        },
+      });
+
+      return doctor;
+    });
+  }
+
+  async updateDoctor(
+    actor: AuthUserDto,
+    id: string,
+    dto: {
+      departmentId?: string;
+      designation?: string;
+      specialization?: string;
+      subSpecialization?: string;
+      experienceYears?: number;
+      consultationFee?: number;
+      followUpFee?: number;
+      opdFee?: number;
+      ipdAvailable?: boolean;
+      consultationDurationMin?: number;
+      availableDays?: string[];
+      shift?: string;
+      isAvailableToday?: boolean;
+    }
+  ) {
+    const doctor = await this.findOne(id, actor);
+    assertBranchAccess(actor, doctor.branchId);
+
+    return this.prisma.doctor.update({
+      where: { id },
+      data: {
+        ...(dto.departmentId ? { departmentId: dto.departmentId } : {}),
+        ...(dto.designation ? { designation: dto.designation } : {}),
+        ...(dto.specialization ? { specialization: dto.specialization } : {}),
+        ...(dto.subSpecialization !== undefined ? { subSpecialization: dto.subSpecialization || null } : {}),
+        ...(dto.experienceYears !== undefined ? { experienceYears: dto.experienceYears } : {}),
+        ...(dto.consultationFee !== undefined ? { consultationFee: dto.consultationFee } : {}),
+        ...(dto.followUpFee !== undefined ? { followUpFee: dto.followUpFee } : {}),
+        ...(dto.opdFee !== undefined ? { opdFee: dto.opdFee } : {}),
+        ...(dto.ipdAvailable !== undefined ? { ipdAvailable: dto.ipdAvailable } : {}),
+        ...(dto.consultationDurationMin !== undefined ? { consultationDurationMin: dto.consultationDurationMin } : {}),
+        ...(dto.availableDays ? { availableDays: dto.availableDays } : {}),
+        ...(dto.shift ? { shift: dto.shift } : {}),
+        ...(dto.isAvailableToday !== undefined ? { isAvailableToday: dto.isAvailableToday } : {}),
+      },
+      include: {
+        department: true,
+        employee: { include: { user: true } },
+      },
+    });
+  }
+
+  async updateSchedule(
+    actor: AuthUserDto,
+    id: string,
+    dto: { availableDays?: string[]; shift?: string; isAvailableToday?: boolean }
+  ) {
+    const doctor = await this.findOne(id, actor);
+    assertBranchAccess(actor, doctor.branchId);
+
+    return this.prisma.doctor.update({
+      where: { id },
+      data: {
+        ...(dto.availableDays ? { availableDays: dto.availableDays } : {}),
+        ...(dto.shift ? { shift: dto.shift } : {}),
+        ...(dto.isAvailableToday !== undefined ? { isAvailableToday: dto.isAvailableToday } : {}),
+      },
+      include: {
+        department: true,
+        employee: { include: { user: true } },
+      },
+    });
   }
 
   async getInpatients(actor?: AuthUserDto, branchId?: string) {

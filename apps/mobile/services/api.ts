@@ -2,11 +2,30 @@ import { createUyirinaiApiClient } from '@multispeciality-hms/api-client';
 import { Platform } from 'react-native';
 
 // In Android emulator 10.0.2.2 points to host localhost; for iOS / web localhost works.
-const DEFAULT_URL = Platform.OS === 'android' ? 'http://10.0.2.2:4000/api/v1' : 'http://localhost:4000/api/v1';
-const API_BASE_URL =
-  Platform.OS === 'web' && process.env.EXPO_PUBLIC_API_URL?.includes('10.0.2.2')
-    ? 'http://localhost:4000/api/v1'
-    : (process.env.EXPO_PUBLIC_API_URL || DEFAULT_URL);
+const getBaseUrl = (): string => {
+  const envUrl = process.env.EXPO_PUBLIC_API_URL;
+  if (Platform.OS === 'web') {
+    if (envUrl && !envUrl.includes('10.0.2.2')) {
+      return envUrl;
+    }
+    if (typeof window !== 'undefined' && window.location && window.location.hostname) {
+      return `http://${window.location.hostname}:4000/api/v1`;
+    }
+    return 'http://localhost:4000/api/v1';
+  }
+  if (Platform.OS === 'android') {
+    if (envUrl) {
+      if (envUrl.includes('localhost')) {
+        return envUrl.replace('localhost', '10.0.2.2');
+      }
+      return envUrl;
+    }
+    return 'http://10.0.2.2:4000/api/v1';
+  }
+  return envUrl || 'http://localhost:4000/api/v1';
+};
+
+const API_BASE_URL = getBaseUrl();
 
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
@@ -15,7 +34,7 @@ export const setMobileUnauthorizedHandler = (handler?: () => void) => { unauthor
 
 export const mobileApiClient = createUyirinaiApiClient({
   baseURL: API_BASE_URL,
-  cookieSession: Platform.OS === 'web',
+  cookieSession: false,
   getAccessToken: () => accessToken,
   getRefreshToken: () => refreshToken,
   setTokens: (access, refresh) => {

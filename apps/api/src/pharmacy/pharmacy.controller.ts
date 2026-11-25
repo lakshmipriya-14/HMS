@@ -1,15 +1,20 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { PharmacyService } from './pharmacy.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { RequirePermissions, Scoped } from '../common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { DispensePrescriptionDto, AdjustStockDto, AuthUserDto } from '@multispeciality-hms/contracts';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Pharmacy & Inventory')
 @Controller('pharmacy')
+@Scoped()
+@UseGuards(RolesGuard)
 export class PharmacyController {
   constructor(private service: PharmacyService) {}
 
   @Get('prescriptions')
+  @RequirePermissions('PRESCRIPTIONS:VIEW')
   @ApiOperation({ summary: 'Get active prescription dispensing queue (alias)' })
   async getPrescriptions(
     @CurrentUser() actor?: AuthUserDto,
@@ -23,6 +28,7 @@ export class PharmacyController {
   }
 
   @Post('dispense')
+  @RequirePermissions('PHARMACY_DISPENSE:DISPENSE')
   @ApiOperation({ summary: 'Dispense prescription medications (direct endpoint)' })
   async dispenseDirect(
     @Body() dto: DispensePrescriptionDto,
@@ -38,6 +44,7 @@ export class PharmacyController {
   }
 
   @Post('inventory/adjust')
+  @RequirePermissions('PHARMACY_INVENTORY:UPDATE')
   @ApiOperation({ summary: 'Adjust stock inventory' })
   async adjustStock(
     @Body() dto: AdjustStockDto,
@@ -52,6 +59,7 @@ export class PharmacyController {
   }
 
   @Get('medicines')
+  @RequirePermissions('PHARMACY_INVENTORY:VIEW')
   @ApiOperation({ summary: 'Search medicine formulary catalogue and stock' })
   async getMedicines(
     @CurrentUser() actor?: AuthUserDto,
@@ -66,6 +74,7 @@ export class PharmacyController {
   }
 
   @Get('dispense-queue')
+  @RequirePermissions('PRESCRIPTIONS:VIEW')
   @ApiOperation({ summary: 'Get active prescription dispensing queue' })
   async getDispenseQueue(
     @CurrentUser() actor?: AuthUserDto,
@@ -79,6 +88,7 @@ export class PharmacyController {
   }
 
   @Post('prescriptions/:id/dispense')
+  @RequirePermissions('PHARMACY_DISPENSE:DISPENSE')
   @ApiOperation({ summary: 'Dispense prescription medications and deduct stock' })
   async dispense(
     @Param('id') id: string,
@@ -95,6 +105,7 @@ export class PharmacyController {
   }
 
   @Get('low-stock')
+  @RequirePermissions('PHARMACY_INVENTORY:VIEW')
   @ApiOperation({ summary: 'Get low stock inventory warnings' })
   async getLowStock(
     @CurrentUser() actor?: AuthUserDto,
@@ -108,6 +119,7 @@ export class PharmacyController {
   }
 
   @Get('expiry-alerts')
+  @RequirePermissions('PHARMACY_INVENTORY:VIEW')
   @ApiOperation({ summary: 'Get near-expiry batch warnings' })
   async getExpiryAlerts(
     @CurrentUser() actor?: AuthUserDto,

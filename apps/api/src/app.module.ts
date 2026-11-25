@@ -24,6 +24,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { AuditModule } from './audit/audit.module';
 import { ReportsModule } from './reports/reports.module';
 import { SuperAdminModule } from './super-admin/super-admin.module';
+import { ApprovalsModule } from './approvals/approvals.module';
 
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { PermissionsGuard } from './common/guards/permissions.guard';
@@ -59,6 +60,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
     AuditModule,
     ReportsModule,
     SuperAdminModule,
+    ApprovalsModule,
   ],
   providers: [
     {

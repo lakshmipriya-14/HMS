@@ -1,15 +1,20 @@
-import { Controller, Get, Post, Patch, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { NursingService } from './nursing.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { RequirePermissions, Scoped } from '../common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { CreateNursingTaskDto, RecordVitalsDto } from '@multispeciality-hms/contracts';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Nursing & Ward Patient Care')
 @Controller('nursing')
+@Scoped()
+@UseGuards(RolesGuard)
 export class NursingController {
   constructor(private service: NursingService) {}
 
   @Get('patients')
+  @RequirePermissions('PATIENTS:VIEW')
   @ApiOperation({ summary: 'List admitted patients with latest vitals and active tasks' })
   async getAssignedPatients() {
     const data = await this.service.getAssignedPatients();
@@ -20,6 +25,7 @@ export class NursingController {
   }
 
   @Post('vitals')
+  @RequirePermissions('VITALS:CREATE')
   @ApiOperation({ summary: 'Record clinical vitals with abnormal thresholds detection' })
   async recordVitals(
     @Body() dto: RecordVitalsDto,
@@ -35,6 +41,7 @@ export class NursingController {
   }
 
   @Get('tasks')
+  @RequirePermissions('NURSING_TASKS:VIEW')
   @ApiOperation({ summary: 'Get nursing care task checklist' })
   async getTasks(@Query('admissionId') admissionId?: string) {
     const data = await this.service.getTasks(admissionId);
@@ -45,6 +52,7 @@ export class NursingController {
   }
 
   @Post('tasks')
+  @RequirePermissions('NURSING_TASKS:CREATE')
   @ApiOperation({ summary: 'Create nursing task' })
   async createTask(@Body() dto: CreateNursingTaskDto) {
     const data = await this.service.createTask(dto);
@@ -55,6 +63,7 @@ export class NursingController {
   }
 
   @Patch('tasks/:id/status')
+  @RequirePermissions('NURSING_TASKS:UPDATE')
   @ApiOperation({ summary: 'Mark nursing task complete/pending' })
   async updateTaskStatus(
     @Param('id') id: string,
@@ -68,6 +77,7 @@ export class NursingController {
   }
 
   @Post('medication-administration')
+  @RequirePermissions('NURSING_TASKS:UPDATE')
   @ApiOperation({ summary: 'Log medication administration event (MAR)' })
   async administerMedication(
     @Body() body: { prescriptionItemId: string; admissionId: string; dose: string; notes?: string },
