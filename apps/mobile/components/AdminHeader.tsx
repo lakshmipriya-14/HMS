@@ -51,7 +51,7 @@ export function AdminHeader({
             <HeartPulse size={20} color="#0F766E" />
           </View>
           <View>
-            <Text style={styles.hospitalText}>{subtitle}</Text>
+            {subtitle ? <Text style={styles.hospitalText}>{subtitle}</Text> : null}
             <Text style={styles.titleText}>{title}</Text>
           </View>
         </View>

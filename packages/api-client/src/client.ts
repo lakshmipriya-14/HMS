@@ -22,6 +22,8 @@ import {
   PasswordResetProof,
   AuthSessionSummaryDto,
   SuperAdminDashboardDto,
+  DepartmentAdminDashboardDto,
+  DepartmentRequestDto,
   RegisterPatientDto,
 } from '@multispeciality-hms/contracts';
 
@@ -795,6 +797,182 @@ export class AalayamApiClient {
     },
     markAsRead: async (id: string) => {
       const res = await this.instance.patch<ApiResponse<any>>(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(id));
+      return res.data;
+    },
+  };
+
+  // --- Department Admin Workspace Module ---
+  public departmentAdmin = {
+    getDashboard: async (params?: { startDate?: string; endDate?: string }) => {
+      const res = await this.instance.get<ApiResponse<DepartmentAdminDashboardDto>>(API_ENDPOINTS.DEPARTMENT_ADMIN.DASHBOARD, { params });
+      return res.data;
+    },
+    getInfo: async () => {
+      const res = await this.instance.get<ApiResponse<any>>(API_ENDPOINTS.DEPARTMENT_ADMIN.INFO);
+      return res.data;
+    },
+    updateInfo: async (data: { name?: string; description?: string; workingHours?: string; capacity?: number }) => {
+      const res = await this.instance.patch<ApiResponse<any>>(API_ENDPOINTS.DEPARTMENT_ADMIN.INFO, data);
+      return res.data;
+    },
+    getDoctors: async (params?: { search?: string; designation?: string; isAvailable?: boolean }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.DOCTORS, { params });
+      return res.data;
+    },
+    addDoctor: async (data: any) => {
+      const res = await this.instance.post<ApiResponse<any>>(API_ENDPOINTS.DEPARTMENT_ADMIN.DOCTORS, data);
+      return res.data;
+    },
+    updateDoctor: async (id: string, data: any) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`${API_ENDPOINTS.DEPARTMENT_ADMIN.DOCTORS}/${id}`, data);
+      return res.data;
+    },
+    toggleDoctorStatus: async (id: string, status?: string) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`${API_ENDPOINTS.DEPARTMENT_ADMIN.DOCTORS}/${id}/status`, { status });
+      return res.data;
+    },
+    getDoctorSchedules: async (doctorId?: string) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.DOCTOR_SCHEDULES, { params: { doctorId } });
+      return res.data;
+    },
+    saveDoctorSchedule: async (doctorId: string, schedules: any[]) => {
+      const res = await this.instance.post<ApiResponse<any>>(API_ENDPOINTS.DEPARTMENT_ADMIN.DOCTOR_SCHEDULES, { doctorId, schedules });
+      return res.data;
+    },
+    getStaff: async (params?: { search?: string; role?: string; status?: string }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.STAFF, { params });
+      return res.data;
+    },
+    addStaff: async (data: any) => {
+      const res = await this.instance.post<ApiResponse<any>>(API_ENDPOINTS.DEPARTMENT_ADMIN.STAFF, data);
+      return res.data;
+    },
+    updateStaff: async (id: string, data: any) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`${API_ENDPOINTS.DEPARTMENT_ADMIN.STAFF}/${id}`, data);
+      return res.data;
+    },
+    toggleStaffStatus: async (id: string) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`${API_ENDPOINTS.DEPARTMENT_ADMIN.STAFF}/${id}/status`);
+      return res.data;
+    },
+    getAttendance: async (date?: string) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.ATTENDANCE, { params: { date } });
+      return res.data;
+    },
+    saveAttendance: async (records: any[]) => {
+      const res = await this.instance.post<ApiResponse<any>>(API_ENDPOINTS.DEPARTMENT_ADMIN.ATTENDANCE, { records });
+      return res.data;
+    },
+    getPatients: async (params?: { query?: string; phone?: string; uhid?: string }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.PATIENTS, { params });
+      return res.data;
+    },
+    getAppointments: async (params?: { date?: string; doctorId?: string; status?: string }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.APPOINTMENTS, { params });
+      return res.data;
+    },
+    createAppointment: async (data: any) => {
+      const res = await this.instance.post<ApiResponse<any>>(API_ENDPOINTS.DEPARTMENT_ADMIN.APPOINTMENTS, data);
+      return res.data;
+    },
+    rescheduleAppointment: async (id: string, data: { appointmentDate: string; appointmentTime: string; doctorId?: string }) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`${API_ENDPOINTS.DEPARTMENT_ADMIN.APPOINTMENTS}/${id}/reschedule`, data);
+      return res.data;
+    },
+    cancelAppointment: async (id: string, reason: string) => {
+      const res = await this.instance.post<ApiResponse<any>>(`${API_ENDPOINTS.DEPARTMENT_ADMIN.APPOINTMENTS}/${id}/cancel`, { reason });
+      return res.data;
+    },
+    updateAppointmentStatus: async (id: string, status: string) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`${API_ENDPOINTS.DEPARTMENT_ADMIN.APPOINTMENTS}/${id}/status`, { status });
+      return res.data;
+    },
+    getOpdMonitoring: async () => {
+      const res = await this.instance.get<ApiResponse<any>>(API_ENDPOINTS.DEPARTMENT_ADMIN.OPD);
+      return res.data;
+    },
+    getIpdMonitoring: async () => {
+      const res = await this.instance.get<ApiResponse<any>>(API_ENDPOINTS.DEPARTMENT_ADMIN.IPD);
+      return res.data;
+    },
+    getWardsAndBeds: async () => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.WARDS_BEDS);
+      return res.data;
+    },
+    getAdmissions: async (params?: { status?: string }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.ADMISSIONS, { params });
+      return res.data;
+    },
+    getDischarges: async (params?: { status?: string }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.DISCHARGES, { params });
+      return res.data;
+    },
+    getLabRequests: async (params?: { status?: string; fromDate?: string; toDate?: string }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.LAB_REQUESTS, { params });
+      return res.data;
+    },
+    getRadiologyRequests: async (params?: { status?: string; fromDate?: string; toDate?: string }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.RADIOLOGY_REQUESTS, { params });
+      return res.data;
+    },
+    getDiagnostics: async (params?: { status?: string }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.DIAGNOSTICS, { params });
+      return res.data;
+    },
+    getEquipment: async () => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.EQUIPMENT);
+      return res.data;
+    },
+    submitMaintenanceRequest: async (data: any) => {
+      const res = await this.instance.post<ApiResponse<any>>(`${API_ENDPOINTS.DEPARTMENT_ADMIN.EQUIPMENT}/maintenance`, data);
+      return res.data;
+    },
+    getInventory: async (params?: { category?: string; lowStockOnly?: boolean }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.INVENTORY, { params });
+      return res.data;
+    },
+    submitInventoryRequest: async (data: any) => {
+      const res = await this.instance.post<ApiResponse<any>>(`${API_ENDPOINTS.DEPARTMENT_ADMIN.INVENTORY}/requests`, data);
+      return res.data;
+    },
+    getLeaves: async (params?: { status?: string }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.LEAVES, { params });
+      return res.data;
+    },
+    reviewLeave: async (leaveId: string, action: 'RECOMMEND' | 'APPROVE' | 'REJECT', remarks?: string) => {
+      const res = await this.instance.post<ApiResponse<any>>(`${API_ENDPOINTS.DEPARTMENT_ADMIN.LEAVES}/${leaveId}/review`, { action, remarks });
+      return res.data;
+    },
+    getReports: async (params: { type: string; fromDate?: string; toDate?: string }) => {
+      const res = await this.instance.get<ApiResponse<any>>(API_ENDPOINTS.DEPARTMENT_ADMIN.REPORTS, { params });
+      return res.data;
+    },
+    getRequests: async (params?: { type?: string; status?: string }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.REQUESTS, { params });
+      return res.data;
+    },
+    createRequest: async (data: any) => {
+      const res = await this.instance.post<ApiResponse<any>>(API_ENDPOINTS.DEPARTMENT_ADMIN.REQUESTS, data);
+      return res.data;
+    },
+    updateRequest: async (id: string, data: any) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`${API_ENDPOINTS.DEPARTMENT_ADMIN.REQUESTS}/${id}`, data);
+      return res.data;
+    },
+    getActivityLogs: async (params?: { page?: number; limit?: number }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DEPARTMENT_ADMIN.ACTIVITY_LOGS, { params });
+      return res.data;
+    },
+    getProfile: async () => {
+      const res = await this.instance.get<ApiResponse<any>>(API_ENDPOINTS.DEPARTMENT_ADMIN.PROFILE);
+      return res.data;
+    },
+    updateProfile: async (data: any) => {
+      const res = await this.instance.patch<ApiResponse<any>>(API_ENDPOINTS.DEPARTMENT_ADMIN.PROFILE, data);
+      return res.data;
+    },
+    changePassword: async (data: { currentPassword?: string; newPassword?: string }) => {
+      const res = await this.instance.post<ApiResponse<any>>(`${API_ENDPOINTS.DEPARTMENT_ADMIN.PROFILE}/change-password`, data);
       return res.data;
     },
   };

@@ -446,3 +446,73 @@ export interface UpdateTripStatusDto {
   currentLongitude?: number;
   notes?: string;
 }
+
+// Department Admin Workspace DTOs
+export interface DepartmentAdminDashboardDto {
+  department: {
+    id: string;
+    name: string;
+    code: string;
+    description?: string;
+    workingHours?: string;
+    capacity?: number;
+    headOfDepartment?: { id: string; name: string; specialization?: string } | null;
+    departmentAdmin?: { id: string; name: string; email: string } | null;
+    branchId?: string;
+    branchName?: string;
+  };
+  metrics: {
+    totalPatients: number;
+    todayOpdRegistrations: number;
+    currentIpdPatients: number;
+    todayAppointments: number;
+    completedConsultations: number;
+    pendingConsultations: number;
+    availableDoctors: number;
+    totalDoctors: number;
+    availableStaff: number;
+    totalStaff: number;
+    bedOccupancyRate: number;
+    totalBeds: number;
+    occupiedBeds: number;
+    availableBeds: number;
+    pendingAdmissions: number;
+    pendingDischarges: number;
+    pendingLabRequests: number;
+    pendingRadiologyRequests: number;
+    pendingDiagnosticRequests: number;
+    pendingInventoryRequests: number;
+    pendingLeaveRequests: number;
+    pendingMaintenanceRequests: number;
+  };
+  recentActivities: Array<{
+    id: string;
+    action: string;
+    resource: string;
+    userName: string;
+    timestamp: string;
+    details?: any;
+  }>;
+  notifications: Array<{
+    id: string;
+    title: string;
+    message: string;
+    type: string;
+    createdAt: string;
+    isRead: boolean;
+  }>;
+}
+
+export interface DepartmentRequestDto {
+  id?: string;
+  type: 'BED' | 'DOCTOR' | 'STAFF' | 'EQUIPMENT' | 'SUPPLY' | 'PURCHASE' | 'MAINTENANCE';
+  title: string;
+  description: string;
+  priority: 'ROUTINE' | 'URGENT' | 'STAT_EMERGENCY';
+  requestedQuantity?: number;
+  supportingInfo?: string;
+  status: 'DRAFT' | 'SUBMITTED' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'IN_PROGRESS' | 'COMPLETED';
+  rejectionReason?: string;
+  submittedAt?: string;
+  updatedAt?: string;
+}

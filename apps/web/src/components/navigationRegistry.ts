@@ -1,4 +1,5 @@
 import { adminNavItems } from '../features/admin/nav';
+import { departmentAdminNavItems } from '../features/department-admin/nav';
 import { doctorNavItems } from '../features/doctor/nav';
 import { nursingNavItems } from '../features/nursing/nav';
 import { receptionNavItems } from '../features/reception/nav';
@@ -18,6 +19,7 @@ import { NavItem } from '../types/navigation';
  */
 export const ALL_NAV_ITEMS: NavItem[] = [
   ...adminNavItems,
+  ...departmentAdminNavItems,
   ...receptionNavItems,
   ...doctorNavItems,
   ...nursingNavItems,

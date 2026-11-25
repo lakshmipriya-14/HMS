@@ -1,0 +1,403 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  ActivityIndicator,
+  TextInput,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
+import { ShoppingCart, Plus, Search, CheckCircle2, Clock, X, IndianRupee } from 'lucide-react-native';
+import { mobileApiClient } from '../../services/api';
+import { AdminHeader } from '../../components/AdminHeader';
+
+export default function PurchaseRequestsScreen() {
+  const [requests, setRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [createModal, setCreateModal] = useState(false);
+  const [itemName, setItemName] = useState('');
+  const [quantity, setQuantity] = useState('1');
+  const [estimatedCost, setEstimatedCost] = useState('');
+  const [description, setDescription] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const loadRequests = async () => {
+    try {
+      setRefreshing(true);
+      const res = await mobileApiClient.departmentAdmin.getRequests({ type: 'PURCHASE' });
+      if (res.data) setRequests(res.data);
+    } catch (err) {
+      console.error('Failed to load purchase requests:', err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    loadRequests();
+  }, []);
+
+  const handleCreate = async () => {
+    if (!itemName.trim() || !description.trim()) return;
+    try {
+      setSubmitting(true);
+      await mobileApiClient.departmentAdmin.createRequest({
+        type: 'PURCHASE',
+        title: itemName,
+        quantity: Number(quantity) || 1,
+        estimatedCost: Number(estimatedCost) || 0,
+        description: `${description} [Est. Cost: ₹${estimatedCost || 0}]`,
+        priority: 'MEDIUM',
+      });
+      setCreateModal(false);
+      setItemName('');
+      setEstimatedCost('');
+      setDescription('');
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+      loadRequests();
+    } catch (err) {
+      console.error('Failed to create purchase request:', err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <AdminHeader title="Purchase Indents" subtitle="Procurement & Capital Orders" />
+
+      {/* Top Bar */}
+      <View style={styles.topBar}>
+        <Text style={styles.topTitle}>Department Procurement</Text>
+        <TouchableOpacity
+          style={styles.addBtn}
+          onPress={() => setCreateModal(true)}
+          activeOpacity={0.8}
+        >
+          <Plus size={15} color="#FFFFFF" />
+          <Text style={styles.addBtnText}>New Indent</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={loadRequests} tintColor="#0F766E" />
+        }
+      >
+        {success && (
+          <View style={styles.successBanner}>
+            <CheckCircle2 size={16} color="#0F766E" />
+            <Text style={styles.successText}>Purchase requisition forwarded to procurement</Text>
+          </View>
+        )}
+
+        {loading && !refreshing ? (
+          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+        ) : requests.length === 0 ? (
+          <View style={styles.emptyState}>
+            <ShoppingCart size={40} color="#CBD5E1" />
+            <Text style={styles.emptyText}>No purchase requisitions found</Text>
+          </View>
+        ) : (
+          requests.map((item) => {
+            const isApproved = item.status === 'APPROVED';
+
+            return (
+              <View key={item.id} style={styles.card}>
+                <View style={styles.cardHeader}>
+                  <View style={styles.infoCol}>
+                    <Text style={styles.itemTitle}>{item.title}</Text>
+                    <Text style={styles.itemSub}>Qty: {item.quantity || 1} units</Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.statusPill,
+                      { backgroundColor: isApproved ? '#CCFBF1' : '#FEF3C7' },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.statusPillText,
+                        { color: isApproved ? '#0F766E' : '#D97706' },
+                      ]}
+                    >
+                      {item.status || 'PENDING'}
+                    </Text>
+                  </View>
+                </View>
+
+                <Text style={styles.descText}>{item.description}</Text>
+
+                <View style={styles.cardFooter}>
+                  <Clock size={12} color="#94A3B8" />
+                  <Text style={styles.dateText}>
+                    Date: {new Date(item.createdAt || Date.now()).toLocaleDateString('en-IN')}
+                  </Text>
+                </View>
+              </View>
+            );
+          })
+        )}
+      </ScrollView>
+
+      {/* Modal */}
+      <Modal visible={createModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>New Purchase Requisition</Text>
+              <TouchableOpacity onPress={() => setCreateModal(false)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView>
+              <Text style={styles.inputLabel}>Item Name & Specifications *</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={itemName}
+                onChangeText={setItemName}
+                placeholder="e.g. 5x Diagnostic Otoscope Sets"
+              />
+
+              <View style={styles.twoInputsRow}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.inputLabel}>Quantity</Text>
+                  <TextInput
+                    style={styles.modalInput}
+                    keyboardType="numeric"
+                    value={quantity}
+                    onChangeText={setQuantity}
+                    placeholder="1"
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.inputLabel}>Est. Cost (₹)</Text>
+                  <TextInput
+                    style={styles.modalInput}
+                    keyboardType="numeric"
+                    value={estimatedCost}
+                    onChangeText={setEstimatedCost}
+                    placeholder="25000"
+                  />
+                </View>
+              </View>
+
+              <Text style={styles.inputLabel}>Procurement Justification *</Text>
+              <TextInput
+                style={[styles.modalInput, { height: 80 }]}
+                multiline
+                numberOfLines={3}
+                value={description}
+                onChangeText={setDescription}
+                placeholder="Vendor details, brand requirements, necessity..."
+              />
+
+              <TouchableOpacity
+                style={[styles.submitBtn, submitting && { opacity: 0.6 }]}
+                onPress={handleCreate}
+                disabled={submitting}
+              >
+                <Text style={styles.submitBtnText}>
+                  {submitting ? 'Submitting...' : 'Submit Purchase Indent'}
+                </Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  topTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#334155',
+    textTransform: 'uppercase',
+  },
+  addBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#0F766E',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    gap: 4,
+  },
+  addBtnText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  content: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 40,
+  },
+  successBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#CCFBF1',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  successText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#0F766E',
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 60,
+  },
+  emptyText: {
+    marginTop: 12,
+    fontSize: 13,
+    color: '#94A3B8',
+    fontWeight: '600',
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  infoCol: {
+    flex: 1,
+  },
+  itemTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  itemSub: {
+    fontSize: 11,
+    color: '#64748B',
+    marginTop: 2,
+  },
+  statusPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  statusPillText: {
+    fontSize: 10,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  descText: {
+    fontSize: 12,
+    color: '#334155',
+    marginTop: 8,
+    lineHeight: 16,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 10,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#F8FAFC',
+  },
+  dateText: {
+    fontSize: 10,
+    color: '#94A3B8',
+    fontFamily: 'monospace',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalBox: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 20,
+    maxHeight: '85%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  inputLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#475569',
+    marginBottom: 6,
+    marginTop: 10,
+    textTransform: 'uppercase',
+  },
+  twoInputsRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  modalInput: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 13,
+    color: '#0F172A',
+  },
+  submitBtn: {
+    backgroundColor: '#0F766E',
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  submitBtnText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 13,
+  },
+});

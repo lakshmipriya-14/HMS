@@ -10,13 +10,20 @@ async function bootstrap() {
   // Set global API prefix /api/v1
   app.setGlobalPrefix('api/v1');
 
-  // Enable CORS
-  const corsOrigins = process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(',').map(value => value.trim())
-    : ['http://localhost:3000', 'http://localhost:8081'];
+  // Enable CORS for web, mobile web, and emulators
   app.enableCors({
-    origin: corsOrigins,
+    origin: true,
     credentials: true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Accept',
+      'Authorization',
+      'X-Requested-With',
+      'X-HMS-Session',
+      'x-hms-session',
+      'Origin',
+    ],
   });
 
   // Global Validation
@@ -52,7 +59,8 @@ async function bootstrap() {
   });
 
   const port = process.env.API_PORT || 4000;
-  await app.listen(port, process.env.API_HOST || '127.0.0.1');
+  const host = process.env.API_HOST && process.env.API_HOST !== 'localhost' ? process.env.API_HOST : '0.0.0.0';
+  await app.listen(port, host);
 
   logger.log(`=============================================================`);
   logger.log(`🏥 Kizuna Multispeciality Hospital API is running!`);

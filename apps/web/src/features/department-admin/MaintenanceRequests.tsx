@@ -1,0 +1,313 @@
+import React, { useState, useEffect } from 'react';
+import { apiClient } from '../../services/api';
+import { LoadingState } from '../../components/LoadingState';
+import { StatusBadge } from '../../components/StatusBadge';
+import {
+  Hammer,
+  Plus,
+  Search,
+  Filter,
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
+  Wrench,
+  AlertCircle,
+} from 'lucide-react';
+
+export const MaintenanceRequests: React.FC = () => {
+  const [requests, setRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [search, setSearch] = useState('');
+  const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [location, setLocation] = useState('');
+  const [priority, setPriority] = useState('MEDIUM');
+  const [submitting, setSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const loadRequests = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const res = await apiClient.departmentAdmin.getRequests({
+        type: 'MAINTENANCE',
+        status: statusFilter || undefined,
+      });
+      if (res.data) setRequests(res.data);
+    } catch (err: any) {
+      console.error('Failed to load maintenance requests:', err);
+      setError(err.message || 'Failed to load department maintenance tickets');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadRequests();
+  }, [statusFilter]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setSubmitting(true);
+      setError('');
+      await apiClient.departmentAdmin.createRequest({
+        type: 'MAINTENANCE',
+        title,
+        description: `${description} [Location: ${location}]`,
+        priority,
+      });
+      setShowModal(false);
+      setTitle('');
+      setDescription('');
+      setLocation('');
+      setSuccessMessage('Maintenance ticket assigned to hospital facilities / biomedical team.');
+      setTimeout(() => setSuccessMessage(''), 4000);
+      loadRequests();
+    } catch (err: any) {
+      console.error('Failed to submit maintenance request:', err);
+      setError(err.message || 'Failed to submit maintenance request');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const filtered = requests.filter((r) => {
+    if (!search) return true;
+    const t = (r.title || '').toLowerCase();
+    const d = (r.description || '').toLowerCase();
+    return t.includes(search.toLowerCase()) || d.includes(search.toLowerCase());
+  });
+
+  return (
+    <div className="space-y-6 pb-12">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
+            <Hammer className="w-6 h-6 text-teal-600" />
+            Department Facility & Maintenance Work Orders
+          </h1>
+          <p className="text-xs text-slate-500 mt-1">
+            Log and track work orders for electrical, plumbing, HVAC, medical gas pipelines, and civil maintenance.
+          </p>
+        </div>
+        <button
+          onClick={() => setShowModal(true)}
+          className="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm self-start sm:self-auto"
+        >
+          <Plus className="w-4 h-4" />
+          Log Maintenance Ticket
+        </button>
+      </div>
+
+      {successMessage && (
+        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-emerald-800 text-xs font-semibold animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+          {successMessage}
+        </div>
+      )}
+
+      {error && (
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs font-semibold">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          {error}
+        </div>
+      )}
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Tickets</p>
+          <p className="text-2xl font-black text-slate-800 mt-1">{requests.length}</p>
+        </div>
+        <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+          <p className="text-xs font-bold text-amber-500 uppercase tracking-wider">Open / In Progress</p>
+          <p className="text-2xl font-black text-amber-600 mt-1">
+            {requests.filter((r) => ['PENDING', 'IN_PROGRESS', 'OPEN'].includes(r.status)).length}
+          </p>
+        </div>
+        <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+          <p className="text-xs font-bold text-rose-500 uppercase tracking-wider">Critical / Urgent</p>
+          <p className="text-2xl font-black text-rose-600 mt-1">
+            {requests.filter((r) => ['URGENT', 'CRITICAL', 'HIGH'].includes(r.priority) && r.status !== 'RESOLVED').length}
+          </p>
+        </div>
+        <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Resolved Tickets</p>
+          <p className="text-2xl font-black text-emerald-600 mt-1">
+            {requests.filter((r) => ['RESOLVED', 'COMPLETED', 'CLOSED'].includes(r.status)).length}
+          </p>
+        </div>
+      </div>
+
+      {/* Filter and Search */}
+      <div className="flex flex-col sm:flex-row items-center gap-3">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search tickets by subject, room, description..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+          />
+        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="w-full sm:w-48 px-3 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+        >
+          <option value="">All Statuses</option>
+          <option value="PENDING">Pending</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="RESOLVED">Resolved</option>
+        </select>
+      </div>
+
+      {/* Table */}
+      {loading ? (
+        <LoadingState message="Loading maintenance work orders..." />
+      ) : filtered.length === 0 ? (
+        <div className="p-12 text-center bg-white rounded-2xl border border-slate-100">
+          <Hammer className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+          <p className="text-sm font-bold text-slate-700">No Maintenance Tickets</p>
+          <p className="text-xs text-slate-400 mt-1">Everything in the department is operating normally.</p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50/70 border-b border-slate-100 text-[11px] font-black uppercase tracking-wider text-slate-400">
+                  <th className="py-3 px-4">Ticket Issue</th>
+                  <th className="py-3 px-4">Priority</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4">Logged Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-xs">
+                {filtered.map((item) => (
+                  <tr key={item.id} className="hover:bg-slate-50/60 transition">
+                    <td className="py-3.5 px-4">
+                      <div className="font-bold text-slate-800">{item.title}</div>
+                      <div className="text-[11px] text-slate-500 line-clamp-1">{item.description}</div>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
+                          item.priority === 'URGENT' || item.priority === 'CRITICAL'
+                            ? 'bg-rose-100 text-rose-700'
+                            : item.priority === 'HIGH'
+                            ? 'bg-amber-100 text-amber-700'
+                            : 'bg-slate-100 text-slate-600'
+                        }`}
+                      >
+                        {item.priority || 'MEDIUM'}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <StatusBadge status={item.status || 'PENDING'} />
+                    </td>
+                    <td className="py-3.5 px-4 text-slate-500 font-mono text-[11px]">
+                      {new Date(item.createdAt || Date.now()).toLocaleDateString('en-IN')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <h3 className="text-base font-black text-slate-800">Log Facility Work Order</h3>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-slate-400 hover:text-slate-600 text-sm font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Issue Subject *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. AC leaking in Doctor Consultation Room 3"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Exact Room / Location *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 2nd Floor, Room 204, Ward A"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Priority</label>
+                <select
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value)}
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                >
+                  <option value="LOW">Low (Cosmetic / Routine)</option>
+                  <option value="MEDIUM">Medium (Maintenance needed today)</option>
+                  <option value="HIGH">High (Disrupting clinical workflow)</option>
+                  <option value="URGENT">Urgent (Safety / Infection Hazard / Power)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Detailed Description *</label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="Describe the failure, duration, and any safety precautions taken..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold rounded-xl text-xs transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs transition shadow-sm"
+                >
+                  {submitting ? 'Submitting...' : 'Dispatch Ticket'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
