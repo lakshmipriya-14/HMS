@@ -19,6 +19,8 @@ import {
   LogOut,
   ChevronRight,
   ShieldAlert,
+  CalendarCheck,
+  DoorOpen,
 } from 'lucide-react-native';
 import { useAuth } from '../../hooks/useAuth';
 import { AdminHeader } from '../../components/AdminHeader';
@@ -46,6 +48,22 @@ export default function AdminMoreScreen() {
   };
 
   const menuItems = [
+    {
+      title: 'OPD Flow & Queue',
+      desc: 'Live tokens, booking desk & patient check-in',
+      icon: CalendarCheck,
+      route: '/(admin)/opd',
+      color: '#0F766E',
+      bgColor: '#CCFBF1',
+    },
+    {
+      title: 'IPD Inpatient Census',
+      desc: 'Admissions, transfers, discharges & bed turnover',
+      icon: DoorOpen,
+      route: '/(admin)/ipd',
+      color: '#E11D48',
+      bgColor: '#FFE4E6',
+    },
     {
       title: 'Hospital Staff & HR',
       desc: 'Employee directory, department assignments & accounts',

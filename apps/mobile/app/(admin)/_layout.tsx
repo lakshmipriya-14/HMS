@@ -82,6 +82,8 @@ export default function AdminTabsLayout() {
         />
 
         {/* Sub-screens (hidden from tab bar) */}
+        <Tabs.Screen name="opd" options={{ href: null }} />
+        <Tabs.Screen name="ipd" options={{ href: null }} />
         <Tabs.Screen name="staff" options={{ href: null }} />
         <Tabs.Screen name="wards" options={{ href: null }} />
         <Tabs.Screen name="approvals" options={{ href: null }} />

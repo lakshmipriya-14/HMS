@@ -21,6 +21,7 @@ import {
   ShieldAlert,
   Clock,
   CheckCircle2,
+  DoorOpen,
 } from 'lucide-react-native';
 import { mobileApiClient } from '../../services/api';
 import { AdminHeader } from '../../components/AdminHeader';
@@ -92,10 +93,55 @@ export default function AdminMobileDashboard() {
             </TouchableOpacity>
           )}
 
+          {/* Quick OPD & IPD Operational Launch Cards */}
+          <View style={{ flexDirection: 'row', gap: 10, marginBottom: 14 }}>
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                backgroundColor: '#CCFBF1',
+                borderWidth: 1,
+                borderColor: '#99F6E4',
+                padding: 12,
+                borderRadius: 12,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 8,
+              }}
+              onPress={() => router.push('/(admin)/opd')}
+            >
+              <CalendarCheck size={20} color="#0F766E" />
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 12, fontWeight: '800', color: '#0F766E' }}>OPD Operations</Text>
+                <Text style={{ fontSize: 10, color: '#115E59' }}>Tokens & Booking</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                backgroundColor: '#FFE4E6',
+                borderWidth: 1,
+                borderColor: '#FECDD3',
+                padding: 12,
+                borderRadius: 12,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 8,
+              }}
+              onPress={() => router.push('/(admin)/ipd')}
+            >
+              <DoorOpen size={20} color="#E11D48" />
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 12, fontWeight: '800', color: '#E11D48' }}>IPD Management</Text>
+                <Text style={{ fontSize: 10, color: '#9F1239' }}>Census & Admissions</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
           {/* KPI Matrix (2 Columns) */}
           <View style={styles.matrixGrid}>
             {/* Bed Occupancy */}
-            <View style={styles.kpiCard}>
+            <TouchableOpacity style={styles.kpiCard} onPress={() => router.push('/(admin)/ipd')}>
               <View style={styles.kpiHeader}>
                 <BedDouble size={18} color="#0F766E" />
                 <View style={[styles.kpiBadge, { backgroundColor: '#CCFBF1' }]}>
@@ -111,10 +157,10 @@ export default function AdminMobileDashboard() {
               <Text style={styles.kpiSub}>
                 {overview.availableBeds || 0} beds available
               </Text>
-            </View>
+            </TouchableOpacity>
 
             {/* OPD & Registered Patients */}
-            <View style={styles.kpiCard}>
+            <TouchableOpacity style={styles.kpiCard} onPress={() => router.push('/(admin)/opd')}>
               <View style={styles.kpiHeader}>
                 <CalendarCheck size={18} color="#2563EB" />
                 <View style={[styles.kpiBadge, { backgroundColor: '#DBEAFE' }]}>
@@ -126,10 +172,10 @@ export default function AdminMobileDashboard() {
               <Text style={styles.kpiSub}>
                 {overview.totalPatients || 0} registered patients
               </Text>
-            </View>
+            </TouchableOpacity>
 
             {/* Inpatients & Emergency */}
-            <View style={styles.kpiCard}>
+            <TouchableOpacity style={styles.kpiCard} onPress={() => router.push('/(admin)/ipd')}>
               <View style={styles.kpiHeader}>
                 <Activity size={18} color="#E11D48" />
                 <View style={[styles.kpiBadge, { backgroundColor: '#FFE4E6' }]}>
@@ -141,7 +187,7 @@ export default function AdminMobileDashboard() {
               <Text style={styles.kpiSub}>
                 {overview.emergencyPatients || 0} emergency cases
               </Text>
-            </View>
+            </TouchableOpacity>
 
             {/* Doctors Available */}
             <View style={styles.kpiCard}>
