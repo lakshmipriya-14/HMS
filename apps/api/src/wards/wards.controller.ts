@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { WardsService } from './wards.service';
 import { AdmitPatientDto, DischargePatientDto, TransferBedDto, AuthUserDto } from '@multispeciality-hms/contracts';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -247,6 +247,20 @@ export class WardsController {
     const data = await this.service.bulkUpdateBedStatus(actor, dto.bedIds, dto.status);
     return {
       message: `Successfully updated ${data.updatedCount} beds to ${data.status}`,
+      data,
+    };
+  }
+
+  @Delete('beds/:bedId')
+  @RequirePermissions('BEDS:DELETE')
+  @ApiOperation({ summary: 'Delete an unoccupied bed from ward inventory' })
+  async deleteBed(
+    @Param('bedId') bedId: string,
+    @CurrentUser() actor: AuthUserDto
+  ) {
+    const data = await this.service.deleteBed(actor, bedId);
+    return {
+      message: 'Bed deleted successfully',
       data,
     };
   }

@@ -59,14 +59,14 @@ export const adminNavItems: NavItem[] = [
     roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
   },
   {
-    label: 'Appointments',
-    path: '/admin/appointments',
+    label: 'OPD Management',
+    path: '/admin/opd',
     icon: CalendarCheck,
     roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
   },
   {
-    label: 'Admissions & IPD',
-    path: '/admin/admissions',
+    label: 'IPD Management',
+    path: '/admin/ipd',
     icon: DoorOpen,
     roles: [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN],
   },

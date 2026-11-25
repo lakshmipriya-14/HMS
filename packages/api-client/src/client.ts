@@ -241,8 +241,24 @@ export class AalayamApiClient {
 
   // --- Appointments Management ---
   public appointments = {
-    list: async (params?: { date?: string; departmentId?: string; status?: string; doctorId?: string }) => {
+    list: async (params?: { date?: string; departmentId?: string; status?: string; doctorId?: string; search?: string }) => {
       const res = await this.instance.get<ApiResponse<any[]>>('/appointments', { params });
+      return res.data;
+    },
+    book: async (dto: any) => {
+      const res = await this.instance.post<ApiResponse<any>>('/appointments', dto);
+      return res.data;
+    },
+    checkIn: async (id: string) => {
+      const res = await this.instance.post<ApiResponse<any>>(`/appointments/${id}/check-in`);
+      return res.data;
+    },
+    updateStatus: async (id: string, status: string) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`/appointments/${id}/status`, { status });
+      return res.data;
+    },
+    getQueue: async (params?: { doctorId?: string; branchId?: string }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>('/appointments/queue', { params });
       return res.data;
     },
     reschedule: async (id: string, dto: { appointmentDate: string; appointmentTime: string }) => {
@@ -257,8 +273,28 @@ export class AalayamApiClient {
 
   // --- Patients Management ---
   public patients = {
+    list: async (params?: { search?: string; phone?: string; uhid?: string }) => {
+      const res = await this.instance.get<ApiResponse<any[]>>('/patients', { params });
+      return res.data;
+    },
     search: async (q?: string) => {
-      const res = await this.instance.get<ApiResponse<any[]>>('/patients', { params: { search: q } });
+      const res = await this.instance.get<ApiResponse<any[]>>('/patients/search', { params: { query: q } });
+      return res.data;
+    },
+    getById: async (id: string) => {
+      const res = await this.instance.get<ApiResponse<any>>(`/patients/${id}`);
+      return res.data;
+    },
+    update: async (id: string, dto: any) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`/patients/${id}`, dto);
+      return res.data;
+    },
+    checkDuplicate: async (phone: string, email?: string) => {
+      const res = await this.instance.get<ApiResponse<any>>('/patients/check-duplicate', { params: { phone, email } });
+      return res.data;
+    },
+    register: async (dto: any) => {
+      const res = await this.instance.post<ApiResponse<any>>('/patients', dto);
       return res.data;
     },
   };
@@ -458,6 +494,21 @@ export class AalayamApiClient {
       );
       return res.data;
     },
+    transferBed: async (admissionId: string, dto: { targetWardId: string; targetBedId: string; reason: string }) => {
+      const res = await this.instance.post<ApiResponse<any>>(`/wards/admissions/${admissionId}/transfer`, {
+        admissionId,
+        ...dto,
+      });
+      return res.data;
+    },
+    cancelAdmission: async (admissionId: string, reason?: string) => {
+      const res = await this.instance.post<ApiResponse<any>>(`/wards/admissions/${admissionId}/cancel`, { reason });
+      return res.data;
+    },
+    deleteBed: async (bedId: string) => {
+      const res = await this.instance.delete<ApiResponse<any>>(`/wards/beds/${bedId}`);
+      return res.data;
+    },
   };
 
   // --- MEMBER 9: Patient Portal & Ambulance Module ---
@@ -598,6 +649,49 @@ export class AalayamApiClient {
     },
     getAdmissions: async (params?: { patientId?: string; status?: string; branchId?: string }) => {
       const res = await this.instance.get<ApiResponse<any>>('/wards/admissions', { params });
+      return res.data;
+    },
+    admitPatient: async (dto: any) => {
+      const res = await this.instance.post<ApiResponse<any>>('/wards/admit', dto);
+      return res.data;
+    },
+    transferBed: async (admissionId: string, dto: any) => {
+      const res = await this.instance.post<ApiResponse<any>>(`/wards/admissions/${admissionId}/transfer`, {
+        admissionId,
+        ...dto,
+      });
+      return res.data;
+    },
+    dischargePatient: async (admissionId: string, dto: any) => {
+      const res = await this.instance.post<ApiResponse<any>>(`/wards/admissions/${admissionId}/discharge`, dto);
+      return res.data;
+    },
+    cancelAdmission: async (admissionId: string, reason?: string) => {
+      const res = await this.instance.post<ApiResponse<any>>(`/wards/admissions/${admissionId}/cancel`, { reason });
+      return res.data;
+    },
+    bookAppointment: async (dto: any) => {
+      const res = await this.instance.post<ApiResponse<any>>('/appointments', dto);
+      return res.data;
+    },
+    checkInAppointment: async (id: string) => {
+      const res = await this.instance.post<ApiResponse<any>>(`/appointments/${id}/check-in`);
+      return res.data;
+    },
+    updateAppointmentStatus: async (id: string, status: string) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`/appointments/${id}/status`, { status });
+      return res.data;
+    },
+    getAppointmentQueue: async (params?: any) => {
+      const res = await this.instance.get<ApiResponse<any[]>>('/appointments/queue', { params });
+      return res.data;
+    },
+    getPatients: async (params?: any) => {
+      const res = await this.instance.get<ApiResponse<any[]>>('/patients', { params });
+      return res.data;
+    },
+    updatePatient: async (id: string, dto: any) => {
+      const res = await this.instance.patch<ApiResponse<any>>(`/patients/${id}`, dto);
       return res.data;
     },
     getBedCensus: async (branchId?: string) => {

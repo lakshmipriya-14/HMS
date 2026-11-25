@@ -27,6 +27,23 @@ export class PatientsController {
     };
   }
 
+  @Get()
+  @RequirePermissions('PATIENTS:VIEW')
+  @ApiOperation({ summary: 'List and search patients' })
+  async findAll(
+    @CurrentUser() actor?: AuthUserDto,
+    @Query('search') search?: string,
+    @Query('query') query?: string,
+    @Query('phone') phone?: string,
+    @Query('uhid') uhid?: string
+  ) {
+    const data = await this.service.search(search || query, phone, uhid, actor);
+    return {
+      message: 'Patients retrieved successfully',
+      data,
+    };
+  }
+
   @Get('search')
   @RequirePermissions('PATIENTS:VIEW')
   @ApiOperation({ summary: 'Search patients by name, UHID, or phone' })

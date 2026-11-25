@@ -8,6 +8,8 @@ import { PatientOperations } from './PatientOperations';
 import { WardBedManagement } from './WardBedManagement';
 import { AppointmentManagement } from './AppointmentManagement';
 import { AdmissionManagement } from './AdmissionManagement';
+import { OpdManagement } from './OpdManagement';
+import { IpdManagement } from './IpdManagement';
 import { DiagnosticsOverview } from './DiagnosticsOverview';
 import { PharmacyOverview } from './PharmacyOverview';
 import { BillingFinanceManagement } from './BillingFinanceManagement';
@@ -33,8 +35,10 @@ export const AdminRoutes: React.FC = () => {
       <Route path="staff" element={<StaffManagement />} />
       <Route path="patients" element={<PatientOperations />} />
       <Route path="wards" element={<WardBedManagement />} />
-      <Route path="appointments" element={<AppointmentManagement />} />
-      <Route path="admissions" element={<AdmissionManagement />} />
+      <Route path="opd" element={<OpdManagement />} />
+      <Route path="ipd" element={<IpdManagement />} />
+      <Route path="appointments" element={<OpdManagement />} />
+      <Route path="admissions" element={<IpdManagement />} />
       <Route path="diagnostics" element={<DiagnosticsOverview />} />
       <Route path="pharmacy" element={<PharmacyOverview />} />
       <Route path="billing" element={<BillingFinanceManagement />} />

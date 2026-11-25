@@ -23,6 +23,13 @@ import {
   X,
   Edit2,
   Ban,
+  Plus,
+  ArrowRightLeft,
+  LogOut,
+  Sparkles,
+  Wrench,
+  UserCheck,
+  CheckSquare,
 } from 'lucide-react-native';
 import { mobileApiClient } from '../../services/api';
 import { AdminHeader } from '../../components/AdminHeader';
@@ -34,30 +41,71 @@ export default function AdminOperationsScreen() {
   const [wards, setWards] = useState<any[]>([]);
   const [admissions, setAdmissions] = useState<any[]>([]);
   const [queue, setQueue] = useState<any[]>([]);
+  const [doctors, setDoctors] = useState<any[]>([]);
+  const [departments, setDepartments] = useState<any[]>([]);
+  const [patients, setPatients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  // Filters
   const [opdStatusFilter, setOpdStatusFilter] = useState('ALL');
+
+  // OPD Modals
   const [rescheduleModal, setRescheduleModal] = useState<any>(null);
   const [reschedDate, setReschedDate] = useState('');
   const [reschedTime, setReschedTime] = useState('10:00');
   const [cancelModal, setCancelModal] = useState<any>(null);
   const [cancelReason, setCancelReason] = useState('');
+
+  const [bookAppointmentModal, setBookAppointmentModal] = useState(false);
+  const [bookDoctorId, setBookDoctorId] = useState('');
+  const [bookPatientName, setBookPatientName] = useState('');
+  const [bookPatientPhone, setBookPatientPhone] = useState('');
+  const [bookDate, setBookDate] = useState(new Date().toISOString().split('T')[0]);
+  const [bookTime, setBookTime] = useState('10:00');
+  const [bookReason, setBookReason] = useState('');
+
+  // IPD Modals
+  const [newAdmissionModal, setNewAdmissionModal] = useState(false);
+  const [admPatientId, setAdmPatientId] = useState('');
+  const [admDoctorId, setAdmDoctorId] = useState('');
+  const [admWardId, setAdmWardId] = useState('');
+  const [admBedId, setAdmBedId] = useState('');
+  const [admDiagnosis, setAdmDiagnosis] = useState('');
+  const [admReason, setAdmReason] = useState('Inpatient clinical care');
+
+  const [transferModal, setTransferModal] = useState<any>(null);
+  const [targetWardId, setTargetWardId] = useState('');
+  const [targetBedId, setTargetBedId] = useState('');
+  const [transferReason, setTransferReason] = useState('Medical necessity');
+
+  const [dischargeModal, setDischargeModal] = useState<any>(null);
+  const [dischargeSummary, setDischargeSummary] = useState('');
+
+  // Bed Status Modal
+  const [bedStatusModal, setBedStatusModal] = useState<any>(null);
+
   const [submitting, setSubmitting] = useState(false);
 
   const loadData = async () => {
     try {
       setRefreshing(true);
-      const [wardRes, admRes, qRes] = await Promise.all([
+      const [wardRes, admRes, qRes, docRes, deptRes, patRes] = await Promise.all([
         mobileApiClient.hospitalAdmin.getWards(),
         mobileApiClient.hospitalAdmin.getAdmissions(),
         mobileApiClient.reception.getTodayQueue().catch(() => ({ data: [] })),
+        mobileApiClient.hospitalAdmin.getDoctors().catch(() => ({ data: [] })),
+        mobileApiClient.hospitalAdmin.getDepartments().catch(() => ({ data: [] })),
+        mobileApiClient.hospitalAdmin.getPatients({ limit: 50 }).catch(() => ({ data: [] })),
       ]);
       if (wardRes.data) setWards(wardRes.data);
       if (admRes.data) setAdmissions(admRes.data);
       if (qRes.data) setQueue(qRes.data);
+      if (docRes.data) setDoctors(docRes.data);
+      if (deptRes.data) setDepartments(deptRes.data);
+      if (patRes.data) setPatients(patRes.data);
     } catch (e) {
-      console.error(e);
+      console.error('Failed to load operational data:', e);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -67,6 +115,33 @@ export default function AdminOperationsScreen() {
   useEffect(() => {
     loadData();
   }, []);
+
+  // OPD Actions
+  const handleCheckIn = async (appointmentId: string) => {
+    try {
+      setSubmitting(true);
+      await mobileApiClient.appointments.checkIn(appointmentId);
+      Alert.alert('Checked In', 'Patient marked checked in for consultation.');
+      await loadData();
+    } catch (err: any) {
+      Alert.alert('Check-In Error', err.message || 'Failed to check in appointment');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleUpdateAppointmentStatus = async (appointmentId: string, status: string) => {
+    try {
+      setSubmitting(true);
+      await mobileApiClient.appointments.updateStatus(appointmentId, status);
+      Alert.alert('Status Updated', `Appointment moved to ${status}.`);
+      await loadData();
+    } catch (err: any) {
+      Alert.alert('Update Error', err.message || 'Failed to update appointment status');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const handleReschedule = async () => {
     if (!rescheduleModal || !reschedDate) {
@@ -108,9 +183,159 @@ export default function AdminOperationsScreen() {
     }
   };
 
+  const handleBookAppointment = async () => {
+    if (!bookDoctorId || !bookDate || !bookTime) {
+      Alert.alert('Required Fields', 'Please select a doctor, date, and appointment time.');
+      return;
+    }
+    try {
+      setSubmitting(true);
+      const doc = doctors.find((d) => d.id === bookDoctorId);
+      await mobileApiClient.appointments.book({
+        doctorId: bookDoctorId,
+        departmentId: doc?.departmentId || departments[0]?.id,
+        appointmentDate: bookDate,
+        appointmentTime: bookTime,
+        reason: bookReason || 'Routine consultation',
+        patientName: bookPatientName || undefined,
+        patientPhone: bookPatientPhone || undefined,
+      });
+      setBookAppointmentModal(false);
+      setBookPatientName('');
+      setBookPatientPhone('');
+      setBookReason('');
+      Alert.alert('Success', 'OPD Appointment booked and token generated.');
+      await loadData();
+    } catch (err: any) {
+      Alert.alert('Booking Error', err.message || 'Failed to book appointment');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // IPD Actions
+  const handleAdmitPatient = async () => {
+    if (!admPatientId || !admDoctorId || !admWardId || !admBedId) {
+      Alert.alert('Incomplete Form', 'Please select patient, doctor, ward, and bed.');
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await mobileApiClient.hospitalAdmin.admitPatient({
+        patientId: admPatientId,
+        admittingDoctorId: admDoctorId,
+        wardId: admWardId,
+        bedId: admBedId,
+        admissionReason: admReason || 'Inpatient medical observation',
+        initialDiagnosis: admDiagnosis || 'Clinical investigation',
+        admittedAt: new Date().toISOString(),
+      });
+      setNewAdmissionModal(false);
+      setAdmPatientId('');
+      setAdmDiagnosis('');
+      setAdmBedId('');
+      Alert.alert('Admitted', 'Inpatient admission completed successfully.');
+      await loadData();
+    } catch (err: any) {
+      Alert.alert('Admission Error', err.message || 'Failed to admit patient');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleTransferBed = async () => {
+    if (!transferModal || !targetWardId || !targetBedId) {
+      Alert.alert('Select Bed', 'Please choose destination ward and available bed.');
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await mobileApiClient.hospitalAdmin.transferBed(transferModal.id, {
+        targetWardId,
+        targetBedId,
+        reason: transferReason,
+      });
+      setTransferModal(null);
+      setTargetWardId('');
+      setTargetBedId('');
+      Alert.alert('Transferred', 'Patient transferred. Prior bed moved to housekeeping.');
+      await loadData();
+    } catch (err: any) {
+      Alert.alert('Transfer Error', err.message || 'Failed to transfer bed');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDischargePatient = async () => {
+    if (!dischargeModal) return;
+    try {
+      setSubmitting(true);
+      await mobileApiClient.hospitalAdmin.dischargePatient(dischargeModal.id, {
+        dischargeSummary: dischargeSummary || 'Patient clinically stable for discharge',
+        dischargedAt: new Date().toISOString(),
+      });
+      setDischargeModal(null);
+      setDischargeSummary('');
+      Alert.alert('Discharged', 'Patient discharged. Bed released for housekeeping.');
+      await loadData();
+    } catch (err: any) {
+      Alert.alert('Discharge Error', err.message || 'Failed to discharge patient');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleCancelAdmission = (adm: any) => {
+    Alert.alert(
+      'Cancel Admission',
+      `Cancel admission for ${adm.patient?.firstName || 'patient'}? Bed will be released back to AVAILABLE.`,
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes, Cancel',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setSubmitting(true);
+              await mobileApiClient.hospitalAdmin.cancelAdmission(adm.id, 'Administrative cancellation');
+              Alert.alert('Cancelled', 'Admission cancelled and bed released.');
+              await loadData();
+            } catch (err: any) {
+              Alert.alert('Error', err.message || 'Failed to cancel admission');
+            } finally {
+              setSubmitting(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleUpdateBedStatus = async (status: string) => {
+    if (!bedStatusModal) return;
+    try {
+      setSubmitting(true);
+      await mobileApiClient.hospitalAdmin.updateBedStatus(bedStatusModal.id, status);
+      setBedStatusModal(null);
+      Alert.alert('Success', `Bed status updated to ${status}.`);
+      await loadData();
+    } catch (err: any) {
+      Alert.alert('Error', err.message || 'Failed to update bed status');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Helper: available beds in selected ward
+  const availableBedsForWard = (wardId: string) => {
+    const ward = wards.find((w) => w.id === wardId);
+    return (ward?.beds || []).filter((b: any) => b.status === 'AVAILABLE');
+  };
+
   return (
     <View style={styles.container}>
-      <AdminHeader title="Clinical Operations" subtitle="Bed Census & Live Flow" />
+      <AdminHeader title="Clinical Operations" subtitle="OPD Live Queue, IPD Census & Bed Matrix" />
 
       {/* Segmented Control */}
       <View style={styles.tabBar}>
@@ -130,7 +355,7 @@ export default function AdminOperationsScreen() {
         >
           <Users size={16} color={activeTab === 'ipd' ? '#0F766E' : '#64748B'} />
           <Text style={[styles.tabLabel, activeTab === 'ipd' && styles.tabLabelActive]}>
-            Inpatients ({admissions.filter((a) => a.status === 'ADMITTED').length})
+            IPD Inpatients ({admissions.filter((a) => a.status === 'ADMITTED').length})
           </Text>
         </TouchableOpacity>
 
@@ -140,7 +365,7 @@ export default function AdminOperationsScreen() {
         >
           <CalendarCheck size={16} color={activeTab === 'opd' ? '#0F766E' : '#64748B'} />
           <Text style={[styles.tabLabel, activeTab === 'opd' && styles.tabLabelActive]}>
-            OPD Queue
+            OPD Flow ({queue.length})
           </Text>
         </TouchableOpacity>
       </View>
@@ -163,7 +388,9 @@ export default function AdminOperationsScreen() {
               {wards.map((ward) => {
                 const totalBeds = ward.beds?.length || ward.totalBeds || 0;
                 const occBeds = ward.beds?.filter((b: any) => b.status === 'OCCUPIED').length || 0;
+                const cleanBeds = ward.beds?.filter((b: any) => b.status === 'HOUSEKEEPING' || b.status === 'CLEANING').length || 0;
                 const occRate = totalBeds > 0 ? Math.round((occBeds / totalBeds) * 100) : 0;
+
                 return (
                   <View key={ward.id} style={styles.card}>
                     <View style={styles.wardHead}>
@@ -192,21 +419,26 @@ export default function AdminOperationsScreen() {
                     </View>
 
                     <Text style={styles.wardStat}>
-                      {occBeds} occupied / {totalBeds} total beds ({totalBeds - occBeds} available)
+                      {occBeds} occupied / {totalBeds} total beds ({totalBeds - occBeds} available
+                      {cleanBeds > 0 ? `, ${cleanBeds} cleaning` : ''})
                     </Text>
 
-                    {/* Beds Grid Preview */}
+                    {/* Beds Grid with Tap Action */}
                     <View style={styles.bedMiniGrid}>
-                      {(ward.beds || []).slice(0, 8).map((b: any) => {
+                      {(ward.beds || []).map((b: any) => {
                         const isOcc = b.status === 'OCCUPIED';
                         const isMaint = b.status === 'MAINTENANCE';
+                        const isClean = b.status === 'HOUSEKEEPING' || b.status === 'CLEANING';
+
                         return (
-                          <View
+                          <TouchableOpacity
                             key={b.id}
+                            onPress={() => setBedStatusModal(b)}
                             style={[
                               styles.bedChip,
                               isOcc && styles.bedChipOcc,
                               isMaint && styles.bedChipMaint,
+                              isClean && styles.bedChipClean,
                             ]}
                           >
                             <Text
@@ -214,23 +446,42 @@ export default function AdminOperationsScreen() {
                                 styles.bedChipText,
                                 isOcc && styles.bedChipTextOcc,
                                 isMaint && styles.bedChipTextMaint,
+                                isClean && styles.bedChipTextClean,
                               ]}
                             >
-                              {b.bedNumber}
+                              Bed {b.bedNumber}
                             </Text>
-                          </View>
+                          </TouchableOpacity>
                         );
                       })}
                     </View>
                   </View>
                 );
               })}
+
+              {wards.length === 0 && (
+                <Text style={styles.emptyText}>No wards registered in hospital.</Text>
+              )}
             </View>
           )}
 
           {/* TAB 2: INPATIENT IPD */}
           {activeTab === 'ipd' && (
             <View>
+              {/* Header Action Button */}
+              <TouchableOpacity
+                style={styles.primaryActionButton}
+                onPress={() => {
+                  setAdmPatientId(patients[0]?.id || '');
+                  setAdmDoctorId(doctors[0]?.id || '');
+                  setAdmWardId(wards[0]?.id || '');
+                  setNewAdmissionModal(true);
+                }}
+              >
+                <Plus size={16} color="#FFFFFF" />
+                <Text style={styles.primaryActionButtonText}>New Inpatient Admission</Text>
+              </TouchableOpacity>
+
               {admissions.length === 0 ? (
                 <Text style={styles.emptyText}>No inpatient admissions recorded.</Text>
               ) : (
@@ -241,6 +492,7 @@ export default function AdminOperationsScreen() {
                   const doctorName = adm.admittingDoctor?.employee?.user
                     ? `Dr. ${adm.admittingDoctor.employee.user.firstName} ${adm.admittingDoctor.employee.user.lastName}`.trim()
                     : (adm.admittingDoctor?.user?.name || 'Dr. Consultant');
+                  const isAdmitted = adm.status === 'ADMITTED';
 
                   return (
                     <View key={adm.id} style={styles.card}>
@@ -253,8 +505,7 @@ export default function AdminOperationsScreen() {
                           style={[
                             styles.statusTag,
                             {
-                              backgroundColor:
-                                adm.status === 'ADMITTED' ? '#CCFBF1' : '#F1F5F9',
+                              backgroundColor: isAdmitted ? '#CCFBF1' : '#F1F5F9',
                             },
                           ]}
                         >
@@ -262,8 +513,7 @@ export default function AdminOperationsScreen() {
                             style={[
                               styles.statusTagText,
                               {
-                                color:
-                                  adm.status === 'ADMITTED' ? '#0F766E' : '#64748B',
+                                color: isAdmitted ? '#0F766E' : '#64748B',
                               },
                             ]}
                           >
@@ -274,7 +524,7 @@ export default function AdminOperationsScreen() {
 
                       <View style={styles.ipdDetailBox}>
                         <Text style={styles.ipdDetailText}>
-                          🛏️ Ward: {adm.ward?.name || 'General Ward'} • Bed {adm.bed?.bedNumber || '-'}
+                          🛏️ Ward: {adm.ward?.name || 'General Ward'} • Bed {adm.bed?.bedNumber || '-'} (Rm {adm.bed?.roomNumber || '-'})
                         </Text>
                         <Text style={styles.ipdDetailText}>
                           👨‍⚕️ Attending: {doctorName}
@@ -283,6 +533,42 @@ export default function AdminOperationsScreen() {
                           📋 Diagnosis: {adm.initialDiagnosis || adm.admissionReason || 'Clinical Evaluation'}
                         </Text>
                       </View>
+
+                      {/* IPD Care Actions */}
+                      {isAdmitted && (
+                        <View style={styles.opdActionsRow}>
+                          <TouchableOpacity
+                            style={styles.opdActionBtn}
+                            onPress={() => {
+                              setTransferModal(adm);
+                              setTargetWardId(wards[0]?.id || '');
+                              setTargetBedId('');
+                            }}
+                          >
+                            <ArrowRightLeft size={13} color="#4F46E5" />
+                            <Text style={[styles.opdActionBtnText, { color: '#4F46E5' }]}>Transfer Bed</Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            style={[styles.opdActionBtn, { borderColor: '#FECDD3' }]}
+                            onPress={() => {
+                              setDischargeModal(adm);
+                              setDischargeSummary('');
+                            }}
+                          >
+                            <LogOut size={13} color="#DC2626" />
+                            <Text style={[styles.opdActionBtnText, { color: '#DC2626' }]}>Discharge</Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            style={[styles.opdActionBtn, { borderColor: '#E2E8F0' }]}
+                            onPress={() => handleCancelAdmission(adm)}
+                          >
+                            <Ban size={13} color="#64748B" />
+                            <Text style={[styles.opdActionBtnText, { color: '#64748B' }]}>Cancel</Text>
+                          </TouchableOpacity>
+                        </View>
+                      )}
                     </View>
                   );
                 })
@@ -293,9 +579,21 @@ export default function AdminOperationsScreen() {
           {/* TAB 3: OPD QUEUE */}
           {activeTab === 'opd' && (
             <View>
+              {/* Header Action Button */}
+              <TouchableOpacity
+                style={styles.primaryActionButton}
+                onPress={() => {
+                  setBookDoctorId(doctors[0]?.id || '');
+                  setBookAppointmentModal(true);
+                }}
+              >
+                <Plus size={16} color="#FFFFFF" />
+                <Text style={styles.primaryActionButtonText}>Book OPD Appointment</Text>
+              </TouchableOpacity>
+
               {/* Status Filter Chips */}
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
-                {['ALL', 'SCHEDULED', 'CHECKED_IN', 'COMPLETED', 'CANCELLED'].map((st) => (
+                {['ALL', 'SCHEDULED', 'CHECKED_IN', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'].map((st) => (
                   <TouchableOpacity
                     key={st}
                     style={[
@@ -328,6 +626,9 @@ export default function AdminOperationsScreen() {
                     const qDoctor = q.doctor?.employee?.user
                       ? `Dr. ${q.doctor.employee.user.firstName} ${q.doctor.employee.user.lastName}`.trim()
                       : (q.doctor?.user?.name || 'Consultant');
+                    const isSched = q.status === 'SCHEDULED';
+                    const isChecked = q.status === 'CHECKED_IN';
+                    const isInProgress = q.status === 'IN_PROGRESS';
                     const canModify = q.status !== 'CANCELLED' && q.status !== 'COMPLETED';
 
                     return (
@@ -348,8 +649,39 @@ export default function AdminOperationsScreen() {
                           </View>
                         </View>
 
+                        {/* Status Advancement Actions */}
                         {canModify && (
                           <View style={styles.opdActionsRow}>
+                            {isSched && (
+                              <TouchableOpacity
+                                style={[styles.opdActionBtn, { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' }]}
+                                onPress={() => handleCheckIn(q.id)}
+                              >
+                                <CheckCircle size={13} color="#16A34A" />
+                                <Text style={[styles.opdActionBtnText, { color: '#16A34A' }]}>Check-In</Text>
+                              </TouchableOpacity>
+                            )}
+
+                            {isChecked && (
+                              <TouchableOpacity
+                                style={[styles.opdActionBtn, { backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' }]}
+                                onPress={() => handleUpdateAppointmentStatus(q.id, 'IN_PROGRESS')}
+                              >
+                                <Clock size={13} color="#2563EB" />
+                                <Text style={[styles.opdActionBtnText, { color: '#2563EB' }]}>Start Consult</Text>
+                              </TouchableOpacity>
+                            )}
+
+                            {isInProgress && (
+                              <TouchableOpacity
+                                style={[styles.opdActionBtn, { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' }]}
+                                onPress={() => handleUpdateAppointmentStatus(q.id, 'COMPLETED')}
+                              >
+                                <CheckSquare size={13} color="#16A34A" />
+                                <Text style={[styles.opdActionBtnText, { color: '#16A34A' }]}>Complete</Text>
+                              </TouchableOpacity>
+                            )}
+
                             <TouchableOpacity
                               style={styles.opdActionBtn}
                               onPress={() => {
@@ -385,7 +717,9 @@ export default function AdminOperationsScreen() {
         </ScrollView>
       )}
 
-      {/* Reschedule Modal */}
+      {/* ========================================================================= */}
+      {/* MODAL: RESCHEDULE APPOINTMENT                                            */}
+      {/* ========================================================================= */}
       <Modal visible={!!rescheduleModal} transparent animationType="slide">
         <View style={styles.modalBg}>
           <View style={styles.modalCard}>
@@ -427,7 +761,9 @@ export default function AdminOperationsScreen() {
         </View>
       </Modal>
 
-      {/* Cancel Modal */}
+      {/* ========================================================================= */}
+      {/* MODAL: CANCEL APPOINTMENT                                                */}
+      {/* ========================================================================= */}
       <Modal visible={!!cancelModal} transparent animationType="slide">
         <View style={styles.modalBg}>
           <View style={styles.modalCard}>
@@ -458,6 +794,352 @@ export default function AdminOperationsScreen() {
                 <Text style={styles.submitBtnText}>Confirm Cancellation</Text>
               )}
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* ========================================================================= */}
+      {/* MODAL: BOOK NEW OPD APPOINTMENT                                          */}
+      {/* ========================================================================= */}
+      <Modal visible={bookAppointmentModal} transparent animationType="slide">
+        <View style={styles.modalBg}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHead}>
+              <Text style={styles.modalTitle}>Book OPD Appointment</Text>
+              <TouchableOpacity onPress={() => setBookAppointmentModal(false)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.fieldLabel}>Select Attending Doctor</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
+              {doctors.map((d) => {
+                const name = d.employee?.user
+                  ? `Dr. ${d.employee.user.firstName} ${d.employee.user.lastName}`
+                  : 'Doctor';
+                const isSelected = bookDoctorId === d.id;
+                return (
+                  <TouchableOpacity
+                    key={d.id}
+                    onPress={() => setBookDoctorId(d.id)}
+                    style={[styles.chipSelect, isSelected && styles.chipSelectActive]}
+                  >
+                    <Text style={[styles.chipSelectText, isSelected && styles.chipSelectTextActive]}>
+                      {name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+
+            <Text style={styles.fieldLabel}>Patient Full Name</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="Patient Name"
+              value={bookPatientName}
+              onChangeText={setBookPatientName}
+            />
+
+            <Text style={styles.fieldLabel}>Patient Phone Number</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="10-digit Phone"
+              keyboardType="phone-pad"
+              value={bookPatientPhone}
+              onChangeText={setBookPatientPhone}
+            />
+
+            <Text style={styles.fieldLabel}>Appointment Date (YYYY-MM-DD)</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="YYYY-MM-DD"
+              value={bookDate}
+              onChangeText={setBookDate}
+            />
+
+            <Text style={styles.fieldLabel}>Slot Time (e.g. 10:00, 11:30)</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="10:00"
+              value={bookTime}
+              onChangeText={setBookTime}
+            />
+
+            <TouchableOpacity
+              style={styles.submitBtn}
+              onPress={handleBookAppointment}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.submitBtnText}>Generate Appointment Token</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* ========================================================================= */}
+      {/* MODAL: NEW INPATIENT ADMISSION                                           */}
+      {/* ========================================================================= */}
+      <Modal visible={newAdmissionModal} transparent animationType="slide">
+        <View style={styles.modalBg}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHead}>
+              <Text style={styles.modalTitle}>Inpatient Admission</Text>
+              <TouchableOpacity onPress={() => setNewAdmissionModal(false)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.fieldLabel}>Select Patient</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 8 }}>
+              {patients.slice(0, 8).map((p) => {
+                const isSelected = admPatientId === p.id;
+                return (
+                  <TouchableOpacity
+                    key={p.id}
+                    onPress={() => setAdmPatientId(p.id)}
+                    style={[styles.chipSelect, isSelected && styles.chipSelectActive]}
+                  >
+                    <Text style={[styles.chipSelectText, isSelected && styles.chipSelectTextActive]}>
+                      {p.firstName} {p.lastName}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+
+            <Text style={styles.fieldLabel}>Select Ward</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 8 }}>
+              {wards.map((w) => {
+                const isSelected = admWardId === w.id;
+                return (
+                  <TouchableOpacity
+                    key={w.id}
+                    onPress={() => {
+                      setAdmWardId(w.id);
+                      setAdmBedId('');
+                    }}
+                    style={[styles.chipSelect, isSelected && styles.chipSelectActive]}
+                  >
+                    <Text style={[styles.chipSelectText, isSelected && styles.chipSelectTextActive]}>
+                      {w.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+
+            <Text style={styles.fieldLabel}>Select Available Bed</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 8 }}>
+              {availableBedsForWard(admWardId).map((b: any) => {
+                const isSelected = admBedId === b.id;
+                return (
+                  <TouchableOpacity
+                    key={b.id}
+                    onPress={() => setAdmBedId(b.id)}
+                    style={[styles.chipSelect, isSelected && styles.chipSelectActive]}
+                  >
+                    <Text style={[styles.chipSelectText, isSelected && styles.chipSelectTextActive]}>
+                      Rm {b.roomNumber} - Bed {b.bedNumber}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+              {availableBedsForWard(admWardId).length === 0 && (
+                <Text style={{ fontSize: 11, color: '#94A3B8', padding: 4 }}>No available beds in this ward</Text>
+              )}
+            </ScrollView>
+
+            <Text style={styles.fieldLabel}>Initial Diagnosis</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="e.g. Acute Appendicitis, Fever..."
+              value={admDiagnosis}
+              onChangeText={setAdmDiagnosis}
+            />
+
+            <TouchableOpacity
+              style={styles.submitBtn}
+              onPress={handleAdmitPatient}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.submitBtnText}>Confirm Inpatient Admission</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* ========================================================================= */}
+      {/* MODAL: TRANSFER INPATIENT BED                                            */}
+      {/* ========================================================================= */}
+      <Modal visible={!!transferModal} transparent animationType="slide">
+        <View style={styles.modalBg}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHead}>
+              <Text style={styles.modalTitle}>Transfer Inpatient Bed</Text>
+              <TouchableOpacity onPress={() => setTransferModal(null)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={{ fontSize: 12, color: '#0F766E', fontWeight: '700', marginBottom: 12 }}>
+              Patient: {transferModal?.patient?.firstName} {transferModal?.patient?.lastName}
+            </Text>
+
+            <Text style={styles.fieldLabel}>Select Target Ward</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 8 }}>
+              {wards.map((w) => {
+                const isSelected = targetWardId === w.id;
+                return (
+                  <TouchableOpacity
+                    key={w.id}
+                    onPress={() => {
+                      setTargetWardId(w.id);
+                      setTargetBedId('');
+                    }}
+                    style={[styles.chipSelect, isSelected && styles.chipSelectActive]}
+                  >
+                    <Text style={[styles.chipSelectText, isSelected && styles.chipSelectTextActive]}>
+                      {w.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+
+            <Text style={styles.fieldLabel}>Select Target Available Bed</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 8 }}>
+              {availableBedsForWard(targetWardId).map((b: any) => {
+                const isSelected = targetBedId === b.id;
+                return (
+                  <TouchableOpacity
+                    key={b.id}
+                    onPress={() => setTargetBedId(b.id)}
+                    style={[styles.chipSelect, isSelected && styles.chipSelectActive]}
+                  >
+                    <Text style={[styles.chipSelectText, isSelected && styles.chipSelectTextActive]}>
+                      Bed {b.bedNumber} (Rm {b.roomNumber})
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+
+            <Text style={styles.fieldLabel}>Transfer Reason</Text>
+            <TextInput
+              style={styles.fieldInput}
+              placeholder="e.g. Medical necessity / ICU stepdown"
+              value={transferReason}
+              onChangeText={setTransferReason}
+            />
+
+            <TouchableOpacity
+              style={[styles.submitBtn, { backgroundColor: '#4F46E5' }]}
+              onPress={handleTransferBed}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.submitBtnText}>Confirm Bed Transfer</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* ========================================================================= */}
+      {/* MODAL: DISCHARGE INPATIENT                                               */}
+      {/* ========================================================================= */}
+      <Modal visible={!!dischargeModal} transparent animationType="slide">
+        <View style={styles.modalBg}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHead}>
+              <Text style={styles.modalTitle}>Inpatient Discharge</Text>
+              <TouchableOpacity onPress={() => setDischargeModal(null)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={{ fontSize: 12, color: '#DC2626', fontWeight: '700', marginBottom: 12 }}>
+              Patient: {dischargeModal?.patient?.firstName} {dischargeModal?.patient?.lastName} (Ward: {dischargeModal?.ward?.name})
+            </Text>
+
+            <Text style={styles.fieldLabel}>Discharge Summary / Clinical Instructions</Text>
+            <TextInput
+              style={[styles.fieldInput, { height: 80 }]}
+              placeholder="Patient clinically stable. Instructions given."
+              multiline
+              value={dischargeSummary}
+              onChangeText={setDischargeSummary}
+            />
+
+            <TouchableOpacity
+              style={[styles.submitBtn, { backgroundColor: '#DC2626' }]}
+              onPress={handleDischargePatient}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.submitBtnText}>Sign Clearances & Discharge</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* ========================================================================= */}
+      {/* MODAL: QUICK BED STATUS UPDATE                                           */}
+      {/* ========================================================================= */}
+      <Modal visible={!!bedStatusModal} transparent animationType="slide">
+        <View style={styles.modalBg}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHead}>
+              <Text style={styles.modalTitle}>
+                Bed {bedStatusModal?.bedNumber} (Rm {bedStatusModal?.roomNumber})
+              </Text>
+              <TouchableOpacity onPress={() => setBedStatusModal(null)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={{ fontSize: 12, color: '#64748B', marginBottom: 16 }}>
+              Current Status: <Text style={{ fontWeight: '700', color: '#0F172A' }}>{bedStatusModal?.status}</Text>
+            </Text>
+
+            <View style={{ gap: 10 }}>
+              <TouchableOpacity
+                style={[styles.quickStatusBtn, { backgroundColor: '#ECFDF5', borderColor: '#A7F3D0' }]}
+                onPress={() => handleUpdateBedStatus('AVAILABLE')}
+              >
+                <CheckCircle size={16} color="#059669" />
+                <Text style={[styles.quickStatusBtnText, { color: '#059669' }]}>Mark AVAILABLE (Cleaned)</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.quickStatusBtn, { backgroundColor: '#FFFBEB', borderColor: '#FDE68A' }]}
+                onPress={() => handleUpdateBedStatus('HOUSEKEEPING')}
+              >
+                <Sparkles size={16} color="#D97706" />
+                <Text style={[styles.quickStatusBtnText, { color: '#D97706' }]}>Mark HOUSEKEEPING (Cleaning)</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.quickStatusBtn, { backgroundColor: '#F8FAFC', borderColor: '#CBD5E1' }]}
+                onPress={() => handleUpdateBedStatus('MAINTENANCE')}
+              >
+                <Wrench size={16} color="#475569" />
+                <Text style={[styles.quickStatusBtnText, { color: '#475569' }]}>Mark MAINTENANCE</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -498,6 +1180,26 @@ const styles = StyleSheet.create({
   },
   scroll: { flex: 1 },
   scrollContent: { padding: 14, paddingBottom: 30 },
+  primaryActionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: '#0F766E',
+    paddingVertical: 10,
+    borderRadius: 12,
+    marginBottom: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  primaryActionButtonText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
+  },
   card: {
     backgroundColor: '#FFFFFF',
     borderRadius: 14,
@@ -575,10 +1277,17 @@ const styles = StyleSheet.create({
     color: '#E11D48',
   },
   bedChipMaint: {
+    backgroundColor: '#F1F5F9',
+    borderColor: '#CBD5E1',
+  },
+  bedChipTextMaint: {
+    color: '#475569',
+  },
+  bedChipClean: {
     backgroundColor: '#FEF3C7',
     borderColor: '#FDE68A',
   },
-  bedChipTextMaint: {
+  bedChipTextClean: {
     color: '#D97706',
   },
   ipdHead: {
@@ -681,8 +1390,9 @@ const styles = StyleSheet.create({
   },
   opdActionsRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'flex-end',
-    gap: 8,
+    gap: 6,
     marginTop: 10,
     paddingTop: 8,
     borderTopWidth: 1,
@@ -692,7 +1402,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1,
@@ -702,6 +1412,40 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     color: '#0F766E',
+  },
+  chipSelect: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: '#F1F5F9',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    marginRight: 6,
+  },
+  chipSelectActive: {
+    backgroundColor: '#CCFBF1',
+    borderColor: '#0F766E',
+  },
+  chipSelectText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  chipSelectTextActive: {
+    color: '#0F766E',
+    fontWeight: '700',
+  },
+  quickStatusBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  quickStatusBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
   },
   modalBg: {
     flex: 1,
@@ -731,7 +1475,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#475569',
     marginBottom: 6,
-    marginTop: 10,
+    marginTop: 8,
   },
   fieldInput: {
     backgroundColor: '#F8FAFC',
@@ -740,7 +1484,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    fontSize: 14,
+    fontSize: 13,
     color: '#0F172A',
   },
   submitBtn: {
@@ -748,7 +1492,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 18,
   },
   submitBtnText: {
     color: '#FFFFFF',
