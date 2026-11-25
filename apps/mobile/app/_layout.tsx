@@ -15,6 +15,7 @@ export default function RootLayout() {
       <Stack.Screen name="(auth)/login" />
       <Stack.Screen name="(super-admin)" />
       <Stack.Screen name="(admin)" />
+      <Stack.Screen name="(department-admin)" />
       <Stack.Screen name="(doctor)" />
       <Stack.Screen name="(nurse)" />
       <Stack.Screen name="(reception)" />

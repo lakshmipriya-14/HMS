@@ -19,12 +19,15 @@ import { BillingRoutes } from '../features/billing/routes';
 import { WardRoutes } from '../features/wards/routes';
 import { AmbulanceRoutes } from '../features/ambulance/routes';
 import { PatientRoutes } from '../features/patient/routes';
+import { DepartmentAdminRoutes } from '../features/department-admin/routes';
 
 const RoleBasedHomeRedirect: React.FC = () => {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
 
   switch (user.role) {
+    case Role.DEPARTMENT_ADMIN:
+      return <Navigate to="/department-admin" replace />;
     case Role.DOCTOR:
       return <Navigate to="/doctor" replace />;
     case Role.NURSE:
@@ -71,6 +74,9 @@ export const AppRoutes: React.FC = () => {
 
           {/* Member 1: Admin */}
           <Route path="/admin/*" element={<AdminRoutes />} />
+
+          {/* Department Admin */}
+          <Route path="/department-admin/*" element={<DepartmentAdminRoutes />} />
 
           {/* Member 2: Doctor */}
           <Route path="/doctor/*" element={<DoctorRoutes />} />
