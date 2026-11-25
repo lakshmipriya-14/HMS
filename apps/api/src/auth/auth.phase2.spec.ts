@@ -137,7 +137,10 @@ describe('Phase 2 auth with an in-memory Prisma mock', () => {
     process.env.CORS_ORIGINS = 'http://localhost:8081';
     const { auth, user, prisma } = mocks();
     const controller = new AuthController(auth, new PasswordRecoveryService(prisma, new ConfiguredOtpDelivery()));
-    const req = (origin: string) => ({ get: (name: string) => name === 'origin' ? origin : 'cookie' }) as unknown as Request;
+    const req = (origin: string) => {
+      const headers: Record<string, string> = { origin, 'x-hms-session': 'cookie' };
+      return { headers, ip: '127.0.0.1', get: (name: string) => headers[name.toLowerCase()] } as unknown as Request;
+    };
     const cookie = jest.fn();
     const res = { cookie } as unknown as Response;
     await expect(controller.login({ email: user.email, password }, req('https://other.example'), res))
