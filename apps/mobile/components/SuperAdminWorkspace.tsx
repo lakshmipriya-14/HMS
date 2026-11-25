@@ -15,6 +15,7 @@ import { Href, useFocusEffect, useRouter } from 'expo-router';
 import {
   Role,
   SUPER_ADMIN_REPORTS,
+  SUPER_ADMIN_REPORT_FILTERS,
   SuperAdminReport,
 } from '@multispeciality-hms/contracts';
 import {
@@ -32,6 +33,7 @@ import {
   X,
   ChevronDown,
   MapPin,
+  CalendarDays,
   Download,
   Printer,
   ChevronLeft,
@@ -45,10 +47,8 @@ import {
 import { mobileApiClient } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import {
-  buildCsvContent,
-  downloadCsvFile,
-  downloadPdfFile,
-  openPrintableReport,
+  exportDirectoryFile,
+  directoryExportTable,
 } from '../services/downloadHelper';
 import { UyirinaiTheme as theme } from '../constants/theme';
 import { SuperAdminHeader } from './SuperAdminHeader';
@@ -378,6 +378,44 @@ function BranchFilterButton({ title, expanded, onPress }: { title: string; expan
   );
 }
 
+function DirectoryDropdown({
+  label, options, value, onChange,
+}: {
+  label: string;
+  options: [string, string][];
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const selectedLabel = options.find(([key]) => key === value)?.[1];
+  return (
+    <View style={styles.directoryDropdown}>
+      <Text style={styles.inputLabel}>{label}</Text>
+      <BranchFilterButton
+        title={selectedLabel ?? label}
+        expanded={expanded}
+        onPress={() => setExpanded((current) => !current)}
+      />
+      {expanded && (
+        <ScrollView nestedScrollEnabled style={styles.branchMenu} keyboardShouldPersistTaps="handled">
+          {options.map(([key, title]) => (
+            <Pressable
+              key={key}
+              style={styles.branchMenuOption}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: value === key }}
+              onPress={() => { onChange(key); setExpanded(false); }}
+            >
+              <Text style={styles.branchFilterLabel}>{title}</Text>
+              {value === key && <CheckCircle2 size={16} color={theme.colors.primary} />}
+            </Pressable>
+          ))}
+        </ScrollView>
+      )}
+    </View>
+  );
+}
+
 function Editor({
   fields,
   initial,
@@ -609,10 +647,10 @@ function Directory({
 
   const unpaged = ['notifications', 'master-settings'].includes(section);
 
-  const data = useLoad(async () => {
+  const loadDirectory = (page: number, limit: number) => {
     const params = {
       page,
-      limit: pageSize,
+      limit,
       search: search || undefined,
       status: status || undefined,
       city: city || undefined,
@@ -623,7 +661,7 @@ function Directory({
     if (section === 'audit-logs') {
       return mobileApiClient.superAdmin.audit({
         page,
-        limit: pageSize,
+        limit,
         search: search || undefined,
         action: search || undefined,
         resource: resourceFilter || undefined,
@@ -641,7 +679,9 @@ function Directory({
       undefined,
       unpaged ? undefined : params
     );
-  }, JSON.stringify([section, page, pageSize, search, status, scope, sortOrder, resourceFilter, role, branchFilters, city]));
+  };
+
+  const data = useLoad(() => loadDirectory(page, pageSize), JSON.stringify([section, page, pageSize, search, status, scope, sortOrder, resourceFilter, role, branchFilters, city]));
 
   const hasFocused = useRef(false);
   const { reload: reloadDirectory } = data;
@@ -730,155 +770,39 @@ function Directory({
     );
   };
 
-  // Export full matching dataset
-  const handleExport = async (format: 'csv' | 'pdf' | 'print') => {
+  const handleExport = (format: 'csv' | 'pdf') => {
+    // Open during the click so browsers allow the print preview after the requests finish.
+    const preview = format === 'pdf' && typeof document !== 'undefined' ? window.open('', '_blank') : undefined;
     action.run(async () => {
-      const exportParams = {
-        page: 1,
-        limit: 1000,
-        search: search || undefined,
-        status: status || undefined,
-        city: city || undefined,
-        branchIds: (isBranchDirectory ? branchFilters.join(',') : scope) || undefined,
-        sortOrder,
-        role: role || undefined,
-      };
-      let allRows: Row[] = [];
-      if (section === 'audit-logs') {
-        const res = await mobileApiClient.superAdmin.audit({
-          page: 1,
-          limit: 1000,
-          search: search || undefined,
-          action: search || undefined,
-          resource: resourceFilter || undefined,
-          branchId: scope || undefined,
-          userRole: role || undefined,
-          sortOrder,
-        });
-        allRows = (res as any)?.data ?? [];
-      } else if (isBranchDirectory) {
+      try {
+        if (preview === null) throw new Error('Allow pop-ups to open the PDF preview.');
+        const detailsPath = isBranchDirectory ? 'branches' : ['admins', 'users'].includes(section) ? 'users' : undefined;
+        const records: Row[] = [];
         let totalPages = 1;
         for (let exportPage = 1; exportPage <= totalPages; exportPage++) {
-          const response = await req<Row[]>('branches', 'GET', undefined, {
-            ...exportParams,
-            page: exportPage,
-            limit: 100,
-          });
-          allRows.push(...(response.data ?? []));
+          const response = await loadDirectory(exportPage, 100);
+          const rows = (response.data ?? []) as Row[];
           totalPages = response.meta?.totalPages ?? 1;
+          if (!detailsPath) {
+            records.push(...rows);
+            continue;
+          }
+          for (let offset = 0; offset < rows.length; offset += 8) {
+            const details = await Promise.all(rows.slice(offset, offset + 8).map(async (row) => {
+              const detail = (await req<Row>(detailsPath + '/' + segment(idOf(row)))).data;
+              if (!detail) throw new Error('A record changed during export. Refresh and try again.');
+              return { ...row, ...detail };
+            }));
+            records.push(...details);
+          }
         }
-      } else {
-        const res = await req<Row[]>(
-          section === 'master-settings' ? 'master-items' : section,
-          'GET',
-          undefined,
-          exportParams
-        );
-        allRows = res?.data ?? [];
-      }
-      if (!allRows.length) throw new Error('No records found to export.');
-
-      let headers: string[] = [];
-      let exportData: (string | number | boolean | null | undefined)[][] = [];
-      const title = titles[section] || section;
-
-      if (section === 'doctors') {
-        headers = [
-          'Doctor Name',
-          'Code/License',
-          'Department',
-          'Specialization',
-          'Branch',
-          'OPD Fee',
-          'Shift',
-          'Availability',
-        ];
-        exportData = allRows.map((r: any) => {
-          const staff = r.employee?.user ?? r;
-          return [
-            `Dr. ${staff.firstName || ''} ${staff.lastName || ''}`.trim(),
-            r.licenseNumber || r.doctorCode || '-',
-            r.department?.name || r.department || '-',
-            r.specialization || '-',
-            r.branch?.name || r.branchName || '-',
-            r.consultationFee ? `₹${r.consultationFee}` : '-',
-            r.shift || '-',
-            r.isAvailableToday ? 'Available' : 'Unavailable',
-          ];
-        });
-      } else if (section === 'patients') {
-        headers = ['UHID', 'Patient Name', 'Gender', 'Phone', 'City', 'Status', 'Registered Date'];
-        exportData = allRows.map((r: any) => [
-          r.uhid || '-',
-          `${r.firstName || ''} ${r.lastName || ''}`.trim(),
-          r.gender || '-',
-          r.phone || '-',
-          r.city || '-',
-          r.status || 'ACTIVE',
-          r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '-',
-        ]);
-      } else if (section === 'audit-logs') {
-        headers = ['Timestamp', 'User Email', 'Role', 'Action', 'Resource', 'Resource ID', 'Scope'];
-        exportData = allRows.map((r: any) => [
-          r.createdAt ? new Date(r.createdAt).toLocaleString() : '-',
-          r.userEmail || '-',
-          r.userRole || '-',
-          r.action || '-',
-          r.resource || '-',
-          r.resourceId || '-',
-          r.branchId || r.hospitalId || '-',
-        ]);
-      } else if (section === 'branches') {
-        headers = ['Code', 'Branch Name', 'City', 'Phone', 'Status'];
-        exportData = allRows.map((r: any) => [
-          r.code || '-',
-          r.name || '-',
-          r.city || '-',
-          r.phone || '-',
-          r.isActive ? 'Active' : 'Inactive',
-        ]);
-      } else if (section === 'admins' || section === 'users') {
-        headers = ['Name', 'Email', 'Role', 'Employee Code', 'Status'];
-        exportData = allRows.map((r: any) => {
-          const emp = r.employee as any;
-          const roleStr = Array.isArray(r.roles)
-            ? r.roles.map((x: any) => x.role?.name || x.role || x).join(', ')
-            : r.role || '-';
-          return [
-            `${r.firstName || ''} ${r.lastName || ''}`.trim(),
-            r.email || '-',
-            roleStr,
-            emp?.employeeCode || '-',
-            r.isActive ? 'Active' : 'Inactive',
-          ];
-        });
-      } else {
-        const keys = Object.keys(allRows[0] || {}).filter(
-          (k) => !['id', 'hospitalId', 'passwordHash'].includes(k)
-        );
-        headers = keys.map((k) => k.replace(/([a-z])([A-Z])/g, '$1 $2'));
-        exportData = allRows.map((r) => keys.map((k) => display(r[k])));
-      }
-
-      const timestamp = new Date().toISOString().slice(0, 10);
-      if (format === 'csv') {
-        const csv = buildCsvContent(headers, exportData);
-        downloadCsvFile(`${section}-export-${timestamp}`, csv);
-      } else if (format === 'pdf') {
-        downloadPdfFile(
-          `${section}-export-${timestamp}`,
-          title,
-          `Exported on ${new Date().toLocaleDateString()}`,
-          headers,
-          exportData
-        );
-      } else if (format === 'print') {
-        openPrintableReport(
-          title,
-          `Exported on ${new Date().toLocaleDateString()}`,
-          headers,
-          exportData
-        );
+        if (!records.length) throw new Error('No records found to export.');
+        const { headers, rows } = directoryExportTable(records);
+        const date = new Date().toISOString().slice(0, 10);
+        await exportDirectoryFile(format, `${section}-export-${date}`, titles[section] || section, headers, rows, preview ?? undefined);
+      } catch (error) {
+        preview?.close();
+        throw error;
       }
     });
   };
@@ -986,10 +910,8 @@ function Directory({
           )}
           {branchMenu === 'more' && (
             <View style={styles.branchOptions}>
-              <Text style={styles.inputLabel}>Sort by name</Text>
-              <Choices options={[['asc', 'A to Z'], ['desc', 'Z to A']]} value={sortOrder} onChange={(value) => { setSortOrder(value); setPage(1); }} />
-              <Text style={styles.inputLabel}>Rows per page</Text>
-              <Choices options={['10', '20', '50', '100'].map((value): [string, string] => [value, value])} value={String(pageSize)} onChange={(value) => { setPageSize(Number(value)); setPage(1); }} />
+              <DirectoryDropdown label="Sort by name" options={[['asc', 'A to Z'], ['desc', 'Z to A']]} value={sortOrder} onChange={(value) => { setSortOrder(value); setPage(1); }} />
+              <DirectoryDropdown label="Rows per page" options={['10', '20', '50', '100'].map((value): [string, string] => [value, value])} value={String(pageSize)} onChange={(value) => { setPageSize(Number(value)); setPage(1); }} />
             </View>
           )}
           {!!(draft || status || city || branchFilters.length || sortOrder !== 'asc' || pageSize !== 20) && (
@@ -998,6 +920,9 @@ function Directory({
             </Pressable>
           )}
         </View>
+      )}
+      {section === 'admins' && (
+        <Button title="+ Create Administrator" onPress={() => navigate('create-admin')} />
       )}
       {/* Search & Dynamic Filter Panel */}
       {!unpaged && !isBranchDirectory && (
@@ -1016,15 +941,17 @@ function Directory({
                 }}
               />
             </View>
-            <Button
-              title="Search"
-              icon={Search}
-              onPress={() => {
-                setSearch(draft.trim());
-                setResourceFilter(resource.trim());
-                setPage(1);
-              }}
-            />
+            <View>
+              <Button
+                title="Search"
+                icon={Search}
+                onPress={() => {
+                  setSearch(draft.trim());
+                  setResourceFilter(resource.trim());
+                  setPage(1);
+                }}
+              />
+            </View>
           </View>
 
           {section === 'audit-logs' && (
@@ -1044,8 +971,8 @@ function Directory({
           {/* Status Filters */}
           {['admins', 'users', 'departments', 'doctors'].includes(section) && (
             <View style={{ gap: 4 }}>
-              <Text style={styles.inputLabel}>Filter by Status</Text>
-              <Choices
+              <DirectoryDropdown
+                label="Filter by Status"
                 options={[
                   ['', 'All statuses'],
                   ['ACTIVE', 'Active'],
@@ -1062,8 +989,8 @@ function Directory({
 
           {section === 'patients' && (
             <View style={{ gap: 4 }}>
-              <Text style={styles.inputLabel}>Patient Status</Text>
-              <Choices
+              <DirectoryDropdown
+                label="Patient Status"
                 options={[
                   ['', 'All statuses'],
                   ['ADMITTED', 'Admitted'],
@@ -1082,8 +1009,8 @@ function Directory({
           {/* Role Filters */}
           {['users', 'admins', 'audit-logs'].includes(section) && (
             <View style={{ gap: 4 }}>
-              <Text style={styles.inputLabel}>Filter by Role</Text>
-              <Choices
+              <DirectoryDropdown
+                label="Filter by Role"
                 options={[
                   ['', 'All roles'],
                   ...(section === 'admins'
@@ -1102,8 +1029,8 @@ function Directory({
 
           {!isBranchDirectory && !!branches.value?.length && (
             <View style={{ gap: 4 }}>
-              <Text style={styles.inputLabel}>Filter by Branch</Text>
-              <Choices
+              <DirectoryDropdown
+                label="Filter by Branch"
                 options={[['', 'All branches'], ...toBranchOptions(branches.value)]}
                 value={scope}
                 onChange={(value) => {
@@ -1116,9 +1043,9 @@ function Directory({
 
           {/* Page Size & Reset Filter Controls */}
           <View style={styles.filterMetaRow}>
-            <View style={styles.pageSizeRow}>
-              <Text style={styles.pageSizeLabel}>Rows per page:</Text>
-              <Choices
+            <View style={styles.directoryPageSize}>
+              <DirectoryDropdown
+                label="Rows per page"
                 options={[
                   ['10', '10'],
                   ['20', '20'],
@@ -1175,12 +1102,6 @@ function Directory({
           </>
         )}
 
-        {section === 'admins' && (
-          <Button
-            title="+ Create Administrator"
-            onPress={() => navigate('create-admin')}
-          />
-        )}
         {['departments', 'master-settings'].includes(section) && (
           <Button title="+ Add Item" onPress={() => setEditing({})} />
         )}
@@ -2323,138 +2244,224 @@ function Policies() {
 // ----------------------------------------------------
 // Reports Component
 // ----------------------------------------------------
+const reportMonths = Array.from({ length: 12 }, (_, month) =>
+  new Intl.DateTimeFormat('en', { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(2020, month, 1)))
+);
+
+function reportDate(daysAgo = 0) {
+  const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Kolkata', dateStyle: 'short' }).format(new Date());
+  const date = new Date(today + 'T00:00:00Z');
+  date.setUTCDate(date.getUTCDate() - daysAgo);
+  return date.toISOString().slice(0, 10);
+}
+
+function ReportDateField({ label: title, value, onChange }: {
+  label: string; value: string; onChange: (value: string) => void;
+}) {
+  const [monthView, setMonthView] = useState<{ year: number; month: number } | null>(null);
+  const thisYear = Number(reportDate().slice(0, 4));
+  const year = monthView?.year ?? thisYear;
+  const month = monthView?.month ?? 0;
+  const firstDay = new Date(Date.UTC(year, month, 1)).getUTCDay();
+  const days = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+  const moveMonth = (offset: number) => {
+    const next = new Date(Date.UTC(year, month + offset, 1));
+    setMonthView({ year: next.getUTCFullYear(), month: next.getUTCMonth() });
+  };
+
+  return (
+    <View style={styles.reportDateField}>
+      <Text style={styles.inputLabel}>{title}</Text>
+      <Pressable style={styles.reportDateButton} accessibilityRole="button" accessibilityLabel={`${title}: ${value}`} onPress={() => {
+        const [year, month] = value.split('-').map(Number);
+        setMonthView({ year, month: month - 1 });
+      }}>
+        <CalendarDays size={17} color="#475569" />
+        <Text style={styles.branchFilterLabel}>{value}</Text>
+      </Pressable>
+      <Modal visible={monthView !== null} transparent animationType="fade" onRequestClose={() => setMonthView(null)}>
+        <View style={styles.reportCalendarOverlay}>
+          {monthView && (
+            <ScrollView style={styles.reportCalendar} keyboardShouldPersistTaps="handled">
+              <Text style={styles.cardHeaderTitle}>Choose {title.toLowerCase()} date</Text>
+              <View style={styles.reportCalendarNav}>
+                <Pressable accessibilityRole="button" accessibilityLabel="Previous month" hitSlop={8} onPress={() => moveMonth(-1)}>
+                  <ChevronLeft size={22} color="#475569" />
+                </Pressable>
+                <Text style={styles.branchFilterLabel}>{reportMonths[month]} {year}</Text>
+                <Pressable accessibilityRole="button" accessibilityLabel="Next month" hitSlop={8} onPress={() => moveMonth(1)}>
+                  <ChevronRight size={22} color="#475569" />
+                </Pressable>
+              </View>
+              <DirectoryDropdown label="Month" options={reportMonths.map((name, index) => [String(index), name])}
+                value={String(month)} onChange={(next) => setMonthView({ year, month: Number(next) })} />
+              <DirectoryDropdown label="Year" options={Array.from({ length: 111 }, (_, index): [string, string] => {
+                const option = String(thisYear + 10 - index);
+                return [option, option];
+              })} value={String(year)} onChange={(next) => setMonthView({ year: Number(next), month })} />
+              <View style={styles.reportCalendarGrid}>
+                {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((day) => (
+                  <View key={day} style={styles.reportCalendarCell}><Text style={styles.muted}>{day}</Text></View>
+                ))}
+                {Array.from({ length: firstDay + days }, (_, index) => {
+                  const day = index - firstDay + 1;
+                  if (day < 1) return <View key={index} style={styles.reportCalendarCell} />;
+                  const date = new Date(Date.UTC(year, month, day)).toISOString().slice(0, 10);
+                  return (
+                    <Pressable key={index} style={[styles.reportCalendarCell, date === value && styles.selected]}
+                      accessibilityRole="button" accessibilityLabel={date} accessibilityState={{ selected: date === value }}
+                      onPress={() => { onChange(date); setMonthView(null); }}>
+                      <Text style={styles.branchFilterLabel}>{day}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+              <Button title="Cancel" variant="secondary" onPress={() => setMonthView(null)} />
+            </ScrollView>
+          )}
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
+const reportFilterLabels = {
+  status: 'Status', role: 'Role', paymentMethod: 'Payment method', action: 'Activity',
+} as const;
+type ReportFilterName = keyof typeof reportFilterLabels;
+type ReportFilters = Partial<Record<ReportFilterName, string>>;
+type ReportParameters = ReportFilters & { from: string; to: string; branchIds?: string };
+
 function Reports() {
   const { user } = useAuth();
   const [key, setKey] = useState<string>(SUPER_ADMIN_REPORTS[0][0]);
-  const [from, setFrom] = useState(''),
-    [to, setTo] = useState('');
+  const [range, setRange] = useState('30');
+  const [from, setFrom] = useState(() => reportDate(29));
+  const [to, setTo] = useState(() => reportDate());
   const [chosen, setChosen] = useState<string[]>([]);
-  const [query, setQuery] = useState<{
-    from?: string;
-    to?: string;
-    branchIds?: string;
-  }>({});
-  const branches = useLoad(branchOptions, 'report-branches');
-  const data = useLoad(
-    async () =>
-      (await req<SuperAdminReport>('reports/' + segment(key), 'GET', undefined, query))
-        .data,
-    JSON.stringify([key, query])
-  );
+  const [showBranches, setShowBranches] = useState(false);
+  const [filters, setFilters] = useState<ReportFilters>({});
+  const [generated, setGenerated] = useState<{ key: string; query: ReportParameters; report: SuperAdminReport }>();
+  const branches = useLoad(() => loadBranches(true), 'report-branches');
   const action = useAction();
-  const canExport =
-    typeof document !== 'undefined' &&
-    user?.permissions.includes('REPORTS:EXPORT') === true;
+  const reportTitle = (reportKey: string) => SUPER_ADMIN_REPORTS.find(([id]) => id === reportKey)?.[1] ?? 'Report';
+  const query = { ...filters, from, to, branchIds: chosen.join(',') || undefined };
+  const filtersChanged = generated && (
+    key !== generated.key || JSON.stringify(query) !== JSON.stringify(generated.query)
+  );
+
+  const generate = () => action.run(async () => {
+    setGenerated(undefined);
+    if (from > to) throw new Error('From date must be on or before To date.');
+    const { data: report } = await req<SuperAdminReport>('reports/' + segment(key), 'GET', undefined, query);
+    if (!report) throw new Error('No report was returned.');
+    setGenerated({ key, query, report });
+  });
+
+  const exportReport = (format: 'csv' | 'pdf') => {
+    if (!generated) return;
+    const preview = format === 'pdf' && typeof document !== 'undefined' ? window.open('', '_blank') : undefined;
+    action.run(async () => {
+      try {
+        if (preview === null) throw new Error('Allow pop-ups to open the PDF preview.');
+        const { key, query } = generated;
+        const { data: report } = await req<SuperAdminReport>('reports/' + segment(key) + '/export', 'POST', undefined, query);
+        if (!report?.rows.length) throw new Error('No report rows found.');
+        setGenerated({ key, query, report });
+        const title = `${reportTitle(key)} · ${query.from} to ${query.to}`;
+        await exportDirectoryFile(format, `${key}-${query.from}-to-${query.to}`, title, report.headers, report.rows, preview ?? undefined);
+      } catch (error) {
+        preview?.close();
+        throw error;
+      }
+    });
+  };
 
   return (
-    <View style={{ gap: 12 }}>
-      <Choices
-        options={SUPER_ADMIN_REPORTS.map(([id, name]) => [id, name])}
-        value={key}
-        onChange={setKey}
-      />
+    <View style={styles.reportStack}>
       <View style={styles.card}>
-        <Input label="From (YYYY-MM-DD)" value={from} change={setFrom} />
-        <Input label="To (YYYY-MM-DD)" value={to} change={setTo} />
-        {branches.value?.map(([id, name]) => (
-          <Pressable
-            key={id}
-            accessibilityRole="checkbox"
-            accessibilityState={{ checked: chosen.includes(id) }}
-            onPress={() =>
-              setChosen(
-                chosen.includes(id)
-                  ? chosen.filter((value) => value !== id)
-                  : [...chosen, id]
-              )
-            }
-          >
-            <Text style={styles.value}>
-              {chosen.includes(id) ? '✓ ' : '○ '}
-              {name}
-            </Text>
-          </Pressable>
-        ))}
+        <DirectoryDropdown label="Report type" options={SUPER_ADMIN_REPORTS.map(([id, title]) => [id, title])} value={key}
+          onChange={(value) => { setKey(value); setFilters({}); }} />
+        <DirectoryDropdown label="Date range" options={[['7', 'Last 7 days'], ['30', 'Last 30 days'], ['90', 'Last 90 days'], ['custom', 'Custom range']]}
+          value={range} onChange={(value) => {
+            setRange(value);
+            if (value !== 'custom') { setFrom(reportDate(Number(value) - 1)); setTo(reportDate()); }
+          }} />
+        <View style={styles.branchFilterRow}>
+          <ReportDateField label="From" value={from} onChange={(value) => { setFrom(value); setRange('custom'); }} />
+          <ReportDateField label="To" value={to} onChange={(value) => { setTo(value); setRange('custom'); }} />
+        </View>
+        <View style={styles.directoryDropdown}>
+          <Text style={styles.inputLabel}>Branch</Text>
+          <BranchFilterButton title={chosen.length ? `${chosen.length} selected` : 'All branches'} expanded={showBranches}
+            onPress={() => setShowBranches((value) => !value)} />
+          {showBranches && (
+            <ScrollView nestedScrollEnabled style={styles.branchMenu}>
+              <Pressable style={styles.branchMenuOption} accessibilityRole="checkbox" accessibilityState={{ checked: chosen.length === 0 }}
+                onPress={() => setChosen([])}>
+                {chosen.length ? <Square size={17} /> : <CheckSquare size={17} color={theme.colors.primary} />}
+                <Text style={styles.branchFilterLabel}>All branches</Text>
+              </Pressable>
+              {branches.value?.map((branch) => {
+                const id = idOf(branch);
+                const checked = chosen.includes(id);
+                const disabled = !checked && chosen.length >= 50;
+                return (
+                  <Pressable key={id} style={[styles.branchMenuOption, disabled && styles.disabled]}
+                    accessibilityRole="checkbox" accessibilityState={{ checked, disabled }} disabled={disabled}
+                    onPress={() => setChosen((current) => checked ? current.filter((value) => value !== id) : [...current, id])}>
+                    {checked ? <CheckSquare size={17} color={theme.colors.primary} /> : <Square size={17} />}
+                    <Text style={styles.branchFilterLabel}>{label(branch)}{branch.city ? ` · ${String(branch.city)}` : ''}</Text>
+                  </Pressable>
+                );
+              })}
+              {chosen.length >= 50 && <Text style={styles.muted}>Select up to 50 branches.</Text>}
+            </ScrollView>
+          )}
+        </View>
         {!!branches.error && <Notice error={branches.error} />}
-        <Button
-          title="Apply Report Filters"
-          onPress={() =>
-            setQuery({
-              from: from.trim() || undefined,
-              to: to.trim() || undefined,
-              branchIds: chosen.join(',') || undefined,
-            })
-          }
-        />
+        {(Object.keys(reportFilterLabels) as ReportFilterName[]).map((field) => {
+          const options = SUPER_ADMIN_REPORT_FILTERS[key]?.[field];
+          if (!options) return null;
+          return (
+            <DirectoryDropdown key={field} label={reportFilterLabels[field]} value={filters[field] ?? ''}
+              options={[['', 'All'], ...options.map((value): [string, string] => [
+                value, value.toLowerCase().replace(/_/g, ' ').replace(/^./, (letter) => letter.toUpperCase()),
+              ])]}
+              onChange={(value) => setFilters((current) => ({ ...current, [field]: value || undefined }))} />
+          );
+        })}
+        <Button title={action.busy ? 'Working…' : 'Generate Report'} disabled={action.busy} onPress={generate} />
       </View>
-      <Feedback action={action} />
-      {data.value ? (
-        <>
-          <View style={styles.actions}>
-            {canExport &&
-              (['csv', 'print'] as const).map((format) => (
-                <Button
-                  key={format}
-                  title={format === 'csv' ? 'Download CSV' : 'Print / Save PDF'}
-                  variant="outline"
-                  disabled={action.busy}
-                  onPress={() =>
-                    action.run(async () => {
-                      const exported = (
-                        await req<SuperAdminReport>(
-                          'reports/' + segment(key) + '/export',
-                          'POST',
-                          undefined,
-                          query
-                        )
-                      ).data;
-                      if (!exported) throw new Error('No report was returned.');
-                      const rows = [exported.headers, ...exported.rows];
-                      if (format === 'csv') {
-                        const csv = buildCsvContent(exported.headers, exported.rows);
-                        downloadCsvFile(`${key}-report`, csv);
-                      } else {
-                        const reportTitle =
-                          SUPER_ADMIN_REPORTS.find(([k]) => k === key)?.[1] ?? 'Report';
-                        openPrintableReport(
-                          reportTitle,
-                          `Generated on ${new Date().toLocaleDateString()}`,
-                          exported.headers,
-                          exported.rows
-                        );
-                      }
-                    })
-                  }
-                />
-              ))}
-          </View>
-          {data.value.truncated && (
-            <Text style={styles.error}>
-              The report exceeded the row limit. Narrow the filters.
-            </Text>
-          )}
-          <ScrollView horizontal>
-            <View>
-              {[data.value.headers, ...data.value.rows].map((row, index) => (
-                <View style={styles.actions} key={index}>
-                  {row.map((cell, column) => (
-                    <Text
-                      style={[styles.cell, index === 0 && styles.heading]}
-                      key={column}
-                    >
-                      {String(cell ?? '')}
-                    </Text>
-                  ))}
-                </View>
-              ))}
-            </View>
-          </ScrollView>
-          {data.value.rows.length === 0 && (
+      {action.error && <Notice error={action.feedback} />}
+      {generated && (
+        <View style={styles.card}>
+          <Text style={styles.cardHeaderTitle}>{reportTitle(generated.key)}</Text>
+          <Text style={styles.muted}>{generated.query.from} to {generated.query.to} · {generated.report.rows.length} rows</Text>
+          {filtersChanged && <Text style={styles.muted}>Generate again to apply your new filters.</Text>}
+          {generated.report.truncated && <Text style={styles.error}>Narrow the report filters to export all results.</Text>}
+          {generated.report.rows.length === 0 ? (
             <Text style={styles.muted}>No report rows found.</Text>
+          ) : (
+            <ScrollView horizontal>
+              <View>
+                {[generated.report.headers, ...generated.report.rows].map((row, index) => (
+                  <View style={styles.reportTableRow} key={index}>
+                    {row.map((cell, column) => (
+                      <Text style={[styles.cell, index === 0 && styles.heading]} key={column}>{String(cell ?? '—')}</Text>
+                    ))}
+                  </View>
+                ))}
+              </View>
+            </ScrollView>
           )}
-        </>
-      ) : (
-        <Notice error={data.error} />
+          {user?.permissions.includes('REPORTS:EXPORT') && generated.report.rows.length > 0 && !generated.report.truncated && (
+            <View style={styles.actions}>
+              <Button title="Export CSV" icon={Download} variant="outline" disabled={action.busy || filtersChanged} onPress={() => exportReport('csv')} />
+              <Button title="Export PDF" icon={Printer} variant="outline" disabled={action.busy || filtersChanged} onPress={() => exportReport('pdf')} />
+            </View>
+          )}
+        </View>
       )}
     </View>
   );
@@ -2631,6 +2638,8 @@ const styles = StyleSheet.create({
   },
   inputClearBtn: { position: 'absolute', right: 10, padding: 4 },
   searchRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
+  directoryDropdown: { gap: 4 },
+  directoryPageSize: { flexGrow: 1, minWidth: 115 },
   branchControls: { gap: 8 },
   branchAdd: { alignItems: 'flex-start' },
   branchSearch: { flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 12, minHeight: 46, borderWidth: 1, borderColor: '#d8e0e8', borderRadius: 10, backgroundColor: '#ffffff' },
@@ -2658,8 +2667,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 8,
   },
-  pageSizeRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  pageSizeLabel: { fontSize: 11.5, fontWeight: '700', color: '#6B7280' },
   bulkActionBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -2873,6 +2880,17 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#111827',
   },
+  reportStack: { gap: 12 },
+  reportDateField: { flex: 1, gap: 4 },
+  reportDateButton: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 8,
+    borderWidth: 1, borderColor: '#d8e0e8', borderRadius: 9, paddingHorizontal: 10, backgroundColor: '#fff' },
+  reportCalendarOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16, backgroundColor: '#0f172a80' },
+  reportCalendar: { flexGrow: 0, maxHeight: '90%', width: '100%', maxWidth: 420, borderRadius: 14,
+    backgroundColor: '#fff', padding: 16 },
+  reportCalendarNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginVertical: 12 },
+  reportCalendarGrid: { flexDirection: 'row', flexWrap: 'wrap', marginVertical: 10 },
+  reportCalendarCell: { width: '14.2857%', minHeight: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 6 },
+  reportTableRow: { flexDirection: 'row', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#d8e0e8' },
   cell: { width: 145, padding: 8, backgroundColor: '#fff', color: '#202d40' },
   emptyContainer: {
     alignItems: 'center',

@@ -46,6 +46,11 @@ export function SuperAdminHeader({
   const queryClient = useQueryClient();
   const [modalVisible, setModalVisible] = useState(false);
   const [unreadOnly, setUnreadOnly] = useState(false);
+  const [logoutVisible, setLogoutVisible] = useState(false);
+  const logoutMutation = useMutation({
+    mutationFn: logout,
+    onSettled: () => setLogoutVisible(false),
+  });
 
   // Fetch notifications
   const { data: notifications = [], isLoading } = useQuery<NotificationItem[]>({
@@ -145,14 +150,43 @@ export function SuperAdminHeader({
               )}
             </TouchableOpacity>
 
-            <View style={styles.profileBadge}>
+            <TouchableOpacity
+              style={styles.profileBadge}
+              accessibilityRole="button"
+              accessibilityLabel="Log out"
+              hitSlop={6}
+              onPress={() => setLogoutVisible(true)}
+            >
               <Text style={styles.profileInitial}>
                 {user?.firstName?.charAt(0) || 'A'}
               </Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
+
+      <Modal visible={logoutVisible} transparent animationType="fade"
+        onRequestClose={() => { if (!logoutMutation.isPending) setLogoutVisible(false); }}>
+        <View style={styles.logoutOverlay}>
+          <View style={styles.logoutCard} accessibilityViewIsModal>
+            <View style={styles.modalTitleRow}>
+              <LogOut size={20} color={theme.colors.primary} />
+              <Text style={styles.modalTitle}>Log out?</Text>
+            </View>
+            <Text style={styles.notifMessage}>You’ll return to the sign-in screen.</Text>
+            <View style={styles.logoutActions}>
+              <TouchableOpacity accessibilityRole="button" style={[styles.logoutButton, styles.cancelLogout]}
+                disabled={logoutMutation.isPending} onPress={() => setLogoutVisible(false)}>
+                <Text style={styles.cancelLogoutText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity accessibilityRole="button" style={[styles.logoutButton, styles.confirmLogout]}
+                disabled={logoutMutation.isPending} onPress={() => logoutMutation.mutate()}>
+                <Text style={styles.confirmLogoutText}>{logoutMutation.isPending ? 'Logging out…' : 'Log out'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* Notification Modal Drawer */}
       <Modal
@@ -414,6 +448,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
+  logoutOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#0007' },
+  logoutCard: { width: '100%', maxWidth: 360, backgroundColor: '#fff', borderRadius: 14, padding: 18, gap: 12 },
+  logoutActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 8, marginTop: 4 },
+  logoutButton: { minHeight: 44, paddingHorizontal: 14, justifyContent: 'center', borderRadius: 8 },
+  cancelLogout: { backgroundColor: '#F3F4F6' },
+  confirmLogout: { backgroundColor: theme.colors.primary },
+  cancelLogoutText: { color: '#374151', fontWeight: '700' },
+  confirmLogoutText: { color: '#fff', fontWeight: '700' },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.45)',

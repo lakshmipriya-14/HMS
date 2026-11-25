@@ -1,6 +1,9 @@
 // Universal true file download utility for UYIRINAI Hospital Management System
 // Generates genuine, properly aligned CSV and PDF documents with official hospital branding
 import { Platform } from 'react-native';
+import * as files from 'expo-file-system';
+import * as print from 'expo-print';
+import * as sharing from 'expo-sharing';
 
 /**
  * Escape string for RFC 4180 CSV compliance
@@ -365,3 +368,103 @@ export function downloadFile(options: { filename: string; content: string; mimeT
   return false;
 }
 
+
+type CsvCell = string | number | boolean | null | undefined;
+
+const credentialFields = /password|secret|token|credential|otp|invitationCode|resetCode/i;
+
+function directoryFields(record: Record<string, unknown>, parent = ''): Record<string, CsvCell> {
+  const fields: Record<string, CsvCell> = Object.create(null);
+  for (const [key, value] of Object.entries(record)) {
+    if (credentialFields.test(key)) continue;
+    const path = parent ? `${parent} / ${key}` : key;
+    if (Array.isArray(value)) {
+      fields[path] = value.map((item) =>
+        item && typeof item === 'object' ? JSON.stringify(directoryFields(item)) : String(item ?? '')
+      ).join('\n');
+    } else if (value && typeof value === 'object') {
+      Object.assign(fields, directoryFields(value as Record<string, unknown>, path));
+    } else {
+      fields[path] = value as CsvCell;
+    }
+  }
+  return fields;
+}
+
+export function directoryExportTable(records: Record<string, unknown>[]) {
+  const fields = records.map((record) => directoryFields(record));
+  const keys = [...new Set(fields.flatMap(Object.keys))];
+  const headers = keys.map((field) => field
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/(^|\/\s)([a-z])/g, (_, prefix: string, letter: string) => prefix + letter.toUpperCase()));
+  return { headers, rows: fields.map((record) => keys.map((key) => record[key])) };
+}
+
+export function buildDirectoryPdfHtml(title: string, headers: string[], rows: CsvCell[][], printButton = false) {
+  const entries = rows.map((row, index) => {
+    const fields = row.map((value, column) => value === null || value === undefined || value === '' ? ''
+      : `<tr><th scope="row">${escapeHtml(headers[column])}</th><td>${escapeHtml(value)}</td></tr>`).join('');
+    return `<h2>Record ${index + 1}</h2><table><tbody>${fields}</tbody></table>`;
+  }).join('');
+  return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
+  <style>
+    @page { size: A4; margin: 14mm; }
+    * { box-sizing: border-box; }
+    body { color: #182230; font: 11pt Arial, sans-serif; margin: 0; }
+    h1 { color: #a1121b; font-size: 15pt; margin: 0 0 8px; }
+    h2 { font-size: 11pt; margin: 16px 0 4px; break-after: avoid; }
+    header { border-bottom: 2px solid #a1121b; padding-bottom: 10px; }
+    table { border-collapse: collapse; table-layout: fixed; width: 100%; }
+    th, td { border: 1px solid #dbe2ea; font-size: 9pt; padding: 5px 7px;
+      text-align: left; vertical-align: top; overflow-wrap: anywhere; white-space: pre-wrap; }
+    th { width: 28%; background: #f1f5f9; }
+    footer { margin-top: 16px; font-size: 8pt; color: #475569; }
+    @media screen { body { padding: 24px; margin: auto; max-width: 850px; } }
+    @media print { button { display: none; } }
+  </style></head><body>
+  <header><h1>UYIRINAI MULTISPECIALITY HOSPITAL</h1><strong>${escapeHtml(title)}</strong>
+  <div>${rows.length} records · ${escapeHtml(new Date().toLocaleDateString())}</div>
+  ${printButton ? '<button type="button" onclick="window.print()">Print / Save as PDF</button>' : ''}</header>
+  ${entries}<footer>Confidential · Uyirinai Hospital Management System</footer></body></html>`;
+}
+
+export async function exportDirectoryFile(
+  format: 'csv' | 'pdf', filename: string, title: string, headers: string[], rows: CsvCell[][], preview?: Window
+) {
+  const csv = () => buildCsvContent(headers, rows.map((row) => row.map((value) =>
+    typeof value === 'string' && /^(?:\s*[=+@-]|[\t\r\n])/.test(value) ? "'" + value : value
+  )));
+  if (Platform.OS === 'web') {
+    if (format === 'csv') {
+      if (!downloadCsvFile(filename, csv())) throw new Error('Could not download the CSV.');
+    } else {
+      if (!preview) throw new Error('Could not open the PDF preview.');
+      preview.document.open();
+      preview.document.write(buildDirectoryPdfHtml(title, headers, rows, true));
+      preview.document.close();
+      preview.focus();
+    }
+    return;
+  }
+
+  if (!files.cacheDirectory || !await sharing.isAvailableAsync()) {
+    throw new Error('File sharing is unavailable on this device.');
+  }
+  const directory = files.cacheDirectory + `directory-export-${Date.now()}/`;
+  const path = directory + filename + '.' + format;
+  let generatedUri: string | undefined;
+  await files.makeDirectoryAsync(directory);
+  try {
+    if (format === 'csv') {
+      await files.writeAsStringAsync(path, '\uFEFF' + csv());
+    } else {
+      const result = await print.printToFileAsync({ html: buildDirectoryPdfHtml(title, headers, rows) });
+      generatedUri = result.uri;
+      await files.moveAsync({ from: generatedUri, to: path });
+    }
+    await sharing.shareAsync(path, { mimeType: format === 'pdf' ? 'application/pdf' : 'text/csv' });
+  } finally {
+    await files.deleteAsync(directory, { idempotent: true });
+    if (generatedUri) await files.deleteAsync(generatedUri, { idempotent: true });
+  }
+}
