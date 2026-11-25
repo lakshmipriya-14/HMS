@@ -1,10 +1,13 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
-import { AuthUserDto, SUPER_ADMIN_REPORTS, SuperAdminReport } from '@multispeciality-hms/contracts';
+import { AuthUserDto, SUPER_ADMIN_REPORTS, SUPER_ADMIN_REPORT_FILTERS, SuperAdminReport } from '@multispeciality-hms/contracts';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { ListQuery, SuperAdminService } from './super-admin.service';
 
-export type ReportQuery = { from?: string; to?: string; branchIds?: string };
+export type ReportQuery = {
+  from?: string; to?: string; branchIds?: string;
+  status?: string; role?: string; paymentMethod?: string; action?: string;
+};
 const MAX = 500;
 
 function date(value: string) {
@@ -109,7 +112,7 @@ export class SuperAdminReadService {
   async exportReport(actor: AuthUserDto, key: string, query: ReportQuery) {
     return this.prisma.$transaction(async tx => {
       const report = await this.reportData(tx, actor, key, query);
-      if (report.truncated) throw new ConflictException('Narrow the date or branch filters before exporting.');
+      if (report.truncated) throw new ConflictException('Narrow the report filters before exporting.');
       await this.admin.audit(tx, actor, 'EXPORT', 'REPORT', undefined, { key, rows: report.rows.length });
       return report;
     }, { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead });
@@ -118,6 +121,14 @@ export class SuperAdminReadService {
   private async reportData(tx: Prisma.TransactionClient, actor: AuthUserDto, key: string, query: ReportQuery): Promise<SuperAdminReport> {
     const hospitalId = this.admin.scope(actor), { timestamps, calendar } = range(query);
     if (!SUPER_ADMIN_REPORTS.some(([name]) => key === name)) throw new BadRequestException('Unknown report.');
+    const filters = SUPER_ADMIN_REPORT_FILTERS[key];
+    for (const field of ['status', 'role', 'paymentMethod', 'action'] as const) {
+      const value = query[field];
+      if (value !== undefined && !filters?.[field]?.includes(value)) {
+        throw new BadRequestException(`Invalid ${field} filter for this report.`);
+      }
+    }
+    const isActive = query.status === 'ACTIVE' ? true : query.status === 'INACTIVE' ? false : undefined;
     const ids = query.branchIds?.split(',').filter(Boolean);
     if (ids && (ids.length > 50 || ids.some(id => id.length > 128))) throw new BadRequestException('Invalid branch filter.');
     const branchFilter = ids?.length ? { in: ids } : undefined;
@@ -128,8 +139,8 @@ export class SuperAdminReadService {
     switch (key) {
       case 'branch-performance':
       case 'branch-comparison': {
-        const branches = await tx.branch.findMany({ where: { hospitalId, deletedAt: null, id: branchFilter },
-          select: { id: true, code: true, name: true }, orderBy: { code: 'asc' }, take });
+        const branches = await tx.branch.findMany({ where: { hospitalId, deletedAt: null, id: branchFilter, isActive },
+          select: { id: true, code: true, name: true, city: true, isActive: true }, orderBy: { code: 'asc' }, take });
         const branchId = { in: branches.map(branch => branch.id) };
         const [bookings, admissions, registrations, payments] = await Promise.all([
           tx.appointment.groupBy({ by: ['branchId'], where: { hospitalId, branchId, appointmentDate: calendar }, _count: { _all: true } }),
@@ -137,13 +148,13 @@ export class SuperAdminReadService {
           tx.patient.groupBy({ by: ['registrationBranchId'], where: { hospitalId, registrationBranchId: branchId, createdAt: timestamps, deletedAt: null }, _count: { _all: true } }),
           tx.payment.groupBy({ by: ['branchId'], where: { hospitalId, branchId, createdAt: timestamps }, _sum: { amount: true } }),
         ]);
-        return result(['Code', 'Branch', 'New registrations', 'Appointments', 'Admissions', 'Payments received (INR)'],
-          branches.map(b => [b.code, b.name, registrations.find(r => r.registrationBranchId === b.id)?._count._all ?? 0,
+        return result(['Code', 'Branch', 'City', 'Status', 'New registrations', 'Appointments', 'Admissions', 'Payments received (INR)'],
+          branches.map(b => [b.code, b.name, b.city, b.isActive ? 'Active' : 'Inactive', registrations.find(r => r.registrationBranchId === b.id)?._count._all ?? 0,
             bookings.find(r => r.branchId === b.id)?._count._all ?? 0, admissions.find(r => r.branchId === b.id)?._count._all ?? 0,
             payments.find(r => r.branchId === b.id)?._sum.amount?.toFixed(2) ?? '0.00']));
       }
       case 'branch-creation': {
-        const rows = await tx.branch.findMany({ where: { hospitalId, deletedAt: null, id: branchFilter, createdAt: timestamps },
+        const rows = await tx.branch.findMany({ where: { hospitalId, deletedAt: null, id: branchFilter, isActive, createdAt: timestamps },
           orderBy: { createdAt: 'desc' }, take, select: { code: true, name: true, city: true, licenseNumber: true, createdAt: true, isActive: true } });
         return result(['Code', 'Branch', 'City', 'Licence', 'Created at', 'Status'],
           rows.map(row => [row.code, row.name, row.city, row.licenseNumber, stamp(row.createdAt), row.isActive ? 'Active' : 'Inactive']));
@@ -151,39 +162,52 @@ export class SuperAdminReadService {
       case 'hospital-admins':
       case 'users': {
         const rows = await tx.user.findMany({
-          where: { ...scoped, deletedAt: null, createdAt: timestamps,
-            userRoles: key === 'hospital-admins' ? { some: { role: { name: 'HOSPITAL_ADMIN' } } } : undefined },
+          where: { ...scoped, deletedAt: null, isActive, createdAt: timestamps,
+            userRoles: key === 'hospital-admins' || query.role
+              ? { some: { role: { name: key === 'hospital-admins' ? 'HOSPITAL_ADMIN' : query.role } } } : undefined },
           orderBy: { createdAt: 'desc' }, take,
-          select: { firstName: true, lastName: true, isActive: true, createdAt: true, branch: { select: { name: true } },
+          select: { firstName: true, lastName: true, email: true, phone: true, isActive: true, createdAt: true,
+            lastLoginAt: true, branch: { select: { name: true } },
+            employee: { select: { employeeCode: true, designation: true, department: { select: { name: true } } } },
             userRoles: { select: { role: { select: { name: true } } } } },
         });
-        return result(['Name', 'Roles', 'Branch', 'Status', 'Created at'], rows.map(row =>
-          [row.firstName + ' ' + row.lastName, row.userRoles.map(link => link.role.name).join(', '), row.branch?.name ?? null, row.isActive ? 'Active' : 'Inactive', stamp(row.createdAt)]));
+        return result(['Name', 'Email', 'Phone', 'Roles', 'Branch', 'Department', 'Employee code', 'Designation', 'Status', 'Created at', 'Last sign-in'],
+          rows.map(row => [row.firstName + ' ' + row.lastName, row.email, row.phone,
+            row.userRoles.map(link => link.role.name).join(', '), row.branch?.name ?? null, row.employee?.department?.name ?? null,
+            row.employee?.employeeCode ?? null, row.employee?.designation ?? null,
+            row.isActive ? 'Active' : 'Inactive', stamp(row.createdAt), stamp(row.lastLoginAt)]));
       }
       case 'account-status': {
-        const rows = await tx.user.groupBy({ by: ['isActive'], where: { ...scoped, deletedAt: null, createdAt: timestamps }, _count: { _all: true } });
+        const rows = await tx.user.groupBy({ by: ['isActive'], where: { ...scoped, deletedAt: null, isActive, createdAt: timestamps,
+          userRoles: query.role ? { some: { role: { name: query.role } } } : undefined }, _count: { _all: true } });
         return result(['Status', 'Accounts created in period'], rows.map(row => [row.isActive ? 'Active' : 'Inactive', row._count._all]));
       }
       case 'employees': {
-        const rows = await tx.employee.findMany({ where: { ...scoped, dateOfJoining: timestamps }, take, orderBy: { dateOfJoining: 'desc' },
-          select: { employeeCode: true, designation: true, dateOfJoining: true, status: true, branch: { select: { name: true } }, department: { select: { name: true } } } });
-        return result(['Employee code', 'Designation', 'Branch', 'Department', 'Joined', 'Status'],
-          rows.map(row => [row.employeeCode, row.designation, row.branch?.name ?? null, row.department?.name ?? null, stamp(row.dateOfJoining), row.status]));
+        const rows = await tx.employee.findMany({ where: { ...scoped, dateOfJoining: timestamps, user: { deletedAt: null, isActive } }, take, orderBy: { dateOfJoining: 'desc' },
+          select: { employeeCode: true, designation: true, dateOfJoining: true, status: true,
+            user: { select: { firstName: true, lastName: true, isActive: true } },
+            branch: { select: { name: true } }, department: { select: { name: true } } } });
+        return result(['Employee code', 'Name', 'Designation', 'Branch', 'Department', 'Joined', 'Employment status', 'Account status'],
+          rows.map(row => [row.employeeCode, row.user.firstName + ' ' + row.user.lastName, row.designation,
+            row.branch?.name ?? null, row.department?.name ?? null, stamp(row.dateOfJoining), row.status, row.user.isActive ? 'Active' : 'Inactive']));
       }
       case 'doctors': {
-        const rows = await tx.doctor.findMany({ where: scoped, take, orderBy: { id: 'asc' },
-          select: { specialization: true, department: { select: { name: true } }, branch: { select: { name: true } },
-            employee: { select: { employeeCode: true } }, _count: { select: { appointments: { where: { hospitalId, appointmentDate: calendar } } } } } });
-        return result(['Doctor code', 'Specialization', 'Branch', 'Department', 'Appointments'],
-          rows.map(row => [row.employee.employeeCode, row.specialization, row.branch.name, row.department.name, row._count.appointments]));
+        const rows = await tx.doctor.findMany({ where: { ...scoped, employee: { user: { deletedAt: null, isActive } } }, take, orderBy: { id: 'asc' },
+          select: { specialization: true, licenseNumber: true, department: { select: { name: true } }, branch: { select: { name: true } },
+            employee: { select: { employeeCode: true, user: { select: { firstName: true, lastName: true, isActive: true } } } },
+            _count: { select: { appointments: { where: { hospitalId, appointmentDate: calendar } } } } } });
+        return result(['Doctor code', 'Name', 'Licence', 'Specialization', 'Branch', 'Department', 'Account status', 'Appointments'],
+          rows.map(row => [row.employee.employeeCode, row.employee.user.firstName + ' ' + row.employee.user.lastName,
+            row.licenseNumber, row.specialization, row.branch.name, row.department.name,
+            row.employee.user.isActive ? 'Active' : 'Inactive', row._count.appointments]));
       }
       case 'departments': {
-        const rows = await tx.department.findMany({ where: { ...scoped, deletedAt: null }, take, orderBy: { code: 'asc' },
-          select: { code: true, name: true, branch: { select: { name: true } },
+        const rows = await tx.department.findMany({ where: { ...scoped, deletedAt: null, isActive }, take, orderBy: { code: 'asc' },
+          select: { code: true, name: true, isActive: true, branch: { select: { name: true } },
             wards: { where: { hospitalId }, select: { totalBeds: true, occupiedBeds: true,
               _count: { select: { admissions: { where: { hospitalId, admittedAt: timestamps } } } } } } } });
-        return result(['Code', 'Department', 'Branch', 'Current beds', 'Current occupied', 'Admissions in period'],
-          rows.map(row => [row.code, row.name, row.branch?.name ?? null, row.wards.reduce((n, w) => n + w.totalBeds, 0),
+        return result(['Code', 'Department', 'Branch', 'Status', 'Current beds', 'Current occupied', 'Admissions in period'],
+          rows.map(row => [row.code, row.name, row.branch?.name ?? null, row.isActive ? 'Active' : 'Inactive', row.wards.reduce((n, w) => n + w.totalBeds, 0),
             row.wards.reduce((n, w) => n + w.occupiedBeds, 0), row.wards.reduce((n, w) => n + w._count.admissions, 0)]));
       }
       case 'patient-registration': {
@@ -192,11 +216,11 @@ export class SuperAdminReadService {
         return result(['UHID', 'Registration branch', 'Registered at'], rows.map(row => [row.uhid, row.registrationBranch.name, stamp(row.createdAt)]));
       }
       case 'appointments': {
-        const rows = await tx.appointment.groupBy({ by: ['status'], where: { ...scoped, appointmentDate: calendar }, _count: { _all: true } });
+        const rows = await tx.appointment.groupBy({ by: ['status'], where: { ...scoped, appointmentDate: calendar, status: query.status }, _count: { _all: true } });
         return result(['Appointment status', 'Count'], rows.map(row => [row.status, row._count._all]));
       }
       case 'revenue': {
-        const rows = await tx.payment.groupBy({ by: ['paymentMethod'], where: { ...scoped, createdAt: timestamps }, _sum: { amount: true }, _count: { _all: true } });
+        const rows = await tx.payment.groupBy({ by: ['paymentMethod'], where: { ...scoped, createdAt: timestamps, paymentMethod: query.paymentMethod }, _sum: { amount: true }, _count: { _all: true } });
         return result(['Payment method', 'Receipts', 'Payments received (INR)'],
           rows.map(row => [row.paymentMethod, row._count._all, row._sum.amount?.toFixed(2) ?? '0.00']));
       }
@@ -205,7 +229,7 @@ export class SuperAdminReadService {
         if (!actor.permissions.includes('AUDIT_LOGS:VIEW') && !actor.permissions.includes('AUDIT_LOGS:EXPORT')) {
           throw new BadRequestException('Audit permission is required for this report.');
         }
-        const rows = await tx.auditLog.findMany({ where: { ...scoped, createdAt: timestamps,
+        const rows = await tx.auditLog.findMany({ where: { ...scoped, createdAt: timestamps, action: query.action,
           resource: key === 'organization-activity' ? { in: ['HOSPITAL', 'BRANCH', 'DEPARTMENT', 'ROLE_POLICY', 'MASTER_DATA'] } : undefined },
           take, orderBy: { createdAt: 'desc' }, select: { action: true, resource: true, userEmail: true, createdAt: true } });
         return result(['Action', 'Resource', 'Actor', 'Timestamp'], rows.map(row => [row.action, row.resource, row.userEmail, stamp(row.createdAt)]));

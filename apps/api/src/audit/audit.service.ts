@@ -56,7 +56,7 @@ export class AuditService {
           user: { select: { firstName: true, lastName: true } },
           branch: { select: { name: true } },
         },
-        orderBy: { createdAt: sortOrder === 'asc' ? 'asc' : 'desc' },
+        orderBy: [{ createdAt: sortOrder === 'asc' ? 'asc' : 'desc' }, { id: 'asc' }],
         skip: (page - 1) * limit,
         take: limit,
       }),

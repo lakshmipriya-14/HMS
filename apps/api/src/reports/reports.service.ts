@@ -157,12 +157,14 @@ export class ReportsService {
           id: true,
           name: true,
           code: true,
+          city: true,
           isActive: true,
           _count: {
             select: {
               departments: { where: { deletedAt: null } },
               doctors: true,
               employees: true,
+              registeredPatients: { where: { deletedAt: null } },
             },
           },
         },
@@ -206,10 +208,12 @@ export class ReportsService {
       id: b.id,
       name: b.name,
       code: b.code,
+      city: b.city,
       isActive: b.isActive,
       departmentCount: b._count.departments,
       doctorCount: b._count.doctors,
       employeeCount: b._count.employees,
+      patientCount: b._count.registeredPatients,
     }));
 
     const recentActivities = recentAuditLogs.map(log => ({

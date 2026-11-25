@@ -92,10 +92,12 @@ export interface SuperAdminDashboardDto {
     id: string;
     name: string;
     code: string;
+    city?: string;
     isActive: boolean;
     departmentCount: number;
     doctorCount: number;
     employeeCount: number;
+    patientCount?: number;
   }[];
   recentActivities?: {
     id: string;
