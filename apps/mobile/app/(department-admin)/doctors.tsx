@@ -11,6 +11,7 @@ import {
   Switch,
   Modal,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import {
   UserCheck,
   Search,
@@ -22,11 +23,15 @@ import {
   X,
   CheckCircle2,
   Calendar,
+  Eye,
+  Building2,
+  Award,
 } from 'lucide-react-native';
 import { mobileApiClient } from '../../services/api';
 import { AdminHeader } from '../../components/AdminHeader';
 
 export default function DepartmentDoctorsScreen() {
+  const router = useRouter();
   const [doctors, setDoctors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -47,6 +52,10 @@ export default function DepartmentDoctorsScreen() {
   // Edit Doctor Modal
   const [editModal, setEditModal] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState<any | null>(null);
+
+  // Doctor Profile Detail Modal
+  const [profileModal, setProfileModal] = useState(false);
+  const [profileDoc, setProfileDoc] = useState<any | null>(null);
 
   const [successMsg, setSuccessMsg] = useState('');
 
@@ -75,6 +84,9 @@ export default function DepartmentDoctorsScreen() {
       setDoctors((prev) =>
         prev.map((d) => (d.id === doctor.id ? { ...d, status: newStatus } : d))
       );
+      if (profileDoc && profileDoc.id === doctor.id) {
+        setProfileDoc({ ...profileDoc, status: newStatus });
+      }
     } catch (err) {
       console.error('Failed to toggle doctor status:', err);
     } finally {
@@ -131,6 +143,20 @@ export default function DepartmentDoctorsScreen() {
     }
   };
 
+  const openProfile = (doc: any) => {
+    setProfileDoc(doc);
+    setProfileModal(true);
+  };
+
+  const openEdit = (doc: any) => {
+    setSelectedDoctor(doc);
+    setSpecialization(doc.specialization || '');
+    setDesignation(doc.designation || 'Consultant');
+    setOpdTiming(doc.opdTiming || '09:00 - 13:00');
+    setProfileModal(false);
+    setEditModal(true);
+  };
+
   const filtered = doctors.filter((doc) => {
     if (!search) return true;
     const name = `${doc.user?.firstName || ''} ${doc.user?.lastName || ''}`.toLowerCase();
@@ -140,9 +166,9 @@ export default function DepartmentDoctorsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Doctors" subtitle="Medical Staff Roster & Duty Desk" />
+      <AdminHeader title="Department Doctors" />
 
-      {/* Top Bar with Add Button */}
+      {/* Top Bar with Search, Scheduling link & Add Button */}
       <View style={styles.topBar}>
         <View style={styles.searchBarContainer}>
           <Search size={15} color="#94A3B8" />
@@ -154,6 +180,16 @@ export default function DepartmentDoctorsScreen() {
             style={styles.searchInput}
           />
         </View>
+
+        <TouchableOpacity
+          style={styles.scheduleNavBtn}
+          onPress={() => router.push('/(department-admin)/scheduling')}
+          activeOpacity={0.8}
+        >
+          <Calendar size={15} color="#0F766E" />
+          <Text style={styles.scheduleNavBtnText}>Roster</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.addBtn}
           onPress={() => setAddModal(true)}
@@ -190,7 +226,12 @@ export default function DepartmentDoctorsScreen() {
             const isUpdating = updatingId === doctor.id;
 
             return (
-              <View key={doctor.id} style={styles.card}>
+              <TouchableOpacity
+                key={doctor.id}
+                style={styles.card}
+                onPress={() => openProfile(doctor)}
+                activeOpacity={0.85}
+              >
                 <View style={styles.cardTop}>
                   <View style={styles.avatar}>
                     <Text style={styles.avatarText}>
@@ -231,22 +272,113 @@ export default function DepartmentDoctorsScreen() {
                   </View>
                   <TouchableOpacity
                     style={styles.editIconBtn}
-                    onPress={() => {
-                      setSelectedDoctor(doctor);
-                      setSpecialization(doctor.specialization || '');
-                      setDesignation(doctor.designation || 'Consultant');
-                      setOpdTiming(doctor.opdTiming || '09:00 - 13:00');
-                      setEditModal(true);
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      openEdit(doctor);
                     }}
                   >
                     <Edit2 size={13} color="#0F766E" />
+                    <Text style={styles.editBtnText}>Edit</Text>
                   </TouchableOpacity>
                 </View>
-              </View>
+              </TouchableOpacity>
             );
           })
         )}
       </ScrollView>
+
+      {/* Doctor Profile Detail Modal */}
+      <Modal visible={profileModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Doctor Profile</Text>
+              <TouchableOpacity onPress={() => setProfileModal(false)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            {profileDoc && (
+              <ScrollView style={styles.modalBody}>
+                <View style={styles.profileHeaderBox}>
+                  <View style={styles.profileAvatar}>
+                    <Text style={styles.profileAvatarText}>
+                      {profileDoc.user?.firstName?.[0] || 'D'}
+                      {profileDoc.user?.lastName?.[0] || ''}
+                    </Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.profileName}>
+                      Dr. {profileDoc.user?.firstName} {profileDoc.user?.lastName}
+                    </Text>
+                    <Text style={styles.profileDesignation}>
+                      {profileDoc.designation || 'Consultant'} • {profileDoc.specialization || 'General Medicine'}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.detailSection}>
+                  <Text style={styles.detailSectionTitle}>CONTACT & CREDENTIALS</Text>
+                  <View style={styles.detailRow}>
+                    <Mail size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>{profileDoc.user?.email || 'N/A'}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Phone size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>{profileDoc.user?.phone || 'N/A'}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Award size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>
+                      Qualifications: {profileDoc.qualification || profileDoc.specialization || 'MBBS, MD'}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.detailSection}>
+                  <Text style={styles.detailSectionTitle}>OPERATIONAL DUTY</Text>
+                  <View style={styles.detailRow}>
+                    <Clock size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>
+                      OPD Hours: {profileDoc.opdTiming || '09:00 - 13:00'}
+                    </Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <UserCheck size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>
+                      Status: {profileDoc.status === 'ACTIVE' ? 'Active & Available' : 'Off-Duty'}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.profileActions}>
+                  <TouchableOpacity
+                    style={styles.profileRosterBtn}
+                    onPress={() => {
+                      setProfileModal(false);
+                      router.push({
+                        pathname: '/(department-admin)/scheduling',
+                        params: { doctorId: profileDoc.id },
+                      });
+                    }}
+                  >
+                    <Calendar size={16} color="#0F766E" />
+                    <Text style={styles.profileRosterBtnText}>Manage Weekly Schedule</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.profileEditBtn}
+                    onPress={() => openEdit(profileDoc)}
+                  >
+                    <Edit2 size={16} color="#FFFFFF" />
+                    <Text style={styles.profileEditBtnText}>Edit Doctor Info</Text>
+                  </TouchableOpacity>
+                </View>
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      </Modal>
 
       {/* Add Doctor Modal */}
       <Modal visible={addModal} animationType="slide" transparent>
@@ -259,7 +391,7 @@ export default function DepartmentDoctorsScreen() {
               </TouchableOpacity>
             </View>
 
-            <ScrollView>
+            <ScrollView style={styles.modalBody}>
               <Text style={styles.inputLabel}>First Name *</Text>
               <TextInput style={styles.modalInput} value={firstName} onChangeText={setFirstName} placeholder="First name" />
 
@@ -267,7 +399,7 @@ export default function DepartmentDoctorsScreen() {
               <TextInput style={styles.modalInput} value={lastName} onChangeText={setLastName} placeholder="Last name" />
 
               <Text style={styles.inputLabel}>Email Address *</Text>
-              <TextInput style={styles.modalInput} keyboardType="email-address" value={email} onChangeText={setEmail} placeholder="doctor@hospital.test" />
+              <TextInput style={styles.modalInput} keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} placeholder="doctor@hospital.test" />
 
               <Text style={styles.inputLabel}>Phone Number</Text>
               <TextInput style={styles.modalInput} keyboardType="phone-pad" value={phone} onChangeText={setPhone} placeholder="+91 9876543210" />
@@ -301,7 +433,7 @@ export default function DepartmentDoctorsScreen() {
               </TouchableOpacity>
             </View>
 
-            <ScrollView>
+            <ScrollView style={styles.modalBody}>
               <Text style={styles.inputLabel}>Physician Name</Text>
               <TextInput
                 style={[styles.modalInput, { backgroundColor: '#F1F5F9' }]}
@@ -346,7 +478,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
-    gap: 10,
+    gap: 8,
   },
   searchBarContainer: {
     flex: 1,
@@ -364,6 +496,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#0F172A',
     marginLeft: 6,
+  },
+  scheduleNavBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#CCFBF1',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    gap: 4,
+  },
+  scheduleNavBtnText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#0F766E',
   },
   addBtn: {
     width: 36,
@@ -383,11 +529,11 @@ const styles = StyleSheet.create({
   successBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
     backgroundColor: '#CCFBF1',
     padding: 12,
-    borderRadius: 12,
-    marginBottom: 16,
+    borderRadius: 10,
+    marginBottom: 14,
+    gap: 8,
   },
   successText: {
     fontSize: 12,
@@ -412,15 +558,20 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: '#E2E8F0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+    elevation: 1,
   },
   cardTop: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: '#CCFBF1',
     justifyContent: 'center',
     alignItems: 'center',
@@ -440,19 +591,18 @@ const styles = StyleSheet.create({
     color: '#0F172A',
   },
   docSpec: {
-    fontSize: 11,
-    color: '#0F766E',
-    fontWeight: '600',
+    fontSize: 12,
+    color: '#64748B',
+    fontWeight: '500',
     marginTop: 2,
   },
   switchCol: {
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   statusText: {
-    fontSize: 9,
-    fontWeight: '800',
-    marginTop: 2,
-    textTransform: 'uppercase',
+    fontSize: 10,
+    fontWeight: '700',
+    marginTop: 4,
   },
   cardFooter: {
     flexDirection: 'row',
@@ -474,62 +624,165 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   editIconBtn: {
-    padding: 4,
-    backgroundColor: '#F1F5F9',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     borderRadius: 6,
+    backgroundColor: '#F0FDFA',
+  },
+  editBtnText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#0F766E',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.5)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
   },
   modalBox: {
     backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     maxHeight: '85%',
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
   },
   modalTitle: {
     fontSize: 16,
     fontWeight: '800',
     color: '#0F172A',
   },
-  inputLabel: {
-    fontSize: 11,
+  modalBody: {
+    padding: 16,
+  },
+  profileHeaderBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 18,
+    backgroundColor: '#F8FAFC',
+    padding: 14,
+    borderRadius: 12,
+  },
+  profileAvatar: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: '#0F766E',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+  },
+  profileAvatarText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 18,
+  },
+  profileName: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  profileDesignation: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
+    fontWeight: '600',
+  },
+  detailSection: {
+    marginBottom: 16,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 12,
+    padding: 12,
+  },
+  detailSectionTitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#64748B',
+    letterSpacing: 0.8,
+    marginBottom: 8,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
+  },
+  detailValue: {
+    fontSize: 13,
+    color: '#1E293B',
+    fontWeight: '600',
+  },
+  profileActions: {
+    gap: 10,
+    marginTop: 8,
+    marginBottom: 20,
+  },
+  profileRosterBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#CCFBF1',
+    paddingVertical: 12,
+    borderRadius: 10,
+    gap: 8,
+  },
+  profileRosterBtnText: {
+    fontSize: 13,
     fontWeight: '700',
-    color: '#475569',
+    color: '#0F766E',
+  },
+  profileEditBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0F766E',
+    paddingVertical: 12,
+    borderRadius: 10,
+    gap: 8,
+  },
+  profileEditBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  inputLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#334155',
     marginBottom: 6,
     marginTop: 10,
-    textTransform: 'uppercase',
   },
   modalInput: {
     backgroundColor: '#F8FAFC',
-    borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    borderColor: '#CBD5E1',
+    borderRadius: 8,
+    padding: 10,
     fontSize: 13,
     color: '#0F172A',
   },
   submitBtn: {
     backgroundColor: '#0F766E',
-    borderRadius: 12,
     paddingVertical: 12,
+    borderRadius: 10,
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 24,
   },
   submitBtnText: {
     color: '#FFFFFF',
+    fontSize: 14,
     fontWeight: '800',
-    fontSize: 13,
   },
 });

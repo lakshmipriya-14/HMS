@@ -1,48 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Modal,
+  TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   Building2,
-  UserCheck,
-  Calendar,
-  Users,
-  Clock,
-  HeartPulse,
-  CalendarCheck,
-  ClipboardList,
-  DoorOpen,
-  BedDouble,
-  UserPlus,
-  LogOut,
+  BarChart3,
+  History,
+  Bell,
   FlaskConical,
   Scan,
   Stethoscope,
   Wrench,
   Pill,
-  CalendarOff,
-  BarChart3,
   Layers,
   ShoppingCart,
   Hammer,
-  Bell,
+  CalendarOff,
   CheckSquare,
-  History,
+  Megaphone,
   User,
+  KeyRound,
+  LogOut,
   ChevronRight,
   ShieldCheck,
+  X,
+  CheckCircle2,
 } from 'lucide-react-native';
 import { useAuth } from '../../hooks/useAuth';
 import { AdminHeader } from '../../components/AdminHeader';
+import { mobileApiClient } from '../../services/api';
 
 export default function DepartmentAdminMoreScreen() {
   const router = useRouter();
   const { user, logout } = useAuth();
+
+  // Password Modal
+  const [passwordModal, setPasswordModal] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [passwordMsg, setPasswordMsg] = useState('');
+  const [passwordErr, setPasswordErr] = useState('');
 
   const handleLogout = async () => {
     try {
@@ -53,60 +60,161 @@ export default function DepartmentAdminMoreScreen() {
     }
   };
 
+  const handleChangePassword = async () => {
+    if (!currentPassword || !newPassword) {
+      setPasswordErr('Please fill in both current and new password');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordErr('New passwords do not match');
+      return;
+    }
+    try {
+      setSavingPassword(true);
+      setPasswordErr('');
+      await mobileApiClient.auth.changePassword({
+        currentPassword,
+        newPassword,
+      });
+      setPasswordMsg('Password changed successfully');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setTimeout(() => {
+        setPasswordMsg('');
+        setPasswordModal(false);
+      }, 2000);
+    } catch (err: any) {
+      setPasswordErr(err?.message || 'Failed to update password');
+    } finally {
+      setSavingPassword(false);
+    }
+  };
+
   const sections = [
     {
-      title: 'Department Administration',
+      title: 'DEPARTMENT ADMINISTRATION',
       items: [
-        { title: 'Department Information', desc: 'Code, working hours, capacity & HOD', icon: Building2, route: '/(department-admin)/info', color: '#0F766E' },
-        { title: 'Department Analytics & Reports', desc: 'OPD/IPD census, doctor volume & exports', icon: BarChart3, route: '/(department-admin)/reports', color: '#7C3AED' },
-        { title: 'Audit Trail & Activity History', desc: 'Chronological department operational log', icon: History, route: '/(department-admin)/activity-history', color: '#334155' },
-        { title: 'Department Notices & Alerts', desc: 'Broadcasts, emergency alerts & notices', icon: Bell, route: '/(department-admin)/notifications', color: '#D97706' },
+        {
+          title: 'Department Information',
+          desc: 'Code, working hours, capacity & HOD',
+          icon: Building2,
+          route: '/(department-admin)/info',
+          color: '#0F766E',
+        },
+        {
+          title: 'Department Reports',
+          desc: 'OPD/IPD census, doctor volume & metrics',
+          icon: BarChart3,
+          route: '/(department-admin)/reports',
+          color: '#7C3AED',
+        },
+        {
+          title: 'Activity History',
+          desc: 'Chronological department operational audit log',
+          icon: History,
+          route: '/(department-admin)/activity-history',
+          color: '#334155',
+        },
+        {
+          title: 'Notifications',
+          desc: 'Department notices & system alerts',
+          icon: Bell,
+          route: '/(department-admin)/notifications',
+          color: '#D97706',
+        },
       ],
     },
     {
-      title: 'Staffing & Duty Schedules',
+      title: 'DIAGNOSTIC SERVICES',
       items: [
-        { title: 'Doctor Directory', desc: 'Physicians on duty & availability toggle', icon: UserCheck, route: '/(department-admin)/doctors', color: '#0F766E' },
-        { title: 'Doctor Weekly Scheduling', desc: 'Timetables, shifts & patient quotas', icon: Calendar, route: '/(department-admin)/scheduling', color: '#0284C7' },
-        { title: 'Staff Directory', desc: 'Nurses, technicians & administration', icon: Users, route: '/(department-admin)/staff', color: '#0284C7' },
-        { title: 'Daily Staff Attendance', desc: 'Roll-call, present/absent/late status', icon: Clock, route: '/(department-admin)/attendance', color: '#059669' },
-        { title: 'Staff Leave Approvals', desc: 'Recommend, approve or reject leave requests', icon: CalendarOff, route: '/(department-admin)/leaves', color: '#DC2626' },
+        {
+          title: 'Laboratory Requests',
+          desc: 'Specimens, barcodes & released test results',
+          icon: FlaskConical,
+          route: '/(department-admin)/lab-requests',
+          color: '#0F766E',
+        },
+        {
+          title: 'Radiology & Imaging',
+          desc: 'X-Ray, CT, MRI, Ultrasound orders & findings',
+          icon: Scan,
+          route: '/(department-admin)/radiology-requests',
+          color: '#0284C7',
+        },
+        {
+          title: 'Other Diagnostic Services',
+          desc: 'ECG, Echo, Endoscopy & Special Tests',
+          icon: Stethoscope,
+          route: '/(department-admin)/diagnostics',
+          color: '#7C3AED',
+        },
       ],
     },
     {
-      title: 'Patients & Outpatient Flow',
+      title: 'RESOURCES',
       items: [
-        { title: 'Department Patient Directory', desc: 'Lookup patient files, UHID & history', icon: HeartPulse, route: '/(department-admin)/patients', color: '#0F766E' },
-        { title: 'Appointment Management', desc: 'Check-in, reschedule & queue desk', icon: CalendarCheck, route: '/(department-admin)/appointments', color: '#0284C7' },
-        { title: 'OPD Lounge Queue', desc: 'Live waiting queue & doctor throughput', icon: ClipboardList, route: '/(department-admin)/opd', color: '#7C3AED' },
+        {
+          title: 'Equipment Management',
+          desc: 'Biomedical asset registry & issue reporting',
+          icon: Wrench,
+          route: '/(department-admin)/equipment',
+          color: '#D97706',
+        },
+        {
+          title: 'Department Inventory',
+          desc: 'Consumables, drugs & restock indents',
+          icon: Pill,
+          route: '/(department-admin)/inventory',
+          color: '#059669',
+        },
+        {
+          title: 'Resource Requests',
+          desc: 'Requisition additional beds, staff & equipment',
+          icon: Layers,
+          route: '/(department-admin)/resource-requests',
+          color: '#0284C7',
+        },
+        {
+          title: 'Purchase Requests',
+          desc: 'Procurement indents & cost estimation',
+          icon: ShoppingCart,
+          route: '/(department-admin)/purchase-requests',
+          color: '#7C3AED',
+        },
+        {
+          title: 'Maintenance Requests',
+          desc: 'Facility electrical, plumbing & HVAC tickets',
+          icon: Hammer,
+          route: '/(department-admin)/maintenance-requests',
+          color: '#D97706',
+        },
       ],
     },
     {
-      title: 'Inpatient Wards & Beds',
+      title: 'ADMINISTRATIVE WORKFLOWS',
       items: [
-        { title: 'IPD Inpatients Census', desc: 'Admitted patients, bed numbers & stay duration', icon: DoorOpen, route: '/(department-admin)/ipd', color: '#7C3AED' },
-        { title: 'Wards & Bed Map', desc: 'Bed availability, occupied status & maintenance', icon: BedDouble, route: '/(department-admin)/wards-beds', color: '#D97706' },
-        { title: 'Admission Monitoring', desc: 'Incoming patient admissions & bed assignment', icon: UserPlus, route: '/(department-admin)/admissions', color: '#059669' },
-        { title: 'Discharge Monitoring', desc: 'Discharge clearance & bed turnover tracking', icon: LogOut, route: '/(department-admin)/discharges', color: '#DC2626' },
-      ],
-    },
-    {
-      title: 'Diagnostics & Inventory',
-      items: [
-        { title: 'Laboratory Test Requests', desc: 'Specimens, barcodes & released test results', icon: FlaskConical, route: '/(department-admin)/lab-requests', color: '#0F766E' },
-        { title: 'Radiology & Imaging Scans', desc: 'X-Ray, CT, MRI, Ultrasound orders & reports', icon: Scan, route: '/(department-admin)/radiology-requests', color: '#0284C7' },
-        { title: 'Other Diagnostic Services', desc: 'ECG, Echo, Endoscopy & Special Tests', icon: Stethoscope, route: '/(department-admin)/diagnostics', color: '#7C3AED' },
-        { title: 'Supplies & Sub-Stock', desc: 'Consumables, emergency drugs & restock orders', icon: Pill, route: '/(department-admin)/inventory', color: '#059669' },
-      ],
-    },
-    {
-      title: 'Requisitions, Maintenance & Hub',
-      items: [
-        { title: 'Biomedical Equipment', desc: 'Asset registry & breakdown reporting', icon: Wrench, route: '/(department-admin)/equipment', color: '#D97706' },
-        { title: 'Resource Requisitions', desc: 'Request additional beds, staff & equipment', icon: Layers, route: '/(department-admin)/resource-requests', color: '#0284C7' },
-        { title: 'Purchase Indents', desc: 'Procurement requisitions & cost estimation', icon: ShoppingCart, route: '/(department-admin)/purchase-requests', color: '#7C3AED' },
-        { title: 'Facility Maintenance Tickets', desc: 'Electrical, plumbing, HVAC & civil work orders', icon: Hammer, route: '/(department-admin)/maintenance-requests', color: '#D97706' },
-        { title: 'Central Approvals Hub', desc: 'Unified tracking of all department requests', icon: CheckSquare, route: '/(department-admin)/approvals-hub', color: '#0F766E' },
+        {
+          title: 'Leave Management',
+          desc: 'Staff leave review, recommendations & approvals',
+          icon: CalendarOff,
+          route: '/(department-admin)/leaves',
+          color: '#DC2626',
+        },
+        {
+          title: 'Request & Approval Tracking',
+          desc: 'Centralized tracking of all department requests',
+          icon: CheckSquare,
+          route: '/(department-admin)/approvals-hub',
+          color: '#0F766E',
+        },
+        {
+          title: 'Department Announcements',
+          desc: 'Broadcast memos & administrative notices',
+          icon: Megaphone,
+          route: '/(department-admin)/notifications',
+          color: '#0284C7',
+        },
       ],
     },
   ];
@@ -138,28 +246,30 @@ export default function DepartmentAdminMoreScreen() {
           <ChevronRight size={18} color="#94A3B8" />
         </TouchableOpacity>
 
-        {/* Categorized Sections */}
-        {sections.map((sec, sidx) => (
-          <View key={sidx} style={styles.sectionWrapper}>
+        {/* 4 Grouped Sections */}
+        {sections.map((sec, idx) => (
+          <View key={idx} style={styles.sectionBox}>
             <Text style={styles.sectionHeader}>{sec.title}</Text>
-            <View style={styles.menuBox}>
-              {sec.items.map((item, iidx) => {
-                const Icon = item.icon;
+            <View style={styles.cardGroup}>
+              {sec.items.map((item, itemIdx) => {
+                const IconComponent = item.icon;
+                const isLast = itemIdx === sec.items.length - 1;
+
                 return (
                   <TouchableOpacity
-                    key={iidx}
-                    style={[styles.menuItem, iidx > 0 && styles.itemBorder]}
+                    key={itemIdx}
+                    style={[styles.menuItem, isLast && styles.menuItemLast]}
                     onPress={() => router.push(item.route as any)}
                     activeOpacity={0.7}
                   >
-                    <View style={[styles.menuIconBox, { backgroundColor: `${item.color}15` }]}>
-                      <Icon size={18} color={item.color} />
+                    <View style={[styles.iconBox, { backgroundColor: `${item.color}15` }]}>
+                      <IconComponent size={20} color={item.color} />
                     </View>
                     <View style={styles.menuTextCol}>
                       <Text style={styles.menuTitle}>{item.title}</Text>
                       <Text style={styles.menuDesc}>{item.desc}</Text>
                     </View>
-                    <ChevronRight size={15} color="#CBD5E1" />
+                    <ChevronRight size={16} color="#CBD5E1" />
                   </TouchableOpacity>
                 );
               })}
@@ -167,12 +277,130 @@ export default function DepartmentAdminMoreScreen() {
           </View>
         ))}
 
-        {/* Sign Out Button */}
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout} activeOpacity={0.8}>
-          <LogOut size={16} color="#DC2626" />
-          <Text style={styles.logoutText}>Sign Out of Department Admin</Text>
-        </TouchableOpacity>
+        {/* ACCOUNT Section */}
+        <View style={styles.sectionBox}>
+          <Text style={styles.sectionHeader}>ACCOUNT</Text>
+          <View style={styles.cardGroup}>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => router.push('/(department-admin)/profile')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.iconBox, { backgroundColor: '#0F766E15' }]}>
+                <User size={20} color="#0F766E" />
+              </View>
+              <View style={styles.menuTextCol}>
+                <Text style={styles.menuTitle}>Admin Profile</Text>
+                <Text style={styles.menuDesc}>View account details & contact information</Text>
+              </View>
+              <ChevronRight size={16} color="#CBD5E1" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => setPasswordModal(true)}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.iconBox, { backgroundColor: '#7C3AED15' }]}>
+                <KeyRound size={20} color="#7C3AED" />
+              </View>
+              <View style={styles.menuTextCol}>
+                <Text style={styles.menuTitle}>Change Password</Text>
+                <Text style={styles.menuDesc}>Update security credentials</Text>
+              </View>
+              <ChevronRight size={16} color="#CBD5E1" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.menuItem, styles.menuItemLast]}
+              onPress={handleLogout}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.iconBox, { backgroundColor: '#DC262615' }]}>
+                <LogOut size={20} color="#DC2626" />
+              </View>
+              <View style={styles.menuTextCol}>
+                <Text style={[styles.menuTitle, { color: '#DC2626' }]}>Sign Out</Text>
+                <Text style={styles.menuDesc}>End active mobile session</Text>
+              </View>
+              <ChevronRight size={16} color="#CBD5E1" />
+            </TouchableOpacity>
+          </View>
+        </View>
       </ScrollView>
+
+      {/* Change Password Modal */}
+      <Modal visible={passwordModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Change Account Password</Text>
+              <TouchableOpacity onPress={() => setPasswordModal(false)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.modalBody}>
+              {passwordMsg ? (
+                <View style={styles.successToast}>
+                  <CheckCircle2 size={16} color="#059669" />
+                  <Text style={styles.successToastText}>{passwordMsg}</Text>
+                </View>
+              ) : null}
+
+              {passwordErr ? <Text style={styles.errorText}>{passwordErr}</Text> : null}
+
+              <Text style={styles.inputLabel}>Current Password *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter current password"
+                secureTextEntry
+                value={currentPassword}
+                onChangeText={setCurrentPassword}
+              />
+
+              <Text style={styles.inputLabel}>New Password *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="At least 8 characters"
+                secureTextEntry
+                value={newPassword}
+                onChangeText={setNewPassword}
+              />
+
+              <Text style={styles.inputLabel}>Confirm New Password *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Re-enter new password"
+                secureTextEntry
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+              />
+            </View>
+
+            <View style={styles.modalFooter}>
+              <TouchableOpacity
+                style={styles.cancelBtn}
+                onPress={() => setPasswordModal(false)}
+                disabled={savingPassword}
+              >
+                <Text style={styles.cancelBtnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.submitBtn}
+                onPress={handleChangePassword}
+                disabled={savingPassword}
+              >
+                {savingPassword ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.submitBtnText}>Update Password</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -187,7 +415,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 48,
+    paddingBottom: 40,
   },
   userCard: {
     flexDirection: 'row',
@@ -199,24 +427,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E2E8F0',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 2,
-    elevation: 1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   userAvatar: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#0F766E',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
   },
   userAvatarText: {
-    fontSize: 18,
-    fontWeight: '900',
-    color: '#0F766E',
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 16,
   },
   userInfo: {
     flex: 1,
@@ -227,58 +455,64 @@ const styles = StyleSheet.create({
     color: '#0F172A',
   },
   userRole: {
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: 11,
     color: '#0F766E',
-    marginTop: 2,
+    fontWeight: '700',
     letterSpacing: 0.5,
+    marginTop: 2,
   },
   userEmail: {
-    fontSize: 11,
+    fontSize: 12,
     color: '#64748B',
     marginTop: 2,
   },
-  sectionWrapper: {
+  sectionBox: {
     marginBottom: 20,
   },
   sectionHeader: {
     fontSize: 11,
     fontWeight: '800',
     color: '#64748B',
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
+    letterSpacing: 0.8,
     marginBottom: 8,
     marginLeft: 4,
   },
-  menuBox: {
+  cardGroup: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     borderWidth: 1,
     borderColor: '#E2E8F0',
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+    elevation: 1,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 13,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
   },
-  itemBorder: {
-    borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
+  menuItemLast: {
+    borderBottomWidth: 0,
   },
-  menuIconBox: {
-    width: 36,
-    height: 36,
+  iconBox: {
+    width: 38,
+    height: 38,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 14,
   },
   menuTextCol: {
     flex: 1,
   },
   menuTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '700',
     color: '#0F172A',
   },
@@ -287,19 +521,100 @@ const styles = StyleSheet.create({
     color: '#64748B',
     marginTop: 2,
   },
-  logoutButton: {
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '85%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  modalBody: {
+    padding: 16,
+  },
+  inputLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#334155',
+    marginBottom: 6,
+    marginTop: 10,
+  },
+  input: {
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 13,
+    color: '#0F172A',
+  },
+  errorText: {
+    fontSize: 12,
+    color: '#DC2626',
+    marginBottom: 8,
+    fontWeight: '600',
+  },
+  successToast: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FEE2E2',
-    paddingVertical: 14,
-    borderRadius: 14,
-    marginTop: 10,
+    backgroundColor: '#D1FAE5',
+    padding: 10,
+    borderRadius: 8,
     gap: 8,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
   },
-  logoutText: {
+  successToastText: {
+    fontSize: 12,
+    color: '#065F46',
+    fontWeight: '600',
+  },
+  modalFooter: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E2E8F0',
+    gap: 12,
+  },
+  cancelBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  cancelBtnText: {
     fontSize: 13,
-    fontWeight: '800',
-    color: '#DC2626',
+    fontWeight: '600',
+    color: '#64748B',
+  },
+  submitBtn: {
+    backgroundColor: '#0F766E',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  submitBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });
