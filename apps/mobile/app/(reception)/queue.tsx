@@ -25,111 +25,35 @@ import {
 interface QueueToken {
   id: string;
   token: string;
-  tokenNumber: number;
   patientName: string;
   uhid: string;
   doctorName: string;
   department: string;
-  roomNumber: string;
-  estimatedWait: string;
-  status: 'IN_CONSULTATION' | 'WAITING' | 'CHECKED_IN' | 'COMPLETED';
-  isWalkIn: boolean;
+  appointmentTime: string;
+  status: string;
 }
 
-const INITIAL_QUEUE: QueueToken[] = [
-  {
-    id: 'q-1',
-    token: 'A-01',
-    tokenNumber: 1,
-    patientName: 'Kannan K.',
-    uhid: 'ALM-2026-0042',
-    doctorName: 'Dr. K. Senthil Nathan',
-    department: 'Cardiology',
-    roomNumber: 'Room 102',
-    estimatedWait: 'Now with Doctor',
-    status: 'IN_CONSULTATION',
-    isWalkIn: false,
-  },
-  {
-    id: 'q-2',
-    token: 'A-02',
-    tokenNumber: 2,
-    patientName: 'Meena R.',
-    uhid: 'ALM-2026-0089',
-    doctorName: 'Dr. K. Senthil Nathan',
-    department: 'Cardiology',
-    roomNumber: 'Room 102',
-    estimatedWait: 'Next (5 mins)',
-    status: 'CHECKED_IN',
-    isWalkIn: false,
-  },
-  {
-    id: 'q-3',
-    token: 'A-03',
-    tokenNumber: 3,
-    patientName: 'Murugan P.',
-    uhid: 'ALM-2026-0150',
-    doctorName: 'Dr. K. Senthil Nathan',
-    department: 'Cardiology',
-    roomNumber: 'Room 102',
-    estimatedWait: '18 mins',
-    status: 'WAITING',
-    isWalkIn: true,
-  },
-  {
-    id: 'q-4',
-    token: 'B-01',
-    tokenNumber: 1,
-    patientName: 'Vijay S.',
-    uhid: 'ALM-2026-0114',
-    doctorName: 'Dr. V. Rajesh',
-    department: 'Orthopedics',
-    roomNumber: 'Room 105',
-    estimatedWait: 'Now with Doctor',
-    status: 'IN_CONSULTATION',
-    isWalkIn: false,
-  },
-  {
-    id: 'q-5',
-    token: 'B-02',
-    tokenNumber: 2,
-    patientName: 'Deepa T.',
-    uhid: 'ALM-2026-0201',
-    doctorName: 'Dr. V. Rajesh',
-    department: 'Orthopedics',
-    roomNumber: 'Room 105',
-    estimatedWait: '12 mins',
-    status: 'WAITING',
-    isWalkIn: false,
-  },
-  {
-    id: 'q-6',
-    token: 'C-01',
-    tokenNumber: 1,
-    patientName: 'Arun Kumar',
-    uhid: 'ALM-2026-0255',
-    doctorName: 'Dr. Rajesh Kumar',
-    department: 'General Medicine',
-    roomNumber: 'Room 108',
-    estimatedWait: 'Now with Doctor',
-    status: 'IN_CONSULTATION',
-    isWalkIn: true,
-  },
-];
-
 export default function ReceptionQueueScreen() {
-  const [tokens, setTokens] = useState<QueueToken[]>(INITIAL_QUEUE);
-  const [selectedDept, setSelectedDept] = useState<'ALL' | 'Cardiology' | 'Orthopedics' | 'General Medicine'>('ALL');
+  const [tokens, setTokens] = useState<QueueToken[]>([]);
+  const [selectedDept, setSelectedDept] = useState('ALL');
   const [refreshing, setRefreshing] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   const loadQueue = async () => {
+    setFailed(false);
     try {
-      const res = await mobileApiClient.reception.getTodayQueue();
-      if (res?.data && res.data.length > 0) {
-        // Map backend queue items
-      }
+      const response = await mobileApiClient.reception.getTodayQueue();
+      setTokens((response.data ?? []).map((row: any) => {
+        const doctor = row.doctor.employee.user;
+        return {
+          id: row.id, token: String(row.tokenNumber), patientName: row.patient.firstName + ' ' + row.patient.lastName,
+          uhid: row.patient.uhid, doctorName: doctor.firstName + ' ' + doctor.lastName,
+          department: row.department.name, appointmentTime: row.appointmentTime, status: row.status,
+        };
+      }));
     } catch {
-      // Keep local data
+      setTokens([]);
+      setFailed(true);
     } finally {
       setRefreshing(false);
     }
@@ -144,13 +68,6 @@ export default function ReceptionQueueScreen() {
     loadQueue();
   };
 
-  const handleCallToken = (token: QueueToken) => {
-    Alert.alert(
-      'Announcement Dispatched',
-      `Token ${token.token} (${token.patientName}) called for ${token.doctorName} in ${token.roomNumber}. Display terminal chime broadcasted.`
-    );
-  };
-
   const filteredTokens = tokens.filter((t) => {
     if (selectedDept !== 'ALL' && t.department !== selectedDept) return false;
     return true;
@@ -161,7 +78,7 @@ export default function ReceptionQueueScreen() {
       {/* Department Filter Strip */}
       <View style={styles.deptFilterRow}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {(['ALL', 'Cardiology', 'Orthopedics', 'General Medicine'] as const).map((d) => (
+          {['ALL', ...new Set(tokens.map((row) => row.department))].map((d) => (
             <TouchableOpacity
               key={d}
               style={[styles.deptChip, selectedDept === d && styles.deptChipActive]}
@@ -178,10 +95,11 @@ export default function ReceptionQueueScreen() {
       {/* Queue Tokens List */}
       <FlatList
         data={filteredTokens}
+        ListEmptyComponent={<Text onPress={failed ? onRefresh : undefined}>{failed ? 'Could not load the queue. Tap to retry.' : 'No appointments in this queue.'}</Text>}
         keyExtractor={(item) => item.id}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#0284C7']} />}
         renderItem={({ item }) => {
-          const isServing = item.status === 'IN_CONSULTATION';
+          const isServing = item.status === 'IN_PROGRESS';
           const isCheckedIn = item.status === 'CHECKED_IN';
 
           return (
@@ -195,13 +113,13 @@ export default function ReceptionQueueScreen() {
 
                 <View style={styles.infoCol}>
                   <Text style={styles.pName}>{item.patientName}</Text>
-                  <Text style={styles.pUhid}>{item.uhid} {item.isWalkIn ? '• Walk-In' : '• Scheduled'}</Text>
-                  <Text style={styles.docText}>{item.doctorName} ({item.roomNumber})</Text>
+                  <Text style={styles.pUhid}>{item.uhid}</Text>
+                  <Text style={styles.docText}>{item.doctorName}</Text>
                 </View>
 
                 <View style={[styles.statusBadge, isServing ? styles.badgeServing : isCheckedIn ? styles.badgeCheckedIn : styles.badgeWait]}>
                   <Text style={[styles.statusText, isServing ? styles.textServing : isCheckedIn ? styles.textCheckedIn : styles.textWait]}>
-                    {isServing ? 'Serving Now' : isCheckedIn ? 'Ready' : 'In Queue'}
+                    {isServing ? 'Serving Now' : isCheckedIn ? 'Ready' : item.status.replace(/_/g, ' ')}
                   </Text>
                 </View>
               </View>
@@ -209,13 +127,10 @@ export default function ReceptionQueueScreen() {
               <View style={styles.cardFooter}>
                 <View style={styles.waitBox}>
                   <Clock size={12} color="#64748B" />
-                  <Text style={styles.waitText}>Wait: {item.estimatedWait}</Text>
+                  <Text style={styles.waitText}>Scheduled time: {item.appointmentTime}</Text>
                 </View>
 
-                <TouchableOpacity style={styles.callBtn} onPress={() => handleCallToken(item)}>
-                  <BellRing size={13} color="#0284C7" />
-                  <Text style={styles.callBtnText}>Chime / Call Patient</Text>
-                </TouchableOpacity>
+
               </View>
             </View>
           );

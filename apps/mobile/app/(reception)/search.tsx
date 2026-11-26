@@ -39,28 +39,10 @@ export default function ReceptionSearchScreen() {
     setHasSearched(true);
     try {
       const res = await mobileApiClient.reception.searchPatients(query.trim());
-      if (res?.data && res.data.length > 0) {
-        setResults(res.data);
-      } else {
-        // Fallback realistic search results matching seed
-        const queryLower = query.toLowerCase();
-        const demoPool = [
-          { id: 'pat-001', uhid: 'ALM-2026-0042', firstName: 'Muthuvel', lastName: 'Kuppusamy', phone: '9840123456', gender: 'MALE', dateOfBirth: '1968-04-12', bloodGroup: 'B_POSITIVE' },
-          { id: 'pat-002', uhid: 'ALM-2026-0089', firstName: 'Meenakshi', lastName: 'Ramasamy', phone: '9789123456', gender: 'FEMALE', dateOfBirth: '1975-09-20', bloodGroup: 'O_POSITIVE' },
-          { id: 'pat-003', uhid: 'ALM-2026-0114', firstName: 'Saravanan', lastName: 'Rajendran', phone: '9444123456', gender: 'MALE', dateOfBirth: '1992-11-05', bloodGroup: 'A_POSITIVE' },
-          { id: 'pat-004', uhid: 'ALM-2026-0201', firstName: 'Anandha', lastName: 'Krishnan', phone: '9840987654', gender: 'MALE', dateOfBirth: '1982-01-10', bloodGroup: 'A_POSITIVE' },
-        ];
-        const matched = demoPool.filter(
-          (p) =>
-            p.firstName.toLowerCase().includes(queryLower) ||
-            p.lastName.toLowerCase().includes(queryLower) ||
-            p.uhid.toLowerCase().includes(queryLower) ||
-            p.phone.includes(query)
-        );
-        setResults(matched);
-      }
+      setResults(Array.isArray(res.data) ? res.data : []);
     } catch {
       setResults([]);
+      Alert.alert('Patient search failed', 'Check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -73,7 +55,7 @@ export default function ReceptionSearchScreen() {
         <Search size={18} color="#0284C7" />
         <TextInput
           style={styles.input}
-          placeholder="Enter UHID (e.g. ALM-2026-0042), Name, or Mobile..."
+          placeholder="Search by UHID, name, or phone"
           placeholderTextColor="#94A3B8"
           value={query}
           onChangeText={setQuery}

@@ -1,10 +1,36 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthUserDto } from '@multispeciality-hms/contracts';
 import { resolveOperationalScope } from '../common/utils/operational-scope';
 
 @Injectable()
-export class NotificationsService {
+export class NotificationsService implements OnModuleInit, OnModuleDestroy {
+  private readonly logger = new Logger(NotificationsService.name);
+  private reminderTimer?: ReturnType<typeof setInterval>;
+  private runningReminders = false;
+
+  onModuleInit() {
+    void this.enqueueReminders();
+    this.reminderTimer = setInterval(() => void this.enqueueReminders(), 5 * 60_000);
+    this.reminderTimer.unref();
+  }
+
+  onModuleDestroy() {
+    clearInterval(this.reminderTimer);
+  }
+
+  private async enqueueReminders() {
+    if (this.runningReminders) return;
+    this.runningReminders = true;
+    try {
+      await this.prisma.$queryRaw`SELECT "uyirinai_enqueue_patient_reminders"()`;
+    } catch (error) {
+      this.logger.warn('Unable to enqueue appointment reminders. Check database connectivity and migration status.');
+    } finally {
+      this.runningReminders = false;
+    }
+  }
+
   constructor(private prisma: PrismaService) {}
 
   async getUserNotifications(userId: string) {

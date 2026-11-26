@@ -8,6 +8,9 @@ import {
   TextInput,
   Image,
 } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '../../hooks/useAuth';
+import { apiRequest } from '../../services/api';
 import {
   FileText,
   AlertCircle,
@@ -34,39 +37,23 @@ export interface ReleasedReport {
   imageUrl: string;
 }
 
-const FALLBACK_REPORTS: ReleasedReport[] = [
-  {
-    id: 'rep-1',
-    orderNumber: 'RAD-2026-0099',
-    uhid: 'KZN-2026-0001',
-    patientName: 'Ramasamy Kuppusamy',
-    scanName: 'Digital X-Ray Chest PA View',
-    modality: 'X-RAY',
-    radiologistName: 'Dr. Vignesh Sundaram, MD RD',
-    releasedAt: 'Today, 10:45 AM',
-    criticalAlert: false,
-    findings: 'Both lung fields are clear. No active infiltration, consolidation or pleural effusion noted. Heart size and vascular pedicle are normal. Costophrenic angles are acute.',
-    impression: 'Normal Radiographic Chest Study. No acute cardiopulmonary abnormality detected.',
-    imageUrl: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'rep-2',
-    orderNumber: 'RAD-2026-0095',
-    uhid: 'KZN-2026-0018',
-    patientName: 'Meenakshi Sundaram',
-    scanName: 'CT Brain Plain Spiral',
-    modality: 'CT',
-    radiologistName: 'Dr. Vignesh Sundaram, MD RD',
-    releasedAt: 'Yesterday, 03:15 PM',
-    criticalAlert: true,
-    findings: 'Acute hyperdense lesion noted in the left basogangliar region measuring 3.2 x 2.4 cm with surrounding vasogenic edema and 4mm midline shift to the right.',
-    impression: 'CRITICAL: Acute Left Basal Ganglia Intraparenchymal Hemorrhage with significant mass effect. Immediate neurosurgical consultation advised.',
-    imageUrl: 'https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&w=600&q=80',
-  },
-];
-
 export default function RadiologyReportsScreen() {
-  const [reports, setReports] = useState<ReleasedReport[]>(FALLBACK_REPORTS);
+  const { user } = useAuth();
+  const query = useQuery<ReleasedReport[]>({
+    queryKey: ['released-radiology', user?.id], enabled: !!user,
+    queryFn: async () => {
+      const rows = (await apiRequest<any[]>('/radiology/worklist')).data;
+      return rows.filter((row) => row.status === 'REPORT_RELEASED' && row.reportReleasedAt).map((row) => ({
+        id: row.id, orderNumber: row.orderNumber, uhid: row.patient.uhid,
+        patientName: row.patient.firstName + ' ' + row.patient.lastName,
+        scanName: row.test.name, modality: row.test.modality,
+        radiologistName: row.releasedBy ? row.releasedBy.firstName + ' ' + row.releasedBy.lastName : 'Unavailable',
+        releasedAt: new Date(row.reportReleasedAt).toLocaleString(), criticalAlert: row.criticalAlert,
+        findings: row.findings, impression: row.impression, imageUrl: row.imageUrl,
+      }));
+    },
+  });
+  const reports = query.data ?? [];
   const [search, setSearch] = useState('');
 
   const filtered = reports.filter(
@@ -97,6 +84,9 @@ export default function RadiologyReportsScreen() {
       </View>
 
       <ScrollView style={styles.scroll}>
+        {query.isPending && <Text>Loading released reports…</Text>}
+        {query.isError && <Text accessibilityRole="alert" onPress={() => void query.refetch()}>{query.error.message} Tap to retry.</Text>}
+        {query.isSuccess && filtered.length === 0 && <Text>No matching released reports.</Text>}
         {filtered.map((rep) => (
           <View key={rep.id} style={styles.card}>
             <View style={styles.cardTop}>
@@ -118,14 +108,6 @@ export default function RadiologyReportsScreen() {
             <Text style={styles.patientMeta}>
               Patient: <Text style={styles.boldText}>{rep.patientName}</Text> ({rep.uhid})
             </Text>
-
-            {/* Simulated PACS Thumbnail */}
-            <View style={styles.pacsPreviewBox}>
-              <View style={styles.pacsBar}>
-                <Eye size={14} color="#0F766E" />
-                <Text style={styles.pacsBarText}>PACS DICOM Preview (Verified Series)</Text>
-              </View>
-            </View>
 
             {/* Findings */}
             <View style={styles.textBox}>

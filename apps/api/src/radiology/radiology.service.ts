@@ -66,6 +66,7 @@ export class RadiologyService {
           },
         },
         test: true,
+        releasedBy: { select: { firstName: true, lastName: true } },
       },
     });
     if (!isDoctor) return rows;
@@ -73,9 +74,10 @@ export class RadiologyService {
       ? row : { ...row, findings: null, impression: null, imageUrl: null, criticalAlert: false });
   }
 
-  async uploadReport(orderId: string, dto: UploadRadiologyReportDto, radiologistUserId: string) {
+  async uploadReport(orderId: string, dto: UploadRadiologyReportDto, actor: AuthUserDto) {
+    const { hospitalId, branchId } = resolveOperationalScope(actor);
     return this.prisma.radiologyOrder.update({
-      where: { id: orderId },
+      where: { id: orderId, hospitalId, branchId },
       data: {
         status: 'REPORT_RELEASED',
         findings: dto.findings,
@@ -83,7 +85,7 @@ export class RadiologyService {
         criticalAlert: dto.criticalAlert,
         imageUrl: dto.imageUrl,
         reportReleasedAt: new Date(),
-        releasedByUserId: radiologistUserId,
+        releasedByUserId: actor.id,
       },
       include: { test: true, patient: true },
     });

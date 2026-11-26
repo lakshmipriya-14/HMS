@@ -34,14 +34,16 @@ export function appointmentReadScope(actor: AuthUserDto, requestedBranchId?: str
 export class AppointmentsService {
   constructor(private prisma: PrismaService) {}
 
-  private async generateAppointmentNumber(): Promise<string> {
+  private async generateAppointmentNumber(tx: Prisma.TransactionClient): Promise<string> {
     const year = new Date().getFullYear();
-    const count = await this.prisma.appointment.count();
+    const count = await tx.appointment.count();
     const sequence = (count + 1).toString().padStart(4, '0');
     return `APT-${year}-${sequence}`;
   }
 
   async create(dto: CreateAppointmentDto, actor: AuthUserDto) {
+    if (actor.role === Role.PATIENT) throw new ForbiddenException('Send an appointment request to Reception.');
+
     const scope = resolveOperationalScope(actor, dto.branchId, dto.departmentId);
     const doctor = await this.prisma.doctor.findUnique({
       where: { id: dto.doctorId, ...scope, employee: { user: { isActive: true, deletedAt: null } } },
@@ -49,78 +51,113 @@ export class AppointmentsService {
     });
     if (!doctor) throw new NotFoundException('Doctor not found');
 
+    if (dto.requestId && (actor.role !== Role.RECEPTIONIST ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(dto.requestId))) {
+      throw new BadRequestException('Invalid Reception appointment request.');
+    }
+    const requestScope = { id: dto.requestId, hospitalId: doctor.hospitalId, branchId: doctor.branchId,
+      patientId: dto.patientId, status: 'PATIENT_LINKED' as const };
+    if (dto.requestId && !await this.prisma.appointmentRequest.findFirst({ where: requestScope, select: { id: true } })) {
+      throw new NotFoundException('Pending appointment request not found in this branch.');
+    }
     const patient = await this.prisma.patient.findFirst({
       where: { id: dto.patientId, hospitalId: scope.hospitalId, deletedAt: null,
-        OR: [{ registrationBranchId: doctor.branchId }, { appointments: { some: { branchId: doctor.branchId } } },
-          { admissions: { some: { branchId: doctor.branchId } } }] },
+        ...(!dto.requestId && { OR: [{ registrationBranchId: doctor.branchId }, { appointments: { some: { branchId: doctor.branchId } } },
+          { admissions: { some: { branchId: doctor.branchId } } }] }) },
       select: { id: true },
     });
     if (!patient) throw new NotFoundException('Patient not found in the selected branch');
 
     const appointmentDate = new Date(dto.appointmentDate);
-
-    // Check slot conflict for the same doctor, date, and time
-    const conflict = await this.prisma.appointment.findFirst({
-      where: {
-        doctorId: dto.doctorId,
-        appointmentDate,
-        appointmentTime: dto.appointmentTime,
-        status: { not: 'CANCELLED' },
-      },
-    });
-    if (conflict) {
-      throw new BadRequestException('This time slot is already booked for this doctor. Please select another time slot.');
+    if (dto.requestId && (!/^\d{4}-\d{2}-\d{2}$/.test(dto.appointmentDate)
+      || !/^([01]\d|2[0-3]):[0-5]\d$/.test(dto.appointmentTime)
+      || !Number.isFinite(appointmentDate.getTime()) || appointmentDate.toISOString().slice(0, 10) !== dto.appointmentDate
+      || new Date(dto.appointmentDate + 'T' + dto.appointmentTime + ':00+05:30').getTime() <= Date.now())) {
+      throw new BadRequestException('Choose a valid future appointment date and time.');
     }
 
-    // Get today's token count for this doctor
-    const existingCount = await this.prisma.appointment.count({
-      where: {
-        doctorId: dto.doctorId,
-        appointmentDate,
-      },
-    });
-    const tokenNumber = existingCount + 1;
-
-    const appointmentNumber = await this.generateAppointmentNumber();
-
-    return this.prisma.$transaction(async (tx) => {
-      const appointment = await tx.appointment.create({
-        data: {
-          appointmentNumber,
-          patientId: dto.patientId,
-          doctorId: dto.doctorId,
-          departmentId: doctor.departmentId,
-          appointmentDate,
-          appointmentTime: dto.appointmentTime,
-          tokenNumber,
-          type: dto.appointmentType,
-          priority: dto.priority || 'ROUTINE',
-          reasonForVisit: dto.reasonForVisit,
-          consultationFee: doctor.consultationFee,
-          status: 'SCHEDULED',
-          isPaid: false,
-          hospitalId: doctor.hospitalId,
-          branchId: doctor.branchId,
-        },
-        include: {
-          patient: { select: { id: true, uhid: true, firstName: true, lastName: true, phone: true } },
-          doctor: {
-            include: {
-              employee: { include: { user: { select: { firstName: true, lastName: true } } } },
-              department: { select: { name: true } },
+    try {
+      return await this.prisma.$transaction(async (tx) => {
+        const booked = await tx.appointment.findMany({
+          where: { doctorId: dto.doctorId, appointmentDate },
+          select: { appointmentTime: true, tokenNumber: true, status: true },
+        });
+        const active = booked.filter(({ status }) => status !== 'CANCELLED');
+        if (active.some(({ appointmentTime }) => appointmentTime === dto.appointmentTime)) {
+          throw new ConflictException('This time slot is already booked.');
+        }
+        if (dto.requestId) {
+          const dayOfWeek = new Intl.DateTimeFormat('en', { weekday: 'long', timeZone: 'UTC' }).format(appointmentDate).toUpperCase();
+          const [schedules, leave] = await Promise.all([
+            tx.doctorSchedule.findMany({ where: { doctorId: dto.doctorId, dayOfWeek, isActive: true } }),
+            tx.doctorLeave.findFirst({ where: { doctorId: dto.doctorId, isApproved: true,
+              startDate: { lte: appointmentDate }, endDate: { gte: appointmentDate } } }),
+          ]);
+          const minutes = (value: string) => {
+            const [hours, mins] = value.split(':').map(Number);
+            return hours * 60 + mins;
+          };
+          const start = minutes(dto.appointmentTime);
+          const duration = doctor.consultationDurationMin;
+          const window = schedules.find((slot) =>
+            minutes(slot.startTime) <= start && start + duration <= minutes(slot.endTime));
+          if (leave || !window) throw new ConflictException('The doctor is unavailable at that time.');
+          if (active.some(({ appointmentTime }) => Math.abs(minutes(appointmentTime) - start) < duration)
+            || active.filter(({ appointmentTime }) => appointmentTime >= window.startTime && appointmentTime < window.endTime).length >= window.maxPatients) {
+            throw new ConflictException('This slot overlaps an appointment or has reached capacity.');
+          }
+        }
+        const tokenNumber = booked.reduce((max, row) => Math.max(max, row.tokenNumber), 0) + 1;
+        const appointmentNumber = await this.generateAppointmentNumber(tx);
+        const appointment = await tx.appointment.create({
+          data: {
+            appointmentNumber,
+            patientId: dto.patientId,
+            doctorId: dto.doctorId,
+            departmentId: doctor.departmentId,
+            appointmentDate,
+            appointmentTime: dto.appointmentTime,
+            tokenNumber,
+            type: dto.appointmentType,
+            priority: dto.priority || 'ROUTINE',
+            reasonForVisit: dto.reasonForVisit,
+            consultationFee: doctor.consultationFee,
+            status: 'SCHEDULED',
+            isPaid: false,
+            hospitalId: doctor.hospitalId,
+            branchId: doctor.branchId,
+          },
+          include: {
+            patient: { select: { id: true, uhid: true, firstName: true, lastName: true, phone: true } },
+            doctor: {
+              include: {
+                employee: { include: { user: { select: { firstName: true, lastName: true } } } },
+                department: { select: { name: true } },
+              },
             },
           },
-        },
-      });
+        });
 
-      await tx.notification.create({ data: {
-        hospitalId: appointment.hospitalId, branchId: appointment.branchId, userId: doctor.employee.userId,
-        title: 'New patient appointment',
-        message: `${appointment.patient.firstName} ${appointment.patient.lastName} has an appointment (${appointment.appointmentNumber}).`,
-        type: 'APPOINTMENT',
-      } });
-      return appointment;
-    });
+        if (dto.requestId) {
+          const linked = await tx.appointmentRequest.updateMany({
+            where: requestScope, data: { status: 'BOOKED', appointmentId: appointment.id },
+          });
+          if (linked.count !== 1) throw new ConflictException('This request has already been booked. Refresh and try again.');
+        }
+        await tx.notification.create({ data: {
+          hospitalId: appointment.hospitalId, branchId: appointment.branchId, userId: doctor.employee.userId,
+          title: 'New patient appointment',
+          message: `${appointment.patient.firstName} ${appointment.patient.lastName} has an appointment (${appointment.appointmentNumber}).`,
+          type: 'APPOINTMENT',
+        } });
+        return appointment;
+      }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && ['P2034', 'P2002'].includes(error.code)) {
+        throw new ConflictException('Another booking changed availability. Refresh before trying again.');
+      }
+      throw error;
+    }
   }
 
   async startConsultation(id: string, actor: AuthUserDto) {
@@ -142,16 +179,11 @@ export class AppointmentsService {
   }
 
   async getTodayQueue(actor: AuthUserDto, doctorId?: string, requestedBranchId?: string) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    const calendarDay = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Kolkata', dateStyle: 'short' }).format(new Date());
+    const today = new Date(calendarDay + 'T00:00:00Z');
 
     const where: Prisma.AppointmentWhereInput = {
-      appointmentDate: {
-        gte: today,
-        lt: tomorrow,
-      },
+      appointmentDate: today,
       AND: [appointmentReadScope(actor, requestedBranchId), ...(doctorId ? [{ doctorId }] : [])],
     };
 
@@ -159,6 +191,7 @@ export class AppointmentsService {
       where,
       orderBy: { tokenNumber: 'asc' },
       include: {
+        department: { select: { name: true } },
         patient: {
           select: {
             id: true,
@@ -183,16 +216,20 @@ export class AppointmentsService {
     });
   }
 
-  async checkIn(id: string) {
-    const appointment = await this.prisma.appointment.findUnique({ where: { id } });
-    if (!appointment) throw new NotFoundException('Appointment not found');
-
-    return this.prisma.appointment.update({
-      where: { id },
-      data: {
-        status: 'CHECKED_IN',
-        checkInAt: new Date(),
-      },
+  async checkIn(id: string, actor: AuthUserDto) {
+    if (actor.role === Role.PATIENT) throw new ForbiddenException('Check-in is handled at Reception.');
+    const scope = appointmentReadScope(actor);
+    const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Kolkata', dateStyle: 'short' }).format(new Date());
+    return this.prisma.$transaction(async (tx) => {
+      const appointment = await tx.appointment.findFirst({ where: { ...scope, id } });
+      if (!appointment) throw new NotFoundException('Appointment not found');
+      if (appointment.status === 'CHECKED_IN') return appointment;
+      const updated = await tx.appointment.updateMany({
+        where: { id, ...scope, status: 'SCHEDULED', appointmentDate: new Date(today + 'T00:00:00Z') },
+        data: { status: 'CHECKED_IN', checkInAt: new Date() },
+      });
+      if (!updated.count) throw new ConflictException('Only today’s scheduled appointments can be checked in.');
+      return tx.appointment.findUniqueOrThrow({ where: { id } });
     });
   }
 

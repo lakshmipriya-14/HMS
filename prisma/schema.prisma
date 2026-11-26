@@ -1307,6 +1307,7 @@ model Notification {
     createdAt DateTime @default(now())
 
   @@index([userId])
+  @@index([userId, createdAt, id])
   @@index([hospitalId, branchId])
 }
 
