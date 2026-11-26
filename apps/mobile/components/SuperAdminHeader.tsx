@@ -13,6 +13,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Bell,
   HeartPulse,
+  ArrowLeft,
   X,
   CheckCheck,
   Check,
@@ -38,13 +39,31 @@ export function SuperAdminHeader({
   breadcrumbs,
   currentTitle,
   home = '/(super-admin)',
+  showBack = false,
+  onBack,
+  fallbackHref,
 }: {
   breadcrumbs?: { label: string; href?: string }[];
   currentTitle?: string;
   home?: Href;
+  showBack?: boolean;
+  onBack?: () => void;
+  fallbackHref?: Href;
 }) {
   const router = useRouter();
   const { user, logout } = useAuth();
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else if (router.canGoBack()) {
+      router.back();
+    } else if (fallbackHref) {
+      router.replace(fallbackHref);
+    } else {
+      router.back();
+    }
+  };
   const queryClient = useQueryClient();
   const [modalVisible, setModalVisible] = useState(false);
   const [unreadOnly, setUnreadOnly] = useState(false);
@@ -93,19 +112,32 @@ export function SuperAdminHeader({
         <View style={styles.headerInner}>
           {/* Left: Branding & Breadcrumbs */}
           <View style={styles.leftCol}>
-            <TouchableOpacity
-              style={styles.brandRow}
-              onPress={() => router.push(home)}
-              activeOpacity={0.8}
-            >
-              <View style={styles.logoBadge}>
-                <HeartPulse size={18} color="#fff" />
-              </View>
-              <View>
-                <Text style={styles.brandTitle}>UYIRINAI</Text>
-                <Text style={styles.brandSub}>MULTISPECIALITY HOSPITAL</Text>
-              </View>
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {showBack ? (
+                <TouchableOpacity
+                  style={styles.backBtn}
+                  onPress={handleBack}
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Back"
+                >
+                  <ArrowLeft size={22} color={theme.colors.primaryDark} strokeWidth={2.4} />
+                </TouchableOpacity>
+              ) : null}
+              <TouchableOpacity
+                style={styles.brandRow}
+                onPress={() => router.push(home)}
+                activeOpacity={0.8}
+              >
+                <View style={styles.logoBadge}>
+                  <HeartPulse size={18} color="#fff" />
+                </View>
+                <View>
+                  <Text style={styles.brandTitle}>UYIRINAI</Text>
+                  <Text style={styles.brandSub}>MULTISPECIALITY HOSPITAL</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
 
             {(breadcrumbs || currentTitle) && (
               <View style={styles.breadcrumbsRow}>
@@ -367,6 +399,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  backBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: theme.colors.softGreen,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.lightGreen,
   },
   logoBadge: {
     width: 30,

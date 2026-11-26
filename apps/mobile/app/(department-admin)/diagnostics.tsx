@@ -49,7 +49,7 @@ export default function OtherDiagnosticsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Other Diagnostic Services" subtitle="ECG, Echo, Endoscopy & Special Tests" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Other Diagnostic Services" subtitle="ECG, Echo, Endoscopy & Special Tests" />
 
       {/* Filter and Search */}
       <View style={styles.topFilterBar}>

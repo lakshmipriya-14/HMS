@@ -79,7 +79,7 @@ export default function DepartmentInventoryScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Supplies" subtitle="Sub-Stock & Restock Requests" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Department Supplies" subtitle="Sub-Stock & Restock Requests" />
 
       {/* Filter and Search */}
       <View style={styles.topFilterBar}>

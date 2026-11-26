@@ -49,7 +49,7 @@ export default function RadiologyRequestsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Radiology & Imaging" subtitle="X-Ray, CT, MRI & Scans Tracking" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Radiology & Imaging" subtitle="X-Ray, CT, MRI & Scans Tracking" />
 
       {/* Filter and Search */}
       <View style={styles.topFilterBar}>

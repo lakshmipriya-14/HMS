@@ -44,7 +44,7 @@ export default function ActivityHistoryScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Audit Log" subtitle="Chronological Operations Trail" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Department Audit Log" subtitle="Chronological Operations Trail" />
 
       {/* Search */}
       <View style={styles.searchBar}>

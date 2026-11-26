@@ -36,10 +36,10 @@ export default function PatientAppointmentsScreen() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const [rescheduleApt, setRescheduleApt] = useState<any>(null);
-  const [rescheduleDate, setRescheduleDate] = useState('');
-  const [rescheduleTime, setRescheduleTime] = useState('');
-  const [rescheduleError, setRescheduleError] = useState('');
+  const [cancelTargetApt, setCancelTargetApt] = useState<any>(null);
+  const [cancelReason, setCancelReason] = useState('Patient schedule conflict');
+  const [cancelError, setCancelError] = useState('');
+  const [cancelSuccessMsg, setCancelSuccessMsg] = useState('');
 
   const { data, isLoading, isError, error, refetch, isRefetching } = useQuery({
     queryKey: ['patient-portal-active-appointments', user?.id],
@@ -47,58 +47,30 @@ export default function PatientAppointmentsScreen() {
     queryFn: async () => (await mobileApiClient.patientPortal.get(1)).data,
   });
 
-  // Reschedule / Cancel mutation
-  const changeMutation = useMutation({
-    mutationFn: async ({
-      id,
-      action,
-      date,
-      time,
-    }: {
-      id: string;
-      action: 'cancel' | 'reschedule';
-      date?: string;
-      time?: string;
-    }) => {
+  // Cancel mutation
+  const cancelMutation = useMutation({
+    mutationFn: async ({ id }: { id: string; reason?: string }) => {
       return await mobileApiClient.patientPortal.changeAppointment(id, {
-        action,
-        date,
-        time,
+        action: 'cancel',
       });
     },
     onSuccess: () => {
-      setRescheduleApt(null);
-      setRescheduleError('');
+      setCancelTargetApt(null);
+      setCancelError('');
+      setCancelSuccessMsg('Appointment cancelled successfully.');
+      setTimeout(() => setCancelSuccessMsg(''), 4000);
       queryClient.invalidateQueries({ queryKey: ['patient-portal-active-appointments'] });
       queryClient.invalidateQueries({ queryKey: ['patient-portal-home'] });
+      queryClient.invalidateQueries({ queryKey: ['patient-portal-records'] });
     },
     onError: (err) => {
-      setRescheduleError(err instanceof Error ? err.message : 'Could not update appointment.');
+      setCancelError(err instanceof Error ? err.message : 'Could not cancel appointment.');
     },
   });
 
-  const handleCancel = (apt: any) => {
-    Alert.alert(
-      'Cancel Appointment',
-      `Are you sure you want to cancel your appointment with Dr. ${
-        apt.doctor?.employee?.user?.firstName || 'Doctor'
-      }?`,
-      [
-        { text: 'Keep Appointment', style: 'cancel' },
-        {
-          text: 'Yes, Cancel',
-          style: 'destructive',
-          onPress: () => changeMutation.mutate({ id: apt.id, action: 'cancel' }),
-        },
-      ]
-    );
-  };
-
-  const openReschedule = (apt: any) => {
-    setRescheduleApt(apt);
-    setRescheduleDate(apt.appointmentDate?.slice(0, 10) || '');
-    setRescheduleTime(apt.appointmentTime || '10:30');
-    setRescheduleError('');
+  const handleCancelClick = (apt: any) => {
+    setCancelError('');
+    setCancelTargetApt(apt);
   };
 
   if (isLoading) {
@@ -148,12 +120,19 @@ export default function PatientAppointmentsScreen() {
         </View>
         <Pressable
           style={styles.historyLinkBtn}
-          onPress={() => router.push('/(patient)/records' as any)}
+          onPress={() => router.push({ pathname: '/(patient)/records', params: { tab: 'appointments' } } as any)}
         >
           <History size={15} color={UyirinaiTheme.colors.primary} />
           <Text style={styles.historyLinkText}>History</Text>
         </Pressable>
       </View>
+
+      {/* Cancellation Success Feedback */}
+      {!!cancelSuccessMsg && (
+        <View style={styles.successBanner}>
+          <Text style={styles.successBannerText}>{cancelSuccessMsg}</Text>
+        </View>
+      )}
 
       {/* Appointment Cards List */}
       {unmetAppointments.length > 0 ? (
@@ -208,24 +187,21 @@ export default function PatientAppointmentsScreen() {
                   </Text>
                 ) : null}
 
-                {/* Action Buttons */}
+                {/* Reschedule Guidance & Cancel Action */}
+                <View style={styles.rescheduleNoticeBox}>
+                  <Text style={styles.rescheduleNoticeText}>
+                    Need to reschedule? Cancel this slot and book a new consultation.
+                  </Text>
+                </View>
+
                 <View style={styles.cardActionsRow}>
                   <Pressable
-                    style={styles.rescheduleBtn}
-                    onPress={() => openReschedule(apt)}
-                    disabled={changeMutation.isPending}
-                  >
-                    <RotateCcw size={14} color={UyirinaiTheme.colors.primary} />
-                    <Text style={styles.rescheduleText}>Reschedule</Text>
-                  </Pressable>
-
-                  <Pressable
                     style={styles.cancelBtn}
-                    onPress={() => handleCancel(apt)}
-                    disabled={changeMutation.isPending}
+                    onPress={() => handleCancelClick(apt)}
+                    disabled={cancelMutation.isPending}
                   >
-                    <XCircle size={14} color={UyirinaiTheme.colors.error} />
-                    <Text style={styles.cancelText}>Cancel</Text>
+                    <XCircle size={15} color={UyirinaiTheme.colors.error} />
+                    <Text style={styles.cancelText}>Cancel Appointment</Text>
                   </Pressable>
                 </View>
               </View>
@@ -252,7 +228,7 @@ export default function PatientAppointmentsScreen() {
 
           <Pressable
             style={styles.viewHistoryBtn}
-            onPress={() => router.push('/(patient)/records' as any)}
+            onPress={() => router.push({ pathname: '/(patient)/records', params: { tab: 'appointments' } } as any)}
           >
             <FileText size={16} color={UyirinaiTheme.colors.primary} />
             <Text style={styles.viewHistoryText}>View Completed Consultations History</Text>
@@ -260,67 +236,71 @@ export default function PatientAppointmentsScreen() {
         </View>
       )}
 
-      {/* Reschedule Modal */}
-      <Modal visible={!!rescheduleApt} transparent={true} animationType="slide">
+      {/* Cancellation Confirmation Modal */}
+      <Modal visible={!!cancelTargetApt} transparent={true} animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Reschedule Consultation</Text>
-              <Pressable onPress={() => setRescheduleApt(null)} style={styles.closeBtn}>
+              <Text style={styles.modalTitle}>Cancel Appointment</Text>
+              <Pressable onPress={() => setCancelTargetApt(null)} style={styles.closeBtn}>
                 <X size={20} color={UyirinaiTheme.colors.textSecondary} />
               </Pressable>
             </View>
 
-            {!!rescheduleError && (
+            {!!cancelError && (
               <View style={styles.errorBanner}>
                 <AlertCircle size={16} color={UyirinaiTheme.colors.error} />
-                <Text style={styles.errorText}>{rescheduleError}</Text>
+                <Text style={styles.errorText}>{cancelError}</Text>
               </View>
             )}
 
             <Text style={styles.inputPrompt}>
-              Choose a new preferred date and time for consultation with{' '}
+              Are you sure you want to cancel your consultation with{' '}
               <Text style={{ fontWeight: '700' }}>
-                Dr. {rescheduleApt?.doctor?.employee?.user?.firstName || 'Doctor'}
-              </Text>
-              :
+                Dr. {cancelTargetApt?.doctor?.employee?.user?.firstName || 'Doctor'}{' '}
+                {cancelTargetApt?.doctor?.employee?.user?.lastName || ''}
+              </Text>{' '}
+              on{' '}
+              <Text style={{ fontWeight: '700' }}>
+                {cancelTargetApt?.appointmentDate?.slice(0, 10)} at {cancelTargetApt?.appointmentTime || '10:30'} IST
+              </Text>?
             </Text>
 
-            <Text style={styles.inputLabel}>New Date (YYYY-MM-DD)</Text>
+            <Text style={styles.inputLabel}>Reason for Cancellation</Text>
             <TextInput
               style={styles.inputField}
-              value={rescheduleDate}
-              onChangeText={setRescheduleDate}
-              placeholder="e.g. 2026-11-28"
+              value={cancelReason}
+              onChangeText={setCancelReason}
+              placeholder="e.g. Schedule conflict, feeling better..."
             />
 
-            <Text style={styles.inputLabel}>New Time (HH:mm in 24hr format)</Text>
-            <TextInput
-              style={styles.inputField}
-              value={rescheduleTime}
-              onChangeText={setRescheduleTime}
-              placeholder="e.g. 11:30"
-            />
+            <View style={styles.modalActionsRow}>
+              <Pressable
+                style={styles.keepBtn}
+                onPress={() => setCancelTargetApt(null)}
+                disabled={cancelMutation.isPending}
+              >
+                <Text style={styles.keepBtnText}>Keep Slot</Text>
+              </Pressable>
 
-            <Pressable
-              style={[
-                styles.confirmRescheduleBtn,
-                changeMutation.isPending && styles.btnDisabled,
-              ]}
-              onPress={() =>
-                changeMutation.mutate({
-                  id: rescheduleApt.id,
-                  action: 'reschedule',
-                  date: rescheduleDate.trim(),
-                  time: rescheduleTime.trim(),
-                })
-              }
-              disabled={changeMutation.isPending || !rescheduleDate || !rescheduleTime}
-            >
-              <Text style={styles.confirmRescheduleText}>
-                {changeMutation.isPending ? 'Confirming...' : 'Confirm Rescheduled Time'}
-              </Text>
-            </Pressable>
+              <Pressable
+                style={[
+                  styles.confirmCancelBtn,
+                  cancelMutation.isPending && styles.btnDisabled,
+                ]}
+                onPress={() =>
+                  cancelMutation.mutate({
+                    id: cancelTargetApt.id,
+                    reason: cancelReason,
+                  })
+                }
+                disabled={cancelMutation.isPending}
+              >
+                <Text style={styles.confirmCancelText}>
+                  {cancelMutation.isPending ? 'Cancelling...' : 'Yes, Cancel'}
+                </Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
@@ -487,31 +467,27 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: UyirinaiTheme.colors.borderLight,
   },
-  rescheduleBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    backgroundColor: UyirinaiTheme.colors.softGreen,
-    paddingVertical: 9,
+  rescheduleNoticeBox: {
+    backgroundColor: '#F8FAFC',
     borderRadius: UyirinaiTheme.borderRadius.md,
-    borderWidth: 1,
-    borderColor: UyirinaiTheme.colors.lightGreen,
+    padding: 8,
+    marginBottom: 10,
+    borderLeftWidth: 3,
+    borderLeftColor: UyirinaiTheme.colors.primary,
   },
-  rescheduleText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: UyirinaiTheme.colors.primary,
+  rescheduleNoticeText: {
+    fontSize: 11,
+    color: UyirinaiTheme.colors.textSecondary,
+    fontStyle: 'italic',
   },
   cancelBtn: {
-    flex: 1,
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
     backgroundColor: '#FDE8E8',
-    paddingVertical: 9,
+    paddingVertical: 10,
     borderRadius: UyirinaiTheme.borderRadius.md,
     borderWidth: 1,
     borderColor: '#F8B4B4',
@@ -520,6 +496,51 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
     color: UyirinaiTheme.colors.error,
+  },
+  modalActionsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 20,
+  },
+  keepBtn: {
+    flex: 1,
+    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
+    borderRadius: UyirinaiTheme.borderRadius.lg,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderDefault,
+  },
+  keepBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.textPrimary,
+  },
+  confirmCancelBtn: {
+    flex: 1,
+    backgroundColor: UyirinaiTheme.colors.error,
+    borderRadius: UyirinaiTheme.borderRadius.lg,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  confirmCancelText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.white,
+  },
+  successBanner: {
+    backgroundColor: UyirinaiTheme.colors.softGreenCard,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.lightGreen,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    padding: 10,
+    marginBottom: 14,
+  },
+  successBannerText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.primaryDark,
+    textAlign: 'center',
   },
 
   /* Empty State */

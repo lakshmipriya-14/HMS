@@ -145,7 +145,7 @@ export default function DepartmentOperationsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Operations" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Department Operations" />
 
       {/* Quick Modules Horizontal Strip */}
       <View style={styles.shortcutsWrapper}>

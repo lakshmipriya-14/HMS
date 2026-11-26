@@ -69,7 +69,7 @@ export default function MaintenanceRequestsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Facility Maintenance" subtitle="Work Orders, Electrical & HVAC" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Facility Maintenance" subtitle="Work Orders, Electrical & HVAC" />
 
       {/* Top Bar */}
       <View style={styles.topBar}>

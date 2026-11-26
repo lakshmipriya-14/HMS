@@ -52,6 +52,17 @@ export default function DepartmentLeavesScreen() {
     loadLeaves();
   }, []);
 
+  const getLeaveUser = (item: any) => {
+    return item.doctor?.employee?.user || item.employee?.user || item.user || {};
+  };
+
+  const getLeaveStatus = (item: any) => {
+    if (item.status) return item.status;
+    if (item.isApproved === true) return 'APPROVED';
+    if (item.isApproved === false) return 'PENDING';
+    return 'PENDING';
+  };
+
   const openReviewModal = (item: any, action: 'RECOMMEND' | 'APPROVE' | 'REJECT') => {
     setSelectedLeave(item);
     setReviewAction(action);
@@ -82,7 +93,7 @@ export default function DepartmentLeavesScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Staff Leave Requests" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Staff Leave Requests" />
 
       {toastMsg ? (
         <View style={styles.toast}>
@@ -107,19 +118,24 @@ export default function DepartmentLeavesScreen() {
           </View>
         ) : (
           leaves.map((item) => {
-            const isPending = ['PENDING', 'SUBMITTED', 'REQUESTED'].includes(item.status);
+            const user = getLeaveUser(item);
+            const status = getLeaveStatus(item);
+            const isPending = ['PENDING', 'SUBMITTED', 'REQUESTED'].includes(status);
+            const staffName = user.firstName
+              ? `${item.doctor ? 'Dr. ' : ''}${user.firstName} ${user.lastName || ''}`.trim()
+              : (item.staffName || 'Staff Member');
 
             return (
               <View key={item.id} style={styles.card}>
                 <View style={styles.cardTop}>
                   <View style={styles.avatar}>
                     <Text style={styles.avatarText}>
-                      {item.user?.firstName?.[0] || 'S'}
+                      {user.firstName?.[0] || 'S'}
                     </Text>
                   </View>
                   <View style={styles.infoCol}>
                     <Text style={styles.staffName}>
-                      {item.user?.firstName} {item.user?.lastName}
+                      {staffName}
                     </Text>
                     <Text style={styles.leaveType}>
                       {item.leaveType || 'Casual Leave'} • {item.totalDays || 1} day(s)
@@ -130,9 +146,9 @@ export default function DepartmentLeavesScreen() {
                       styles.statusBadge,
                       {
                         backgroundColor:
-                          item.status === 'APPROVED'
+                          status === 'APPROVED'
                             ? '#D1FAE5'
-                            : item.status === 'REJECTED'
+                            : status === 'REJECTED'
                             ? '#EAF5ED'
                             : '#FEF3C7',
                       },
@@ -143,15 +159,15 @@ export default function DepartmentLeavesScreen() {
                         styles.statusBadgeText,
                         {
                           color:
-                            item.status === 'APPROVED'
+                            status === 'APPROVED'
                               ? '#059669'
-                              : item.status === 'REJECTED'
+                              : status === 'REJECTED'
                               ? '#DC2626'
                               : '#D97706',
                         },
                       ]}
                     >
-                      {item.status || 'PENDING'}
+                      {status}
                     </Text>
                   </View>
                 </View>
@@ -221,7 +237,9 @@ export default function DepartmentLeavesScreen() {
               <View style={styles.modalBody}>
                 <View style={styles.summaryCard}>
                   <Text style={styles.summaryName}>
-                    {selectedLeave.user?.firstName} {selectedLeave.user?.lastName}
+                    {getLeaveUser(selectedLeave).firstName
+                      ? `${selectedLeave.doctor ? 'Dr. ' : ''}${getLeaveUser(selectedLeave).firstName} ${getLeaveUser(selectedLeave).lastName || ''}`.trim()
+                      : (selectedLeave.staffName || 'Staff Member')}
                   </Text>
                   <Text style={styles.summarySub}>
                     {selectedLeave.leaveType || 'Leave'} • {selectedLeave.totalDays || 1} day(s)

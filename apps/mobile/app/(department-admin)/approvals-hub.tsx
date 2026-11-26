@@ -73,7 +73,7 @@ export default function ApprovalsHubScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Approvals Hub" subtitle="Requisitions & Reviews Tracking" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Approvals Hub" subtitle="Requisitions & Reviews Tracking" />
 
       {/* Tabs */}
       <View style={styles.selectorBar}>

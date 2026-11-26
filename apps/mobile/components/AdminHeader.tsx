@@ -7,16 +7,21 @@ import {
   Modal,
   Platform,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { HeartPulse, Bell, ShieldCheck, LogOut, ChevronRight, X } from 'lucide-react-native';
+import { Href, useRouter } from 'expo-router';
+import { ArrowLeft, HeartPulse, Bell, ShieldCheck, LogOut, ChevronRight, X } from 'lucide-react-native';
 import { useAuth } from '../hooks/useAuth';
 import { UyirinaiTheme } from '../constants/theme';
 
-interface AdminHeaderProps {
+export interface AdminHeaderProps {
   title?: string;
   subtitle?: string;
   alertsCount?: number;
   rightAction?: React.ReactNode;
+  showBack?: boolean;
+  onBack?: () => void;
+  fallbackHref?: Href;
+  notificationHref?: Href;
+  onNotificationPress?: () => void;
 }
 
 export function AdminHeader({
@@ -24,10 +29,39 @@ export function AdminHeader({
   subtitle = 'Uyirinai Multispeciality Hospital',
   alertsCount = 0,
   rightAction,
+  showBack = false,
+  onBack,
+  fallbackHref,
+  notificationHref,
+  onNotificationPress,
 }: AdminHeaderProps) {
   const router = useRouter();
   const { user, logout } = useAuth();
   const [menuVisible, setMenuVisible] = useState(false);
+
+  const handleNotificationPress = () => {
+    if (onNotificationPress) {
+      onNotificationPress();
+    } else if (notificationHref) {
+      router.push(notificationHref);
+    } else if (user?.role === 'DEPARTMENT_ADMIN') {
+      router.push('/(department-admin)/notifications');
+    } else {
+      router.push('/(admin)/approvals');
+    }
+  };
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else if (router.canGoBack()) {
+      router.back();
+    } else if (fallbackHref) {
+      router.replace(fallbackHref);
+    } else {
+      router.back();
+    }
+  };
 
   const handleLogout = async () => {
     setMenuVisible(false);
@@ -47,9 +81,21 @@ export function AdminHeader({
     <View style={styles.headerContainer}>
       <View style={styles.topRow}>
         <View style={styles.brandRow}>
-          <View style={styles.iconCircle}>
-            <HeartPulse size={20} color={UyirinaiTheme.colors.primary} />
-          </View>
+          {showBack ? (
+            <TouchableOpacity
+              style={styles.backBtn}
+              onPress={handleBack}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              accessibilityRole="button"
+              accessibilityLabel="Back"
+            >
+              <ArrowLeft size={22} color={UyirinaiTheme.colors.primaryDark} strokeWidth={2.4} />
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.iconCircle}>
+              <HeartPulse size={20} color={UyirinaiTheme.colors.primary} />
+            </View>
+          )}
           <View style={{ flex: 1 }}>
             {subtitle ? <Text style={styles.hospitalText} numberOfLines={1}>{subtitle}</Text> : null}
             <Text style={styles.titleText} numberOfLines={1}>{title}</Text>
@@ -60,7 +106,10 @@ export function AdminHeader({
           {rightAction}
           <TouchableOpacity
             style={styles.actionBtn}
-            onPress={() => router.push('/(admin)/approvals')}
+            onPress={handleNotificationPress}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityRole="button"
+            accessibilityLabel="Notifications"
           >
             <Bell size={20} color={UyirinaiTheme.colors.textPrimary} />
             {alertsCount > 0 && (
@@ -160,6 +209,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconCircle: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
+    backgroundColor: UyirinaiTheme.colors.softGreen,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.lightGreen,
+  },
+  backBtn: {
     width: 38,
     height: 38,
     borderRadius: 10,

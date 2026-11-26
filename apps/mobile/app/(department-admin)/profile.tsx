@@ -95,7 +95,7 @@ export default function DepartmentAdminProfileScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Account Profile" subtitle="Credentials & Security" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Account Profile" subtitle="Credentials & Security" />
 
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
         {/* Profile Card */}

@@ -8,8 +8,10 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  ArrowLeft,
   Bell,
   BellOff,
   Calendar,
@@ -28,6 +30,7 @@ import { LoadingIndicator } from '../../components/ui/LoadingIndicator';
 import { ErrorState } from '../../components/ui/ErrorState';
 
 export default function PatientNotificationsScreen() {
+  const router = useRouter();
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -143,7 +146,7 @@ export default function PatientNotificationsScreen() {
         />
       }
     >
-      {/* Header Bar */}
+      {/* Unread Alerts Sub-Header Bar */}
       <View style={styles.topHeaderBar}>
         <View style={styles.unreadCountPill}>
           <Text style={styles.unreadCountText}>
@@ -253,6 +256,30 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: 16,
     paddingBottom: 40,
+  },
+  navHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: UyirinaiTheme.colors.borderLight,
+  },
+  backBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: UyirinaiTheme.colors.white,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderDefault,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navHeaderTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.textPrimary,
   },
   topHeaderBar: {
     flexDirection: 'row',

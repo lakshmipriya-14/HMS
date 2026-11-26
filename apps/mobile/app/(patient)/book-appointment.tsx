@@ -109,14 +109,25 @@ export default function BookAppointmentScreen() {
         if (!matchesShift && schedules.length > 0) return false;
       }
 
-      // 5. Search query
+      // 5. Search query (matches from first letter)
       if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
+        const q = searchQuery.toLowerCase().trim();
         const docUser = doc.employee?.user;
-        const name = `${docUser?.firstName || ''} ${docUser?.lastName || ''}`.toLowerCase();
+        const firstName = (docUser?.firstName || '').toLowerCase();
+        const lastName = (docUser?.lastName || '').toLowerCase();
+        const name = `${firstName} ${lastName}`.trim();
         const spec = (doc.specialization || '').toLowerCase();
         const dept = (doc.department?.name || '').toLowerCase();
-        if (!name.includes(q) && !spec.includes(q) && !dept.includes(q)) {
+        const matches =
+          firstName.startsWith(q) ||
+          lastName.startsWith(q) ||
+          name.startsWith(q) ||
+          spec.startsWith(q) ||
+          dept.startsWith(q) ||
+          name.includes(q) ||
+          spec.includes(q) ||
+          dept.includes(q);
+        if (!matches) {
           return false;
         }
       }

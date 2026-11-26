@@ -4,6 +4,7 @@ import { Tabs } from 'expo-router';
 import { LayoutDashboard, Users, CheckSquare, Pill, User, HeartPulse, RotateCcw, UserCheck, BellRing } from 'lucide-react-native';
 import { Platform } from 'react-native';
 import { UyirinaiTheme } from '../../constants/theme';
+import { HeaderBackButton } from '../../components/ui/HeaderBackButton';
 
 export default function NurseTabsLayout() {
   const bottomInset = Platform.OS === 'web' ? 10 : 12;
@@ -72,6 +73,7 @@ export default function NurseTabsLayout() {
           options={{
             href: null,
             title: 'Clinical Vitals Charting',
+            headerLeft: () => <HeaderBackButton fallbackHref="/(nurse)" />,
           }}
         />
         <Tabs.Screen
@@ -79,6 +81,7 @@ export default function NurseTabsLayout() {
           options={{
             href: null,
             title: 'Shift Handover Protocol',
+            headerLeft: () => <HeaderBackButton fallbackHref="/(nurse)" />,
           }}
         />
         <Tabs.Screen
@@ -86,6 +89,7 @@ export default function NurseTabsLayout() {
           options={{
             href: null,
             title: 'Head Nurse Supervision',
+            headerLeft: () => <HeaderBackButton fallbackHref="/(nurse)" />,
           }}
         />
         <Tabs.Screen
@@ -93,6 +97,7 @@ export default function NurseTabsLayout() {
           options={{
             href: null,
             title: 'Nurse Alerts & Notifications',
+            headerLeft: () => <HeaderBackButton fallbackHref="/(nurse)" />,
           }}
         />
       </Tabs>

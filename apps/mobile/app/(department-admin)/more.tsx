@@ -221,7 +221,7 @@ export default function DepartmentAdminMoreScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Hub" />
+      <AdminHeader title="Department Hub" subtitle="" />
 
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
         {/* User Card */}

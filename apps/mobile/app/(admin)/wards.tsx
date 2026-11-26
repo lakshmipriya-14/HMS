@@ -245,7 +245,7 @@ export default function AdminWardsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader
+      <AdminHeader showBack={true} fallbackHref="/(admin)/more"
         title="Bed Census & Wards"
         subtitle="Hospital Inpatient Capacity"
         alertsCount={summary.maintenanceBeds || 0}

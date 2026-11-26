@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../hooks/useAuth';
 import { mobileApiClient } from '../../services/api';
 import { UyirinaiTheme as theme } from '../../constants/theme';
+import { HeaderBackButton } from '../../components/ui/HeaderBackButton';
 
 export default function ProfileSecurity() {
   const { user, logout } = useAuth();
@@ -42,8 +43,10 @@ export default function ProfileSecurity() {
     try { await logout(); } catch { /* Local sign-out takes effect in the workspace gate. */ }
   }
   return <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-    <TouchableOpacity onPress={() => router.replace('/(super-admin)/more' as any)}><Text>‹ More</Text></TouchableOpacity>
-    <Text style={styles.title}>Profile &amp; Security</Text>
+    <View style={styles.headerRow}>
+      <HeaderBackButton fallbackHref="/(super-admin)/more" />
+      <Text style={styles.title}>Profile &amp; Security</Text>
+    </View>
     <Text>{user?.firstName} {user?.lastName}</Text>
     <Text>{user?.email}</Text>
     <Text>Super Admin</Text>
@@ -66,6 +69,7 @@ export default function ProfileSecurity() {
 
 const styles = StyleSheet.create({
   container: { padding: 20, gap: 12, backgroundColor: 'white', flexGrow: 1 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
   title: { fontSize: 20, fontWeight: '800' },
   input: { borderColor: theme.colors.borderGrey, borderRadius: 8, borderWidth: 1, padding: 12 },
   button: { padding: 12, alignItems: 'center', backgroundColor: theme.colors.primary, borderRadius: 8 },

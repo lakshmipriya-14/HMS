@@ -46,6 +46,9 @@ export default function DepartmentDoctorsScreen() {
   const [phone, setPhone] = useState('');
   const [specialization, setSpecialization] = useState('');
   const [designation, setDesignation] = useState('Consultant');
+  const [licenseNumber, setLicenseNumber] = useState('');
+  const [consultationFee, setConsultationFee] = useState('500');
+  const [shift, setShift] = useState('MORNING');
   const [opdTiming, setOpdTiming] = useState('09:00 - 13:00');
   const [savingDoctor, setSavingDoctor] = useState(false);
 
@@ -58,6 +61,8 @@ export default function DepartmentDoctorsScreen() {
   const [profileDoc, setProfileDoc] = useState<any | null>(null);
 
   const [successMsg, setSuccessMsg] = useState('');
+
+  const getDocUser = (doc: any) => doc?.employee?.user || doc?.user || {};
 
   const loadDoctors = async () => {
     try {
@@ -99,12 +104,15 @@ export default function DepartmentDoctorsScreen() {
     try {
       setSavingDoctor(true);
       await mobileApiClient.departmentAdmin.addDoctor({
-        firstName,
-        lastName,
-        email,
-        phone,
-        specialization,
-        designation,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        specialization: specialization.trim(),
+        designation: designation.trim(),
+        licenseNumber: licenseNumber.trim() || `LIC-${Date.now()}`,
+        consultationFee: parseFloat(consultationFee) || 500,
+        shift,
         opdTiming,
       });
       setAddModal(false);
@@ -112,6 +120,8 @@ export default function DepartmentDoctorsScreen() {
       setLastName('');
       setEmail('');
       setPhone('');
+      setLicenseNumber('');
+      setConsultationFee('500');
       setSuccessMsg('Doctor assigned to department successfully');
       setTimeout(() => setSuccessMsg(''), 3000);
       loadDoctors();
@@ -127,8 +137,10 @@ export default function DepartmentDoctorsScreen() {
     try {
       setSavingDoctor(true);
       await mobileApiClient.departmentAdmin.updateDoctor(selectedDoctor.id, {
-        specialization,
-        designation,
+        specialization: specialization.trim(),
+        designation: designation.trim(),
+        consultationFee: parseFloat(consultationFee) || 500,
+        shift,
         opdTiming,
       });
       setEditModal(false);
@@ -152,6 +164,8 @@ export default function DepartmentDoctorsScreen() {
     setSelectedDoctor(doc);
     setSpecialization(doc.specialization || '');
     setDesignation(doc.designation || 'Consultant');
+    setConsultationFee(String(doc.consultationFee || 500));
+    setShift(doc.shift || 'MORNING');
     setOpdTiming(doc.opdTiming || '09:00 - 13:00');
     setProfileModal(false);
     setEditModal(true);
@@ -159,9 +173,12 @@ export default function DepartmentDoctorsScreen() {
 
   const filtered = doctors.filter((doc) => {
     if (!search) return true;
-    const name = `${doc.user?.firstName || ''} ${doc.user?.lastName || ''}`.toLowerCase();
+    const u = getDocUser(doc);
+    const name = `${u.firstName || ''} ${u.lastName || ''}`.toLowerCase();
     const spec = (doc.specialization || '').toLowerCase();
-    return name.includes(search.toLowerCase()) || spec.includes(search.toLowerCase());
+    const lic = (doc.licenseNumber || '').toLowerCase();
+    const q = search.toLowerCase();
+    return name.includes(q) || spec.includes(q) || lic.includes(q);
   });
 
   return (
@@ -235,13 +252,13 @@ export default function DepartmentDoctorsScreen() {
                 <View style={styles.cardTop}>
                   <View style={styles.avatar}>
                     <Text style={styles.avatarText}>
-                      {doctor.user?.firstName?.[0] || 'D'}
-                      {doctor.user?.lastName?.[0] || ''}
+                      {getDocUser(doctor).firstName?.[0] || 'D'}
+                      {getDocUser(doctor).lastName?.[0] || ''}
                     </Text>
                   </View>
                   <View style={styles.docInfo}>
                     <Text style={styles.docName}>
-                      Dr. {doctor.user?.firstName} {doctor.user?.lastName}
+                      Dr. {getDocUser(doctor).firstName} {getDocUser(doctor).lastName}
                     </Text>
                     <Text style={styles.docSpec}>
                       {doctor.designation || doctor.specialization || 'Consultant'}
@@ -264,7 +281,7 @@ export default function DepartmentDoctorsScreen() {
                 <View style={styles.cardFooter}>
                   <View style={styles.metaItem}>
                     <Phone size={13} color="#64748B" />
-                    <Text style={styles.metaText}>{doctor.user?.phone || 'No phone'}</Text>
+                    <Text style={styles.metaText}>{getDocUser(doctor).phone || 'No phone'}</Text>
                   </View>
                   <View style={styles.metaItem}>
                     <Clock size={13} color="#64748B" />
@@ -303,13 +320,13 @@ export default function DepartmentDoctorsScreen() {
                 <View style={styles.profileHeaderBox}>
                   <View style={styles.profileAvatar}>
                     <Text style={styles.profileAvatarText}>
-                      {profileDoc.user?.firstName?.[0] || 'D'}
-                      {profileDoc.user?.lastName?.[0] || ''}
+                      {getDocUser(profileDoc).firstName?.[0] || 'D'}
+                      {getDocUser(profileDoc).lastName?.[0] || ''}
                     </Text>
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.profileName}>
-                      Dr. {profileDoc.user?.firstName} {profileDoc.user?.lastName}
+                      Dr. {getDocUser(profileDoc).firstName} {getDocUser(profileDoc).lastName}
                     </Text>
                     <Text style={styles.profileDesignation}>
                       {profileDoc.designation || 'Consultant'} • {profileDoc.specialization || 'General Medicine'}
@@ -321,11 +338,11 @@ export default function DepartmentDoctorsScreen() {
                   <Text style={styles.detailSectionTitle}>CONTACT & CREDENTIALS</Text>
                   <View style={styles.detailRow}>
                     <Mail size={15} color="#38845A" />
-                    <Text style={styles.detailValue}>{profileDoc.user?.email || 'N/A'}</Text>
+                    <Text style={styles.detailValue}>{getDocUser(profileDoc).email || 'N/A'}</Text>
                   </View>
                   <View style={styles.detailRow}>
                     <Phone size={15} color="#38845A" />
-                    <Text style={styles.detailValue}>{profileDoc.user?.phone || 'N/A'}</Text>
+                    <Text style={styles.detailValue}>{getDocUser(profileDoc).phone || 'N/A'}</Text>
                   </View>
                   <View style={styles.detailRow}>
                     <Award size={15} color="#38845A" />
@@ -406,6 +423,12 @@ export default function DepartmentDoctorsScreen() {
 
               <Text style={styles.inputLabel}>Specialization / Qualification</Text>
               <TextInput style={styles.modalInput} value={specialization} onChangeText={setSpecialization} placeholder="e.g. MD, DM Cardiology" />
+
+              <Text style={styles.inputLabel}>Medical License / Registration No.</Text>
+              <TextInput style={styles.modalInput} value={licenseNumber} onChangeText={setLicenseNumber} placeholder="e.g. TNMC-2026-4891" />
+
+              <Text style={styles.inputLabel}>Consultation Fee (₹)</Text>
+              <TextInput style={styles.modalInput} keyboardType="numeric" value={consultationFee} onChangeText={setConsultationFee} placeholder="500" />
 
               <Text style={styles.inputLabel}>OPD Consultation Hours</Text>
               <TextInput style={styles.modalInput} value={opdTiming} onChangeText={setOpdTiming} placeholder="09:00 - 13:00" />

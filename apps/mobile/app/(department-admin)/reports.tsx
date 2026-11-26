@@ -24,7 +24,122 @@ export default function DepartmentReportsScreen() {
       const res = await mobileApiClient.departmentAdmin.getReports({
         type: reportType,
       });
-      if (res.data) setData(res.data);
+      const repData = res.data || {};
+      let summaryObj: Record<string, any> = {};
+      let breakdownRows: any[] = [];
+
+      const metrics = repData.metrics || {};
+
+      if (reportType === 'opd_census') {
+        summaryObj = {
+          todayOpdRegistrations: metrics.todayOpdRegistrations ?? 0,
+          todayAppointments: metrics.todayAppointments ?? 0,
+          completedConsultations: metrics.completedConsultations ?? 0,
+          pendingConsultations: metrics.pendingConsultations ?? 0,
+        };
+        try {
+          const apptRes = await mobileApiClient.departmentAdmin.getAppointments();
+          if (apptRes.data) {
+            breakdownRows = apptRes.data.slice(0, 15).map((a: any) => ({
+              appointmentNumber: a.appointmentNumber || a.id.slice(0, 8),
+              patient: a.patient ? `${a.patient.firstName || ''} ${a.patient.lastName || ''}`.trim() : 'Patient',
+              doctor: a.doctor?.employee?.user ? `Dr. ${a.doctor.employee.user.firstName || ''} ${a.doctor.employee.user.lastName || ''}`.trim() : 'Physician',
+              time: a.appointmentTime || '10:00 AM',
+              status: a.status,
+            }));
+          }
+        } catch (_) {}
+      } else if (reportType === 'ipd_census') {
+        summaryObj = {
+          currentInpatients: metrics.currentIpdPatients ?? 0,
+          bedOccupancyRate: `${metrics.bedOccupancyRate ?? 0}%`,
+          totalBeds: metrics.totalBeds ?? 0,
+          availableBeds: metrics.availableBeds ?? 0,
+        };
+        try {
+          const ipdRes = await mobileApiClient.departmentAdmin.getIpdMonitoring();
+          if (ipdRes.data?.inpatients) {
+            breakdownRows = ipdRes.data.inpatients.slice(0, 15).map((ip: any) => ({
+              uhid: ip.patient?.uhid || '—',
+              patient: `${ip.patient?.firstName || ''} ${ip.patient?.lastName || ''}`.trim(),
+              ward: ip.ward?.name || 'Inpatient Care',
+              bed: ip.bed?.bedNumber || ip.bedNumber || '—',
+              admittedAt: ip.admittedAt ? new Date(ip.admittedAt).toLocaleDateString() : 'Active',
+            }));
+          }
+        } catch (_) {}
+      } else if (reportType === 'doctor_workload') {
+        summaryObj = {
+          totalDoctors: metrics.totalDoctors ?? 0,
+          availableDoctors: metrics.availableDoctors ?? 0,
+          pendingConsultations: metrics.pendingConsultations ?? 0,
+          completedConsultations: metrics.completedConsultations ?? 0,
+        };
+        try {
+          const docRes = await mobileApiClient.departmentAdmin.getDoctors();
+          if (docRes.data) {
+            breakdownRows = docRes.data.map((d: any) => {
+              const u = d.employee?.user || d.user;
+              return {
+                doctor: `Dr. ${u?.firstName || ''} ${u?.lastName || ''}`.trim(),
+                designation: d.designation || 'Specialist',
+                specialization: d.specialization || 'Clinical',
+                status: d.isAvailableToday ? 'On Duty' : 'Off Duty',
+                shift: d.shift || 'Regular',
+              };
+            });
+          }
+        } catch (_) {}
+      } else if (reportType === 'diagnostics_volume') {
+        summaryObj = {
+          totalDiagnosticOrders: metrics.pendingDiagnosticRequests ?? 0,
+          pendingLabRequests: metrics.pendingLabRequests ?? 0,
+          pendingRadiologyRequests: metrics.pendingRadiologyRequests ?? 0,
+        };
+        try {
+          const labRes = await mobileApiClient.departmentAdmin.getLabRequests();
+          if (labRes.data) {
+            breakdownRows = labRes.data.slice(0, 15).map((l: any) => ({
+              orderNumber: l.orderNumber || l.id.slice(0, 8),
+              patient: l.patient ? `${l.patient.firstName || ''} ${l.patient.lastName || ''}`.trim() : 'Patient',
+              status: l.status,
+              items: l.orderItems?.map((it: any) => it.labTest?.name).filter(Boolean).join(', ') || 'Diagnostic Panel',
+            }));
+          }
+        } catch (_) {}
+      } else if (reportType === 'bed_turnover') {
+        summaryObj = {
+          totalBeds: metrics.totalBeds ?? 0,
+          occupiedBeds: metrics.occupiedBeds ?? 0,
+          availableBeds: metrics.availableBeds ?? 0,
+          occupancyRate: `${metrics.bedOccupancyRate ?? 0}%`,
+        };
+        try {
+          const wardRes = await mobileApiClient.departmentAdmin.getWardsAndBeds();
+          if (wardRes.data) {
+            breakdownRows = wardRes.data.flatMap((w: any) =>
+              (w.beds || []).map((b: any) => ({
+                ward: w.name,
+                bedNumber: b.bedNumber,
+                type: b.type || w.type || 'Standard',
+                status: b.status,
+              }))
+            );
+          }
+        } catch (_) {}
+      }
+
+      if (repData.summary && Object.keys(summaryObj).length === 0) {
+        summaryObj = repData.summary;
+      }
+      if (repData.rows && repData.rows.length > 0 && breakdownRows.length === 0) {
+        breakdownRows = repData.rows;
+      }
+
+      setData({
+        summary: summaryObj,
+        rows: breakdownRows,
+      });
     } catch (err) {
       console.error('Failed to load report:', err);
     } finally {
@@ -47,7 +162,7 @@ export default function DepartmentReportsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Analytics" subtitle="Throughput & Clinical Performance" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Department Analytics" subtitle="Throughput & Clinical Performance" />
 
       {/* Report Category Chips */}
       <View style={styles.selectorBar}>

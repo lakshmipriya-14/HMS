@@ -61,6 +61,9 @@ export default function DoctorTabsLayout() {
             title: 'Surgery OT',
             href: null,
             tabBarIcon: ({ color, size }) => <Scissors color={color} size={size} />,
+            header: ({ options }) => (
+              <SuperAdminHeader currentTitle={options.title} home="/(doctor)" showBack={true} fallbackHref="/(doctor)" />
+            ),
           }}
         />
         <Tabs.Screen
@@ -69,6 +72,9 @@ export default function DoctorTabsLayout() {
             title: 'Reports',
             href: null,
             tabBarIcon: ({ color, size }) => <FileText color={color} size={size} />,
+            header: ({ options }) => (
+              <SuperAdminHeader currentTitle={options.title} home="/(doctor)" showBack={true} fallbackHref="/(doctor)" />
+            ),
           }}
         />
         <Tabs.Screen
@@ -77,6 +83,9 @@ export default function DoctorTabsLayout() {
             title: 'Rx Pad',
             href: null,
             tabBarIcon: ({ color, size }) => <Pill color={color} size={size} />,
+            header: ({ options }) => (
+              <SuperAdminHeader currentTitle={options.title} home="/(doctor)" showBack={true} fallbackHref="/(doctor)" />
+            ),
           }}
         />
         <Tabs.Screen
@@ -93,7 +102,16 @@ export default function DoctorTabsLayout() {
             tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
           }}
         />
-        <Tabs.Screen name="patient-history" options={{ title: 'Patient history', href: null }} />
+        <Tabs.Screen
+          name="patient-history"
+          options={{
+            title: 'Patient history',
+            href: null,
+            header: ({ options }) => (
+              <SuperAdminHeader currentTitle={options.title} home="/(doctor)" showBack={true} fallbackHref="/(doctor)/patients" />
+            ),
+          }}
+        />
       </Tabs>
     </WorkspaceGate>
   );

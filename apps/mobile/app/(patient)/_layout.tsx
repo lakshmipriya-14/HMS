@@ -5,6 +5,7 @@ import { Calendar, Home, LogOut, User } from 'lucide-react-native';
 import { WorkspaceGate } from '../../components/WorkspaceGate';
 import { PatientHeaderRight } from '../../components/PatientHeaderRight';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
+import { HeaderBackButton } from '../../components/ui/HeaderBackButton';
 import { UyirinaiTheme } from '../../constants/theme';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -126,6 +127,7 @@ export default function PatientTabsLayout() {
             title: 'Medical History',
             headerTitle: 'Medical History',
             href: null,
+            headerLeft: () => <HeaderBackButton fallbackHref="/(patient)" />,
           }}
         />
         <Tabs.Screen
@@ -134,6 +136,7 @@ export default function PatientTabsLayout() {
             title: 'Payment History',
             headerTitle: 'Payment & Billing',
             href: null,
+            headerLeft: () => <HeaderBackButton fallbackHref="/(patient)" />,
           }}
         />
         <Tabs.Screen
@@ -142,6 +145,7 @@ export default function PatientTabsLayout() {
             title: 'Notifications',
             headerTitle: 'Health Alerts',
             href: null,
+            headerLeft: () => <HeaderBackButton fallbackHref="/(patient)" />,
           }}
         />
         <Tabs.Screen
@@ -150,6 +154,7 @@ export default function PatientTabsLayout() {
             title: 'Book Appointment',
             headerTitle: 'Schedule Consultation',
             href: null,
+            headerLeft: () => <HeaderBackButton fallbackHref="/(patient)" />,
           }}
         />
       </Tabs>

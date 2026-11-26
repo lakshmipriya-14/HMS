@@ -89,7 +89,7 @@ export default function WardBedOverviewScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Wards & Bed Map" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Wards & Bed Map" />
 
       {/* Summary KPI Strip */}
       <View style={styles.kpiStrip}>

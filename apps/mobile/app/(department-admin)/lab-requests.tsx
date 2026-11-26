@@ -50,7 +50,7 @@ export default function LaboratoryRequestsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Laboratory Orders" subtitle="Specimens, Barcodes & Test Reports" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Department Laboratory Orders" subtitle="Specimens, Barcodes & Test Reports" />
 
       {/* Filter and Search */}
       <View style={styles.topFilterBar}>

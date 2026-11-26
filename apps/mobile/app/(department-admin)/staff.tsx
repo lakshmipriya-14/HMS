@@ -60,6 +60,16 @@ export default function DepartmentStaffScreen() {
   const [profileModal, setProfileModal] = useState(false);
   const [profileStaff, setProfileStaff] = useState<any | null>(null);
 
+  const getStaffUser = (item: any) => ({
+    firstName: item.user?.firstName || item.firstName || '',
+    lastName: item.user?.lastName || item.lastName || '',
+    email: item.user?.email || item.email || '',
+    phone: item.user?.phone || item.phone || '',
+    role: item.nursingProfile ? (item.nursingProfile.isHeadNurse ? 'Head Nurse' : 'Staff Nurse') : item.role || item.designation || 'Department Staff',
+    shift: item.nursingProfile?.shift || item.shift || 'DAY',
+    status: item.user?.isActive !== undefined ? (item.user.isActive ? 'ACTIVE' : 'INACTIVE') : item.status || 'ACTIVE',
+  });
+
   const loadStaff = async () => {
     try {
       setRefreshing(true);
@@ -162,14 +172,17 @@ export default function DepartmentStaffScreen() {
 
   const filtered = staff.filter((s) => {
     if (!search) return true;
-    const name = `${s.firstName || ''} ${s.lastName || ''}`.toLowerCase();
-    const r = (s.role || '').toLowerCase();
-    return name.includes(search.toLowerCase()) || r.includes(search.toLowerCase());
+    const su = getStaffUser(s);
+    const name = `${su.firstName} ${su.lastName}`.toLowerCase();
+    const r = su.role.toLowerCase();
+    const code = (s.employeeCode || '').toLowerCase();
+    const q = search.toLowerCase();
+    return name.includes(q) || r.includes(q) || code.includes(q);
   });
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Staff" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Department Staff" />
 
       {/* Top Bar with Search, Roll-call shortcut & Add Button */}
       <View style={styles.topBar}>
@@ -225,7 +238,9 @@ export default function DepartmentStaffScreen() {
           </View>
         ) : (
           filtered.map((item) => {
+            const su = getStaffUser(item);
             const isPresent = item.attendanceStatus !== 'ABSENT';
+            const isActive = su.status === 'ACTIVE';
 
             return (
               <TouchableOpacity
@@ -237,20 +252,20 @@ export default function DepartmentStaffScreen() {
                 <View style={styles.cardTop}>
                   <View style={styles.avatar}>
                     <Text style={styles.avatarText}>
-                      {item.firstName?.[0] || 'S'}
-                      {item.lastName?.[0] || ''}
+                      {su.firstName?.[0] || 'S'}
+                      {su.lastName?.[0] || ''}
                     </Text>
                   </View>
                   <View style={styles.infoCol}>
                     <Text style={styles.staffName}>
-                      {item.firstName} {item.lastName}
+                      {su.firstName} {su.lastName}
                     </Text>
-                    <Text style={styles.staffRole}>{item.role || 'Nursing Staff'}</Text>
+                    <Text style={styles.staffRole}>{su.role}</Text>
                   </View>
                   <TouchableOpacity
                     style={[
                       styles.attendanceBadge,
-                      { backgroundColor: isPresent ? '#EAF5ED' : '#EAF5ED' },
+                      { backgroundColor: isPresent ? '#EAF5ED' : '#FEE2E2' },
                     ]}
                     onPress={(e) => {
                       e.stopPropagation();
@@ -271,11 +286,11 @@ export default function DepartmentStaffScreen() {
                 <View style={styles.cardFooter}>
                   <View style={styles.metaItem}>
                     <Phone size={13} color="#64748B" />
-                    <Text style={styles.metaText}>{item.phone || 'No phone'}</Text>
+                    <Text style={styles.metaText}>{su.phone || 'No phone'}</Text>
                   </View>
                   <View style={styles.metaItem}>
                     <Clock size={13} color="#64748B" />
-                    <Text style={styles.metaText}>{item.shift || 'General Shift'}</Text>
+                    <Text style={styles.metaText}>{su.shift}</Text>
                   </View>
                   <TouchableOpacity
                     style={styles.editBtn}

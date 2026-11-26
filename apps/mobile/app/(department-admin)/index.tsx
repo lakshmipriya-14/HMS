@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import {
   BedDouble,
   Users,
@@ -62,10 +62,22 @@ export default function DepartmentAdminMobileDashboard() {
     fetchTelemetry();
   }, []);
 
-  const stats = data?.stats || {};
+  useFocusEffect(
+    useCallback(() => {
+      fetchTelemetry();
+    }, [])
+  );
+
+  const stats = {
+    ...(data?.stats || {}),
+    ...(data?.metrics || {}),
+    todayOpd: data?.metrics?.todayOpdRegistrations ?? data?.stats?.todayOpd ?? 0,
+    currentIpd: data?.metrics?.currentIpdPatients ?? data?.stats?.currentIpd ?? 0,
+  };
   const department = data?.department || {};
   const recentActivities = data?.recentActivities || [];
-  const alerts = data?.alerts || [];
+  const alerts = data?.alerts || data?.notifications || [];
+  const unreadAlerts = alerts.filter((a: any) => !a.isRead);
 
   if (loading && !refreshing) {
     return (
@@ -81,7 +93,8 @@ export default function DepartmentAdminMobileDashboard() {
       <AdminHeader
         title={department.name ? `${department.name} Command` : 'Department Command'}
         subtitle="Operational & Clinical Overview"
-        alertsCount={alerts.length}
+        alertsCount={unreadAlerts.length}
+        notificationHref="/(department-admin)/notifications"
       />
 
       {/* Date Filter Bar */}

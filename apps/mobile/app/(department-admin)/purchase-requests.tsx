@@ -71,7 +71,7 @@ export default function PurchaseRequestsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Purchase Indents" subtitle="Procurement & Capital Orders" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Purchase Indents" subtitle="Procurement & Capital Orders" />
 
       {/* Top Bar */}
       <View style={styles.topBar}>

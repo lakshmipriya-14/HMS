@@ -53,7 +53,18 @@ export default function DepartmentAppointmentsScreen() {
   const [cancelModal, setCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
 
+  // Reject state
+  const [rejectModal, setRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState('Doctor slot unavailable / emergency shift');
+
   const [processing, setProcessing] = useState(false);
+
+  const getDocName = (doc: any) => {
+    if (!doc) return 'Assigned Physician';
+    const u = doc.employee?.user || doc.user;
+    if (u) return `Dr. ${u.firstName || ''} ${u.lastName || ''}`.trim();
+    return doc.name ? `Dr. ${doc.name}` : 'Assigned Physician';
+  };
 
   const loadData = async () => {
     try {
@@ -85,6 +96,54 @@ export default function DepartmentAppointmentsScreen() {
   useEffect(() => {
     loadData();
   }, [statusFilter]);
+
+  const handleApprove = async (id: string) => {
+    try {
+      setProcessing(true);
+      await mobileApiClient.departmentAdmin.updateAppointmentStatus(id, 'CONFIRMED');
+      setToastMsg('Appointment approved and confirmed');
+      setTimeout(() => setToastMsg(''), 3000);
+      loadData();
+    } catch (err) {
+      console.error('Failed to approve appointment:', err);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleRejectSubmit = async () => {
+    if (!selectedAppt) return;
+    try {
+      setProcessing(true);
+      await mobileApiClient.departmentAdmin.cancelAppointment(
+        selectedAppt.id,
+        `Rejected by Department Admin: ${rejectReason}`
+      );
+      setRejectModal(false);
+      setSelectedAppt(null);
+      setToastMsg('Appointment rejected');
+      setTimeout(() => setToastMsg(''), 3000);
+      loadData();
+    } catch (err) {
+      console.error('Failed to reject appointment:', err);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleComplete = async (id: string) => {
+    try {
+      setProcessing(true);
+      await mobileApiClient.departmentAdmin.updateAppointmentStatus(id, 'COMPLETED');
+      setToastMsg('Consultation marked as completed');
+      setTimeout(() => setToastMsg(''), 3000);
+      loadData();
+    } catch (err) {
+      console.error('Failed to complete consultation:', err);
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   const handleCheckIn = async (id: string) => {
     try {
@@ -164,17 +223,19 @@ export default function DepartmentAppointmentsScreen() {
     if (!search) return true;
     const patName = `${a.patient?.firstName || ''} ${a.patient?.lastName || ''}`.toLowerCase();
     const uhid = (a.patient?.uhid || '').toLowerCase();
-    const docName = (a.doctor?.user?.firstName || a.doctor?.name || '').toLowerCase();
-    return (
-      patName.includes(search.toLowerCase()) ||
-      uhid.includes(search.toLowerCase()) ||
-      docName.includes(search.toLowerCase())
-    );
+    const docName = getDocName(a.doctor).toLowerCase();
+    const q = search.toLowerCase();
+    return patName.includes(q) || uhid.includes(q) || docName.includes(q);
   });
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Appointments" subtitle="Queue & Check-in Desk" />
+      <AdminHeader
+        showBack={true}
+        fallbackHref="/(department-admin)/operations"
+        title="Department Appointments"
+        subtitle="Queue & Check-in Desk"
+      />
 
       {toastMsg ? (
         <View style={styles.toast}>
@@ -211,14 +272,14 @@ export default function DepartmentAppointmentsScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.statusChips}
         >
-          {(['', 'SCHEDULED', 'CHECKED_IN', 'COMPLETED', 'CANCELLED'] as const).map((st) => (
+          {(['', 'SCHEDULED', 'CONFIRMED', 'CHECKED_IN', 'COMPLETED', 'CANCELLED'] as const).map((st) => (
             <TouchableOpacity
               key={st}
               style={[styles.chip, statusFilter === st && styles.chipActive]}
               onPress={() => setStatusFilter(st)}
             >
               <Text style={[styles.chipText, statusFilter === st && styles.chipTextActive]}>
-                {st === '' ? 'All' : st.replace('_', ' ')}
+                {st === '' ? 'All' : st === 'SCHEDULED' ? 'Pending Approval' : st.replace('_', ' ')}
               </Text>
             </TouchableOpacity>
           ))}
@@ -289,7 +350,7 @@ export default function DepartmentAppointmentsScreen() {
 
                 <View style={styles.detailsRow}>
                   <Text style={styles.doctorText}>
-                    Dr. {item.doctor?.user?.firstName || item.doctor?.name || 'Assigned Physician'}
+                    {getDocName(item.doctor)}
                   </Text>
                   <Text style={styles.timeText}>
                     {new Date(item.appointmentDate || Date.now()).toLocaleDateString('en-IN')} •{' '}
@@ -299,13 +360,50 @@ export default function DepartmentAppointmentsScreen() {
 
                 {!isCompleted && !isCancelled && (
                   <View style={styles.actionsRow}>
-                    {!isCheckedIn && (
+                    {(item.status === 'SCHEDULED' || item.status === 'PENDING') && (
+                      <TouchableOpacity
+                        style={[styles.btn, { backgroundColor: '#38845A' }]}
+                        onPress={() => handleApprove(item.id)}
+                        disabled={processing}
+                      >
+                        <CheckCircle2 size={13} color="#FFFFFF" />
+                        <Text style={styles.checkInText}>Approve</Text>
+                      </TouchableOpacity>
+                    )}
+
+                    {(item.status === 'SCHEDULED' || item.status === 'PENDING') && (
+                      <TouchableOpacity
+                        style={[styles.btn, styles.cancelBtn]}
+                        onPress={() => {
+                          setSelectedAppt(item);
+                          setRejectModal(true);
+                        }}
+                        disabled={processing}
+                      >
+                        <XCircle size={13} color="#DC2626" />
+                        <Text style={styles.cancelText}>Reject</Text>
+                      </TouchableOpacity>
+                    )}
+
+                    {item.status === 'CONFIRMED' && !isCheckedIn && (
                       <TouchableOpacity
                         style={[styles.btn, styles.checkInBtn]}
                         onPress={() => handleCheckIn(item.id)}
+                        disabled={processing}
                       >
                         <CheckCircle2 size={13} color="#FFFFFF" />
                         <Text style={styles.checkInText}>Check In</Text>
+                      </TouchableOpacity>
+                    )}
+
+                    {isCheckedIn && (
+                      <TouchableOpacity
+                        style={[styles.btn, { backgroundColor: '#0284C7' }]}
+                        onPress={() => handleComplete(item.id)}
+                        disabled={processing}
+                      >
+                        <CheckCircle2 size={13} color="#FFFFFF" />
+                        <Text style={styles.checkInText}>Complete</Text>
                       </TouchableOpacity>
                     )}
 
@@ -318,21 +416,25 @@ export default function DepartmentAppointmentsScreen() {
                         );
                         setRescheduleModal(true);
                       }}
+                      disabled={processing}
                     >
                       <Calendar size={13} color="#38845A" />
                       <Text style={styles.rescheduleText}>Reschedule</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity
-                      style={[styles.btn, styles.cancelBtn]}
-                      onPress={() => {
-                        setSelectedAppt(item);
-                        setCancelModal(true);
-                      }}
-                    >
-                      <XCircle size={13} color="#DC2626" />
-                      <Text style={styles.cancelText}>Cancel</Text>
-                    </TouchableOpacity>
+                    {item.status === 'CONFIRMED' && (
+                      <TouchableOpacity
+                        style={[styles.btn, styles.cancelBtn]}
+                        onPress={() => {
+                          setSelectedAppt(item);
+                          setCancelModal(true);
+                        }}
+                        disabled={processing}
+                      >
+                        <XCircle size={13} color="#DC2626" />
+                        <Text style={styles.cancelText}>Cancel</Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
                 )}
               </View>
@@ -499,6 +601,46 @@ export default function DepartmentAppointmentsScreen() {
               >
                 <Text style={styles.submitBtnText}>
                   {processing ? 'Cancelling...' : 'Confirm Cancellation'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Reject Appointment Modal */}
+      <Modal visible={rejectModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Reject Appointment Request</Text>
+              <TouchableOpacity onPress={() => setRejectModal(false)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.modalBody}>
+              <Text style={styles.inputLabel}>Rejection Reason *</Text>
+              <TextInput
+                style={[styles.modalInput, { height: 80 }]}
+                multiline
+                numberOfLines={3}
+                value={rejectReason}
+                onChangeText={setRejectReason}
+                placeholder="State reason for rejecting request..."
+              />
+
+              <TouchableOpacity
+                style={[
+                  styles.submitBtn,
+                  { backgroundColor: '#DC2626' },
+                  processing && { opacity: 0.6 },
+                ]}
+                onPress={handleRejectSubmit}
+                disabled={processing}
+              >
+                <Text style={styles.submitBtnText}>
+                  {processing ? 'Rejecting...' : 'Confirm Rejection'}
                 </Text>
               </TouchableOpacity>
             </View>

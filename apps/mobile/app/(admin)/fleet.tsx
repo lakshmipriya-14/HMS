@@ -152,7 +152,7 @@ export default function AdminFleetScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="108 Emergency Fleet" subtitle="Rapid Response Logistics" />
+      <AdminHeader showBack={true} fallbackHref="/(admin)/more" title="108 Emergency Fleet" subtitle="Rapid Response Logistics" />
 
       {/* Action Bar */}
       <View style={styles.actionBar}>

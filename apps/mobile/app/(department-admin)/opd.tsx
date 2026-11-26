@@ -60,7 +60,7 @@ export default function OpdManagementScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="OPD Queue Monitoring" subtitle="Lounge Queue & Physician Flow" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="OPD Queue Monitoring" subtitle="Lounge Queue & Physician Flow" />
 
       {/* Summary Chips */}
       <View style={styles.summaryBar}>
