@@ -116,7 +116,7 @@ export default function AdminApprovalsScreen() {
           style={[styles.tabBtn, activeTab === 'pending' && styles.tabBtnActive]}
           onPress={() => setActiveTab('pending')}
         >
-          <CheckSquare size={16} color={activeTab === 'pending' ? '#0F766E' : '#64748B'} />
+          <CheckSquare size={16} color={activeTab === 'pending' ? '#38845A' : '#64748B'} />
           <Text style={[styles.tabBtnText, activeTab === 'pending' && styles.tabBtnTextActive]}>
             Pending ({summary.totalPending || 0})
           </Text>
@@ -126,7 +126,7 @@ export default function AdminApprovalsScreen() {
           style={[styles.tabBtn, activeTab === 'history' && styles.tabBtnActive]}
           onPress={() => setActiveTab('history')}
         >
-          <History size={16} color={activeTab === 'history' ? '#0F766E' : '#64748B'} />
+          <History size={16} color={activeTab === 'history' ? '#38845A' : '#64748B'} />
           <Text style={[styles.tabBtnText, activeTab === 'history' && styles.tabBtnTextActive]}>
             Approval History ({historyData.length})
           </Text>
@@ -173,7 +173,7 @@ export default function AdminApprovalsScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#0F766E" />
+          <ActivityIndicator size="large" color="#38845A" />
           <Text style={styles.loadingText}>Fetching live approval queues...</Text>
         </View>
       ) : activeTab === 'history' ? (
@@ -182,7 +182,7 @@ export default function AdminApprovalsScreen() {
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={loadApprovals} tintColor="#0F766E" />
+            <RefreshControl refreshing={refreshing} onRefresh={loadApprovals} tintColor="#38845A" />
           }
         >
           {historyData.length === 0 ? (
@@ -202,7 +202,7 @@ export default function AdminApprovalsScreen() {
                     <View
                       style={[
                         styles.historyActionBadge,
-                        { backgroundColor: isApproved ? '#D1FAE5' : '#FEE2E2' },
+                        { backgroundColor: isApproved ? '#D1FAE5' : '#EAF5ED' },
                       ]}
                     >
                       <Text
@@ -245,7 +245,7 @@ export default function AdminApprovalsScreen() {
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={loadApprovals} tintColor="#0F766E" />
+            <RefreshControl refreshing={refreshing} onRefresh={loadApprovals} tintColor="#38845A" />
           }
         >
           {/* SECTION 1: APPOINTMENT REQUESTS */}
@@ -319,7 +319,7 @@ export default function AdminApprovalsScreen() {
           {(categoryFilter === 'ALL' || categoryFilter === 'LEAVES') && (
             <View style={styles.sectionWrap}>
               <View style={styles.sectionTitleRow}>
-                <UserCheck size={16} color="#0F766E" />
+                <UserCheck size={16} color="#38845A" />
                 <Text style={styles.sectionTitle}>Doctor Leave Applications ({doctorLeaves.length})</Text>
               </View>
 
@@ -420,7 +420,7 @@ export default function AdminApprovalsScreen() {
                           styles.pendingBadge,
                           {
                             backgroundColor:
-                              bed.status === 'CLEANING' ? '#FEF3C7' : '#FEE2E2',
+                              bed.status === 'CLEANING' ? '#FEF3C7' : '#EAF5ED',
                           },
                         ]}
                       >
@@ -540,7 +540,7 @@ export default function AdminApprovalsScreen() {
                 styles.confirmBtn,
                 {
                   backgroundColor:
-                    actionItem?.action === 'APPROVE' ? '#0F766E' : '#DC2626',
+                    actionItem?.action === 'APPROVE' ? '#38845A' : '#DC2626',
                 },
               ]}
               onPress={handleExecuteAction}
@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   tabBtnActive: {
-    borderBottomColor: '#0F766E',
+    borderBottomColor: '#38845A',
   },
   tabBtnText: {
     fontSize: 12,
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   tabBtnTextActive: {
-    color: '#0F766E',
+    color: '#38845A',
   },
   filterScroll: {
     backgroundColor: '#FFFFFF',
@@ -608,7 +608,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   filterChipActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   filterChipText: {
     fontSize: 11,
@@ -662,7 +662,7 @@ const styles = StyleSheet.create({
   cardDate: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#0F766E',
+    color: '#38845A',
     marginTop: 2,
   },
   reasonText: {
@@ -702,7 +702,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   approveBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   approveBtnText: {
     color: '#FFFFFF',
@@ -710,7 +710,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   rejectBtn: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
     borderWidth: 1,
     borderColor: '#FECDD3',
   },

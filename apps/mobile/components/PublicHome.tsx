@@ -366,7 +366,7 @@ export function PublicHome() {
               EXCELLENCE IN CARE
             </Text>
           </View>
-          <Text style={[styles.sectionHeading, { color: UyirinaiTheme.colors.white }]}>
+          <Text style={[styles.sectionHeading, { color: UyirinaiTheme.colors.textPrimary }]}>
             Why Choose UYIRINAI?
           </Text>
 
@@ -961,7 +961,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   heroIntroText: {
-    color: '#FEE2E2',
+    color: UyirinaiTheme.colors.lightGreen,
     fontSize: 13,
     lineHeight: 20,
     marginTop: 16,
@@ -1024,7 +1024,7 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   heroStatLabel: {
-    color: '#FEE2E2',
+    color: UyirinaiTheme.colors.lightGreen,
     fontSize: 10,
     fontWeight: '600',
     marginTop: 2,
@@ -1108,9 +1108,12 @@ const styles = StyleSheet.create({
 
   // Why Choose Dark Section
   darkHighlightSection: {
-    backgroundColor: UyirinaiTheme.colors.black,
+    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
     paddingHorizontal: 20,
     paddingVertical: 32,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderLight,
   },
   whyGrid: {
     flexDirection: 'row',
@@ -1121,22 +1124,22 @@ const styles = StyleSheet.create({
   },
   whyCard: {
     width: '48%',
-    backgroundColor: '#262626',
+    backgroundColor: UyirinaiTheme.colors.white,
     borderRadius: 14,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#404040',
+    borderColor: UyirinaiTheme.colors.border,
   },
   whyTitle: {
     fontSize: 13,
     fontWeight: '800',
-    color: UyirinaiTheme.colors.white,
+    color: UyirinaiTheme.colors.textPrimary,
     marginTop: 10,
     marginBottom: 4,
   },
   whyDesc: {
     fontSize: 11,
-    color: '#A3A3A3',
+    color: UyirinaiTheme.colors.textSecondary,
     lineHeight: 16,
   },
 
@@ -1167,7 +1170,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: UyirinaiTheme.colors.softGreen,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
@@ -1215,7 +1218,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: UyirinaiTheme.colors.softGreen,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1358,7 +1361,7 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 10,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: UyirinaiTheme.colors.softGreen,
     alignItems: 'center',
     justifyContent: 'center',
   },

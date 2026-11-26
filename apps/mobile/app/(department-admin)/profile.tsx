@@ -88,7 +88,7 @@ export default function DepartmentAdminProfileScreen() {
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#0F766E" />
+        <ActivityIndicator size="large" color="#38845A" />
       </View>
     );
   }
@@ -117,7 +117,7 @@ export default function DepartmentAdminProfileScreen() {
           </View>
 
           <View style={styles.metaRow}>
-            <Building2 size={14} color="#0F766E" />
+            <Building2 size={14} color="#38845A" />
             <Text style={styles.metaText}>
               Assigned Dept: {profile?.department?.name || 'Department'}
             </Text>
@@ -129,7 +129,7 @@ export default function DepartmentAdminProfileScreen() {
           <Text style={styles.formTitle}>Contact Details</Text>
           {phoneSaved && (
             <View style={styles.successBox}>
-              <CheckCircle2 size={14} color="#0F766E" />
+              <CheckCircle2 size={14} color="#38845A" />
               <Text style={styles.successText}>Phone number updated successfully</Text>
             </View>
           )}
@@ -158,7 +158,7 @@ export default function DepartmentAdminProfileScreen() {
 
           {passSaved && (
             <View style={styles.successBox}>
-              <CheckCircle2 size={14} color="#0F766E" />
+              <CheckCircle2 size={14} color="#38845A" />
               <Text style={styles.successText}>Password updated successfully</Text>
             </View>
           )}
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 18,
     fontWeight: '900',
-    color: '#0F766E',
+    color: '#38845A',
   },
   profileInfo: {
     flex: 1,
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   profileRole: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
     marginTop: 2,
     letterSpacing: 0.5,
   },
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     color: '#0F172A',
   },
   saveBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 10,
     paddingVertical: 12,
     alignItems: 'center',
@@ -337,18 +337,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     padding: 8,
     borderRadius: 8,
     marginBottom: 10,
   },
   successText: {
     fontSize: 11,
-    color: '#0F766E',
+    color: '#38845A',
     fontWeight: '600',
   },
   errorBox: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
     padding: 8,
     borderRadius: 8,
     marginBottom: 10,

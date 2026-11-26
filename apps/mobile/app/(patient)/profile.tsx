@@ -252,7 +252,7 @@ export default function PatientProfileScreen() {
       <View style={styles.familySwitcherSection}>
         <View style={styles.secRow}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Users size={16} color="#0F766E" />
+            <Users size={16} color="#38845A" />
             <Text style={styles.sectionHeaderTitle}>Family Members Profile Switcher</Text>
           </View>
           <Text style={styles.switchCount}>{FAMILY_MEMBERS.length} Registered</Text>
@@ -310,7 +310,7 @@ export default function PatientProfileScreen() {
           </View>
 
           <TouchableOpacity style={styles.relinkBtn} onPress={() => setOtpModal(true)}>
-            <KeyRound size={12} color="#0F766E" />
+            <KeyRound size={12} color="#38845A" />
             <Text style={styles.relinkBtnText}>Verify / Re-link Phone OTP</Text>
           </TouchableOpacity>
         </View>
@@ -343,7 +343,7 @@ export default function PatientProfileScreen() {
       <View style={styles.card}>
         <View style={styles.cardHeaderWithBtn}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <HeartPulse size={18} color="#0F766E" />
+            <HeartPulse size={18} color="#38845A" />
             <Text style={styles.cardSectionTitle}>Personal Health Vitals Logger (P13)</Text>
           </View>
           <TouchableOpacity style={styles.addVitalBtn} onPress={() => setVitalsModal(true)}>
@@ -410,7 +410,7 @@ export default function PatientProfileScreen() {
       <View style={styles.card}>
         <View style={styles.cardHeaderWithBtn}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <MessageSquare size={18} color="#0F766E" />
+            <MessageSquare size={18} color="#38845A" />
             <Text style={styles.cardSectionTitle}>Feedback & Complaints Desk (P15)</Text>
           </View>
           <TouchableOpacity style={styles.addVitalBtn} onPress={() => setFeedbackModal(true)}>
@@ -658,11 +658,11 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
     marginRight: 8,
   },
-  familyPillActive: { backgroundColor: '#0F766E', borderColor: '#0F766E' },
+  familyPillActive: { backgroundColor: '#38845A', borderColor: '#38845A' },
   familyPillText: { fontSize: 11, fontWeight: '600', color: '#475569' },
   familyPillTextActive: { color: '#fff', fontWeight: '800' },
   uhidCard: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 16,
     padding: 18,
     marginBottom: 14,
@@ -672,10 +672,10 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   uhidCardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  hospTitle: { color: '#CCFBF1', fontSize: 11, fontWeight: '800', letterSpacing: 0.5 },
-  hospSub: { color: '#99F6E4', fontSize: 9, marginTop: 1 },
+  hospTitle: { color: '#EAF5ED', fontSize: 11, fontWeight: '800', letterSpacing: 0.5 },
+  hospSub: { color: '#CDE8D5', fontSize: 9, marginTop: 1 },
   cardName: { color: '#fff', fontSize: 18, fontWeight: '800', marginTop: 10 },
-  cardRelation: { color: '#CCFBF1', fontSize: 12, marginTop: 2 },
+  cardRelation: { color: '#EAF5ED', fontSize: 12, marginTop: 2 },
   uhidBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -686,13 +686,13 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginTop: 10,
   },
-  uhidBarLabel: { color: '#99F6E4', fontSize: 10, fontWeight: '700' },
+  uhidBarLabel: { color: '#CDE8D5', fontSize: 10, fontWeight: '700' },
   uhidBarVal: { color: '#fff', fontSize: 13, fontWeight: '800', fontFamily: 'monospace' },
   uhidCardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 },
   verifiedTag: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#D1FAE5', paddingHorizontal: 6, paddingVertical: 3, borderRadius: 4 },
   verifiedTagText: { fontSize: 9, fontWeight: '800', color: '#065F46' },
-  relinkBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#CCFBF1', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  relinkBtnText: { fontSize: 10, fontWeight: '700', color: '#0F766E' },
+  relinkBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  relinkBtnText: { fontSize: 10, fontWeight: '700', color: '#38845A' },
   card: {
     backgroundColor: '#fff',
     borderRadius: 14,
@@ -704,7 +704,7 @@ const styles = StyleSheet.create({
   cardSectionTitle: { fontSize: 13, fontWeight: '800', color: '#0F172A' },
   cardHeaderWithBtn: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   cardSub: { fontSize: 11, color: '#64748B', marginTop: 2, marginBottom: 10 },
-  addVitalBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#0F766E', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  addVitalBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#38845A', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   addVitalBtnText: { color: '#fff', fontSize: 11, fontWeight: '700' },
   infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
   infoLabel: { fontSize: 11, color: '#64748B' },
@@ -714,7 +714,7 @@ const styles = StyleSheet.create({
   vitalDate: { fontSize: 11, fontWeight: '700', color: '#0F172A' },
   vitalBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   badgeNormal: { backgroundColor: '#D1FAE5' },
-  badgeAttention: { backgroundColor: '#FEE2E2' },
+  badgeAttention: { backgroundColor: '#EAF5ED' },
   vitalBadgeText: { fontSize: 9, fontWeight: '800' },
   textNormal: { color: '#065F46' },
   textAttention: { color: '#DC2626' },
@@ -727,7 +727,7 @@ const styles = StyleSheet.create({
   complaintCard: { backgroundColor: '#F8FAFC', borderRadius: 8, padding: 10, marginBottom: 8, borderWidth: 1, borderColor: '#F1F5F9' },
   compTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   compTicket: { fontSize: 11, fontWeight: '800', color: '#0F172A', fontFamily: 'monospace' },
-  compDept: { fontSize: 11, color: '#0F766E', fontWeight: '600', marginTop: 1 },
+  compDept: { fontSize: 11, color: '#38845A', fontWeight: '600', marginTop: 1 },
   compBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   compResolved: { backgroundColor: '#D1FAE5' },
   compReview: { backgroundColor: '#FEF3C7' },
@@ -743,7 +743,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
     paddingVertical: 12,
     borderRadius: 10,
     gap: 8,
@@ -758,21 +758,21 @@ const styles = StyleSheet.create({
   modalInputLabel: { fontSize: 11, fontWeight: '700', color: '#475569', marginBottom: 4 },
   modalInput: { backgroundColor: '#F8FAFC', borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8, fontSize: 13, color: '#0F172A' },
   phoneInputRow: { flexDirection: 'row', gap: 8 },
-  sendOtpBtn: { backgroundColor: '#0F766E', borderRadius: 8, paddingHorizontal: 14, justifyContent: 'center' },
+  sendOtpBtn: { backgroundColor: '#38845A', borderRadius: 8, paddingHorizontal: 14, justifyContent: 'center' },
   sendOtpText: { color: '#fff', fontSize: 11, fontWeight: '700' },
   otpPrompt: { fontSize: 10, color: '#64748B', marginTop: 4 },
-  verifyOtpBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0F766E', borderRadius: 10, paddingVertical: 12, marginTop: 14, gap: 6 },
+  verifyOtpBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#38845A', borderRadius: 10, paddingVertical: 12, marginTop: 14, gap: 6 },
   verifyOtpBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
   vitalsInputGrid: { flexDirection: 'row', gap: 10 },
-  saveVitalsBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0F766E', borderRadius: 10, paddingVertical: 12, marginTop: 14, gap: 6 },
+  saveVitalsBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#38845A', borderRadius: 10, paddingVertical: 12, marginTop: 14, gap: 6 },
   saveVitalsBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
   starSelectorRow: { flexDirection: 'row', gap: 8, marginVertical: 6 },
   deptPillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginVertical: 4 },
   fDeptPill: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, backgroundColor: '#F1F5F9', borderWidth: 1, borderColor: '#E2E8F0' },
-  fDeptPillActive: { backgroundColor: '#CCFBF1', borderColor: '#0F766E' },
+  fDeptPillActive: { backgroundColor: '#EAF5ED', borderColor: '#38845A' },
   fDeptText: { fontSize: 10, color: '#475569' },
-  fDeptTextActive: { color: '#0F766E', fontWeight: '700' },
-  submitFeedbackBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0F766E', borderRadius: 10, paddingVertical: 12, marginTop: 14, gap: 6 },
+  fDeptTextActive: { color: '#38845A', fontWeight: '700' },
+  submitFeedbackBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#38845A', borderRadius: 10, paddingVertical: 12, marginTop: 14, gap: 6 },
   submitFeedbackBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
 });
 

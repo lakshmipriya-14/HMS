@@ -52,7 +52,7 @@ export default function IpdManagementScreen() {
       {/* Summary Row */}
       <View style={styles.summaryBar}>
         <View style={styles.sumBox}>
-          <Text style={[styles.sumVal, { color: '#0F766E' }]}>{data?.totalInpatients ?? inpatients.length}</Text>
+          <Text style={[styles.sumVal, { color: '#38845A' }]}>{data?.totalInpatients ?? inpatients.length}</Text>
           <Text style={styles.sumLbl}>Total Inpatients</Text>
         </View>
         <View style={styles.sumBox}>
@@ -80,11 +80,11 @@ export default function IpdManagementScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadIpd} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadIpd} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <DoorOpen size={40} color="#CBD5E1" />
@@ -105,7 +105,7 @@ export default function IpdManagementScreen() {
                     <Text style={styles.uhidText}>UHID: {item.patient?.uhid || '—'}</Text>
                   </View>
                   <View style={styles.bedBadge}>
-                    <BedDouble size={14} color="#0F766E" />
+                    <BedDouble size={14} color="#38845A" />
                     <Text style={styles.bedBadgeText}>
                       Bed: {item.bed?.bedNumber || item.bedNumber || 'Assigned'}
                     </Text>
@@ -119,7 +119,7 @@ export default function IpdManagementScreen() {
                   </View>
                   <View style={styles.detailItem}>
                     <Text style={styles.detailLabel}>Length of Stay</Text>
-                    <Text style={[styles.detailVal, { color: daysStay > 7 ? '#D97706' : '#0F766E' }]}>
+                    <Text style={[styles.detailVal, { color: daysStay > 7 ? '#D97706' : '#38845A' }]}>
                       {daysStay} Day(s)
                     </Text>
                   </View>
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   },
   uhidText: {
     fontSize: 11,
-    color: '#0F766E',
+    color: '#38845A',
     fontFamily: 'monospace',
     marginTop: 1,
   },
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   bedBadgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   detailsGrid: {
     flexDirection: 'row',

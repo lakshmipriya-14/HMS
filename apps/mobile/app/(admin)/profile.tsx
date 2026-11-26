@@ -141,7 +141,7 @@ export default function AdminProfileScreen() {
         {/* Profile Card */}
         <View style={styles.card}>
           <View style={styles.iconCircle}>
-            <ShieldCheck size={36} color="#0F766E" />
+            <ShieldCheck size={36} color="#38845A" />
           </View>
           <Text style={styles.title}>{displayName}</Text>
           <Text style={styles.sub}>{user?.email || 'hospital_admin@demo.uyirinai.test'}</Text>
@@ -185,7 +185,7 @@ export default function AdminProfileScreen() {
           style={styles.actionBtn}
           onPress={() => setSettingsModal(true)}
         >
-          <View style={[styles.actionIconBox, { backgroundColor: '#FEE2E2' }]}>
+          <View style={[styles.actionIconBox, { backgroundColor: '#EAF5ED' }]}>
             <PhoneCall size={18} color="#DC2626" />
           </View>
           <View style={{ flex: 1, marginLeft: 12 }}>
@@ -199,8 +199,8 @@ export default function AdminProfileScreen() {
           style={styles.actionBtn}
           onPress={() => setPwdModal(true)}
         >
-          <View style={[styles.actionIconBox, { backgroundColor: '#CCFBF1' }]}>
-            <KeyRound size={18} color="#0F766E" />
+          <View style={[styles.actionIconBox, { backgroundColor: '#EAF5ED' }]}>
+            <KeyRound size={18} color="#38845A" />
           </View>
           <View style={{ flex: 1, marginLeft: 12 }}>
             <Text style={styles.actionBtnTitle}>Update Account Password</Text>
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
     width: 68,
     height: 68,
     borderRadius: 34,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
@@ -411,13 +411,13 @@ const styles = StyleSheet.create({
   title: { fontSize: 18, fontWeight: '800', color: '#0F172A' },
   sub: { fontSize: 13, color: '#64748B', marginTop: 3 },
   roleTag: {
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
     marginTop: 8,
   },
-  roleTagText: { fontSize: 11, fontWeight: '800', color: '#0F766E' },
+  roleTagText: { fontSize: 11, fontWeight: '800', color: '#38845A' },
   divider: { height: 1, backgroundColor: '#F1F5F9', width: '100%', marginVertical: 14 },
   metaRow: {
     flexDirection: 'row',
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
     paddingVertical: 14,
     borderRadius: 14,
     marginTop: 16,
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   chipActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   chipText: {
     fontSize: 11,
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: 'center',

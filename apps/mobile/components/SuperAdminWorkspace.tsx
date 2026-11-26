@@ -2613,7 +2613,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   selected: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
     borderColor: theme.colors.primary,
   },
   choiceText: { fontSize: 12, color: '#4B5563', fontWeight: '600' },
@@ -2767,7 +2767,7 @@ const styles = StyleSheet.create({
   },
   feedbackError: {
     backgroundColor: theme.colors.accentRedBg,
-    borderColor: '#FECACA',
+    borderColor: '#CDE8D5',
   },
   confirmOverlay: {
     flex: 1,

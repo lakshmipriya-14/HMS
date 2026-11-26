@@ -160,12 +160,12 @@ export default function AdminFleetScreen() {
           style={styles.backBtn}
           onPress={() => router.replace('/(admin)/more')}
         >
-          <ChevronLeft size={20} color="#0F766E" />
+          <ChevronLeft size={20} color="#38845A" />
         </TouchableOpacity>
         <Text style={styles.actionTitle}>Hospital Fleet & Active Radar</Text>
         <View style={{ flexDirection: 'row', gap: 6 }}>
           <TouchableOpacity
-            style={[styles.dispatchBtn, { backgroundColor: '#0F766E' }]}
+            style={[styles.dispatchBtn, { backgroundColor: '#38845A' }]}
             onPress={() => setAddVehicleModal(true)}
           >
             <Plus size={16} color="#FFFFFF" />
@@ -183,14 +183,14 @@ export default function AdminFleetScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#0F766E" />
+          <ActivityIndicator size="large" color="#38845A" />
         </View>
       ) : (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#0F766E" />
+            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />
           }
         >
           {/* Active Dispatches Radar */}
@@ -231,7 +231,7 @@ export default function AdminFleetScreen() {
               <View key={v.id} style={styles.vehicleCard}>
                 <View style={styles.vHeader}>
                   <View style={styles.vIcon}>
-                    <Ambulance size={18} color="#0F766E" />
+                    <Ambulance size={18} color="#38845A" />
                   </View>
                   <View style={{ flex: 1, marginLeft: 10 }}>
                     <Text style={styles.vReg}>{v.registrationNumber}</Text>
@@ -569,7 +569,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     alignItems: 'center',
     justifyContent: 'center',
   },

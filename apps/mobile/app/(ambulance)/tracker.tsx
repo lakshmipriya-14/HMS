@@ -97,7 +97,7 @@ export default function AmbulanceTrackerScreen() {
       <View style={styles.header}>
         <View style={styles.headerTitleRow}>
           <View style={styles.iconBox}>
-            <Navigation size={22} color="#0F766E" />
+            <Navigation size={22} color="#38845A" />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.title}>Live Vehicle Route Tracker</Text>
@@ -117,7 +117,7 @@ export default function AmbulanceTrackerScreen() {
         {/* Live Telemetry KPI Cards */}
         <View style={styles.telemetryGrid}>
           <View style={styles.telemetryKpi}>
-            <Clock size={16} color="#0F766E" />
+            <Clock size={16} color="#38845A" />
             <Text style={styles.kpiValue}>{formatMinSec(secondsRemaining)}</Text>
             <Text style={styles.kpiLabel}>ETA COUNTDOWN</Text>
           </View>
@@ -140,13 +140,13 @@ export default function AmbulanceTrackerScreen() {
       <View style={styles.mapCanvasCard}>
         <View style={styles.mapCanvasHeader}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Radio size={16} color="#059669" />
+            <Radio size={16} color="#38845A" />
             <Text style={styles.gpsCoordText}>
               GPS: {currentWaypoint.lat.toFixed(4)}° N, {currentWaypoint.lng.toFixed(4)}° E • Alt 138m
             </Text>
           </View>
           <View style={styles.greenCorridorPill}>
-            <ShieldCheck size={12} color="#059669" />
+            <ShieldCheck size={12} color="#38845A" />
             <Text style={styles.greenCorridorText}>Smart Corridor Active</Text>
           </View>
         </View>
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC', padding: 16 },
   header: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, marginBottom: 14 },
   headerTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 14 },
-  iconBox: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#CCFBF1', alignItems: 'center', justifyContent: 'center' },
+  iconBox: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#EAF5ED', alignItems: 'center', justifyContent: 'center' },
   title: { fontSize: 17, fontWeight: '800', color: '#0F172A' },
   subtitle: { fontSize: 11, color: '#64748B' },
   sirenToggleBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
@@ -283,11 +283,11 @@ const styles = StyleSheet.create({
   waypointRow: { flexDirection: 'row', gap: 12 },
   nodeColumn: { alignItems: 'center', width: 26 },
   nodeDot: { width: 26, height: 26, borderRadius: 13, backgroundColor: '#E2E8F0', alignItems: 'center', justifyContent: 'center' },
-  nodeDotCompleted: { backgroundColor: '#0F766E' },
-  nodeDotActive: { backgroundColor: '#DC2626', borderWidth: 3, borderColor: '#FECACA' },
+  nodeDotCompleted: { backgroundColor: '#38845A' },
+  nodeDotActive: { backgroundColor: '#DC2626', borderWidth: 3, borderColor: '#CDE8D5' },
   innerDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#94A3B8' },
   connectingLine: { width: 3, height: 38, backgroundColor: '#E2E8F0', marginVertical: 2 },
-  connectingLineCompleted: { backgroundColor: '#0F766E' },
+  connectingLineCompleted: { backgroundColor: '#38845A' },
   waypointContent: { flex: 1, paddingBottom: 20 },
   waypointContentActive: { backgroundColor: '#FEF2F2', padding: 8, borderRadius: 8, marginBottom: 12 },
   waypointHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   vehicleDetailVal: { fontSize: 12, fontWeight: '800', color: '#0F172A', marginTop: 2 },
   simulationControlRow: { flexDirection: 'row', gap: 10, marginTop: 14, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
   simControlBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#F1F5F9', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: '#E2E8F0' },
-  advanceBtn: { flex: 1, backgroundColor: '#0F766E', borderColor: '#0F766E' },
+  advanceBtn: { flex: 1, backgroundColor: '#38845A', borderColor: '#38845A' },
   simControlBtnText: { fontSize: 12, fontWeight: '700', color: '#1E293B' },
   bottomCard: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, marginBottom: 20 },
   bottomCardTitle: { fontSize: 14, fontWeight: '800', color: '#991B1B' },

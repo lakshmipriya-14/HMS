@@ -1,3 +1,4 @@
+import { UyirinaiTheme } from '../../constants/theme';
 import React, { useState } from 'react';
 import {
   View,
@@ -78,7 +79,7 @@ export default function PatientHomeScreen() {
         <View style={styles.uhidTopRow}>
           <Text style={styles.hospital}>KIZUNA MULTISPECIALITY HOSPITALS</Text>
           <TouchableOpacity style={styles.familySwitchBtn} onPress={() => setFamilyModal(true)}>
-            <Users size={12} color="#0F766E" />
+            <Users size={12} color="#38845A" />
             <Text style={styles.familySwitchText}>Switch Profile</Text>
           </TouchableOpacity>
         </View>
@@ -118,7 +119,7 @@ export default function PatientHomeScreen() {
       <View style={styles.tokenCard}>
         <View style={styles.tokenHeader}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Clock size={16} color="#0F766E" />
+            <Clock size={16} color="#38845A" />
             <Text style={styles.tokenCardTitle}>Live OPD Queue Tracker</Text>
           </View>
           <View style={styles.livePulseBadge}>
@@ -213,7 +214,7 @@ export default function PatientHomeScreen() {
           style={styles.actionCard}
           onPress={() => router.push('/(patient)/appointments')}
         >
-          <Calendar color="#0F766E" size={22} />
+          <Calendar color="#38845A" size={22} />
           <Text style={styles.actionText}>Book Doctor</Text>
           <Text style={styles.actionSub}>OPD Slots</Text>
         </TouchableOpacity>
@@ -297,7 +298,7 @@ export default function PatientHomeScreen() {
                   </Text>
                   <Text style={styles.profUhid}>UHID: {f.uhid}</Text>
                 </View>
-                {activeProfile.id === f.id && <CheckCircle2 size={20} color="#0F766E" />}
+                {activeProfile.id === f.id && <CheckCircle2 size={20} color="#38845A" />}
               </TouchableOpacity>
             ))}
           </View>
@@ -325,7 +326,7 @@ export default function PatientHomeScreen() {
 
             {/* GPS Location Box */}
             <View style={styles.gpsBox}>
-              <Navigation size={18} color="#0F766E" />
+              <Navigation size={18} color="#38845A" />
               <View style={{ flex: 1 }}>
                 <Text style={styles.gpsCoords}>
                   GPS: {gpsCoords.latitude}, {gpsCoords.longitude}
@@ -388,58 +389,58 @@ export default function PatientHomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC', padding: 16 },
+  container: { flex: 1, backgroundColor: UyirinaiTheme.colors.backgroundSecondary, padding: 16 },
   uhidCard: {
-    backgroundColor: '#0F766E',
+    backgroundColor: UyirinaiTheme.colors.primary,
     borderRadius: 16,
     padding: 18,
     marginBottom: 14,
-    shadowColor: '#000',
+    shadowColor: UyirinaiTheme.colors.primaryDark,
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
   },
   uhidTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  hospital: { color: '#CCFBF1', fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
+  hospital: { color: UyirinaiTheme.colors.lightGreen, fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
   familySwitchBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: UyirinaiTheme.colors.white,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
-  familySwitchText: { fontSize: 10, fontWeight: '800', color: '#0F766E' },
-  patientName: { color: '#fff', fontSize: 19, fontWeight: '800', marginTop: 8 },
-  patientSub: { color: '#CCFBF1', fontSize: 12, marginTop: 2 },
+  familySwitchText: { fontSize: 10, fontWeight: '800', color: UyirinaiTheme.colors.primaryDark },
+  patientName: { color: UyirinaiTheme.colors.white, fontSize: 19, fontWeight: '800', marginTop: 8 },
+  patientSub: { color: UyirinaiTheme.colors.lightGreen, fontSize: 12, marginTop: 2 },
   uhidBadgeRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 12 },
   uhidPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: 'rgba(255,255,255,0.18)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
   },
-  uhidLabel: { color: '#99F6E4', fontSize: 11, fontWeight: '700' },
-  uhidCode: { color: '#fff', fontSize: 12, fontWeight: '800', fontFamily: 'monospace' },
+  uhidLabel: { color: UyirinaiTheme.colors.lightGreen, fontSize: 11, fontWeight: '700' },
+  uhidCode: { color: UyirinaiTheme.colors.white, fontSize: 12, fontWeight: '800', fontFamily: 'monospace' },
   verifiedPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#D1FAE5',
+    backgroundColor: UyirinaiTheme.colors.softGreen,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
   },
-  verifiedText: { color: '#065F46', fontSize: 10, fontWeight: '700' },
+  verifiedText: { color: UyirinaiTheme.colors.primaryDark, fontSize: 10, fontWeight: '700' },
   sosCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#DC2626',
+    backgroundColor: UyirinaiTheme.colors.error,
     borderRadius: 14,
     padding: 14,
     marginBottom: 14,
@@ -454,71 +455,73 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sosTitle: { color: '#fff', fontSize: 13, fontWeight: '900', letterSpacing: 0.5 },
-  sosSub: { color: '#FEE2E2', fontSize: 11, marginTop: 1 },
+  sosSub: { color: '#EAF5ED', fontSize: 11, marginTop: 1 },
   tokenCard: {
-    backgroundColor: '#fff',
+    backgroundColor: UyirinaiTheme.colors.white,
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: UyirinaiTheme.colors.border,
     marginBottom: 14,
+    ...UyirinaiTheme.shadows.subtle,
   },
   tokenHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  tokenCardTitle: { fontSize: 14, fontWeight: '800', color: '#0F172A' },
+  tokenCardTitle: { fontSize: 14, fontWeight: '800', color: UyirinaiTheme.colors.textPrimary },
   livePulseBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: UyirinaiTheme.colors.errorBg,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 10,
   },
-  pulseDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#DC2626' },
-  livePulseText: { fontSize: 9, fontWeight: '900', color: '#DC2626' },
+  pulseDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: UyirinaiTheme.colors.error },
+  livePulseText: { fontSize: 9, fontWeight: '900', color: UyirinaiTheme.colors.error },
   tokenGrid: { flexDirection: 'row', alignItems: 'center', marginVertical: 12 },
   tokenBox: { flex: 1, alignItems: 'center' },
-  tokenBoxLabel: { fontSize: 11, color: '#64748B' },
-  myTokenNum: { fontSize: 26, fontWeight: '900', color: '#0F766E' },
-  tokenStatusWaiting: { fontSize: 11, fontWeight: '700', color: '#D97706' },
-  tokenDivider: { width: 1, height: 40, backgroundColor: '#E2E8F0' },
-  nowServingNum: { fontSize: 26, fontWeight: '900', color: '#0F172A' },
-  tokenRoom: { fontSize: 11, color: '#64748B' },
-  tokenMeta: { backgroundColor: '#F8FAFC', padding: 8, borderRadius: 8, marginBottom: 8 },
-  tokenDoc: { fontSize: 12, fontWeight: '700', color: '#1E293B' },
-  tokenWait: { fontSize: 11, color: '#0F766E', fontWeight: '600', marginTop: 2 },
-  progressTrack: { height: 6, backgroundColor: '#E2E8F0', borderRadius: 3, overflow: 'hidden' },
-  progressBar: { height: 6, backgroundColor: '#0F766E', borderRadius: 3 },
-  progressNote: { fontSize: 10, color: '#94A3B8', marginTop: 6 },
+  tokenBoxLabel: { fontSize: 11, color: UyirinaiTheme.colors.textSecondary },
+  myTokenNum: { fontSize: 26, fontWeight: '900', color: UyirinaiTheme.colors.primary },
+  tokenStatusWaiting: { fontSize: 11, fontWeight: '700', color: UyirinaiTheme.colors.pending },
+  tokenDivider: { width: 1, height: 40, backgroundColor: UyirinaiTheme.colors.borderLight },
+  nowServingNum: { fontSize: 26, fontWeight: '900', color: UyirinaiTheme.colors.textPrimary },
+  tokenRoom: { fontSize: 11, color: UyirinaiTheme.colors.textSecondary },
+  tokenMeta: { backgroundColor: UyirinaiTheme.colors.backgroundSecondary, padding: 8, borderRadius: 8, marginBottom: 8 },
+  tokenDoc: { fontSize: 12, fontWeight: '700', color: UyirinaiTheme.colors.textPrimary },
+  tokenWait: { fontSize: 11, color: UyirinaiTheme.colors.primary, fontWeight: '600', marginTop: 2 },
+  progressTrack: { height: 6, backgroundColor: UyirinaiTheme.colors.borderLight, borderRadius: 3, overflow: 'hidden' },
+  progressBar: { height: 6, backgroundColor: UyirinaiTheme.colors.primary, borderRadius: 3 },
+  progressNote: { fontSize: 10, color: UyirinaiTheme.colors.textMuted, marginTop: 6 },
   ipdCard: {
-    backgroundColor: '#fff',
+    backgroundColor: UyirinaiTheme.colors.white,
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: UyirinaiTheme.colors.border,
     marginBottom: 16,
+    ...UyirinaiTheme.shadows.subtle,
   },
   ipdHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  ipdTitle: { fontSize: 13, fontWeight: '800', color: '#0F172A' },
-  admittedBadge: { backgroundColor: '#E0F2FE', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  admittedBadgeText: { fontSize: 9, fontWeight: '800', color: '#0284C7' },
+  ipdTitle: { fontSize: 13, fontWeight: '800', color: UyirinaiTheme.colors.textPrimary },
+  admittedBadge: { backgroundColor: UyirinaiTheme.colors.infoBg, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
+  admittedBadgeText: { fontSize: 9, fontWeight: '800', color: UyirinaiTheme.colors.info },
   ipdDetailsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 },
   ipdDetailItem: { width: '47%' },
-  ipdLabel: { fontSize: 10, color: '#64748B' },
-  ipdVal: { fontSize: 12, fontWeight: '700', color: '#0F172A', marginTop: 1 },
-  ipdVitalsBox: { backgroundColor: '#F8FAFC', padding: 8, borderRadius: 8, marginTop: 10 },
-  ipdVitalsTitle: { fontSize: 10, fontWeight: '700', color: '#475569', marginBottom: 4 },
+  ipdLabel: { fontSize: 10, color: UyirinaiTheme.colors.textSecondary },
+  ipdVal: { fontSize: 12, fontWeight: '700', color: UyirinaiTheme.colors.textPrimary, marginTop: 1 },
+  ipdVitalsBox: { backgroundColor: UyirinaiTheme.colors.backgroundSecondary, padding: 8, borderRadius: 8, marginTop: 10 },
+  ipdVitalsTitle: { fontSize: 10, fontWeight: '700', color: UyirinaiTheme.colors.textSecondary, marginBottom: 4 },
   ipdVitalsRow: { flexDirection: 'row', gap: 8 },
   vitalsTag: {
     fontSize: 10,
     fontWeight: '700',
-    backgroundColor: '#fff',
+    backgroundColor: UyirinaiTheme.colors.white,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    color: '#0F766E',
+    borderColor: UyirinaiTheme.colors.border,
+    color: UyirinaiTheme.colors.primary,
   },
   dischargeSummaryBtn: {
     flexDirection: 'row',
@@ -527,56 +530,57 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
+    borderTopColor: UyirinaiTheme.colors.borderLight,
   },
-  dischargeSummaryText: { fontSize: 11, fontWeight: '700', color: '#0284C7' },
-  sectionTitle: { fontSize: 14, fontWeight: '800', color: '#1E293B', marginBottom: 10 },
+  dischargeSummaryText: { fontSize: 11, fontWeight: '700', color: UyirinaiTheme.colors.primary },
+  sectionTitle: { fontSize: 14, fontWeight: '800', color: UyirinaiTheme.colors.textPrimary, marginBottom: 10 },
   actionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   actionCard: {
     width: '31%',
-    backgroundColor: '#fff',
+    backgroundColor: UyirinaiTheme.colors.white,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: UyirinaiTheme.colors.border,
     padding: 12,
     alignItems: 'center',
     gap: 4,
+    ...UyirinaiTheme.shadows.subtle,
   },
-  actionText: { fontSize: 11, fontWeight: '800', color: '#1E293B', textAlign: 'center' },
-  actionSub: { fontSize: 9, color: '#64748B', textAlign: 'center' },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.6)', justifyContent: 'flex-end' },
-  modalCard: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20 },
+  actionText: { fontSize: 11, fontWeight: '800', color: UyirinaiTheme.colors.textPrimary, textAlign: 'center' },
+  actionSub: { fontSize: 9, color: UyirinaiTheme.colors.textSecondary, textAlign: 'center' },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(38, 53, 44, 0.4)', justifyContent: 'flex-end' },
+  modalCard: { backgroundColor: UyirinaiTheme.colors.white, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20 },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 14 },
-  modalTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
-  modalSub: { fontSize: 11, color: '#64748B', marginTop: 2 },
+  modalTitle: { fontSize: 16, fontWeight: '800', color: UyirinaiTheme.colors.textPrimary },
+  modalSub: { fontSize: 11, color: UyirinaiTheme.colors.textSecondary, marginTop: 2 },
   profileOption: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: UyirinaiTheme.colors.border,
     marginBottom: 8,
   },
-  profileOptionActive: { borderColor: '#0F766E', backgroundColor: '#F0FDFA' },
-  profName: { fontSize: 14, fontWeight: '700', color: '#0F172A' },
-  profMeta: { fontSize: 11, color: '#64748B', marginTop: 2 },
-  profUhid: { fontSize: 10, color: '#0F766E', fontWeight: '700', fontFamily: 'monospace' },
-  sosModalTitle: { fontSize: 16, fontWeight: '900', color: '#DC2626' },
+  profileOptionActive: { borderColor: UyirinaiTheme.colors.primary, backgroundColor: UyirinaiTheme.colors.softGreen },
+  profName: { fontSize: 14, fontWeight: '700', color: UyirinaiTheme.colors.textPrimary },
+  profMeta: { fontSize: 11, color: UyirinaiTheme.colors.textSecondary, marginTop: 2 },
+  profUhid: { fontSize: 10, color: UyirinaiTheme.colors.primary, fontWeight: '700', fontFamily: 'monospace' },
+  sosModalTitle: { fontSize: 16, fontWeight: '900', color: UyirinaiTheme.colors.error },
   gpsBox: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: '#F0FDFA',
+    backgroundColor: UyirinaiTheme.colors.softGreen,
     borderWidth: 1,
-    borderColor: '#99F6E4',
+    borderColor: UyirinaiTheme.colors.lightGreen,
     padding: 10,
     borderRadius: 8,
     marginVertical: 10,
   },
-  gpsCoords: { fontSize: 11, fontWeight: '800', color: '#0F766E', fontFamily: 'monospace' },
-  gpsAddress: { fontSize: 11, color: '#334155', marginTop: 1 },
-  sosAlertText: { fontSize: 12, color: '#475569', lineHeight: 18, marginBottom: 14 },
+  gpsCoords: { fontSize: 11, fontWeight: '800', color: UyirinaiTheme.colors.primaryDark, fontFamily: 'monospace' },
+  gpsAddress: { fontSize: 11, color: UyirinaiTheme.colors.textPrimary, marginTop: 1 },
+  sosAlertText: { fontSize: 12, color: UyirinaiTheme.colors.textSecondary, lineHeight: 18, marginBottom: 14 },
   triggerSosBtn: {
     flexDirection: 'row',
     alignItems: 'center',

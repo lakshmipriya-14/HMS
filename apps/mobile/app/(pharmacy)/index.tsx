@@ -447,11 +447,11 @@ export default function PharmacyDispenseScreen() {
       {/* Main List */}
       <ScrollView
         style={styles.scrollArea}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#7C3AED']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
       >
         {loading && !refreshing ? (
           <View style={styles.centerBox}>
-            <ActivityIndicator size="large" color="#7C3AED" />
+            <ActivityIndicator size="large" color="#38845A" />
             <Text style={styles.loadingText}>Syncing Central Pharmacy Queue...</Text>
           </View>
         ) : filteredList.length === 0 ? (
@@ -504,7 +504,7 @@ export default function PharmacyDispenseScreen() {
               {/* Patient Details */}
               <View style={styles.patientRow}>
                 <View style={styles.avatarCircle}>
-                  <User size={18} color="#7C3AED" />
+                  <User size={18} color="#38845A" />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.patientName}>
@@ -565,7 +565,7 @@ export default function PharmacyDispenseScreen() {
                   </TouchableOpacity>
                 ) : (
                   <View style={styles.completedTag}>
-                    <CheckCircle2 size={16} color="#059669" />
+                    <CheckCircle2 size={16} color="#38845A" />
                     <Text style={styles.completedText}>Dispensed & Stock Adjusted</Text>
                   </View>
                 )}
@@ -613,7 +613,7 @@ export default function PharmacyDispenseScreen() {
                   >
                     <ShieldAlert
                       size={18}
-                      color={selectedRx.allergies[0].includes('NKDA') ? '#059669' : '#DC2626'}
+                      color={selectedRx.allergies[0].includes('NKDA') ? '#38845A' : '#DC2626'}
                     />
                     <View style={{ flex: 1, marginLeft: 8 }}>
                       <Text style={styles.noticeTitle}>Patient Allergy Profile</Text>
@@ -776,7 +776,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#DDD6FE',
   },
-  counterText: { fontSize: 11, fontWeight: '700', color: '#7C3AED' },
+  counterText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -809,7 +809,7 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   tabText: { fontSize: 11, fontWeight: '600', color: '#64748B' },
-  tabTextActive: { color: '#7C3AED', fontWeight: '800' },
+  tabTextActive: { color: '#38845A', fontWeight: '800' },
   scrollArea: { flex: 1, padding: 14 },
   centerBox: { alignItems: 'center', justifyContent: 'center', paddingVertical: 40 },
   loadingText: { marginTop: 10, fontSize: 13, color: '#64748B' },
@@ -830,7 +830,7 @@ const styles = StyleSheet.create({
   },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   tokenPill: {
-    backgroundColor: '#7C3AED',
+    backgroundColor: '#38845A',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
@@ -842,7 +842,7 @@ const styles = StyleSheet.create({
   statusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   statusPending: { backgroundColor: '#FEF3C7' },
   statusPendingText: { color: '#92400E', fontSize: 10, fontWeight: '800' },
-  statusReady: { backgroundColor: '#EDE9FE' },
+  statusReady: { backgroundColor: '#EAF5ED' },
   statusReadyText: { color: '#6D28D9', fontSize: 10, fontWeight: '800' },
   statusDispensed: { backgroundColor: '#D1FAE5' },
   statusDispensedText: { color: '#065F46', fontSize: 10, fontWeight: '800' },
@@ -866,7 +866,7 @@ const styles = StyleSheet.create({
   allergyBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
     paddingHorizontal: 8,
     paddingVertical: 5,
     borderRadius: 6,
@@ -884,15 +884,15 @@ const styles = StyleSheet.create({
   },
   itemsHeader: { fontSize: 11, fontWeight: '700', color: '#475569', textTransform: 'uppercase', marginBottom: 6 },
   itemRow: { flexDirection: 'row', alignItems: 'flex-start', marginVertical: 4, gap: 8 },
-  itemBullet: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: '#7C3AED', marginTop: 6 },
+  itemBullet: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: '#38845A', marginTop: 6 },
   itemDrugName: { fontSize: 12, fontWeight: '700', color: '#0F172A' },
   itemDoseInfo: { fontSize: 11, color: '#64748B', marginTop: 1 },
-  qtyBubble: { backgroundColor: '#EDE9FE', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
+  qtyBubble: { backgroundColor: '#EAF5ED', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   qtyBubbleText: { fontSize: 10, fontWeight: '700', color: '#6D28D9' },
   cardFooter: { marginTop: 12, paddingTop: 10, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
   reviewBtn: {
     flexDirection: 'row',
-    backgroundColor: '#7C3AED',
+    backgroundColor: '#38845A',
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',
@@ -901,7 +901,7 @@ const styles = StyleSheet.create({
   },
   reviewBtnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
   completedTag: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 4 },
-  completedText: { color: '#059669', fontSize: 12, fontWeight: '700' },
+  completedText: { color: '#38845A', fontSize: 12, fontWeight: '700' },
   // Modal styles
   modalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.6)', justifyContent: 'flex-end' },
   modalContent: {
@@ -925,7 +925,7 @@ const styles = StyleSheet.create({
   modalBody: { padding: 18 },
   modalAllergyNotice: { flexDirection: 'row', padding: 12, borderRadius: 10, marginBottom: 14 },
   noticeGreen: { backgroundColor: '#ECFDF5', borderWidth: 1, borderColor: '#A7F3D0' },
-  noticeRed: { backgroundColor: '#FEF2F2', borderWidth: 1, borderColor: '#FECACA' },
+  noticeRed: { backgroundColor: '#FEF2F2', borderWidth: 1, borderColor: '#CDE8D5' },
   noticeTitle: { fontSize: 12, fontWeight: '800', color: '#0F172A' },
   noticeDesc: { fontSize: 12, color: '#334155', marginTop: 2 },
   sectionHeading: { fontSize: 13, fontWeight: '800', color: '#334155', marginBottom: 10, textTransform: 'uppercase' },
@@ -949,11 +949,11 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#E2E8F0',
   },
-  batchPillSelected: { borderColor: '#7C3AED', backgroundColor: '#FAF5FF' },
+  batchPillSelected: { borderColor: '#38845A', backgroundColor: '#FAF5FF' },
   batchPillLow: { borderColor: '#FCA5A5' },
   batchPillTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   batchNumberText: { fontSize: 12, fontWeight: '700', color: '#1E293B' },
-  batchNumberTextSelected: { color: '#7C3AED' },
+  batchNumberTextSelected: { color: '#38845A' },
   fefoTag: { backgroundColor: '#D1FAE5', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   fefoTagText: { fontSize: 9, fontWeight: '800', color: '#065F46' },
   batchMetaSub: { fontSize: 10, color: '#64748B', marginTop: 2 },
@@ -982,7 +982,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 2,
   },
-  checkboxBoxChecked: { backgroundColor: '#7C3AED', borderColor: '#7C3AED' },
+  checkboxBoxChecked: { backgroundColor: '#38845A', borderColor: '#38845A' },
   checkboxLabel: { flex: 1, fontSize: 11, color: '#475569', lineHeight: 16 },
   modalFooter: {
     flexDirection: 'row',
@@ -997,7 +997,7 @@ const styles = StyleSheet.create({
   confirmDispenseBtn: {
     flex: 2,
     flexDirection: 'row',
-    backgroundColor: '#7C3AED',
+    backgroundColor: '#38845A',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',

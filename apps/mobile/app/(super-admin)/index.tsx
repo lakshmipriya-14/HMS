@@ -64,10 +64,10 @@ export default function SuperAdminHome() {
   const selectedBranch = branches.find((branch) => branch.id === branchId);
   const visibleBranches = selectedBranch ? [selectedBranch] : branches;
   const metrics = totals ? [
-    { label: 'Branches', value: totals.branches, detail: `${totals.activeBranches} active · ${totals.inactiveBranches} inactive`, icon: Building2, route: 'branches', tint: '#FEE2E2', color: theme.colors.primary },
+    { label: 'Branches', value: totals.branches, detail: `${totals.activeBranches} active · ${totals.inactiveBranches} inactive`, icon: Building2, route: 'branches', tint: '#EAF5ED', color: theme.colors.primary },
     { label: 'Administrators', value: totals.admins, detail: `${totals.activeAdmins ?? totals.admins} active · ${totals.inactiveAdmins ?? 0} inactive`, icon: UserCheck, route: 'admins', tint: '#EDE9FE', color: '#6D28D9' },
     { label: 'Accounts', value: totals.totalUsers ?? totals.employees, icon: Users, route: 'users', tint: '#E0E7FF', color: '#4338CA' },
-    { label: 'Doctors', value: totals.doctors, icon: Stethoscope, route: 'doctors', tint: '#CCFBF1', color: '#0F766E' },
+    { label: 'Doctors', value: totals.doctors, icon: Stethoscope, route: 'doctors', tint: '#EAF5ED', color: '#38845A' },
     { label: 'Departments', value: totals.departments, icon: Layers, route: 'departments', tint: '#D1FAE5', color: '#047857' },
     { label: 'Registered patients', value: totals.patients, icon: HeartPulse, route: 'patients', tint: '#FFE4E6', color: '#BE123C' },
   ] : [];

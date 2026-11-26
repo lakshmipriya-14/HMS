@@ -85,11 +85,11 @@ export default function DepartmentPatientsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadPatients} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadPatients} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : patients.length === 0 ? (
           <View style={styles.emptyState}>
             <HeartPulse size={40} color="#CBD5E1" />
@@ -174,17 +174,17 @@ export default function DepartmentPatientsScreen() {
                 <View style={styles.detailSection}>
                   <Text style={styles.detailSectionTitle}>DEMOGRAPHICS & CONTACT</Text>
                   <View style={styles.detailRow}>
-                    <User size={15} color="#0F766E" />
+                    <User size={15} color="#38845A" />
                     <Text style={styles.detailValue}>
                       Gender: {selectedPatient.gender || 'Not specified'} • Age: {selectedPatient.age || 35} yrs
                     </Text>
                   </View>
                   <View style={styles.detailRow}>
-                    <Phone size={15} color="#0F766E" />
+                    <Phone size={15} color="#38845A" />
                     <Text style={styles.detailValue}>{selectedPatient.phone || 'No contact phone'}</Text>
                   </View>
                   <View style={styles.detailRow}>
-                    <Droplet size={15} color="#0F766E" />
+                    <Droplet size={15} color="#38845A" />
                     <Text style={styles.detailValue}>
                       Blood Group: {selectedPatient.bloodGroup || 'O+'}
                     </Text>
@@ -194,13 +194,13 @@ export default function DepartmentPatientsScreen() {
                 <View style={styles.detailSection}>
                   <Text style={styles.detailSectionTitle}>CLINICAL & VISIT STATUS</Text>
                   <View style={styles.detailRow}>
-                    <Clock size={15} color="#0F766E" />
+                    <Clock size={15} color="#38845A" />
                     <Text style={styles.detailValue}>
                       Status: {selectedPatient.admissions?.length ? 'Currently Admitted (IPD)' : 'Outpatient (OPD)'}
                     </Text>
                   </View>
                   <View style={styles.detailRow}>
-                    <FileText size={15} color="#0F766E" />
+                    <FileText size={15} color="#38845A" />
                     <Text style={styles.detailValue}>
                       Department: General Medicine Registry
                     </Text>
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
   viewBadgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   modalOverlay: {
     flex: 1,
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 12,
     borderRadius: 10,
     gap: 8,

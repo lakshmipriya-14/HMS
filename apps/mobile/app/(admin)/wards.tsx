@@ -257,7 +257,7 @@ export default function AdminWardsScreen() {
           style={styles.backBtn}
           onPress={() => router.replace('/(admin)/more')}
         >
-          <ChevronLeft size={20} color="#0F766E" />
+          <ChevronLeft size={20} color="#38845A" />
         </TouchableOpacity>
         <Text style={styles.actionTitle}>Ward Census & Bed Matrix</Text>
         <View style={{ flexDirection: 'row', gap: 6 }}>
@@ -265,7 +265,7 @@ export default function AdminWardsScreen() {
             style={[styles.addBtn, { backgroundColor: '#F1F5F9' }]}
             onPress={() => setAddWardModal(true)}
           >
-            <Text style={[styles.addBtnText, { color: '#0F766E' }]}>+ Ward</Text>
+            <Text style={[styles.addBtnText, { color: '#38845A' }]}>+ Ward</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.addBtn}
@@ -282,7 +282,7 @@ export default function AdminWardsScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#0F766E" />
+          <ActivityIndicator size="large" color="#38845A" />
           <Text style={styles.loadingText}>Loading live bed census...</Text>
         </View>
       ) : (
@@ -290,14 +290,14 @@ export default function AdminWardsScreen() {
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#0F766E" />
+            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />
           }
         >
           {/* EXECUTIVE CENSUS KPI CARD */}
           <View style={styles.kpiCard}>
             <View style={styles.kpiHeader}>
               <View style={styles.kpiIconWrapper}>
-                <BedDouble size={20} color="#0F766E" />
+                <BedDouble size={20} color="#38845A" />
               </View>
               <View style={{ flex: 1, marginLeft: 10 }}>
                 <Text style={styles.kpiSub}>Hospital Bed Occupancy</Text>
@@ -323,7 +323,7 @@ export default function AdminWardsScreen() {
               </View>
               <View style={styles.kpiCol}>
                 <Text style={styles.kpiColLabel}>Occupied</Text>
-                <Text style={[styles.kpiColVal, { color: '#0F766E' }]}>
+                <Text style={[styles.kpiColVal, { color: '#38845A' }]}>
                   {summary.occupiedBeds || 0}
                 </Text>
               </View>
@@ -359,7 +359,7 @@ export default function AdminWardsScreen() {
                           styles.miniProgressFill,
                           {
                             width: `${Math.min(d.occupancyRate, 100)}%`,
-                            backgroundColor: d.occupancyRate > 80 ? '#E11D48' : '#0F766E',
+                            backgroundColor: d.occupancyRate > 80 ? '#E11D48' : '#38845A',
                           },
                         ]}
                       />
@@ -475,7 +475,7 @@ export default function AdminWardsScreen() {
                   {
                     color:
                       selectedBed?.status === 'OCCUPIED'
-                        ? '#0F766E'
+                        ? '#38845A'
                         : selectedBed?.status === 'AVAILABLE'
                         ? '#059669'
                         : '#DC2626',
@@ -490,7 +490,7 @@ export default function AdminWardsScreen() {
             {selectedBed?.status === 'OCCUPIED' ? (
               <View style={styles.patientBox}>
                 <View style={styles.patientBoxHead}>
-                  <User size={16} color="#0F766E" />
+                  <User size={16} color="#38845A" />
                   <Text style={styles.patientBoxTitle}>Inpatient Allocation Details</Text>
                 </View>
                 <Text style={styles.patientField}>
@@ -552,7 +552,7 @@ export default function AdminWardsScreen() {
                   )}
                   {selectedBed?.status !== 'MAINTENANCE' && (
                     <TouchableOpacity
-                      style={[styles.statusChoiceBtn, { backgroundColor: '#FEE2E2' }]}
+                      style={[styles.statusChoiceBtn, { backgroundColor: '#EAF5ED' }]}
                       onPress={() => handleUpdateStatus(selectedBed.id, 'MAINTENANCE')}
                       disabled={submitting}
                     >
@@ -578,7 +578,7 @@ export default function AdminWardsScreen() {
                   setEditDailyRate(String(selectedBed.dailyRate || 1000));
                 }}
               >
-                <Edit2 size={14} color="#0F766E" />
+                <Edit2 size={14} color="#38845A" />
                 <Text style={styles.bedManageBtnText}>Edit Bed Details</Text>
               </TouchableOpacity>
 
@@ -812,7 +812,7 @@ const styles = StyleSheet.create({
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
@@ -830,9 +830,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#CCFBF1',
+    borderColor: '#EAF5ED',
     marginBottom: 16,
-    shadowColor: '#0F766E',
+    shadowColor: '#38845A',
     shadowOpacity: 0.05,
     shadowRadius: 6,
     elevation: 2,
@@ -845,7 +845,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -858,7 +858,7 @@ const styles = StyleSheet.create({
   kpiMain: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
     marginTop: 1,
   },
   kpiBadge: {
@@ -965,12 +965,12 @@ const styles = StyleSheet.create({
   },
   wardDept: {
     fontSize: 10,
-    color: '#0F766E',
+    color: '#38845A',
     fontWeight: '600',
     marginTop: 2,
   },
   occBadge: {
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -978,7 +978,7 @@ const styles = StyleSheet.create({
   occBadgeText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
   },
   wardStatsText: {
     fontSize: 11,
@@ -1005,7 +1005,7 @@ const styles = StyleSheet.create({
     borderColor: '#FECDD3',
   },
   bedItemMaint: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
     borderColor: '#FCA5A5',
   },
   bedItemClean: {
@@ -1095,7 +1095,7 @@ const styles = StyleSheet.create({
   patientBoxTitle: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
   },
   patientField: {
     fontSize: 12,
@@ -1159,8 +1159,8 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   chipActive: {
-    backgroundColor: '#CCFBF1',
-    borderColor: '#0F766E',
+    backgroundColor: '#EAF5ED',
+    borderColor: '#38845A',
   },
   chipText: {
     fontSize: 11,
@@ -1168,11 +1168,11 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   chipTextActive: {
-    color: '#0F766E',
+    color: '#38845A',
     fontWeight: '700',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
@@ -1214,11 +1214,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#CCFBF1',
+    borderColor: '#EAF5ED',
   },
   bedManageBtnText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
 });

@@ -205,7 +205,7 @@ export default function PatientAppointmentsScreen() {
         <View style={styles.activeQueueCard}>
           <View style={styles.queueHeader}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Clock size={16} color="#0F766E" />
+              <Clock size={16} color="#38845A" />
               <Text style={styles.queueHeaderTitle}>Active Token Queue</Text>
             </View>
             <View style={styles.liveTag}>
@@ -341,7 +341,7 @@ export default function PatientAppointmentsScreen() {
           <View key={doc.id} style={styles.docCard}>
             <View style={styles.docTop}>
               <View style={styles.docAvatar}>
-                <Stethoscope size={22} color="#0F766E" />
+                <Stethoscope size={22} color="#38845A" />
               </View>
               <View style={{ flex: 1, marginLeft: 12 }}>
                 <Text style={styles.docName}>{doc.name}</Text>
@@ -399,7 +399,7 @@ export default function PatientAppointmentsScreen() {
                   style={[styles.slotCard, selectedSlot === s && styles.slotCardActive]}
                   onPress={() => setSelectedSlot(s)}
                 >
-                  <Clock size={12} color={selectedSlot === s ? '#0F766E' : '#64748B'} />
+                  <Clock size={12} color={selectedSlot === s ? '#38845A' : '#64748B'} />
                   <Text style={[styles.slotText, selectedSlot === s && styles.slotTextActive]}>
                     {s}
                   </Text>
@@ -421,23 +421,23 @@ export default function PatientAppointmentsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC', padding: 16 },
   activeQueueCard: {
-    backgroundColor: '#F0FDFA',
+    backgroundColor: '#EAF5ED',
     borderRadius: 14,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#99F6E4',
+    borderColor: '#CDE8D5',
     marginBottom: 14,
   },
   queueHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  queueHeaderTitle: { fontSize: 13, fontWeight: '800', color: '#0F766E' },
-  liveTag: { backgroundColor: '#0F766E', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
+  queueHeaderTitle: { fontSize: 13, fontWeight: '800', color: '#38845A' },
+  liveTag: { backgroundColor: '#38845A', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   liveTagText: { color: '#fff', fontSize: 9, fontWeight: '900' },
   queueSplit: { flexDirection: 'row', alignItems: 'center', marginVertical: 8 },
   queueBox: { flex: 1, alignItems: 'center' },
   queueBoxLabel: { fontSize: 10, color: '#64748B' },
-  queueMyToken: { fontSize: 24, fontWeight: '900', color: '#0F766E' },
+  queueMyToken: { fontSize: 24, fontWeight: '900', color: '#38845A' },
   queueWaitText: { fontSize: 10, fontWeight: '700', color: '#D97706' },
-  queueDivider: { width: 1, height: 35, backgroundColor: '#CCFBF1' },
+  queueDivider: { width: 1, height: 35, backgroundColor: '#EAF5ED' },
   queueCallingToken: { fontSize: 24, fontWeight: '900', color: '#0F172A' },
   queueRoomText: { fontSize: 10, color: '#64748B' },
   queueDocText: { fontSize: 11, color: '#334155', fontWeight: '600', textAlign: 'center', marginTop: 4 },
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
   statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   badgeQueue: { backgroundColor: '#FEF3C7' },
   badgeConfirmed: { backgroundColor: '#D1FAE5' },
-  badgeCancelled: { backgroundColor: '#FEE2E2' },
+  badgeCancelled: { backgroundColor: '#EAF5ED' },
   statusBadgeText: { fontSize: 10, fontWeight: '800' },
   textQueue: { color: '#B45309' },
   textConfirmed: { color: '#065F46' },
@@ -466,8 +466,8 @@ const styles = StyleSheet.create({
   aptMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 8 },
   aptMetaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   aptMetaText: { fontSize: 11, color: '#475569' },
-  tokenPill: { backgroundColor: '#CCFBF1', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },
-  tokenPillText: { fontSize: 10, fontWeight: '800', color: '#0F766E' },
+  tokenPill: { backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },
+  tokenPillText: { fontSize: 10, fontWeight: '800', color: '#38845A' },
   aptRoom: { fontSize: 11, color: '#64748B', marginTop: 6 },
   cancelLink: { marginTop: 8, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
   cancelLinkText: { fontSize: 11, color: '#DC2626', fontWeight: '700' },
@@ -493,7 +493,7 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
     marginRight: 8,
   },
-  deptPillActive: { backgroundColor: '#0F766E', borderColor: '#0F766E' },
+  deptPillActive: { backgroundColor: '#38845A', borderColor: '#38845A' },
   deptPillText: { fontSize: 11, fontWeight: '600', color: '#475569' },
   deptPillTextActive: { color: '#fff', fontWeight: '700' },
   docCard: {
@@ -509,18 +509,18 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     alignItems: 'center',
     justifyContent: 'center',
   },
   docName: { fontSize: 14, fontWeight: '800', color: '#0F172A' },
-  docSpec: { fontSize: 11, color: '#0F766E', fontWeight: '700', marginTop: 1 },
+  docSpec: { fontSize: 11, color: '#38845A', fontWeight: '700', marginTop: 1 },
   docQual: { fontSize: 10, color: '#64748B', marginTop: 1 },
   docFee: { fontSize: 14, fontWeight: '900', color: '#0F172A' },
   docRoomRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8 },
   docRoomText: { fontSize: 11, color: '#64748B' },
   bookSlotBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 8,
     paddingVertical: 8,
     alignItems: 'center',
@@ -533,7 +533,7 @@ const styles = StyleSheet.create({
   modalTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
   modalSub: { fontSize: 12, color: '#64748B', marginTop: 2 },
   docModalInfo: { backgroundColor: '#F8FAFC', padding: 10, borderRadius: 8, marginBottom: 14 },
-  modalDocSpec: { fontSize: 12, fontWeight: '700', color: '#0F766E' },
+  modalDocSpec: { fontSize: 12, fontWeight: '700', color: '#38845A' },
   modalDocFee: { fontSize: 12, color: '#334155', marginTop: 2 },
   slotSectionTitle: { fontSize: 12, fontWeight: '700', color: '#475569', marginBottom: 8 },
   slotsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
@@ -548,14 +548,14 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
     backgroundColor: '#F8FAFC',
   },
-  slotCardActive: { borderColor: '#0F766E', backgroundColor: '#F0FDFA' },
+  slotCardActive: { borderColor: '#38845A', backgroundColor: '#EAF5ED' },
   slotText: { fontSize: 11, color: '#475569' },
-  slotTextActive: { color: '#0F766E', fontWeight: '800' },
+  slotTextActive: { color: '#38845A', fontWeight: '800' },
   confirmAptBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 10,
     paddingVertical: 12,
     gap: 8,

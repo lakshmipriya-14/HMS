@@ -298,7 +298,7 @@ export default function BillingCashierScreen() {
             <Text style={styles.sub}>Central Revenue, Multi-Mode POS & Discharge Billing</Text>
           </View>
           <TouchableOpacity style={styles.refreshBtn} onPress={fetchInvoices}>
-            <RefreshCw size={16} color="#059669" />
+            <RefreshCw size={16} color="#38845A" />
           </TouchableOpacity>
         </View>
 
@@ -343,7 +343,7 @@ export default function BillingCashierScreen() {
 
       {/* List of Invoices */}
       <ScrollView style={styles.listContainer} contentContainerStyle={{ paddingBottom: 30 }}>
-        {loading && <ActivityIndicator size="small" color="#059669" style={{ marginVertical: 12 }} />}
+        {loading && <ActivityIndicator size="small" color="#38845A" style={{ marginVertical: 12 }} />}
 
         {filteredInvoices.length === 0 ? (
           <View style={styles.emptyState}>
@@ -381,7 +381,7 @@ export default function BillingCashierScreen() {
                 <Text style={styles.breakdownTitle}>Consolidated Service Charges</Text>
                 <View style={styles.breakdownGrid}>
                   <View style={styles.chargeItem}>
-                    <Stethoscope size={13} color="#059669" />
+                    <Stethoscope size={13} color="#38845A" />
                     <Text style={styles.chargeLabel}>Consultation</Text>
                     <Text style={styles.chargeVal}>₹{inv.breakdown.consultation}</Text>
                   </View>
@@ -450,7 +450,7 @@ export default function BillingCashierScreen() {
                 <View style={styles.actionsGroup}>
                   {inv.status === 'Paid' ? (
                     <TouchableOpacity style={styles.receiptBtn} onPress={() => setReceiptInvoice(inv)}>
-                      <Receipt size={14} color="#059669" />
+                      <Receipt size={14} color="#38845A" />
                       <Text style={styles.receiptBtnText}>View Receipt</Text>
                     </TouchableOpacity>
                   ) : (
@@ -501,10 +501,10 @@ export default function BillingCashierScreen() {
                   style={[styles.modeCard, paymentMode === mode && styles.modeCardSelected]}
                   onPress={() => setPaymentMode(mode)}
                 >
-                  {mode === 'UPI' && <QrCode size={18} color={paymentMode === mode ? '#059669' : '#64748B'} />}
-                  {mode === 'Cash' && <IndianRupee size={18} color={paymentMode === mode ? '#059669' : '#64748B'} />}
-                  {mode === 'Card' && <CreditCard size={18} color={paymentMode === mode ? '#059669' : '#64748B'} />}
-                  {mode === 'Net Banking' && <Building size={18} color={paymentMode === mode ? '#059669' : '#64748B'} />}
+                  {mode === 'UPI' && <QrCode size={18} color={paymentMode === mode ? '#38845A' : '#64748B'} />}
+                  {mode === 'Cash' && <IndianRupee size={18} color={paymentMode === mode ? '#38845A' : '#64748B'} />}
+                  {mode === 'Card' && <CreditCard size={18} color={paymentMode === mode ? '#38845A' : '#64748B'} />}
+                  {mode === 'Net Banking' && <Building size={18} color={paymentMode === mode ? '#38845A' : '#64748B'} />}
                   <Text style={[styles.modeText, paymentMode === mode && styles.modeTextSelected]}>{mode}</Text>
                 </TouchableOpacity>
               ))}
@@ -615,7 +615,7 @@ export default function BillingCashierScreen() {
 
             <ScrollView style={{ maxHeight: 380 }}>
               <View style={styles.receiptStamp}>
-                <CheckCircle2 size={24} color="#059669" />
+                <CheckCircle2 size={24} color="#38845A" />
                 <Text style={styles.receiptStampText}>PAYMENT SETTLED</Text>
               </View>
 
@@ -735,7 +735,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: '#F1F5F9',
   },
-  tabBtnActive: { backgroundColor: '#059669' },
+  tabBtnActive: { backgroundColor: '#38845A' },
   tabBtnText: { fontSize: 12, fontWeight: '600', color: '#64748B' },
   tabBtnTextActive: { color: '#fff', fontWeight: '700' },
   listContainer: { padding: 16 },
@@ -760,12 +760,12 @@ const styles = StyleSheet.create({
   invoiceIdText: { fontSize: 14, fontWeight: '800', color: '#0F172A' },
   encBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   encOpd: { backgroundColor: '#E0F2FE' },
-  encIpd: { backgroundColor: '#FEE2E2' },
+  encIpd: { backgroundColor: '#EAF5ED' },
   encBadgeText: { fontSize: 10, fontWeight: '800', color: '#0369A1' },
   netAmount: { fontSize: 18, fontWeight: '900', color: '#0F172A' },
   metaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
   patientName: { fontSize: 15, fontWeight: '700', color: '#1E293B' },
-  uhidText: { fontSize: 12, fontWeight: '700', color: '#059669', fontFamily: 'monospace' },
+  uhidText: { fontSize: 12, fontWeight: '700', color: '#38845A', fontFamily: 'monospace' },
   doctorInfo: { fontSize: 12, color: '#475569', marginTop: 2 },
   dateInfo: { fontSize: 11, color: '#94A3B8', marginTop: 2 },
   breakdownBox: {
@@ -793,7 +793,7 @@ const styles = StyleSheet.create({
   chargeVal: { fontSize: 11, fontWeight: '700', color: '#0F172A' },
   summaryRow: { flexDirection: 'row', gap: 12, marginTop: 8, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#E2E8F0' },
   summaryLabel: { fontSize: 11, fontWeight: '600', color: '#475569' },
-  summaryCredit: { fontSize: 11, fontWeight: '700', color: '#059669' },
+  summaryCredit: { fontSize: 11, fontWeight: '700', color: '#38845A' },
   summaryTpa: { fontSize: 11, fontWeight: '700', color: '#0284C7' },
   cardFooter: {
     flexDirection: 'row',
@@ -816,7 +816,7 @@ const styles = StyleSheet.create({
   payBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#059669',
+    backgroundColor: '#38845A',
     paddingHorizontal: 12,
     paddingVertical: 7,
     borderRadius: 8,
@@ -834,7 +834,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 6,
   },
-  receiptBtnText: { color: '#059669', fontSize: 12, fontWeight: '700' },
+  receiptBtnText: { color: '#38845A', fontSize: 12, fontWeight: '700' },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(15, 23, 42, 0.6)',
@@ -850,7 +850,7 @@ const styles = StyleSheet.create({
   modalTitle: { fontSize: 17, fontWeight: '800', color: '#0F172A' },
   modalSub: { fontSize: 12, color: '#64748B', marginTop: 2 },
   payableBanner: {
-    backgroundColor: '#059669',
+    backgroundColor: '#38845A',
     borderRadius: 12,
     padding: 14,
     alignItems: 'center',
@@ -871,11 +871,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
   modeCardSelected: {
-    borderColor: '#059669',
+    borderColor: '#38845A',
     backgroundColor: '#ECFDF5',
   },
   modeText: { fontSize: 11, fontWeight: '600', color: '#475569' },
-  modeTextSelected: { color: '#059669', fontWeight: '800' },
+  modeTextSelected: { color: '#38845A', fontWeight: '800' },
   paymentBox: {
     backgroundColor: '#F8FAFC',
     borderRadius: 12,
@@ -885,7 +885,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   qrPlaceholder: { alignItems: 'center', paddingVertical: 10, gap: 6 },
-  qrPrompt: { fontSize: 12, fontWeight: '600', color: '#059669' },
+  qrPrompt: { fontSize: 12, fontWeight: '600', color: '#38845A' },
   fieldLabel: { fontSize: 12, fontWeight: '700', color: '#334155', marginBottom: 6 },
   textInput: {
     backgroundColor: '#fff',
@@ -899,7 +899,7 @@ const styles = StyleSheet.create({
   },
   changeRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
   changeLabel: { fontSize: 12, color: '#64748B' },
-  changeVal: { fontSize: 14, fontWeight: '800', color: '#059669' },
+  changeVal: { fontSize: 14, fontWeight: '800', color: '#38845A' },
   helperText: { fontSize: 11, color: '#64748B', marginTop: 6 },
   bankOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   bankPill: {
@@ -910,14 +910,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
-  bankPillActive: { borderColor: '#059669', backgroundColor: '#ECFDF5' },
+  bankPillActive: { borderColor: '#38845A', backgroundColor: '#ECFDF5' },
   bankPillText: { fontSize: 11, color: '#475569' },
-  bankPillTextActive: { color: '#059669', fontWeight: '700' },
+  bankPillTextActive: { color: '#38845A', fontWeight: '700' },
   confirmBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#059669',
+    backgroundColor: '#38845A',
     borderRadius: 12,
     paddingVertical: 14,
     gap: 8,
@@ -937,7 +937,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#A7F3D0',
   },
-  receiptStampText: { color: '#059669', fontWeight: '900', fontSize: 13, letterSpacing: 1 },
+  receiptStampText: { color: '#38845A', fontWeight: '900', fontSize: 13, letterSpacing: 1 },
   receiptInfoGrid: { backgroundColor: '#F8FAFC', padding: 12, borderRadius: 8, gap: 6 },
   receiptRow: { flexDirection: 'row', justifyContent: 'space-between' },
   recLabel: { fontSize: 11, color: '#64748B' },
@@ -949,7 +949,7 @@ const styles = StyleSheet.create({
   recItemAmt: { fontSize: 11, fontWeight: '600', color: '#0F172A' },
   recTotalRow: { borderTopWidth: 1, borderTopColor: '#E2E8F0', marginTop: 6, paddingTop: 6 },
   recTotalText: { fontSize: 13, fontWeight: '800', color: '#0F172A' },
-  recTotalAmt: { fontSize: 15, fontWeight: '900', color: '#059669' },
+  recTotalAmt: { fontSize: 15, fontWeight: '900', color: '#38845A' },
   printBtn: {
     flexDirection: 'row',
     alignItems: 'center',

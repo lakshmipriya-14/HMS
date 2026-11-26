@@ -214,7 +214,7 @@ export default function NurseMedicationsScreen() {
     <View style={styles.container}>
       {/* Top Protocol Strip */}
       <View style={styles.protocolBanner}>
-        <ShieldCheck size={18} color="#0F766E" />
+        <ShieldCheck size={18} color="#38845A" />
         <View style={{ flex: 1, marginLeft: 8 }}>
           <Text style={styles.protocolTitle}>Medication Administration Record (e-MAR)</Text>
           <Text style={styles.protocolSub}>Ensure 5-Rights check (Right Patient, Drug, Dose, Route, Time)</Text>
@@ -373,7 +373,7 @@ export default function NurseMedicationsScreen() {
                   style={[styles.checkCard, patientConfirmed && styles.checkCardActive]}
                   onPress={() => setPatientConfirmed(!patientConfirmed)}
                 >
-                  <CheckCircle2 size={18} color={patientConfirmed ? '#0F766E' : '#94A3B8'} />
+                  <CheckCircle2 size={18} color={patientConfirmed ? '#38845A' : '#94A3B8'} />
                   <View style={{ flex: 1, marginLeft: 10 }}>
                     <Text style={styles.checkTitle}>1. Right Patient Verified</Text>
                     <Text style={styles.checkSub}>
@@ -387,7 +387,7 @@ export default function NurseMedicationsScreen() {
                   style={[styles.checkCard, doseConfirmed && styles.checkCardActive]}
                   onPress={() => setDoseConfirmed(!doseConfirmed)}
                 >
-                  <CheckCircle2 size={18} color={doseConfirmed ? '#0F766E' : '#94A3B8'} />
+                  <CheckCircle2 size={18} color={doseConfirmed ? '#38845A' : '#94A3B8'} />
                   <View style={{ flex: 1, marginLeft: 10 }}>
                     <Text style={styles.checkTitle}>2. Right Drug & Dosage Verified</Text>
                     <Text style={styles.checkSub}>
@@ -401,7 +401,7 @@ export default function NurseMedicationsScreen() {
                   style={[styles.checkCard, routeConfirmed && styles.checkCardActive]}
                   onPress={() => setRouteConfirmed(!routeConfirmed)}
                 >
-                  <CheckCircle2 size={18} color={routeConfirmed ? '#0F766E' : '#94A3B8'} />
+                  <CheckCircle2 size={18} color={routeConfirmed ? '#38845A' : '#94A3B8'} />
                   <View style={{ flex: 1, marginLeft: 10 }}>
                     <Text style={styles.checkTitle}>3. Right Route & Timing</Text>
                     <Text style={styles.checkSub}>
@@ -494,16 +494,16 @@ const styles = StyleSheet.create({
   protocolBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     padding: 12,
     borderRadius: 12,
     marginBottom: 12,
   },
-  protocolTitle: { fontSize: 13, fontWeight: '800', color: '#0F766E' },
+  protocolTitle: { fontSize: 13, fontWeight: '800', color: '#38845A' },
   protocolSub: { fontSize: 11, color: '#115E59', marginTop: 1 },
   tabBar: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 10, padding: 4, marginBottom: 12 },
   tab: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 8 },
-  tabActive: { backgroundColor: '#0F766E' },
+  tabActive: { backgroundColor: '#38845A' },
   tabText: { fontSize: 11, fontWeight: '700', color: '#64748B' },
   tabTextActive: { color: '#fff' },
   emptyBox: { alignItems: 'center', padding: 30, backgroundColor: '#fff', borderRadius: 12 },
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
   statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   statusBadgeDue: { backgroundColor: '#FEF3C7' },
   statusBadgeGiven: { backgroundColor: '#D1FAE5' },
-  statusBadgeRefused: { backgroundColor: '#FEE2E2' },
+  statusBadgeRefused: { backgroundColor: '#EAF5ED' },
   statusBadgeText: { fontSize: 10, fontWeight: '800' },
   textDue: { color: '#B45309' },
   textGiven: { color: '#059669' },
@@ -533,7 +533,7 @@ const styles = StyleSheet.create({
   adminInfoText: { fontSize: 11, fontWeight: '700', color: '#166534' },
   notesText: { fontSize: 11, color: '#475569', fontStyle: 'italic', marginTop: 6 },
   btnRow: { flexDirection: 'row', gap: 8, marginTop: 12 },
-  giveBtn: { flex: 2, flexDirection: 'row', backgroundColor: '#0F766E', paddingVertical: 10, borderRadius: 8, alignItems: 'center', justifyContent: 'center', gap: 6 },
+  giveBtn: { flex: 2, flexDirection: 'row', backgroundColor: '#38845A', paddingVertical: 10, borderRadius: 8, alignItems: 'center', justifyContent: 'center', gap: 6 },
   giveBtnText: { color: '#fff', fontSize: 12, fontWeight: '800' },
   refuseBtn: { flex: 1, borderWidth: 1, borderColor: '#CBD5E1', paddingVertical: 10, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   refuseBtnText: { color: '#64748B', fontSize: 11, fontWeight: '700' },
@@ -544,12 +544,12 @@ const styles = StyleSheet.create({
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
   modalTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
   checkCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F8FAFC', borderWidth: 1, borderColor: '#E2E8F0', padding: 12, borderRadius: 10, marginBottom: 10 },
-  checkCardActive: { borderColor: '#0F766E', backgroundColor: '#F0FDFA' },
+  checkCardActive: { borderColor: '#38845A', backgroundColor: '#EAF5ED' },
   checkTitle: { fontSize: 12, fontWeight: '800', color: '#0F172A' },
   checkSub: { fontSize: 11, color: '#475569', marginTop: 1 },
   noteInputLabel: { fontSize: 11, fontWeight: '700', color: '#475569', marginTop: 10, marginBottom: 4 },
   modalInput: { borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, padding: 10, fontSize: 12, backgroundColor: '#F8FAFC' },
-  confirmAdminBtn: { backgroundColor: '#0F766E', paddingVertical: 12, borderRadius: 10, alignItems: 'center', marginTop: 14 },
+  confirmAdminBtn: { backgroundColor: '#38845A', paddingVertical: 12, borderRadius: 10, alignItems: 'center', marginTop: 14 },
   btnDisabled: { opacity: 0.5 },
   confirmAdminText: { color: '#fff', fontSize: 13, fontWeight: '800' },
   exMedLabel: { fontSize: 13, color: '#64748B', fontWeight: '600', marginBottom: 12 },

@@ -9,6 +9,7 @@ import {
   Menu,
 } from 'lucide-react-native';
 import { Platform } from 'react-native';
+import { UyirinaiTheme } from '../../constants/theme';
 
 export default function DepartmentAdminTabsLayout() {
   const bottomInset = Platform.OS === 'web' ? 10 : 12;
@@ -19,20 +20,20 @@ export default function DepartmentAdminTabsLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: '#0F766E',
-          tabBarInactiveTintColor: '#64748B',
+          tabBarActiveTintColor: UyirinaiTheme.colors.primary,
+          tabBarInactiveTintColor: UyirinaiTheme.colors.textMuted,
           tabBarHideOnKeyboard: true,
           tabBarStyle: {
             height: tabHeight,
             paddingBottom: bottomInset,
             paddingTop: 6,
-            backgroundColor: '#FFFFFF',
+            backgroundColor: UyirinaiTheme.colors.white,
             borderTopWidth: 1,
-            borderTopColor: '#E2E8F0',
-            elevation: 8,
-            shadowColor: '#000',
+            borderTopColor: UyirinaiTheme.colors.borderLight,
+            elevation: 4,
+            shadowColor: UyirinaiTheme.colors.primaryDark,
             shadowOffset: { width: 0, height: -2 },
-            shadowOpacity: 0.06,
+            shadowOpacity: 0.05,
             shadowRadius: 4,
           },
           tabBarLabelStyle: {

@@ -328,7 +328,7 @@ export default function AdminIpdScreen() {
               style={[styles.tabItem, isActive && styles.tabItemActive]}
               onPress={() => setActiveTab(tab.id as IpdTab)}
             >
-              <Icon size={14} color={isActive ? '#0F766E' : '#64748B'} />
+              <Icon size={14} color={isActive ? '#38845A' : '#64748B'} />
               <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>{tab.label}</Text>
             </TouchableOpacity>
           );
@@ -337,14 +337,14 @@ export default function AdminIpdScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#0F766E" />
+          <ActivityIndicator size="large" color="#38845A" />
           <Text style={styles.loadingText}>Loading IPD inpatient census & ward matrix...</Text>
         </View>
       ) : (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#0F766E" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />}
         >
           {/* Header Action Button */}
           <TouchableOpacity
@@ -383,7 +383,7 @@ export default function AdminIpdScreen() {
                   <Text style={styles.kpiMiniLabel}>Inpatients</Text>
                 </View>
                 <View style={styles.kpiMiniCard}>
-                  <Text style={[styles.kpiMiniNum, { color: '#0F766E' }]}>{availableBedsCount}</Text>
+                  <Text style={[styles.kpiMiniNum, { color: '#38845A' }]}>{availableBedsCount}</Text>
                   <Text style={styles.kpiMiniLabel}>Avail Beds</Text>
                 </View>
                 <View style={styles.kpiMiniCard}>
@@ -433,7 +433,7 @@ export default function AdminIpdScreen() {
                             isLongStay && { backgroundColor: '#FEF3C7', borderColor: '#FDE68A' },
                           ]}
                         >
-                          <Clock size={11} color={isLongStay ? '#B45309' : '#0F766E'} />
+                          <Clock size={11} color={isLongStay ? '#B45309' : '#38845A'} />
                           <Text
                             style={[
                               styles.losBadgeText,
@@ -521,13 +521,13 @@ export default function AdminIpdScreen() {
                       <View
                         style={[
                           styles.statusBadge,
-                          { backgroundColor: isAdmitted ? '#CCFBF1' : '#F1F5F9' },
+                          { backgroundColor: isAdmitted ? '#EAF5ED' : '#F1F5F9' },
                         ]}
                       >
                         <Text
                           style={[
                             styles.statusBadgeText,
-                            { color: isAdmitted ? '#0F766E' : '#64748B' },
+                            { color: isAdmitted ? '#38845A' : '#64748B' },
                           ]}
                         >
                           {adm.status}
@@ -854,7 +854,7 @@ export default function AdminIpdScreen() {
               </TouchableOpacity>
             </View>
 
-            <Text style={{ fontSize: 12, color: '#0F766E', fontWeight: '700', marginBottom: 10 }}>
+            <Text style={{ fontSize: 12, color: '#38845A', fontWeight: '700', marginBottom: 10 }}>
               Patient: {transferModal?.patient?.firstName} {transferModal?.patient?.lastName}
             </Text>
 
@@ -934,22 +934,22 @@ export default function AdminIpdScreen() {
             {/* Checklist */}
             <View style={{ gap: 6, backgroundColor: '#F8FAFC', padding: 10, borderRadius: 8, marginBottom: 10 }}>
               <TouchableOpacity style={styles.checkRow} onPress={() => setClearanceBilling(!clearanceBilling)}>
-                {clearanceBilling ? <CheckSquare size={16} color="#0F766E" /> : <Square size={16} color="#94A3B8" />}
+                {clearanceBilling ? <CheckSquare size={16} color="#38845A" /> : <Square size={16} color="#94A3B8" />}
                 <Text style={styles.checkText}>1. Billing Clearance: Room & care settled</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.checkRow} onPress={() => setClearancePharmacy(!clearancePharmacy)}>
-                {clearancePharmacy ? <CheckSquare size={16} color="#0F766E" /> : <Square size={16} color="#94A3B8" />}
+                {clearancePharmacy ? <CheckSquare size={16} color="#38845A" /> : <Square size={16} color="#94A3B8" />}
                 <Text style={styles.checkText}>2. Pharmacy Clearance: Meds dispensed/cleared</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.checkRow} onPress={() => setClearanceDiagnostics(!clearanceDiagnostics)}>
-                {clearanceDiagnostics ? <CheckSquare size={16} color="#0F766E" /> : <Square size={16} color="#94A3B8" />}
+                {clearanceDiagnostics ? <CheckSquare size={16} color="#38845A" /> : <Square size={16} color="#94A3B8" />}
                 <Text style={styles.checkText}>3. Diagnostics Clearance: Lab results reviewed</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.checkRow} onPress={() => setClearanceMedical(!clearanceMedical)}>
-                {clearanceMedical ? <CheckSquare size={16} color="#0F766E" /> : <Square size={16} color="#94A3B8" />}
+                {clearanceMedical ? <CheckSquare size={16} color="#38845A" /> : <Square size={16} color="#94A3B8" />}
                 <Text style={styles.checkText}>4. Medical Clearance: Doctor approved</Text>
               </TouchableOpacity>
             </View>
@@ -1047,7 +1047,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   tabItemActive: {
-    borderBottomColor: '#0F766E',
+    borderBottomColor: '#38845A',
   },
   tabLabel: {
     fontSize: 10,
@@ -1055,7 +1055,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   tabLabelActive: {
-    color: '#0F766E',
+    color: '#38845A',
   },
   scroll: { flex: 1 },
   scrollContent: { padding: 14, paddingBottom: 30 },
@@ -1064,7 +1064,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 11,
     borderRadius: 12,
     marginBottom: 12,
@@ -1168,9 +1168,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     borderWidth: 1,
-    borderColor: '#99F6E4',
+    borderColor: '#CDE8D5',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -1178,7 +1178,7 @@ const styles = StyleSheet.create({
   losBadgeText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
   },
   statusBadge: {
     paddingHorizontal: 8,
@@ -1190,7 +1190,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   occBadge: {
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -1198,7 +1198,7 @@ const styles = StyleSheet.create({
   occBadgeText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
   },
   detailBox: {
     backgroundColor: '#F8FAFC',
@@ -1229,12 +1229,12 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#CCFBF1',
+    borderColor: '#EAF5ED',
   },
   actionBtnText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   bedGrid: {
     flexDirection: 'row',
@@ -1318,8 +1318,8 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   chipSelectActive: {
-    backgroundColor: '#CCFBF1',
-    borderColor: '#0F766E',
+    backgroundColor: '#EAF5ED',
+    borderColor: '#38845A',
   },
   chipSelectText: {
     fontSize: 11,
@@ -1327,7 +1327,7 @@ const styles = StyleSheet.create({
     color: '#475569',
   },
   chipSelectTextActive: {
-    color: '#0F766E',
+    color: '#38845A',
     fontWeight: '700',
   },
   checkRow: {
@@ -1394,7 +1394,7 @@ const styles = StyleSheet.create({
     color: '#0F172A',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: 'center',

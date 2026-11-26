@@ -238,7 +238,7 @@ export default function AmbulanceDispatchScreen() {
   return (
     <ScrollView
       style={styles.container}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#0F766E']} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
     >
       {/* Top Emergency Active Bar */}
       <View style={styles.statusBar}>
@@ -268,7 +268,7 @@ export default function AmbulanceDispatchScreen() {
             >
               <View style={styles.tripTabTop}>
                 <Text style={[styles.tripTabCode, isSelected && styles.tripTabCodeSelected]}>{t.tripCode}</Text>
-                <View style={[styles.miniPriorityPill, t.priority === 'CRITICAL' ? { backgroundColor: '#FEE2E2' } : { backgroundColor: '#FEF3C7' }]}>
+                <View style={[styles.miniPriorityPill, t.priority === 'CRITICAL' ? { backgroundColor: '#EAF5ED' } : { backgroundColor: '#FEF3C7' }]}>
                   <Text style={[styles.miniPriorityText, t.priority === 'CRITICAL' ? { color: '#DC2626' } : { color: '#D97706' }]}>
                     {t.priority}
                   </Text>
@@ -291,7 +291,7 @@ export default function AmbulanceDispatchScreen() {
               <Text style={styles.vehicleModelText}>{activeTrip.vehicleModel}</Text>
             </View>
             <View style={styles.vehicleBadge}>
-              <Ambulance size={14} color="#0F766E" />
+              <Ambulance size={14} color="#38845A" />
               <Text style={styles.vehicleBadgeText}>{activeTrip.vehicleNumber}</Text>
             </View>
           </View>
@@ -306,7 +306,7 @@ export default function AmbulanceDispatchScreen() {
             </View>
 
             <View style={styles.etaPill}>
-              <Clock size={13} color="#0F766E" />
+              <Clock size={13} color="#38845A" />
               <Text style={styles.etaPillText}>ETA: <Text style={{ fontWeight: '900' }}>{activeTrip.eta}</Text> ({activeTrip.distanceKm})</Text>
             </View>
           </View>
@@ -344,7 +344,7 @@ export default function AmbulanceDispatchScreen() {
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Assigned Driver</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <User size={13} color="#0F766E" />
+                <User size={13} color="#38845A" />
                 <Text style={styles.infoVal}>{activeTrip.driverName} ({activeTrip.driverPhone})</Text>
               </View>
             </View>
@@ -380,7 +380,7 @@ export default function AmbulanceDispatchScreen() {
               style={styles.quickNavBtn}
               onPress={() => router.push('/(ambulance)/tracker')}
             >
-              <Navigation size={14} color="#0F766E" />
+              <Navigation size={14} color="#38845A" />
               <Text style={styles.quickNavBtnText}>Live Tracker Map</Text>
             </TouchableOpacity>
 
@@ -419,7 +419,7 @@ export default function AmbulanceDispatchScreen() {
             </TouchableOpacity>
           ) : (
             <View style={styles.handoverCompletedBox}>
-              <CheckCircle2 size={18} color="#059669" />
+              <CheckCircle2 size={18} color="#38845A" />
               <Text style={styles.handoverCompletedText}>Mission Completed • Patient Handed Over to ER</Text>
             </View>
           )}
@@ -488,7 +488,7 @@ function formatStatusText(status: AmbulanceTripStatus): string {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC', padding: 16 },
-  statusBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FEF2F2', borderWidth: 1, borderColor: '#FECACA', borderRadius: 12, padding: 12, marginBottom: 14, gap: 10 },
+  statusBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FEF2F2', borderWidth: 1, borderColor: '#CDE8D5', borderRadius: 12, padding: 12, marginBottom: 14, gap: 10 },
   pulseContainer: { width: 20, height: 20, alignItems: 'center', justifyContent: 'center' },
   pulseDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#DC2626' },
   statusHeaderText: { fontSize: 12, fontWeight: '900', color: '#991B1B' },
@@ -498,35 +498,35 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 14, fontWeight: '700', color: '#334155', marginBottom: 8 },
   tripSelectorRow: { flexDirection: 'row', marginBottom: 14 },
   tripTab: { width: 150, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', padding: 10, marginRight: 10 },
-  tripTabSelected: { borderColor: '#0F766E', borderWidth: 1.5, backgroundColor: '#F0FDFA' },
+  tripTabSelected: { borderColor: '#38845A', borderWidth: 1.5, backgroundColor: '#EAF5ED' },
   tripTabTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   tripTabCode: { fontSize: 11, fontWeight: '800', color: '#64748B', fontFamily: 'monospace' },
-  tripTabCodeSelected: { color: '#0F766E' },
+  tripTabCodeSelected: { color: '#38845A' },
   miniPriorityPill: { paddingHorizontal: 5, paddingVertical: 2, borderRadius: 4 },
   miniPriorityText: { fontSize: 8, fontWeight: '800' },
   tripTabVehicle: { fontSize: 12, fontWeight: '700', color: '#0F172A', marginTop: 4 },
-  tripTabVehicleSelected: { color: '#0F766E' },
+  tripTabVehicleSelected: { color: '#38845A' },
   tripTabStatus: { fontSize: 10, color: '#94A3B8', marginTop: 2 },
-  tripTabStatusSelected: { color: '#0F766E', fontWeight: '700' },
+  tripTabStatusSelected: { color: '#38845A', fontWeight: '700' },
   mainCard: { backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', padding: 18, marginBottom: 20 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   tripCodeText: { fontSize: 18, fontWeight: '900', color: '#0F172A', fontFamily: 'monospace' },
   vehicleModelText: { fontSize: 11, color: '#64748B', marginTop: 2 },
-  vehicleBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#CCFBF1', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-  vehicleBadgeText: { fontSize: 12, fontWeight: '800', color: '#0F766E' },
+  vehicleBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#EAF5ED', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
+  vehicleBadgeText: { fontSize: 12, fontWeight: '800', color: '#38845A' },
   telemetryRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 },
   severityPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 },
-  severityPillCritical: { backgroundColor: '#FEE2E2' },
+  severityPillCritical: { backgroundColor: '#EAF5ED' },
   severityPillHigh: { backgroundColor: '#FEF3C7' },
   severityPillText: { fontSize: 11, fontWeight: '900' },
-  etaPill: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#F0FDFA', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: '#99F6E4' },
-  etaPillText: { fontSize: 11, color: '#0F766E', fontWeight: '600' },
+  etaPill: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#EAF5ED', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: '#CDE8D5' },
+  etaPillText: { fontSize: 11, color: '#38845A', fontWeight: '600' },
   progressTracker: { marginTop: 16, backgroundColor: '#F8FAFC', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#E2E8F0' },
   trackerTitle: { fontSize: 11, fontWeight: '700', color: '#64748B', textTransform: 'uppercase', marginBottom: 10 },
   trackerStepsRow: { flexDirection: 'row', justifyContent: 'space-between' },
   trackerStepItem: { alignItems: 'center', flex: 1 },
   trackerStepCircle: { width: 22, height: 22, borderRadius: 11, backgroundColor: '#CBD5E1', alignItems: 'center', justifyContent: 'center' },
-  trackerStepCirclePassed: { backgroundColor: '#0F766E' },
+  trackerStepCirclePassed: { backgroundColor: '#38845A' },
   trackerStepCircleCurrent: { backgroundColor: '#DC2626' },
   trackerStepNumber: { fontSize: 10, fontWeight: '700', color: '#fff' },
   trackerStepLabel: { fontSize: 9, color: '#94A3B8', marginTop: 4, textAlign: 'center' },
@@ -538,13 +538,13 @@ const styles = StyleSheet.create({
   infoVal: { fontSize: 13, fontWeight: '700', color: '#0F172A' },
   locationGroup: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
   locationText: { fontSize: 13, fontWeight: '700', color: '#1E293B', flex: 1 },
-  conditionBox: { backgroundColor: '#FEF2F2', padding: 12, borderRadius: 10, marginTop: 12, borderWidth: 1, borderColor: '#FECACA' },
+  conditionBox: { backgroundColor: '#FEF2F2', padding: 12, borderRadius: 10, marginTop: 12, borderWidth: 1, borderColor: '#CDE8D5' },
   conditionTitle: { fontSize: 11, fontWeight: '800', color: '#991B1B' },
   conditionBody: { fontSize: 12, color: '#7F1D1D', marginTop: 4, lineHeight: 18 },
   quickNavRow: { flexDirection: 'row', gap: 10, marginTop: 14 },
   quickNavBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#F1F5F9', paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#E2E8F0' },
   quickNavBtnText: { fontSize: 11, fontWeight: '700', color: '#334155' },
-  lifecycleActionBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#0F766E', borderRadius: 12, paddingVertical: 14, marginTop: 16 },
+  lifecycleActionBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#38845A', borderRadius: 12, paddingVertical: 14, marginTop: 16 },
   lifecycleActionBtnText: { color: '#fff', fontSize: 14, fontWeight: '800' },
   handoverCompletedBox: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#ECFDF5', borderRadius: 12, paddingVertical: 14, marginTop: 16, borderWidth: 1, borderColor: '#A7F3D0' },
   handoverCompletedText: { color: '#065F46', fontSize: 13, fontWeight: '800' },

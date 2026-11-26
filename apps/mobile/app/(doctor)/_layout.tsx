@@ -22,9 +22,16 @@ export default function DoctorTabsLayout() {
           headerShown: true,
           header: ({ options }) => <SuperAdminHeader currentTitle={options.title} home="/(doctor)" />,
           tabBarActiveTintColor: UyirinaiTheme.colors.primary,
-          tabBarInactiveTintColor: '#64748B',
-          tabBarStyle: { height: 60, paddingBottom: 8, paddingTop: 6 },
-          tabBarLabelStyle: { fontSize: 10, fontWeight: '600' },
+          tabBarInactiveTintColor: UyirinaiTheme.colors.textMuted,
+          tabBarStyle: {
+            height: 64,
+            paddingBottom: 10,
+            paddingTop: 6,
+            backgroundColor: UyirinaiTheme.colors.white,
+            borderTopWidth: 1,
+            borderTopColor: UyirinaiTheme.colors.borderLight,
+          },
+          tabBarLabelStyle: { fontSize: 10, fontWeight: '700', marginBottom: 2 },
         }}
       >
         <Tabs.Screen

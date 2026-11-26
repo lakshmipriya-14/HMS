@@ -335,7 +335,7 @@ export default function NursePatientsScreen() {
     <View style={styles.container}>
       {/* Search Header */}
       <View style={styles.searchBar}>
-        <Search size={18} color="#0F766E" />
+        <Search size={18} color="#38845A" />
         <TextInput
           style={styles.searchInput}
           placeholder="Search patient, UHID, or Bed (e.g. ICCU-01)..."
@@ -376,7 +376,7 @@ export default function NursePatientsScreen() {
             style={[styles.filterChip, selectedFilter === 'PENDING_TASKS' && styles.filterChipActive]}
             onPress={() => setSelectedFilter('PENDING_TASKS')}
           >
-            <Clock size={12} color={selectedFilter === 'PENDING_TASKS' ? '#fff' : '#B5121B'} />
+            <Clock size={12} color={selectedFilter === 'PENDING_TASKS' ? '#fff' : '#38845A'} />
             <Text style={[styles.filterText, selectedFilter === 'PENDING_TASKS' && styles.filterTextActive]}>
               Tasks Pending
             </Text>
@@ -396,14 +396,14 @@ export default function NursePatientsScreen() {
       {/* Patient Cards List */}
       {loading ? (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#B5121B" />
+          <ActivityIndicator size="large" color="#38845A" />
           <Text style={styles.loadingText}>Loading assigned ward patients...</Text>
         </View>
       ) : (
         <FlatList
           data={filteredPatients}
           keyExtractor={(item) => item.id}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#B5121B']} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
           ListEmptyComponent={
             <View style={styles.emptyCard}>
               <BedDouble size={36} color="#94A3B8" />
@@ -427,7 +427,7 @@ export default function NursePatientsScreen() {
                 {/* Header: Bed & UHID */}
                 <View style={styles.cardHeader}>
                   <View style={[styles.bedBadge, isCritical && styles.bedBadgeRed]}>
-                    <BedDouble size={13} color={isCritical ? '#DC2626' : '#0F766E'} />
+                    <BedDouble size={13} color={isCritical ? '#DC2626' : '#38845A'} />
                     <Text style={[styles.bedText, isCritical && styles.bedTextRed]}>
                       {item.bed?.bedNumber || 'Bed Assigned'}
                     </Text>
@@ -496,7 +496,7 @@ export default function NursePatientsScreen() {
                   </Text>
                   <View style={styles.openChartBtn}>
                     <Text style={styles.openChartText}>Open 14-Sec Nursing Chart</Text>
-                    <ChevronRight size={14} color="#0F766E" />
+                    <ChevronRight size={14} color="#38845A" />
                   </View>
                 </View>
               </TouchableOpacity>
@@ -640,7 +640,7 @@ export default function NursePatientsScreen() {
                     <Text style={styles.cardSectionTitle}>2. Admitting Clinical Diagnosis</Text>
                     <Text style={styles.mainDiagnosis}>{activePatient.initialDiagnosis}</Text>
                     <View style={styles.docInfoBox}>
-                      <Stethoscope size={16} color="#0F766E" />
+                      <Stethoscope size={16} color="#38845A" />
                       <Text style={styles.docInfoText}>
                         Attending: Dr. {activePatient.admittingDoctor?.employee?.user?.firstName} {activePatient.admittingDoctor?.employee?.user?.lastName} ({activePatient.admittingDoctor?.specialization})
                       </Text>
@@ -736,7 +736,7 @@ export default function NursePatientsScreen() {
                   <View style={styles.notesTop}>
                     <Text style={styles.cardSectionTitle}>Nursing Clinical Observation Notes</Text>
                     <TouchableOpacity style={styles.addNoteBtn} onPress={() => setNoteModalVisible(true)}>
-                      <PlusCircle size={14} color="#0F766E" />
+                      <PlusCircle size={14} color="#38845A" />
                       <Text style={styles.addNoteText}>Add Note</Text>
                     </TouchableOpacity>
                   </View>
@@ -879,7 +879,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 6,
   },
-  filterChipActive: { backgroundColor: '#B5121B', borderColor: '#B5121B' },
+  filterChipActive: { backgroundColor: '#38845A', borderColor: '#38845A' },
   filterChipCritical: { backgroundColor: '#DC2626', borderColor: '#DC2626' },
   filterText: { fontSize: 11, fontWeight: '700', color: '#475569' },
   filterTextActive: { color: '#fff' },
@@ -906,14 +906,14 @@ const styles = StyleSheet.create({
   bedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
     gap: 4,
   },
-  bedBadgeRed: { backgroundColor: '#FEE2E2' },
-  bedText: { fontSize: 11, fontWeight: '800', color: '#B5121B' },
+  bedBadgeRed: { backgroundColor: '#EAF5ED' },
+  bedText: { fontSize: 11, fontWeight: '800', color: '#38845A' },
   bedTextRed: { color: '#DC2626' },
   uhidText: { fontSize: 10, color: '#64748B', fontFamily: 'monospace' },
   nameRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
@@ -957,7 +957,7 @@ const styles = StyleSheet.create({
   },
   taskCount: { fontSize: 11, color: '#D97706', fontWeight: '700' },
   openChartBtn: { flexDirection: 'row', alignItems: 'center', gap: 2 },
-  openChartText: { fontSize: 11, fontWeight: '700', color: '#B5121B' },
+  openChartText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
 
   // Modal styles
   modalContainer: { flex: 1, backgroundColor: '#F8FAFC' },
@@ -993,7 +993,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 10,
     borderRadius: 8,
     gap: 6,
@@ -1007,9 +1007,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   profileTab: { paddingHorizontal: 12, paddingVertical: 6, marginRight: 8, borderRadius: 6 },
-  profileTabActive: { backgroundColor: '#CCFBF1' },
+  profileTabActive: { backgroundColor: '#EAF5ED' },
   profileTabText: { fontSize: 12, fontWeight: '600', color: '#64748B' },
-  profileTabTextActive: { color: '#0F766E', fontWeight: '800' },
+  profileTabTextActive: { color: '#38845A', fontWeight: '800' },
   profileBody: { flex: 1, padding: 14 },
   sectionWrap: { gap: 12, paddingBottom: 40 },
   infoCard: {
@@ -1028,22 +1028,22 @@ const styles = StyleSheet.create({
   docInfoBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     padding: 8,
     borderRadius: 8,
     gap: 6,
     marginTop: 8,
   },
-  docInfoText: { fontSize: 11, color: '#0F766E', fontWeight: '700' },
+  docInfoText: { fontSize: 11, color: '#38845A', fontWeight: '700' },
   allergyTagList: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  allergyPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#FEE2E2', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  allergyPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   allergyPillText: { fontSize: 11, color: '#DC2626', fontWeight: '800' },
   noAllergyText: { fontSize: 12, color: '#059669', fontWeight: '600' },
   assessRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: '#F8FAFC' },
   assessLabel: { fontSize: 12, color: '#475569' },
   assessVal: { fontSize: 12, fontWeight: '700', color: '#0F172A' },
   vitalCardItem: { backgroundColor: '#fff', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 8 },
-  vitalCardAbnormal: { borderColor: '#FECACA', backgroundColor: '#FEF2F2' },
+  vitalCardAbnormal: { borderColor: '#CDE8D5', backgroundColor: '#FEF2F2' },
   vitalCardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   vitalCardTime: { fontSize: 11, color: '#64748B' },
   abnormalBadge: { backgroundColor: '#DC2626', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
@@ -1070,7 +1070,7 @@ const styles = StyleSheet.create({
   orderDocText: { fontSize: 10, color: '#94A3B8', marginTop: 4 },
   notesTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   addNoteBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  addNoteText: { fontSize: 11, fontWeight: '700', color: '#0F766E' },
+  addNoteText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
   noteCardItem: { backgroundColor: '#fff', padding: 12, borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 8 },
   noteText: { fontSize: 12, color: '#1E293B', lineHeight: 18 },
   noteAuthorText: { fontSize: 10, color: '#64748B', marginTop: 6 },
@@ -1087,7 +1087,7 @@ const styles = StyleSheet.create({
   vInputCol: { flex: 1 },
   vInputLabel: { fontSize: 11, fontWeight: '700', color: '#475569', marginBottom: 4 },
   vInput: { borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, padding: 10, fontSize: 14, color: '#0F172A', backgroundColor: '#F8FAFC' },
-  saveVitalsBtn: { backgroundColor: '#0F766E', paddingVertical: 14, borderRadius: 10, alignItems: 'center', marginTop: 8 },
+  saveVitalsBtn: { backgroundColor: '#38845A', paddingVertical: 14, borderRadius: 10, alignItems: 'center', marginTop: 8 },
   saveVitalsText: { color: '#fff', fontSize: 13, fontWeight: '800' },
   noteInput: { borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, padding: 12, fontSize: 13, height: 100, textAlignVertical: 'top', backgroundColor: '#F8FAFC', marginBottom: 14 },
 });

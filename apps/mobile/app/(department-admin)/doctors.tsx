@@ -186,7 +186,7 @@ export default function DepartmentDoctorsScreen() {
           onPress={() => router.push('/(department-admin)/scheduling')}
           activeOpacity={0.8}
         >
-          <Calendar size={15} color="#0F766E" />
+          <Calendar size={15} color="#38845A" />
           <Text style={styles.scheduleNavBtnText}>Roster</Text>
         </TouchableOpacity>
 
@@ -203,18 +203,18 @@ export default function DepartmentDoctorsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadDoctors} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadDoctors} tintColor="#38845A" />
         }
       >
         {successMsg && (
           <View style={styles.successBanner}>
-            <CheckCircle2 size={16} color="#0F766E" />
+            <CheckCircle2 size={16} color="#38845A" />
             <Text style={styles.successText}>{successMsg}</Text>
           </View>
         )}
 
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <UserCheck size={40} color="#CBD5E1" />
@@ -252,10 +252,10 @@ export default function DepartmentDoctorsScreen() {
                       value={isActive}
                       onValueChange={() => handleToggleStatus(doctor)}
                       disabled={isUpdating}
-                      trackColor={{ false: '#CBD5E1', true: '#99F6E4' }}
-                      thumbColor={isActive ? '#0F766E' : '#F1F5F9'}
+                      trackColor={{ false: '#CBD5E1', true: '#CDE8D5' }}
+                      thumbColor={isActive ? '#38845A' : '#F1F5F9'}
                     />
-                    <Text style={[styles.statusText, { color: isActive ? '#0F766E' : '#94A3B8' }]}>
+                    <Text style={[styles.statusText, { color: isActive ? '#38845A' : '#94A3B8' }]}>
                       {isActive ? 'Available' : 'Off-Duty'}
                     </Text>
                   </View>
@@ -277,7 +277,7 @@ export default function DepartmentDoctorsScreen() {
                       openEdit(doctor);
                     }}
                   >
-                    <Edit2 size={13} color="#0F766E" />
+                    <Edit2 size={13} color="#38845A" />
                     <Text style={styles.editBtnText}>Edit</Text>
                   </TouchableOpacity>
                 </View>
@@ -320,15 +320,15 @@ export default function DepartmentDoctorsScreen() {
                 <View style={styles.detailSection}>
                   <Text style={styles.detailSectionTitle}>CONTACT & CREDENTIALS</Text>
                   <View style={styles.detailRow}>
-                    <Mail size={15} color="#0F766E" />
+                    <Mail size={15} color="#38845A" />
                     <Text style={styles.detailValue}>{profileDoc.user?.email || 'N/A'}</Text>
                   </View>
                   <View style={styles.detailRow}>
-                    <Phone size={15} color="#0F766E" />
+                    <Phone size={15} color="#38845A" />
                     <Text style={styles.detailValue}>{profileDoc.user?.phone || 'N/A'}</Text>
                   </View>
                   <View style={styles.detailRow}>
-                    <Award size={15} color="#0F766E" />
+                    <Award size={15} color="#38845A" />
                     <Text style={styles.detailValue}>
                       Qualifications: {profileDoc.qualification || profileDoc.specialization || 'MBBS, MD'}
                     </Text>
@@ -338,13 +338,13 @@ export default function DepartmentDoctorsScreen() {
                 <View style={styles.detailSection}>
                   <Text style={styles.detailSectionTitle}>OPERATIONAL DUTY</Text>
                   <View style={styles.detailRow}>
-                    <Clock size={15} color="#0F766E" />
+                    <Clock size={15} color="#38845A" />
                     <Text style={styles.detailValue}>
                       OPD Hours: {profileDoc.opdTiming || '09:00 - 13:00'}
                     </Text>
                   </View>
                   <View style={styles.detailRow}>
-                    <UserCheck size={15} color="#0F766E" />
+                    <UserCheck size={15} color="#38845A" />
                     <Text style={styles.detailValue}>
                       Status: {profileDoc.status === 'ACTIVE' ? 'Active & Available' : 'Off-Duty'}
                     </Text>
@@ -362,7 +362,7 @@ export default function DepartmentDoctorsScreen() {
                       });
                     }}
                   >
-                    <Calendar size={16} color="#0F766E" />
+                    <Calendar size={16} color="#38845A" />
                     <Text style={styles.profileRosterBtnText}>Manage Weekly Schedule</Text>
                   </TouchableOpacity>
 
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
   scheduleNavBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 8,
@@ -509,13 +509,13 @@ const styles = StyleSheet.create({
   scheduleNavBtnText: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
   },
   addBtn: {
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
   successBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     padding: 12,
     borderRadius: 10,
     marginBottom: 14,
@@ -538,7 +538,7 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   emptyState: {
     alignItems: 'center',
@@ -572,13 +572,13 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   avatarText: {
-    color: '#0F766E',
+    color: '#38845A',
     fontWeight: '800',
     fontSize: 14,
   },
@@ -630,12 +630,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
-    backgroundColor: '#F0FDFA',
+    backgroundColor: '#EAF5ED',
   },
   editBtnText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   modalOverlay: {
     flex: 1,
@@ -676,7 +676,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -732,7 +732,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     paddingVertical: 12,
     borderRadius: 10,
     gap: 8,
@@ -740,13 +740,13 @@ const styles = StyleSheet.create({
   profileRosterBtnText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   profileEditBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 12,
     borderRadius: 10,
     gap: 8,
@@ -773,7 +773,7 @@ const styles = StyleSheet.create({
     color: '#0F172A',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',

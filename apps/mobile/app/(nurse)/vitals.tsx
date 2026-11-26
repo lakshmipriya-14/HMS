@@ -102,7 +102,7 @@ export default function NurseVitalsScreen() {
       {/* Top Header */}
       <View style={styles.patientBanner}>
         <View style={styles.patientRow}>
-          <User size={20} color="#0F766E" />
+          <User size={20} color="#38845A" />
           <View style={{ marginLeft: 8 }}>
             <Text style={styles.pName}>{patientName}</Text>
             <Text style={styles.pSub}>Bed: {bedNumber} • ICCU Floor 2 • UHID: ALM-2026-0042</Text>
@@ -256,20 +256,20 @@ export default function NurseVitalsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC', padding: 16 },
   patientBanner: {
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     borderRadius: 12,
     padding: 14,
     marginBottom: 12,
   },
   patientRow: { flexDirection: 'row', alignItems: 'center' },
-  pName: { fontSize: 16, fontWeight: '800', color: '#0F766E' },
+  pName: { fontSize: 16, fontWeight: '800', color: '#38845A' },
   pSub: { fontSize: 11, color: '#115E59', marginTop: 2 },
   alertBanner: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FEF2F2',
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: '#CDE8D5',
     borderRadius: 12,
     padding: 12,
     marginBottom: 14,
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   inputWarning: { borderColor: '#DC2626', backgroundColor: '#FEF2F2', color: '#DC2626' },
   unitHelp: { fontSize: 9, color: '#94A3B8', marginTop: 2 },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',

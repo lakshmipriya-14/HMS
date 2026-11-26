@@ -94,7 +94,7 @@ export default function WardBedOverviewScreen() {
       {/* Summary KPI Strip */}
       <View style={styles.kpiStrip}>
         <View style={styles.kpiBox}>
-          <Text style={[styles.kpiVal, { color: '#0F766E' }]}>{totalBeds}</Text>
+          <Text style={[styles.kpiVal, { color: '#38845A' }]}>{totalBeds}</Text>
           <Text style={styles.kpiLbl}>Total Beds</Text>
         </View>
         <View style={styles.kpiBox}>
@@ -111,7 +111,7 @@ export default function WardBedOverviewScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadBeds} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadBeds} tintColor="#38845A" />
         }
       >
         {success && (
@@ -122,7 +122,7 @@ export default function WardBedOverviewScreen() {
         )}
 
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : wards.length === 0 ? (
           <View style={styles.emptyState}>
             <BedDouble size={40} color="#CBD5E1" />
@@ -160,10 +160,10 @@ export default function WardBedOverviewScreen() {
                           styles.bedTile,
                           {
                             backgroundColor: isOcc
-                              ? '#FEE2E2'
+                              ? '#EAF5ED'
                               : isMaint
                               ? '#F1F5F9'
-                              : '#CCFBF1',
+                              : '#EAF5ED',
                           },
                         ]}
                         onPress={() => handleOpenBedDetail(bed, ward)}
@@ -177,7 +177,7 @@ export default function WardBedOverviewScreen() {
                                 ? '#DC2626'
                                 : isMaint
                                 ? '#64748B'
-                                : '#0F766E',
+                                : '#38845A',
                             },
                           ]}
                         >
@@ -187,7 +187,7 @@ export default function WardBedOverviewScreen() {
                         <Text
                           style={[
                             styles.bedStatusLabel,
-                            { color: isOcc ? '#DC2626' : '#0F766E' },
+                            { color: isOcc ? '#DC2626' : '#38845A' },
                           ]}
                         >
                           {isOcc ? 'Occupied' : isMaint ? 'Maintenance' : 'Available'}
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
   occupancyRatio: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
   },
   bedGrid: {
     flexDirection: 'row',
@@ -516,7 +516,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 12,
     borderRadius: 10,
     gap: 8,
@@ -559,7 +559,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
   prChipActive: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
     borderColor: '#EF4444',
   },
   prChipText: {
@@ -571,7 +571,7 @@ const styles = StyleSheet.create({
     color: '#DC2626',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',

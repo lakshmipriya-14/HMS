@@ -95,11 +95,11 @@ export default function DepartmentLeavesScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadLeaves} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadLeaves} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : leaves.length === 0 ? (
           <View style={styles.emptyState}>
             <CalendarOff size={40} color="#CBD5E1" />
@@ -133,7 +133,7 @@ export default function DepartmentLeavesScreen() {
                           item.status === 'APPROVED'
                             ? '#D1FAE5'
                             : item.status === 'REJECTED'
-                            ? '#FEE2E2'
+                            ? '#EAF5ED'
                             : '#FEF3C7',
                       },
                     ]}
@@ -177,7 +177,7 @@ export default function DepartmentLeavesScreen() {
                       style={[styles.btn, styles.recommendBtn]}
                       onPress={() => openReviewModal(item, 'RECOMMEND')}
                     >
-                      <ThumbsUp size={13} color="#0F766E" />
+                      <ThumbsUp size={13} color="#38845A" />
                       <Text style={styles.recommendBtnText}>Recommend</Text>
                     </TouchableOpacity>
 
@@ -432,12 +432,12 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   recommendBtn: {
-    backgroundColor: '#F0FDFA',
+    backgroundColor: '#EAF5ED',
     borderWidth: 1,
-    borderColor: '#CCFBF1',
+    borderColor: '#EAF5ED',
   },
   recommendBtnText: {
-    color: '#0F766E',
+    color: '#38845A',
     fontSize: 11,
     fontWeight: '700',
   },
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   rejectBtn: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
   },
   rejectBtnText: {
     color: '#DC2626',
@@ -505,7 +505,7 @@ const styles = StyleSheet.create({
   },
   summaryDates: {
     fontSize: 11,
-    color: '#0F766E',
+    color: '#38845A',
     marginTop: 4,
     fontWeight: '700',
   },
@@ -530,11 +530,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   actChipActive: {
-    backgroundColor: '#CCFBF1',
-    borderColor: '#0F766E',
+    backgroundColor: '#EAF5ED',
+    borderColor: '#38845A',
   },
   actChipReject: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
     borderColor: '#DC2626',
   },
   actChipText: {
@@ -543,7 +543,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   actChipTextActive: {
-    color: '#0F766E',
+    color: '#38845A',
   },
   modalInput: {
     backgroundColor: '#F8FAFC',
@@ -555,7 +555,7 @@ const styles = StyleSheet.create({
     color: '#0F172A',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',

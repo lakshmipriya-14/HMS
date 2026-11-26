@@ -79,7 +79,7 @@ export default function DepartmentInfoScreen() {
   if (loading && !refreshing) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#0F766E" />
+        <ActivityIndicator size="large" color="#38845A" />
       </View>
     );
   }
@@ -92,12 +92,12 @@ export default function DepartmentInfoScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadInfo} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadInfo} tintColor="#38845A" />
         }
       >
         {success && (
           <View style={styles.successBanner}>
-            <CheckCircle2 size={16} color="#0F766E" />
+            <CheckCircle2 size={16} color="#38845A" />
             <Text style={styles.successText}>Department profile updated successfully</Text>
           </View>
         )}
@@ -105,7 +105,7 @@ export default function DepartmentInfoScreen() {
         {/* Header Card */}
         <View style={styles.mainCard}>
           <View style={styles.iconBox}>
-            <Building2 size={28} color="#0F766E" />
+            <Building2 size={28} color="#38845A" />
           </View>
           <Text style={styles.deptTitle}>{info?.name || 'Department'}</Text>
           <Text style={styles.deptCode}>Code: {info?.code || 'DEPT'} • Clinical</Text>
@@ -127,8 +127,8 @@ export default function DepartmentInfoScreen() {
         <Text style={styles.sectionTitle}>Leadership & Governance</Text>
         <View style={styles.cardGroup}>
           <View style={styles.itemRow}>
-            <View style={[styles.miniIconBox, { backgroundColor: '#CCFBF1' }]}>
-              <User size={18} color="#0F766E" />
+            <View style={[styles.miniIconBox, { backgroundColor: '#EAF5ED' }]}>
+              <User size={18} color="#38845A" />
             </View>
             <View style={styles.itemCol}>
               <Text style={styles.itemLabel}>Head of Department (HOD)</Text>
@@ -171,7 +171,7 @@ export default function DepartmentInfoScreen() {
           </View>
 
           <View style={[styles.itemRow, { borderTopWidth: 1, borderTopColor: '#F1F5F9' }]}>
-            <View style={[styles.miniIconBox, { backgroundColor: '#FEE2E2' }]}>
+            <View style={[styles.miniIconBox, { backgroundColor: '#EAF5ED' }]}>
               <BedDouble size={18} color="#DC2626" />
             </View>
             <View style={styles.itemCol}>
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     padding: 12,
     borderRadius: 12,
     marginBottom: 16,
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   mainCard: {
     backgroundColor: '#FFFFFF',
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
   deptCode: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
     marginTop: 2,
     letterSpacing: 0.5,
   },
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
   editBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingHorizontal: 16,
     paddingVertical: 9,
     borderRadius: 10,
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
     color: '#0F172A',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',

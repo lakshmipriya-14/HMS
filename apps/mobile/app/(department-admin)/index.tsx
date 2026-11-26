@@ -70,7 +70,7 @@ export default function DepartmentAdminMobileDashboard() {
   if (loading && !refreshing) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#0F766E" />
+        <ActivityIndicator size="large" color="#38845A" />
         <Text style={styles.loadingText}>Loading Department Command...</Text>
       </View>
     );
@@ -104,7 +104,7 @@ export default function DepartmentAdminMobileDashboard() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={fetchTelemetry} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={fetchTelemetry} tintColor="#38845A" />
         }
       >
         {/* Department Info Header Banner (Clickable -> Module 2: Dept Info) */}
@@ -114,7 +114,7 @@ export default function DepartmentAdminMobileDashboard() {
           activeOpacity={0.8}
         >
           <View style={styles.deptIconCircle}>
-            <Building2 size={24} color="#0F766E" />
+            <Building2 size={24} color="#38845A" />
           </View>
           <View style={styles.deptTextCol}>
             <Text style={styles.deptName}>{department.name || 'Department Workspace'}</Text>
@@ -134,8 +134,8 @@ export default function DepartmentAdminMobileDashboard() {
             onPress={() => router.push('/(department-admin)/appointments')}
             activeOpacity={0.7}
           >
-            <View style={[styles.kpiIconBox, { backgroundColor: '#CCFBF1' }]}>
-              <CalendarCheck size={18} color="#0F766E" />
+            <View style={[styles.kpiIconBox, { backgroundColor: '#EAF5ED' }]}>
+              <CalendarCheck size={18} color="#38845A" />
             </View>
             <Text style={styles.kpiValue}>{stats.todayAppointments ?? 0}</Text>
             <Text style={styles.kpiLabel}>Appointments</Text>
@@ -192,7 +192,7 @@ export default function DepartmentAdminMobileDashboard() {
             activeOpacity={0.8}
           >
             <View style={styles.summaryTop}>
-              <UserCheck size={20} color="#0F766E" />
+              <UserCheck size={20} color="#38845A" />
               <ChevronRight size={16} color="#94A3B8" />
             </View>
             <Text style={styles.summaryNumber}>
@@ -246,7 +246,7 @@ export default function DepartmentAdminMobileDashboard() {
             onPress={() => router.push('/(department-admin)/lab-requests')}
             activeOpacity={0.7}
           >
-            <Text style={[styles.requestMiniCount, { color: '#0F766E' }]}>
+            <Text style={[styles.requestMiniCount, { color: '#38845A' }]}>
               {stats.pendingLabRequests ?? 0}
             </Text>
             <Text style={styles.requestMiniLabel}>Lab Orders</Text>
@@ -310,8 +310,8 @@ export default function DepartmentAdminMobileDashboard() {
             style={styles.actionItem}
             onPress={() => router.push('/(department-admin)/patients')}
           >
-            <View style={[styles.actionIconBox, { backgroundColor: '#CCFBF1' }]}>
-              <Activity size={20} color="#0F766E" />
+            <View style={[styles.actionIconBox, { backgroundColor: '#EAF5ED' }]}>
+              <Activity size={20} color="#38845A" />
             </View>
             <View style={styles.actionTextCol}>
               <Text style={styles.actionTitle}>Patient Directory</Text>
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   filterChipActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   filterChipText: {
     fontSize: 11,
@@ -474,7 +474,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
   viewAllText: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
   },
   kpiGrid: {
     flexDirection: 'row',
@@ -669,7 +669,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     marginTop: 4,
     marginRight: 10,
   },

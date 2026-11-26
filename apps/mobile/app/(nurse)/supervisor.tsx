@@ -100,7 +100,7 @@ export default function HeadNurseSupervisionScreen() {
               <Text style={styles.mLabel}>Total Beds</Text>
             </View>
             <View style={styles.mCard}>
-              <Text style={[styles.mNum, { color: '#0F766E' }]}>7</Text>
+              <Text style={[styles.mNum, { color: '#38845A' }]}>7</Text>
               <Text style={styles.mLabel}>Occupied</Text>
             </View>
             <View style={styles.mCard}>
@@ -271,17 +271,17 @@ const styles = StyleSheet.create({
   bedRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F8FAFC' },
   bedLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   bedPill: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  pillRed: { backgroundColor: '#FEE2E2' },
+  pillRed: { backgroundColor: '#EAF5ED' },
   pillGreen: { backgroundColor: '#D1FAE5' },
   pillBlue: { backgroundColor: '#E0F2FE' },
   bedPillText: { fontSize: 10, fontWeight: '800', color: '#0F172A' },
   pNameText: { fontSize: 12, fontWeight: '700', color: '#0F172A' },
   nurseNameText: { fontSize: 10, color: '#64748B' },
   reassignBtn: { backgroundColor: '#F1F5F9', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 },
-  reassignText: { fontSize: 10, fontWeight: '700', color: '#0F766E' },
+  reassignText: { fontSize: 10, fontWeight: '700', color: '#38845A' },
   rosterTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  ratioBadge: { backgroundColor: '#CCFBF1', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  ratioText: { fontSize: 10, fontWeight: '800', color: '#0F766E' },
+  ratioBadge: { backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  ratioText: { fontSize: 10, fontWeight: '800', color: '#38845A' },
   nurseCard: { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 8 },
   nurseTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   nurseName: { fontSize: 14, fontWeight: '800', color: '#0F172A' },
@@ -294,8 +294,8 @@ const styles = StyleSheet.create({
   textOff: { color: '#64748B' },
   nurseBottom: { marginTop: 8, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F8FAFC', flexDirection: 'row', justifyContent: 'space-between' },
   bedList: { fontSize: 11, color: '#334155' },
-  workloadText: { fontSize: 11, fontWeight: '700', color: '#0F766E' },
-  escalateCard: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#FECACA', padding: 20, alignItems: 'center', gap: 10 },
+  workloadText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
+  escalateCard: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#CDE8D5', padding: 20, alignItems: 'center', gap: 10 },
   escTitle: { fontSize: 16, fontWeight: '800', color: '#DC2626' },
   escSub: { fontSize: 12, color: '#475569', textAlign: 'center', lineHeight: 18 },
   escButton: { backgroundColor: '#DC2626', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 8, marginTop: 10 },

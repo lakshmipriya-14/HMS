@@ -65,7 +65,7 @@ export default function OpdManagementScreen() {
       {/* Summary Chips */}
       <View style={styles.summaryBar}>
         <View style={styles.sumBox}>
-          <Text style={[styles.sumVal, { color: '#0F766E' }]}>{data?.totalRegistrations ?? 0}</Text>
+          <Text style={[styles.sumVal, { color: '#38845A' }]}>{data?.totalRegistrations ?? 0}</Text>
           <Text style={styles.sumLbl}>Today's OPD</Text>
         </View>
         <View style={styles.sumBox}>
@@ -101,11 +101,11 @@ export default function OpdManagementScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadOpd} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadOpd} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : filteredQueue.length === 0 ? (
           <View style={styles.emptyState}>
             <ClipboardList size={40} color="#CBD5E1" />
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tabBtnActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   tabText: {
     fontSize: 11,
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   tokenNumber: {
     fontSize: 13,
     fontWeight: '900',
-    color: '#0F766E',
+    color: '#38845A',
   },
   patCol: {
     flex: 1,
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
     textTransform: 'uppercase',
   },
 });

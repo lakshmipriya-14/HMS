@@ -97,7 +97,7 @@ export default function DepartmentOperationsScreen() {
       desc: 'Directory & Search',
       icon: HeartPulse,
       route: '/(department-admin)/patients',
-      color: '#0F766E',
+      color: '#38845A',
     },
     {
       title: 'Appointments',
@@ -217,11 +217,11 @@ export default function DepartmentOperationsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadOperations} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadOperations} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : activeTab === 'OPD' ? (
           /* OPD & APPOINTMENTS TAB */
           <View>
@@ -371,13 +371,13 @@ export default function DepartmentOperationsScreen() {
                           key={bed.id}
                           style={[
                             styles.bedPill,
-                            { backgroundColor: isOccupied ? '#FEE2E2' : '#CCFBF1' },
+                            { backgroundColor: isOccupied ? '#EAF5ED' : '#EAF5ED' },
                           ]}
                         >
                           <Text
                             style={[
                               styles.bedNumber,
-                              { color: isOccupied ? '#DC2626' : '#0F766E' },
+                              { color: isOccupied ? '#DC2626' : '#38845A' },
                             ]}
                           >
                             {bed.bedNumber}
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   tabItemActive: {
-    borderBottomColor: '#0F766E',
+    borderBottomColor: '#38845A',
   },
   tabLabel: {
     fontSize: 12,
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   tabLabelActive: {
-    color: '#0F766E',
+    color: '#38845A',
   },
   content: {
     flex: 1,
@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
   viewAllText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   emptyCard: {
     backgroundColor: '#FFFFFF',
@@ -592,7 +592,7 @@ const styles = StyleSheet.create({
   checkInBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 8,

@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   name: { fontSize: 18, fontWeight: '800', color: '#0F172A' },
   sub: { fontSize: 13, color: '#64748B', marginTop: 4 },
   deskTag: { backgroundColor: '#F1F5F9', color: '#334155', fontSize: 11, fontWeight: '700', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, marginTop: 12 },
-  logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEE2E2', paddingVertical: 14, borderRadius: 10, gap: 8 },
+  logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#EAF5ED', paddingVertical: 14, borderRadius: 10, gap: 8 },
   logoutText: { color: '#DC2626', fontSize: 14, fontWeight: '700' },
 });
 

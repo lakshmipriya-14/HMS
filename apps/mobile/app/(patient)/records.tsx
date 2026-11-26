@@ -371,7 +371,7 @@ export default function PatientRecordsScreen() {
               <View key={rx.id} style={styles.card}>
                 <View style={styles.cardTopRow}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Pill size={16} color="#0F766E" />
+                    <Pill size={16} color="#38845A" />
                     <Text style={styles.rxNo}>{rx.rxNumber}</Text>
                   </View>
                   <View style={styles.dispensedBadge}>
@@ -421,7 +421,7 @@ export default function PatientRecordsScreen() {
                   style={styles.downloadCardBtn}
                   onPress={() => handleDownloadReport(`Rx_${rx.rxNumber}`, rx.rxNumber)}
                 >
-                  <Download size={14} color="#0F766E" />
+                  <Download size={14} color="#38845A" />
                   <Text style={styles.downloadCardText}>Download Official E-Prescription PDF</Text>
                 </TouchableOpacity>
               </View>
@@ -643,7 +643,7 @@ export default function PatientRecordsScreen() {
 
             <View style={styles.card}>
               <View style={styles.dischargeTop}>
-                <Building size={20} color="#0F766E" />
+                <Building size={20} color="#38845A" />
                 <View style={{ flex: 1, marginLeft: 10 }}>
                   <Text style={styles.dischargeHospital}>KIZUNA MULTISPECIALITY HOSPITALS</Text>
                   <Text style={styles.dischargeDocTitle}>Official IPD Discharge Summary</Text>
@@ -690,7 +690,7 @@ export default function PatientRecordsScreen() {
               </View>
 
               <View style={styles.followUpCard}>
-                <Calendar size={14} color="#0F766E" />
+                <Calendar size={14} color="#38845A" />
                 <Text style={styles.followUpText}>
                   Scheduled Follow-up: {DISCHARGE_SUMMARY.followUpDate}
                 </Text>
@@ -722,7 +722,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
     marginRight: 8,
   },
-  tabPillActive: { backgroundColor: '#0F766E' },
+  tabPillActive: { backgroundColor: '#38845A' },
   tabPillText: { fontSize: 12, fontWeight: '700', color: '#64748B' },
   tabPillTextActive: { color: '#fff', fontWeight: '800' },
   contentScroll: { padding: 16 },
@@ -747,7 +747,7 @@ const styles = StyleSheet.create({
   dispensedBadgeText: { fontSize: 10, fontWeight: '800', color: '#065F46' },
   rxDoctor: { fontSize: 13, fontWeight: '700', color: '#1E293B', marginTop: 6 },
   rxDate: { fontSize: 11, color: '#64748B', marginTop: 2 },
-  rxDiagnosis: { fontSize: 12, color: '#0F766E', fontWeight: '600', marginTop: 4 },
+  rxDiagnosis: { fontSize: 12, color: '#38845A', fontWeight: '600', marginTop: 4 },
   medsBox: { backgroundColor: '#F8FAFC', borderRadius: 10, padding: 10, marginTop: 10, gap: 10 },
   medRow: {
     flexDirection: 'row',
@@ -761,10 +761,10 @@ const styles = StyleSheet.create({
   medInst: { fontSize: 10, color: '#64748B', marginTop: 2 },
   scheduleBadges: { flexDirection: 'row', gap: 4, alignItems: 'center' },
   timeBadge: { paddingHorizontal: 6, paddingVertical: 3, borderRadius: 4 },
-  timeBadgeOn: { backgroundColor: '#CCFBF1' },
+  timeBadgeOn: { backgroundColor: '#EAF5ED' },
   timeBadgeOff: { backgroundColor: '#F1F5F9' },
   timeBadgeText: { fontSize: 9, fontWeight: '800' },
-  timeTextOn: { color: '#0F766E' },
+  timeTextOn: { color: '#38845A' },
   timeTextOff: { color: '#94A3B8' },
   downloadCardBtn: {
     flexDirection: 'row',
@@ -776,7 +776,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#F1F5F9',
   },
-  downloadCardText: { fontSize: 12, fontWeight: '700', color: '#0F766E' },
+  downloadCardText: { fontSize: 12, fontWeight: '700', color: '#38845A' },
   orderId: { fontSize: 13, fontWeight: '800', color: '#0F172A', fontFamily: 'monospace' },
   modeBadge: { backgroundColor: '#E0F2FE', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4 },
   modeBadgeText: { fontSize: 10, fontWeight: '800', color: '#0369A1' },
@@ -795,7 +795,7 @@ const styles = StyleSheet.create({
   counterText: { fontSize: 11, color: '#475569', marginTop: 6 },
   labTestName: { fontSize: 14, fontWeight: '800', color: '#0F172A' },
   statusPill: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4 },
-  pillCritical: { backgroundColor: '#FEE2E2' },
+  pillCritical: { backgroundColor: '#EAF5ED' },
   pillElevated: { backgroundColor: '#FEF3C7' },
   pillNormal: { backgroundColor: '#D1FAE5' },
   statusPillText: { fontSize: 10, fontWeight: '800' },
@@ -833,7 +833,7 @@ const styles = StyleSheet.create({
   findingsBody: { fontSize: 11, color: '#475569', marginTop: 4 },
   dischargeTop: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   dischargeHospital: { fontSize: 13, fontWeight: '900', color: '#0F172A' },
-  dischargeDocTitle: { fontSize: 11, color: '#0F766E', fontWeight: '700' },
+  dischargeDocTitle: { fontSize: 11, color: '#38845A', fontWeight: '700' },
   dsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, backgroundColor: '#F8FAFC', padding: 10, borderRadius: 8, marginBottom: 10 },
   dsItem: { width: '47%' },
   dsLabel: { fontSize: 10, color: '#64748B' },
@@ -841,13 +841,13 @@ const styles = StyleSheet.create({
   summarySection: { marginTop: 8 },
   sumSecTitle: { fontSize: 12, fontWeight: '800', color: '#0F172A' },
   sumSecBody: { fontSize: 11, color: '#334155', marginTop: 2, lineHeight: 16 },
-  followUpCard: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#F0FDFA', padding: 8, borderRadius: 6, marginVertical: 10 },
-  followUpText: { fontSize: 11, fontWeight: '700', color: '#0F766E' },
+  followUpCard: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#EAF5ED', padding: 8, borderRadius: 6, marginVertical: 10 },
+  followUpText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
   downloadDischargeBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 10,
     paddingVertical: 12,
     gap: 8,

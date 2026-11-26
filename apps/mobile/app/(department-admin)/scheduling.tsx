@@ -137,13 +137,13 @@ export default function DoctorSchedulingScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={() => loadDoctorsAndSchedules(selectedDoctorId)}
-            tintColor="#0F766E"
+            tintColor="#38845A"
           />
         }
       >
         {savedSuccess && (
           <View style={styles.successBanner}>
-            <CheckCircle2 size={16} color="#0F766E" />
+            <CheckCircle2 size={16} color="#38845A" />
             <Text style={styles.successText}>Weekly OPD timetable saved successfully</Text>
           </View>
         )}
@@ -151,7 +151,7 @@ export default function DoctorSchedulingScreen() {
         <Text style={styles.sectionTitle}>Weekly Duty Timetable</Text>
 
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : (
           DAYS.map((day) => {
             const sched = schedules[day] || {
@@ -165,7 +165,7 @@ export default function DoctorSchedulingScreen() {
               <View key={day} style={styles.dayCard}>
                 <View style={styles.dayTop}>
                   <View style={styles.dayHeader}>
-                    <Calendar size={16} color="#0F766E" />
+                    <Calendar size={16} color="#38845A" />
                     <Text style={styles.dayName}>{day}</Text>
                   </View>
                   <View style={styles.switchRow}>
@@ -178,8 +178,8 @@ export default function DoctorSchedulingScreen() {
                           [day]: { ...sched, isActive: val },
                         }))
                       }
-                      trackColor={{ false: '#CBD5E1', true: '#99F6E4' }}
-                      thumbColor={sched.isActive ? '#0F766E' : '#F1F5F9'}
+                      trackColor={{ false: '#CBD5E1', true: '#CDE8D5' }}
+                      thumbColor={sched.isActive ? '#38845A' : '#F1F5F9'}
                     />
                   </View>
                 </View>
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   doctorPillActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   doctorPillText: {
     fontSize: 12,
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     padding: 12,
     borderRadius: 12,
     marginBottom: 16,
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   sectionTitle: {
     fontSize: 12,
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 12,
     paddingVertical: 14,
     marginTop: 16,

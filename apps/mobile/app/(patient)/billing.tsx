@@ -224,7 +224,7 @@ export default function PatientBillingScreen() {
           style={[styles.tabBtn, activeTab === 'BILLS' && styles.tabBtnActive]}
           onPress={() => setActiveTab('BILLS')}
         >
-          <CreditCard size={16} color={activeTab === 'BILLS' ? '#0F766E' : '#64748B'} />
+          <CreditCard size={16} color={activeTab === 'BILLS' ? '#38845A' : '#64748B'} />
           <Text style={[styles.tabText, activeTab === 'BILLS' && styles.tabTextActive]}>
             Hospital Bills (P10)
           </Text>
@@ -234,7 +234,7 @@ export default function PatientBillingScreen() {
           style={[styles.tabBtn, activeTab === 'CLAIMS' && styles.tabBtnActive]}
           onPress={() => setActiveTab('CLAIMS')}
         >
-          <ShieldCheck size={16} color={activeTab === 'CLAIMS' ? '#0F766E' : '#64748B'} />
+          <ShieldCheck size={16} color={activeTab === 'CLAIMS' ? '#38845A' : '#64748B'} />
           <Text style={[styles.tabText, activeTab === 'CLAIMS' && styles.tabTextActive]}>
             TPA Insurance Tracker (P11)
           </Text>
@@ -333,7 +333,7 @@ export default function PatientBillingScreen() {
                       style={styles.receiptActionBtn}
                       onPress={() => setReceiptInv(inv)}
                     >
-                      <Receipt size={14} color="#0F766E" />
+                      <Receipt size={14} color="#38845A" />
                       <Text style={styles.receiptActionText}>View Receipt</Text>
                     </TouchableOpacity>
                   ) : (
@@ -588,9 +588,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
     gap: 6,
   },
-  tabBtnActive: { backgroundColor: '#CCFBF1' },
+  tabBtnActive: { backgroundColor: '#EAF5ED' },
   tabText: { fontSize: 12, fontWeight: '700', color: '#64748B' },
-  tabTextActive: { color: '#0F766E', fontWeight: '800' },
+  tabTextActive: { color: '#38845A', fontWeight: '800' },
   contentScroll: { padding: 16 },
   sectionHeading: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
   sectionSub: { fontSize: 12, color: '#64748B', marginTop: 2, marginBottom: 12 },
@@ -650,11 +650,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     gap: 4,
   },
-  receiptActionText: { color: '#0F766E', fontSize: 11, fontWeight: '700' },
+  receiptActionText: { color: '#38845A', fontSize: 11, fontWeight: '700' },
   payActionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingHorizontal: 14,
     paddingVertical: 7,
     borderRadius: 8,
@@ -662,7 +662,7 @@ const styles = StyleSheet.create({
   },
   payActionText: { color: '#fff', fontSize: 12, fontWeight: '800' },
   claimIdText: { fontSize: 13, fontWeight: '800', color: '#0F172A', fontFamily: 'monospace' },
-  tpaNameText: { fontSize: 13, fontWeight: '700', color: '#0F766E', marginTop: 2 },
+  tpaNameText: { fontSize: 13, fontWeight: '700', color: '#38845A', marginTop: 2 },
   policyNoText: { fontSize: 11, color: '#64748B', marginTop: 1 },
   pillApproved: { backgroundColor: '#D1FAE5', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   textApproved: { fontSize: 10, fontWeight: '800', color: '#065F46' },
@@ -682,21 +682,21 @@ const styles = StyleSheet.create({
   cFinVal: { fontSize: 12, fontWeight: '800', color: '#0F172A', marginTop: 2 },
   claimFooterRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
   updateText: { fontSize: 10, color: '#94A3B8' },
-  helplineText: { fontSize: 10, color: '#0F766E', fontWeight: '600' },
+  helplineText: { fontSize: 10, color: '#38845A', fontWeight: '600' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.6)', justifyContent: 'flex-end' },
   modalCard: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20 },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 },
   modalTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
   modalSub: { fontSize: 11, color: '#64748B', marginTop: 2 },
-  payAmountBanner: { backgroundColor: '#0F766E', borderRadius: 12, padding: 14, alignItems: 'center', marginBottom: 14 },
-  payAmountLabel: { color: '#CCFBF1', fontSize: 11, fontWeight: '600' },
+  payAmountBanner: { backgroundColor: '#38845A', borderRadius: 12, padding: 14, alignItems: 'center', marginBottom: 14 },
+  payAmountLabel: { color: '#EAF5ED', fontSize: 11, fontWeight: '600' },
   payAmountVal: { color: '#fff', fontSize: 24, fontWeight: '900', marginTop: 2 },
   modalInputLabel: { fontSize: 11, fontWeight: '700', color: '#475569', marginBottom: 6 },
   payModeRow: { flexDirection: 'row', gap: 6, marginBottom: 14 },
   payModePill: { flex: 1, paddingVertical: 8, borderRadius: 8, borderWidth: 1, borderColor: '#E2E8F0', alignItems: 'center', backgroundColor: '#F8FAFC' },
-  payModePillActive: { borderColor: '#0F766E', backgroundColor: '#F0FDFA' },
+  payModePillActive: { borderColor: '#38845A', backgroundColor: '#EAF5ED' },
   payModeText: { fontSize: 11, color: '#475569', fontWeight: '600' },
-  payModeTextActive: { color: '#0F766E', fontWeight: '800' },
+  payModeTextActive: { color: '#38845A', fontWeight: '800' },
   modeFormBox: { backgroundColor: '#F8FAFC', borderRadius: 10, padding: 12, marginBottom: 16 },
   upiQrBox: { alignItems: 'center', gap: 4, paddingVertical: 8 },
   upiQrText: { fontSize: 11, color: '#64748B' },
@@ -704,7 +704,7 @@ const styles = StyleSheet.create({
   modalInput: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8, fontSize: 13, color: '#0F172A' },
   bankPill: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6, backgroundColor: '#fff', borderWidth: 1, borderColor: '#CBD5E1' },
   bankPillText: { fontSize: 11, color: '#334155' },
-  confirmPayBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0F766E', borderRadius: 10, paddingVertical: 14, gap: 8 },
+  confirmPayBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#38845A', borderRadius: 10, paddingVertical: 14, gap: 8 },
   confirmPayBtnText: { color: '#fff', fontSize: 14, fontWeight: '800' },
   receiptHospital: { fontSize: 13, fontWeight: '900', color: '#0F172A' },
   receiptSub: { fontSize: 10, color: '#64748B' },

@@ -15,7 +15,7 @@ export default function SuperAdminTabsLayout() {
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: UyirinaiTheme.colors.primary,
-          tabBarInactiveTintColor: '#6B7280',
+          tabBarInactiveTintColor: UyirinaiTheme.colors.textMuted,
           tabBarHideOnKeyboard: true,
           tabBarStyle: {
             height: tabHeight,
@@ -23,11 +23,11 @@ export default function SuperAdminTabsLayout() {
             paddingTop: 6,
             backgroundColor: UyirinaiTheme.colors.white,
             borderTopWidth: 1,
-            borderTopColor: UyirinaiTheme.colors.borderGrey,
-            elevation: 8,
-            shadowColor: '#000',
+            borderTopColor: UyirinaiTheme.colors.borderLight,
+            elevation: 4,
+            shadowColor: UyirinaiTheme.colors.primaryDark,
             shadowOffset: { width: 0, height: -2 },
-            shadowOpacity: 0.08,
+            shadowOpacity: 0.05,
             shadowRadius: 4,
           },
           tabBarLabelStyle: {

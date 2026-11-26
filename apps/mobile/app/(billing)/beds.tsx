@@ -21,7 +21,7 @@ export default function WardBedsScreen() {
         {WARDS.map((w, idx) => (
           <View key={idx} style={styles.card}>
             <View style={styles.cardHeader}>
-              <BedDouble size={18} color="#059669" />
+              <BedDouble size={18} color="#38845A" />
               <Text style={styles.name}>{w.name}</Text>
             </View>
             <View style={styles.row}>
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   name: { fontSize: 14, fontWeight: '700', color: '#0F172A', flex: 1 },
   row: { flexDirection: 'row', gap: 8, marginTop: 4 },
   pillTotal: { fontSize: 11, fontWeight: '600', backgroundColor: '#F1F5F9', color: '#475569', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  pillOcc: { fontSize: 11, fontWeight: '600', backgroundColor: '#FEE2E2', color: '#DC2626', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  pillFree: { fontSize: 11, fontWeight: '700', backgroundColor: '#D1FAE5', color: '#059669', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  pillOcc: { fontSize: 11, fontWeight: '600', backgroundColor: '#EAF5ED', color: '#DC2626', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  pillFree: { fontSize: 11, fontWeight: '700', backgroundColor: '#D1FAE5', color: '#38845A', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
 });
 

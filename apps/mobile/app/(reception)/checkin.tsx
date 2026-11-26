@@ -137,7 +137,7 @@ export default function ReceptionCheckInScreen() {
       {checkedInResult && (
         <View style={styles.tokenSlipCard}>
           <View style={styles.slipTop}>
-            <CheckCircle2 size={24} color="#059669" />
+            <CheckCircle2 size={24} color="#38845A" />
             <Text style={styles.slipTitle}>Official OPD Consultation Token</Text>
           </View>
 
@@ -202,7 +202,7 @@ export default function ReceptionCheckInScreen() {
             </TouchableOpacity>
           ) : (
             <View style={styles.alreadyCheckedInBox}>
-              <CheckCircle2 size={16} color="#059669" />
+              <CheckCircle2 size={16} color="#38845A" />
               <Text style={styles.alreadyCheckedInText}>Patient already checked in and in active queue</Text>
             </View>
           )}

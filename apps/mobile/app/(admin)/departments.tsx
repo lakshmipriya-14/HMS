@@ -236,14 +236,14 @@ export default function AdminDepartmentsScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#0F766E" />
+          <ActivityIndicator size="large" color="#38845A" />
         </View>
       ) : (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#0F766E" />
+            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />
           }
         >
           {filtered.length === 0 ? (
@@ -268,7 +268,7 @@ export default function AdminDepartmentsScreen() {
                     <TouchableOpacity
                       style={[
                         styles.statusPill,
-                        { backgroundColor: dept.isActive ? '#D1FAE5' : '#FEE2E2' },
+                        { backgroundColor: dept.isActive ? '#D1FAE5' : '#EAF5ED' },
                       ]}
                       onPress={() => handleToggleStatus(dept.id)}
                     >
@@ -286,7 +286,7 @@ export default function AdminDepartmentsScreen() {
                   {/* HOD & Admin Details */}
                   <View style={styles.metaBox}>
                     <View style={styles.metaRow}>
-                      <UserCheck size={14} color="#0F766E" />
+                      <UserCheck size={14} color="#38845A" />
                       <Text style={styles.metaLabel}>Head of Dept:</Text>
                       <Text style={styles.metaVal}>
                         {dept.hod?.user?.name || 'Unassigned'}
@@ -334,7 +334,7 @@ export default function AdminDepartmentsScreen() {
                           setEditDesc(dept.description || '');
                         }}
                       >
-                        <Edit2 size={15} color="#0F766E" />
+                        <Edit2 size={15} color="#38845A" />
                         <Text style={styles.actionIconText}>Edit</Text>
                       </TouchableOpacity>
 
@@ -489,7 +489,7 @@ export default function AdminDepartmentsScreen() {
                         {p.specialization || p.employee?.designation || p.email}
                       </Text>
                     </View>
-                    {isSelected && <CheckCircle size={18} color="#0F766E" />}
+                    {isSelected && <CheckCircle size={18} color="#38845A" />}
                   </TouchableOpacity>
                 );
               })}
@@ -542,7 +542,7 @@ const styles = StyleSheet.create({
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingHorizontal: 14,
     borderRadius: 10,
     gap: 6,
@@ -568,7 +568,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   filterChipActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   filterChipText: {
     fontSize: 12,
@@ -605,13 +605,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   codeBadge: {
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
   },
   codeText: {
-    color: '#0F766E',
+    color: '#38845A',
     fontSize: 11,
     fontWeight: '800',
   },
@@ -660,7 +660,7 @@ const styles = StyleSheet.create({
   changeLink: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   cardFooter: {
     flexDirection: 'row',
@@ -691,13 +691,13 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#CCFBF1',
+    borderColor: '#EAF5ED',
     gap: 4,
   },
   actionIconText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   modalBg: {
     flex: 1,
@@ -740,7 +740,7 @@ const styles = StyleSheet.create({
     color: '#0F172A',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: 'center',
@@ -767,8 +767,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   personOptionSelected: {
-    borderColor: '#0F766E',
-    backgroundColor: '#F0FDFA',
+    borderColor: '#38845A',
+    backgroundColor: '#EAF5ED',
   },
   personName: {
     fontSize: 13,

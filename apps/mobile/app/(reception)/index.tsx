@@ -69,7 +69,7 @@ export default function ReceptionDashboardScreen() {
   return (
     <ScrollView
       style={styles.container}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#B5121B']} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
     >
       {/* Front Desk Terminal Banner */}
       <View style={styles.banner}>
@@ -120,8 +120,8 @@ export default function ReceptionDashboardScreen() {
           style={styles.actionCard}
           onPress={() => router.push('/(reception)/search' as any)}
         >
-          <View style={[styles.actionIcon, { backgroundColor: '#CCFBF1' }]}>
-            <Search size={22} color="#0F766E" />
+          <View style={[styles.actionIcon, { backgroundColor: '#EAF5ED' }]}>
+            <Search size={22} color="#38845A" />
           </View>
           <Text style={styles.actionTitle}>Search Existing Patient</Text>
           <Text style={styles.actionSub}>By UHID, Name, Mobile</Text>
@@ -143,7 +143,7 @@ export default function ReceptionDashboardScreen() {
           onPress={() => router.push('/(reception)/checkin' as any)}
         >
           <View style={[styles.actionIcon, { backgroundColor: '#DCFCE7' }]}>
-            <CheckCircle2 size={22} color="#059669" />
+            <CheckCircle2 size={22} color="#38845A" />
           </View>
           <Text style={styles.actionTitle}>Patient Check-In</Text>
           <Text style={styles.actionSub}>Confirm Arrival & Token</Text>
@@ -233,7 +233,7 @@ export default function ReceptionDashboardScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC', padding: 14 },
   banner: {
-    backgroundColor: '#B5121B',
+    backgroundColor: '#38845A',
     borderRadius: 16,
     padding: 18,
     marginBottom: 14,
@@ -244,18 +244,18 @@ const styles = StyleSheet.create({
   },
   bannerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   greeting: { fontSize: 17, fontWeight: '800', color: '#fff' },
-  deskSub: { fontSize: 11, color: '#FECACA', marginTop: 2 },
-  liveTag: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#850D14', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, gap: 5 },
+  deskSub: { fontSize: 11, color: '#CDE8D5', marginTop: 2 },
+  liveTag: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#287348', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, gap: 5 },
   liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#22C55E' },
   liveText: { fontSize: 9, fontWeight: '800', color: '#fff' },
   bannerStatsRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 16, backgroundColor: 'rgba(255,255,255,0.12)', padding: 12, borderRadius: 12 },
   bStatCol: { alignItems: 'center', flex: 1 },
   bStatNum: { fontSize: 20, fontWeight: '900', color: '#fff' },
-  bStatLabel: { fontSize: 10, color: '#FECACA', marginTop: 2, textAlign: 'center' },
+  bStatLabel: { fontSize: 10, color: '#CDE8D5', marginTop: 2, textAlign: 'center' },
   bStatDivider: { width: 1, height: 26, backgroundColor: 'rgba(255,255,255,0.2)' },
   sectionTitle: { fontSize: 15, fontWeight: '800', color: '#0F172A', marginBottom: 10 },
   sectionHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  linkText: { fontSize: 12, fontWeight: '700', color: '#B5121B' },
+  linkText: { fontSize: 12, fontWeight: '700', color: '#38845A' },
   actionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 14 },
   actionCard: {
     width: '48.5%',
@@ -280,16 +280,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#FEE2E2',
+    borderColor: '#EAF5ED',
     borderRadius: 10,
     paddingVertical: 12,
     gap: 6,
   },
-  secondaryBtnText: { fontSize: 11, fontWeight: '700', color: '#B5121B' },
+  secondaryBtnText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
   queueCard: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 12, marginBottom: 14 },
   queueItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#F8FAFC' },
-  tokenBox: { width: 46, height: 46, borderRadius: 10, backgroundColor: '#FEE2E2', alignItems: 'center', justifyContent: 'center' },
-  tokenText: { color: '#B5121B', fontWeight: '900', fontSize: 15 },
+  tokenBox: { width: 46, height: 46, borderRadius: 10, backgroundColor: '#EAF5ED', alignItems: 'center', justifyContent: 'center' },
+  tokenText: { color: '#38845A', fontWeight: '900', fontSize: 15 },
   qPatient: { fontSize: 14, fontWeight: '800', color: '#0F172A' },
   qDoc: { fontSize: 11, color: '#475569', marginTop: 1 },
   qDept: { fontSize: 10, color: '#64748B', marginTop: 1 },
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FEF2F2',
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: '#CDE8D5',
     borderRadius: 14,
     padding: 14,
   },
