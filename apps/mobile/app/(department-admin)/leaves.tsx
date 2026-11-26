@@ -7,8 +7,20 @@ import {
   RefreshControl,
   ActivityIndicator,
   TouchableOpacity,
+  Modal,
+  TextInput,
 } from 'react-native';
-import { CalendarOff, CheckCircle2, XCircle, Clock, ThumbsUp } from 'lucide-react-native';
+import {
+  CalendarOff,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  ThumbsUp,
+  X,
+  User,
+  Calendar,
+  AlertCircle,
+} from 'lucide-react-native';
 import { mobileApiClient } from '../../services/api';
 import { AdminHeader } from '../../components/AdminHeader';
 
@@ -16,7 +28,12 @@ export default function DepartmentLeavesScreen() {
   const [leaves, setLeaves] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [reviewingId, setReviewingId] = useState<string | null>(null);
+  const [selectedLeave, setSelectedLeave] = useState<any | null>(null);
+  const [reviewModal, setReviewModal] = useState(false);
+  const [reviewAction, setReviewAction] = useState<'RECOMMEND' | 'APPROVE' | 'REJECT'>('RECOMMEND');
+  const [remarks, setRemarks] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [toastMsg, setToastMsg] = useState('');
 
   const loadLeaves = async () => {
     try {
@@ -35,23 +52,44 @@ export default function DepartmentLeavesScreen() {
     loadLeaves();
   }, []);
 
-  const handleAction = async (leaveId: string, action: 'RECOMMEND' | 'APPROVE' | 'REJECT') => {
+  const openReviewModal = (item: any, action: 'RECOMMEND' | 'APPROVE' | 'REJECT') => {
+    setSelectedLeave(item);
+    setReviewAction(action);
+    setRemarks('');
+    setReviewModal(true);
+  };
+
+  const handleSubmitReview = async () => {
+    if (!selectedLeave) return;
     try {
-      setReviewingId(leaveId);
-      await mobileApiClient.departmentAdmin.reviewLeave(leaveId, action, `Mobile ${action.toLowerCase()}`);
-      setLeaves((prev) =>
-        prev.map((l) => (l.id === leaveId ? { ...l, status: action === 'RECOMMEND' ? 'RECOMMENDED' : action === 'APPROVE' ? 'APPROVED' : 'REJECTED' } : l))
+      setSubmitting(true);
+      await mobileApiClient.departmentAdmin.reviewLeave(
+        selectedLeave.id,
+        reviewAction,
+        remarks.trim() || `Department Admin: ${reviewAction.toLowerCase()}ed`
       );
+      setReviewModal(false);
+      setSelectedLeave(null);
+      setToastMsg(`Leave application ${reviewAction.toLowerCase()}ed successfully`);
+      setTimeout(() => setToastMsg(''), 3000);
+      loadLeaves();
     } catch (err) {
       console.error('Failed to review leave:', err);
     } finally {
-      setReviewingId(null);
+      setSubmitting(false);
     }
   };
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Staff Leave Requests" subtitle="Approval & Shift Coverage" />
+      <AdminHeader title="Staff Leave Requests" />
+
+      {toastMsg ? (
+        <View style={styles.toast}>
+          <CheckCircle2 size={16} color="#059669" />
+          <Text style={styles.toastText}>{toastMsg}</Text>
+        </View>
+      ) : null}
 
       <ScrollView
         style={styles.content}
@@ -70,7 +108,6 @@ export default function DepartmentLeavesScreen() {
         ) : (
           leaves.map((item) => {
             const isPending = ['PENDING', 'SUBMITTED', 'REQUESTED'].includes(item.status);
-            const isProcessing = reviewingId === item.id;
 
             return (
               <View key={item.id} style={styles.card}>
@@ -85,50 +122,78 @@ export default function DepartmentLeavesScreen() {
                       {item.user?.firstName} {item.user?.lastName}
                     </Text>
                     <Text style={styles.leaveType}>
-                      {item.leaveType || 'Casual Leave'} ({item.totalDays || 1} days)
+                      {item.leaveType || 'Casual Leave'} • {item.totalDays || 1} day(s)
                     </Text>
                   </View>
-                  <View style={styles.statusBadge}>
-                    <Text style={styles.statusBadgeText}>{item.status || 'PENDING'}</Text>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      {
+                        backgroundColor:
+                          item.status === 'APPROVED'
+                            ? '#D1FAE5'
+                            : item.status === 'REJECTED'
+                            ? '#FEE2E2'
+                            : '#FEF3C7',
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.statusBadgeText,
+                        {
+                          color:
+                            item.status === 'APPROVED'
+                              ? '#059669'
+                              : item.status === 'REJECTED'
+                              ? '#DC2626'
+                              : '#D97706',
+                        },
+                      ]}
+                    >
+                      {item.status || 'PENDING'}
+                    </Text>
                   </View>
                 </View>
 
                 <View style={styles.dateRow}>
-                  <Clock size={12} color="#64748B" />
+                  <Calendar size={13} color="#64748B" />
                   <Text style={styles.dateText}>
                     {new Date(item.startDate).toLocaleDateString('en-IN')} –{' '}
                     {new Date(item.endDate).toLocaleDateString('en-IN')}
                   </Text>
                 </View>
 
-                <Text style={styles.reasonText}>Reason: {item.reason || 'Personal emergency'}</Text>
+                {item.reason ? (
+                  <View style={styles.reasonBox}>
+                    <Text style={styles.reasonLabel}>Reason:</Text>
+                    <Text style={styles.reasonText}>{item.reason}</Text>
+                  </View>
+                ) : null}
 
                 {isPending && (
                   <View style={styles.actionsRow}>
                     <TouchableOpacity
                       style={[styles.btn, styles.recommendBtn]}
-                      disabled={isProcessing}
-                      onPress={() => handleAction(item.id, 'RECOMMEND')}
+                      onPress={() => openReviewModal(item, 'RECOMMEND')}
                     >
-                      <ThumbsUp size={12} color="#0F766E" />
+                      <ThumbsUp size={13} color="#0F766E" />
                       <Text style={styles.recommendBtnText}>Recommend</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       style={[styles.btn, styles.approveBtn]}
-                      disabled={isProcessing}
-                      onPress={() => handleAction(item.id, 'APPROVE')}
+                      onPress={() => openReviewModal(item, 'APPROVE')}
                     >
-                      <CheckCircle2 size={12} color="#FFFFFF" />
+                      <CheckCircle2 size={13} color="#FFFFFF" />
                       <Text style={styles.approveBtnText}>Approve</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       style={[styles.btn, styles.rejectBtn]}
-                      disabled={isProcessing}
-                      onPress={() => handleAction(item.id, 'REJECT')}
+                      onPress={() => openReviewModal(item, 'REJECT')}
                     >
-                      <XCircle size={12} color="#DC2626" />
+                      <XCircle size={13} color="#DC2626" />
                       <Text style={styles.rejectBtnText}>Reject</Text>
                     </TouchableOpacity>
                   </View>
@@ -138,6 +203,91 @@ export default function DepartmentLeavesScreen() {
           })
         )}
       </ScrollView>
+
+      {/* Leave Review Modal */}
+      <Modal visible={reviewModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                Review Leave Application
+              </Text>
+              <TouchableOpacity onPress={() => setReviewModal(false)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            {selectedLeave && (
+              <View style={styles.modalBody}>
+                <View style={styles.summaryCard}>
+                  <Text style={styles.summaryName}>
+                    {selectedLeave.user?.firstName} {selectedLeave.user?.lastName}
+                  </Text>
+                  <Text style={styles.summarySub}>
+                    {selectedLeave.leaveType || 'Leave'} • {selectedLeave.totalDays || 1} day(s)
+                  </Text>
+                  <Text style={styles.summaryDates}>
+                    {new Date(selectedLeave.startDate).toLocaleDateString('en-IN')} to{' '}
+                    {new Date(selectedLeave.endDate).toLocaleDateString('en-IN')}
+                  </Text>
+                </View>
+
+                <Text style={styles.inputLabel}>Review Action</Text>
+                <View style={styles.actionSelector}>
+                  {(['RECOMMEND', 'APPROVE', 'REJECT'] as const).map((act) => (
+                    <TouchableOpacity
+                      key={act}
+                      style={[
+                        styles.actChip,
+                        reviewAction === act && styles.actChipActive,
+                        reviewAction === act && act === 'REJECT' && styles.actChipReject,
+                      ]}
+                      onPress={() => setReviewAction(act)}
+                    >
+                      <Text
+                        style={[
+                          styles.actChipText,
+                          reviewAction === act && styles.actChipTextActive,
+                        ]}
+                      >
+                        {act}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                <Text style={styles.inputLabel}>Admin Remarks & Handover Notes</Text>
+                <TextInput
+                  style={[styles.modalInput, { height: 80 }]}
+                  multiline
+                  numberOfLines={3}
+                  placeholder="e.g. Ward duty handover confirmed with Nurse Priya..."
+                  value={remarks}
+                  onChangeText={setRemarks}
+                />
+
+                <TouchableOpacity
+                  style={[
+                    styles.submitBtn,
+                    reviewAction === 'REJECT' && { backgroundColor: '#DC2626' },
+                    submitting && { opacity: 0.6 },
+                  ]}
+                  onPress={handleSubmitReview}
+                  disabled={submitting}
+                >
+                  {submitting ? (
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                  ) : (
+                    <Text style={styles.submitBtnText}>
+                      Submit {reviewAction} Decision
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -147,12 +297,29 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8FAFC',
   },
+  toast: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#D1FAE5',
+    marginHorizontal: 16,
+    marginTop: 8,
+    padding: 10,
+    borderRadius: 8,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+  },
+  toastText: {
+    fontSize: 12,
+    color: '#065F46',
+    fontWeight: '600',
+  },
   content: {
     flex: 1,
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 32,
+    paddingBottom: 40,
   },
   emptyState: {
     alignItems: 'center',
@@ -172,22 +339,27 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: '#E2E8F0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+    elevation: 1,
   },
   cardTop: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   avatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: '#CCFBF1',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#E0F2FE',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 10,
+    marginRight: 12,
   },
   avatarText: {
-    color: '#0F766E',
+    color: '#0284C7',
     fontWeight: '800',
     fontSize: 14,
   },
@@ -195,27 +367,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   staffName: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
     color: '#0F172A',
   },
   leaveType: {
-    fontSize: 11,
-    color: '#0F766E',
-    fontWeight: '600',
-    marginTop: 1,
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
+    fontWeight: '500',
   },
   statusBadge: {
-    backgroundColor: '#F1F5F9',
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 6,
   },
   statusBadgeText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#475569',
-    textTransform: 'uppercase',
   },
   dateRow: {
     flexDirection: 'row',
@@ -224,55 +393,178 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   dateText: {
-    fontSize: 11,
+    fontSize: 12,
+    color: '#334155',
+    fontWeight: '600',
+  },
+  reasonBox: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 8,
+    padding: 8,
+    marginTop: 8,
+  },
+  reasonLabel: {
+    fontSize: 10,
+    fontWeight: '700',
     color: '#64748B',
-    fontFamily: 'monospace',
+    textTransform: 'uppercase',
   },
   reasonText: {
-    fontSize: 11,
-    color: '#334155',
-    marginTop: 6,
-    fontStyle: 'italic',
+    fontSize: 12,
+    color: '#1E293B',
+    marginTop: 2,
   },
   actionsRow: {
     flexDirection: 'row',
+    justifyContent: 'flex-end',
     gap: 8,
     marginTop: 12,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#F8FAFC',
+    borderTopColor: '#F1F5F9',
   },
   btn: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     borderRadius: 8,
     gap: 4,
   },
   recommendBtn: {
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#F0FDFA',
+    borderWidth: 1,
+    borderColor: '#CCFBF1',
   },
   recommendBtnText: {
+    color: '#0F766E',
     fontSize: 11,
     fontWeight: '700',
-    color: '#0F766E',
   },
   approveBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#059669',
   },
   approveBtnText: {
+    color: '#FFFFFF',
     fontSize: 11,
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   rejectBtn: {
     backgroundColor: '#FEE2E2',
   },
   rejectBtnText: {
+    color: '#DC2626',
     fontSize: 11,
     fontWeight: '700',
-    color: '#DC2626',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalBox: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '80%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  modalBody: {
+    padding: 16,
+  },
+  summaryCard: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  summaryName: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  summarySub: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
+    fontWeight: '600',
+  },
+  summaryDates: {
+    fontSize: 11,
+    color: '#0F766E',
+    marginTop: 4,
+    fontWeight: '700',
+  },
+  inputLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#334155',
+    marginBottom: 6,
+    marginTop: 10,
+  },
+  actionSelector: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  actChip: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    backgroundColor: '#F8FAFC',
+    alignItems: 'center',
+  },
+  actChipActive: {
+    backgroundColor: '#CCFBF1',
+    borderColor: '#0F766E',
+  },
+  actChipReject: {
+    backgroundColor: '#FEE2E2',
+    borderColor: '#DC2626',
+  },
+  actChipText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#64748B',
+  },
+  actChipTextActive: {
+    color: '#0F766E',
+  },
+  modalInput: {
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 13,
+    color: '#0F172A',
+  },
+  submitBtn: {
+    backgroundColor: '#0F766E',
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  submitBtnText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '800',
   },
 });

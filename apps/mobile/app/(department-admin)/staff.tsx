@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Modal,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import {
   Users,
   Search,
@@ -20,12 +21,17 @@ import {
   Edit2,
   X,
   CheckCircle2,
+  Calendar,
+  CalendarOff,
   UserCheck,
+  Shield,
+  Briefcase,
 } from 'lucide-react-native';
 import { mobileApiClient } from '../../services/api';
 import { AdminHeader } from '../../components/AdminHeader';
 
 export default function DepartmentStaffScreen() {
+  const router = useRouter();
   const [staff, setStaff] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -49,6 +55,10 @@ export default function DepartmentStaffScreen() {
   const [editRole, setEditRole] = useState('');
   const [editShift, setEditShift] = useState('');
   const [updatingStaff, setUpdatingStaff] = useState(false);
+
+  // Staff Profile Detail Modal
+  const [profileModal, setProfileModal] = useState(false);
+  const [profileStaff, setProfileStaff] = useState<any | null>(null);
 
   const loadStaff = async () => {
     try {
@@ -75,6 +85,9 @@ export default function DepartmentStaffScreen() {
       setStaff((prev) =>
         prev.map((s) => (s.id === item.id ? { ...s, attendanceStatus: nextStatus } : s))
       );
+      if (profileStaff && profileStaff.id === item.id) {
+        setProfileStaff({ ...profileStaff, attendanceStatus: nextStatus });
+      }
       await mobileApiClient.departmentAdmin.saveAttendance([
         { userId: item.userId || item.id, status: nextStatus, date: new Date().toISOString() },
       ]);
@@ -118,7 +131,13 @@ export default function DepartmentStaffScreen() {
     setEditPhone(item.phone || '');
     setEditRole(item.role || 'NURSE');
     setEditShift(item.shift || 'MORNING');
+    setProfileModal(false);
     setEditModal(true);
+  };
+
+  const openProfile = (item: any) => {
+    setProfileStaff(item);
+    setProfileModal(true);
   };
 
   const handleUpdateStaff = async () => {
@@ -150,20 +169,38 @@ export default function DepartmentStaffScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader
-        title="Department Staff"
-        subtitle="Attendance & Shift Duty"
-        rightAction={
-          <TouchableOpacity
-            style={styles.addBtn}
-            onPress={() => setAddModal(true)}
-            activeOpacity={0.7}
-          >
-            <Plus size={16} color="#FFFFFF" />
-            <Text style={styles.addBtnText}>Add Staff</Text>
-          </TouchableOpacity>
-        }
-      />
+      <AdminHeader title="Department Staff" />
+
+      {/* Top Bar with Search, Roll-call shortcut & Add Button */}
+      <View style={styles.topBar}>
+        <View style={styles.searchBarContainer}>
+          <Search size={15} color="#94A3B8" />
+          <TextInput
+            placeholder="Search staff by name or role..."
+            placeholderTextColor="#94A3B8"
+            value={search}
+            onChangeText={setSearch}
+            style={styles.searchInput}
+          />
+        </View>
+
+        <TouchableOpacity
+          style={styles.navChip}
+          onPress={() => router.push('/(department-admin)/attendance')}
+          activeOpacity={0.8}
+        >
+          <Clock size={15} color="#0F766E" />
+          <Text style={styles.navChipText}>Roll-Call</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.addBtn}
+          onPress={() => setAddModal(true)}
+          activeOpacity={0.8}
+        >
+          <Plus size={16} color="#FFFFFF" />
+        </TouchableOpacity>
+      </View>
 
       {successMsg ? (
         <View style={styles.toast}>
@@ -171,17 +208,6 @@ export default function DepartmentStaffScreen() {
           <Text style={styles.toastText}>{successMsg}</Text>
         </View>
       ) : null}
-
-      <View style={styles.searchBarContainer}>
-        <Search size={16} color="#94A3B8" style={styles.searchIcon} />
-        <TextInput
-          placeholder="Search staff by name or role..."
-          placeholderTextColor="#94A3B8"
-          value={search}
-          onChangeText={setSearch}
-          style={styles.searchInput}
-        />
-      </View>
 
       <ScrollView
         style={styles.content}
@@ -202,7 +228,12 @@ export default function DepartmentStaffScreen() {
             const isPresent = item.attendanceStatus !== 'ABSENT';
 
             return (
-              <View key={item.id} style={styles.card}>
+              <TouchableOpacity
+                key={item.id}
+                style={styles.card}
+                onPress={() => openProfile(item)}
+                activeOpacity={0.85}
+              >
                 <View style={styles.cardTop}>
                   <View style={styles.avatar}>
                     <Text style={styles.avatarText}>
@@ -221,7 +252,10 @@ export default function DepartmentStaffScreen() {
                       styles.attendanceBadge,
                       { backgroundColor: isPresent ? '#CCFBF1' : '#FEE2E2' },
                     ]}
-                    onPress={() => handleToggleAttendance(item)}
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      handleToggleAttendance(item);
+                    }}
                   >
                     <Text
                       style={[
@@ -245,18 +279,122 @@ export default function DepartmentStaffScreen() {
                   </View>
                   <TouchableOpacity
                     style={styles.editBtn}
-                    onPress={() => openEditModal(item)}
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      openEditModal(item);
+                    }}
                     activeOpacity={0.7}
                   >
                     <Edit2 size={13} color="#0F766E" />
                     <Text style={styles.editText}>Edit</Text>
                   </TouchableOpacity>
                 </View>
-              </View>
+              </TouchableOpacity>
             );
           })
         )}
       </ScrollView>
+
+      {/* Staff Profile Detail Modal */}
+      <Modal visible={profileModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Staff Profile</Text>
+              <TouchableOpacity onPress={() => setProfileModal(false)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            {profileStaff && (
+              <ScrollView style={styles.modalBody}>
+                <View style={styles.profileHeaderBox}>
+                  <View style={styles.profileAvatar}>
+                    <Text style={styles.profileAvatarText}>
+                      {profileStaff.firstName?.[0] || 'S'}
+                      {profileStaff.lastName?.[0] || ''}
+                    </Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.profileName}>
+                      {profileStaff.firstName} {profileStaff.lastName}
+                    </Text>
+                    <Text style={styles.profileRole}>
+                      {profileStaff.role || 'Staff Nurse'} • Shift: {profileStaff.shift || 'General'}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.detailSection}>
+                  <Text style={styles.detailSectionTitle}>CONTACT & EMPLOYMENT</Text>
+                  <View style={styles.detailRow}>
+                    <Mail size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>{profileStaff.email || 'N/A'}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Phone size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>{profileStaff.phone || 'N/A'}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Briefcase size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>
+                      Employment Status: Active Department Staff
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.detailSection}>
+                  <Text style={styles.detailSectionTitle}>ATTENDANCE & DUTY</Text>
+                  <View style={styles.detailRow}>
+                    <Clock size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>
+                      Assigned Shift: {profileStaff.shift || 'General Shift'}
+                    </Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <UserCheck size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>
+                      Today's Status: {profileStaff.attendanceStatus !== 'ABSENT' ? 'Present on Duty' : 'Absent'}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.profileActions}>
+                  <TouchableOpacity
+                    style={styles.profileNavBtn}
+                    onPress={() => {
+                      setProfileModal(false);
+                      router.push('/(department-admin)/attendance');
+                    }}
+                  >
+                    <Clock size={16} color="#0F766E" />
+                    <Text style={styles.profileNavBtnText}>Attendance History</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.profileNavBtn}
+                    onPress={() => {
+                      setProfileModal(false);
+                      router.push('/(department-admin)/leaves');
+                    }}
+                  >
+                    <CalendarOff size={16} color="#0F766E" />
+                    <Text style={styles.profileNavBtnText}>Staff Leave Requests</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.profileEditBtn}
+                    onPress={() => openEditModal(profileStaff)}
+                  >
+                    <Edit2 size={16} color="#FFFFFF" />
+                    <Text style={styles.profileEditBtnText}>Edit Staff Details</Text>
+                  </TouchableOpacity>
+                </View>
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      </Modal>
 
       {/* Add Staff Modal */}
       <Modal visible={addModal} animationType="slide" transparent>
@@ -421,19 +559,54 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8FAFC',
   },
-  addBtn: {
+  topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F766E',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+    gap: 8,
+  },
+  searchBarContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  searchInput: {
+    flex: 1,
+    paddingVertical: 7,
+    fontSize: 12,
+    color: '#0F172A',
+    marginLeft: 6,
+  },
+  navChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#CCFBF1',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
     borderRadius: 8,
     gap: 4,
   },
-  addBtnText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '700',
+  navChipText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#0F766E',
+  },
+  addBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: '#0F766E',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   toast: {
     flexDirection: 'row',
@@ -452,33 +625,12 @@ const styles = StyleSheet.create({
     color: '#065F46',
     fontWeight: '600',
   },
-  searchBarContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    marginHorizontal: 16,
-    marginTop: 12,
-    marginBottom: 8,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 10,
-    fontSize: 13,
-    color: '#0F172A',
-  },
   content: {
     flex: 1,
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 32,
+    paddingBottom: 40,
   },
   emptyState: {
     alignItems: 'center',
@@ -606,6 +758,98 @@ const styles = StyleSheet.create({
   },
   modalBody: {
     padding: 16,
+  },
+  profileHeaderBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    backgroundColor: '#F8FAFC',
+    padding: 14,
+    borderRadius: 12,
+  },
+  profileAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#0284C7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+  },
+  profileAvatarText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 18,
+  },
+  profileName: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  profileRole: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
+    fontWeight: '600',
+  },
+  detailSection: {
+    marginBottom: 14,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 12,
+    padding: 12,
+  },
+  detailSectionTitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#64748B',
+    letterSpacing: 0.8,
+    marginBottom: 8,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
+  },
+  detailValue: {
+    fontSize: 13,
+    color: '#1E293B',
+    fontWeight: '600',
+  },
+  profileActions: {
+    gap: 8,
+    marginTop: 8,
+    marginBottom: 20,
+  },
+  profileNavBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#CCFBF1',
+    paddingVertical: 12,
+    borderRadius: 10,
+    gap: 8,
+  },
+  profileNavBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#0F766E',
+  },
+  profileEditBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0F766E',
+    paddingVertical: 12,
+    borderRadius: 10,
+    gap: 8,
+  },
+  profileEditBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   inputLabel: {
     fontSize: 12,

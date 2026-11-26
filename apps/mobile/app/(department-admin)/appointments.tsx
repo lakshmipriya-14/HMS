@@ -20,16 +20,28 @@ import {
   XCircle,
   Calendar,
   X,
+  Plus,
 } from 'lucide-react-native';
 import { mobileApiClient } from '../../services/api';
 import { AdminHeader } from '../../components/AdminHeader';
 
 export default function DepartmentAppointmentsScreen() {
   const [appointments, setAppointments] = useState<any[]>([]);
+  const [doctors, setDoctors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
+
+  // Book Appointment Modal
+  const [bookModal, setBookModal] = useState(false);
+  const [patientUhid, setPatientUhid] = useState('');
+  const [selectedDoctorId, setSelectedDoctorId] = useState('');
+  const [bookDate, setBookDate] = useState(new Date().toISOString().split('T')[0]);
+  const [bookTime, setBookTime] = useState('10:00');
+  const [bookReason, setBookReason] = useState('General Consultation');
+  const [booking, setBooking] = useState(false);
+  const [toastMsg, setToastMsg] = useState('');
 
   // Reschedule state
   const [rescheduleModal, setRescheduleModal] = useState(false);
@@ -43,13 +55,25 @@ export default function DepartmentAppointmentsScreen() {
 
   const [processing, setProcessing] = useState(false);
 
-  const loadAppointments = async () => {
+  const loadData = async () => {
     try {
       setRefreshing(true);
-      const res = await mobileApiClient.departmentAdmin.getAppointments({
-        status: statusFilter || undefined,
-      });
-      if (res.data) setAppointments(res.data);
+      const [apptRes, docRes] = await Promise.allSettled([
+        mobileApiClient.departmentAdmin.getAppointments({
+          status: statusFilter || undefined,
+        }),
+        mobileApiClient.departmentAdmin.getDoctors(),
+      ]);
+
+      if (apptRes.status === 'fulfilled' && apptRes.value.data) {
+        setAppointments(apptRes.value.data);
+      }
+      if (docRes.status === 'fulfilled' && docRes.value.data) {
+        setDoctors(docRes.value.data);
+        if (docRes.value.data.length > 0 && !selectedDoctorId) {
+          setSelectedDoctorId(docRes.value.data[0].id);
+        }
+      }
     } catch (err) {
       console.error('Failed to load appointments:', err);
     } finally {
@@ -59,7 +83,7 @@ export default function DepartmentAppointmentsScreen() {
   };
 
   useEffect(() => {
-    loadAppointments();
+    loadData();
   }, [statusFilter]);
 
   const handleCheckIn = async (id: string) => {
@@ -68,8 +92,33 @@ export default function DepartmentAppointmentsScreen() {
       setAppointments((prev) =>
         prev.map((a) => (a.id === id ? { ...a, status: 'CHECKED_IN' } : a))
       );
+      setToastMsg('Patient checked in successfully');
+      setTimeout(() => setToastMsg(''), 3000);
     } catch (err) {
       console.error('Failed to check in:', err);
+    }
+  };
+
+  const handleBookSubmit = async () => {
+    if (!patientUhid.trim()) return;
+    try {
+      setBooking(true);
+      await mobileApiClient.departmentAdmin.createAppointment({
+        patientUhid: patientUhid.trim(),
+        doctorId: selectedDoctorId,
+        appointmentDate: bookDate,
+        appointmentTime: bookTime,
+        reason: bookReason,
+      });
+      setBookModal(false);
+      setPatientUhid('');
+      setToastMsg('Appointment booked successfully');
+      setTimeout(() => setToastMsg(''), 3000);
+      loadData();
+    } catch (err) {
+      console.error('Failed to book appointment:', err);
+    } finally {
+      setBooking(false);
     }
   };
 
@@ -83,7 +132,9 @@ export default function DepartmentAppointmentsScreen() {
       });
       setRescheduleModal(false);
       setSelectedAppt(null);
-      loadAppointments();
+      setToastMsg('Appointment rescheduled');
+      setTimeout(() => setToastMsg(''), 3000);
+      loadData();
     } catch (err) {
       console.error('Failed to reschedule:', err);
     } finally {
@@ -99,7 +150,9 @@ export default function DepartmentAppointmentsScreen() {
       setCancelModal(false);
       setSelectedAppt(null);
       setCancelReason('');
-      loadAppointments();
+      setToastMsg('Appointment cancelled');
+      setTimeout(() => setToastMsg(''), 3000);
+      loadData();
     } catch (err) {
       console.error('Failed to cancel:', err);
     } finally {
@@ -112,27 +165,52 @@ export default function DepartmentAppointmentsScreen() {
     const patName = `${a.patient?.firstName || ''} ${a.patient?.lastName || ''}`.toLowerCase();
     const uhid = (a.patient?.uhid || '').toLowerCase();
     const docName = (a.doctor?.user?.firstName || a.doctor?.name || '').toLowerCase();
-    return patName.includes(search.toLowerCase()) || uhid.includes(search.toLowerCase()) || docName.includes(search.toLowerCase());
+    return (
+      patName.includes(search.toLowerCase()) ||
+      uhid.includes(search.toLowerCase()) ||
+      docName.includes(search.toLowerCase())
+    );
   });
 
   return (
     <View style={styles.container}>
       <AdminHeader title="Department Appointments" subtitle="Queue & Check-in Desk" />
 
-      {/* Search & Filters */}
+      {toastMsg ? (
+        <View style={styles.toast}>
+          <CheckCircle2 size={16} color="#059669" />
+          <Text style={styles.toastText}>{toastMsg}</Text>
+        </View>
+      ) : null}
+
+      {/* Search & Status Filters */}
       <View style={styles.topFilterBar}>
-        <View style={styles.searchBox}>
-          <Search size={15} color="#94A3B8" />
-          <TextInput
-            placeholder="Search by UHID, patient, doctor..."
-            placeholderTextColor="#94A3B8"
-            value={search}
-            onChangeText={setSearch}
-            style={styles.searchInput}
-          />
+        <View style={styles.searchRow}>
+          <View style={styles.searchBox}>
+            <Search size={15} color="#94A3B8" />
+            <TextInput
+              placeholder="Search by UHID, patient, doctor..."
+              placeholderTextColor="#94A3B8"
+              value={search}
+              onChangeText={setSearch}
+              style={styles.searchInput}
+            />
+          </View>
+          <TouchableOpacity
+            style={styles.bookBtn}
+            onPress={() => setBookModal(true)}
+            activeOpacity={0.8}
+          >
+            <Plus size={15} color="#FFFFFF" />
+            <Text style={styles.bookBtnText}>Book</Text>
+          </TouchableOpacity>
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.statusChips}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.statusChips}
+        >
           {(['', 'SCHEDULED', 'CHECKED_IN', 'COMPLETED', 'CANCELLED'] as const).map((st) => (
             <TouchableOpacity
               key={st}
@@ -151,7 +229,7 @@ export default function DepartmentAppointmentsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadAppointments} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#0F766E" />
         }
       >
         {loading && !refreshing ? (
@@ -214,8 +292,8 @@ export default function DepartmentAppointmentsScreen() {
                     Dr. {item.doctor?.user?.firstName || item.doctor?.name || 'Assigned Physician'}
                   </Text>
                   <Text style={styles.timeText}>
-                    {new Date(item.appointmentDate || Date.now()).toLocaleDateString('en-IN')}{' '}
-                    • {item.appointmentTime || '10:00'}
+                    {new Date(item.appointmentDate || Date.now()).toLocaleDateString('en-IN')} •{' '}
+                    {item.appointmentTime || '10:00'}
                   </Text>
                 </View>
 
@@ -235,7 +313,9 @@ export default function DepartmentAppointmentsScreen() {
                       style={[styles.btn, styles.rescheduleBtn]}
                       onPress={() => {
                         setSelectedAppt(item);
-                        setNewDate(new Date(item.appointmentDate || Date.now()).toISOString().split('T')[0]);
+                        setNewDate(
+                          new Date(item.appointmentDate || Date.now()).toISOString().split('T')[0]
+                        );
                         setRescheduleModal(true);
                       }}
                     >
@@ -261,6 +341,89 @@ export default function DepartmentAppointmentsScreen() {
         )}
       </ScrollView>
 
+      {/* Book Appointment Modal */}
+      <Modal visible={bookModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Book Department Appointment</Text>
+              <TouchableOpacity onPress={() => setBookModal(false)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.modalBody}>
+              <Text style={styles.inputLabel}>Patient UHID *</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={patientUhid}
+                onChangeText={setPatientUhid}
+                placeholder="e.g. UYI-2026-0012"
+              />
+
+              <Text style={styles.inputLabel}>Consulting Doctor</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 4 }}>
+                {doctors.map((doc) => (
+                  <TouchableOpacity
+                    key={doc.id}
+                    style={[
+                      styles.docChip,
+                      selectedDoctorId === doc.id && styles.docChipActive,
+                    ]}
+                    onPress={() => setSelectedDoctorId(doc.id)}
+                  >
+                    <Text
+                      style={[
+                        styles.docChipText,
+                        selectedDoctorId === doc.id && styles.docChipTextActive,
+                      ]}
+                    >
+                      Dr. {doc.user?.firstName || doc.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              <Text style={styles.inputLabel}>Appointment Date (YYYY-MM-DD)</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={bookDate}
+                onChangeText={setBookDate}
+                placeholder="2026-11-26"
+              />
+
+              <Text style={styles.inputLabel}>Appointment Time (HH:MM)</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={bookTime}
+                onChangeText={setBookTime}
+                placeholder="10:00"
+              />
+
+              <Text style={styles.inputLabel}>Reason / Symptoms</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={bookReason}
+                onChangeText={setBookReason}
+                placeholder="e.g. Follow-up consultation"
+              />
+
+              <TouchableOpacity
+                style={[styles.submitBtn, booking && { opacity: 0.6 }]}
+                onPress={handleBookSubmit}
+                disabled={booking}
+              >
+                {booking ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.submitBtnText}>Confirm Booking</Text>
+                )}
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
       {/* Reschedule Modal */}
       <Modal visible={rescheduleModal} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
@@ -272,29 +435,33 @@ export default function DepartmentAppointmentsScreen() {
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.inputLabel}>New Date (YYYY-MM-DD)</Text>
-            <TextInput
-              style={styles.modalInput}
-              value={newDate}
-              onChangeText={setNewDate}
-              placeholder="2026-11-26"
-            />
+            <View style={styles.modalBody}>
+              <Text style={styles.inputLabel}>New Date (YYYY-MM-DD)</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={newDate}
+                onChangeText={setNewDate}
+                placeholder="2026-11-26"
+              />
 
-            <Text style={styles.inputLabel}>New Time (HH:MM)</Text>
-            <TextInput
-              style={styles.modalInput}
-              value={newTime}
-              onChangeText={setNewTime}
-              placeholder="10:30"
-            />
+              <Text style={styles.inputLabel}>New Time (HH:MM)</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={newTime}
+                onChangeText={setNewTime}
+                placeholder="10:30"
+              />
 
-            <TouchableOpacity
-              style={[styles.submitBtn, processing && { opacity: 0.6 }]}
-              onPress={handleRescheduleSubmit}
-              disabled={processing}
-            >
-              <Text style={styles.submitBtnText}>{processing ? 'Updating...' : 'Confirm Reschedule'}</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.submitBtn, processing && { opacity: 0.6 }]}
+                onPress={handleRescheduleSubmit}
+                disabled={processing}
+              >
+                <Text style={styles.submitBtnText}>
+                  {processing ? 'Updating...' : 'Confirm Reschedule'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -310,23 +477,31 @@ export default function DepartmentAppointmentsScreen() {
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.inputLabel}>Cancellation Reason *</Text>
-            <TextInput
-              style={[styles.modalInput, { height: 80 }]}
-              multiline
-              numberOfLines={3}
-              value={cancelReason}
-              onChangeText={setCancelReason}
-              placeholder="e.g. Doctor emergency leave, patient requested..."
-            />
+            <View style={styles.modalBody}>
+              <Text style={styles.inputLabel}>Cancellation Reason *</Text>
+              <TextInput
+                style={[styles.modalInput, { height: 80 }]}
+                multiline
+                numberOfLines={3}
+                value={cancelReason}
+                onChangeText={setCancelReason}
+                placeholder="e.g. Doctor emergency leave, patient requested..."
+              />
 
-            <TouchableOpacity
-              style={[styles.submitBtn, { backgroundColor: '#DC2626' }, processing && { opacity: 0.6 }]}
-              onPress={handleCancelSubmit}
-              disabled={processing}
-            >
-              <Text style={styles.submitBtnText}>{processing ? 'Cancelling...' : 'Confirm Cancellation'}</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.submitBtn,
+                  { backgroundColor: '#DC2626' },
+                  processing && { opacity: 0.6 },
+                ]}
+                onPress={handleCancelSubmit}
+                disabled={processing}
+              >
+                <Text style={styles.submitBtnText}>
+                  {processing ? 'Cancelling...' : 'Confirm Cancellation'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -339,22 +514,59 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8FAFC',
   },
+  bookBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#0F766E',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    gap: 4,
+  },
+  bookBtnText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  toast: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#D1FAE5',
+    marginHorizontal: 16,
+    marginTop: 8,
+    padding: 10,
+    borderRadius: 8,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+  },
+  toastText: {
+    fontSize: 12,
+    color: '#065F46',
+    fontWeight: '600',
+  },
   topFilterBar: {
     backgroundColor: '#FFFFFF',
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
   },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    gap: 8,
+    marginBottom: 8,
+  },
   searchBox: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F8FAFC',
-    marginHorizontal: 16,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    marginBottom: 8,
   },
   searchInput: {
     flex: 1,
@@ -365,16 +577,19 @@ const styles = StyleSheet.create({
   },
   statusChips: {
     paddingHorizontal: 16,
-    gap: 6,
+    gap: 8,
   },
   chip: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 8,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   chipActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#CCFBF1',
+    borderColor: '#0F766E',
   },
   chipText: {
     fontSize: 11,
@@ -382,7 +597,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   chipTextActive: {
-    color: '#FFFFFF',
+    color: '#0F766E',
   },
   content: {
     flex: 1,
@@ -404,11 +619,16 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 14,
+    borderRadius: 16,
     padding: 14,
-    marginBottom: 10,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: '#E2E8F0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+    elevation: 1,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -419,56 +639,52 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   patName: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
     color: '#0F172A',
   },
   patUhid: {
     fontSize: 11,
-    color: '#0F766E',
-    fontFamily: 'monospace',
+    color: '#64748B',
     marginTop: 2,
   },
   statusPill: {
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 6,
   },
   statusPillText: {
     fontSize: 10,
     fontWeight: '800',
-    textTransform: 'uppercase',
   },
   detailsRow: {
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#F8FAFC',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
   },
   doctorText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600',
     color: '#334155',
   },
   timeText: {
-    fontSize: 10,
+    fontSize: 11,
     color: '#64748B',
-    marginTop: 2,
-    fontFamily: 'monospace',
+    fontWeight: '500',
   },
   actionsRow: {
     flexDirection: 'row',
+    justifyContent: 'flex-end',
     gap: 8,
-    marginTop: 10,
-    paddingTop: 8,
+    marginTop: 12,
+    paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#F8FAFC',
+    borderTopColor: '#F1F5F9',
   },
   btn: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
     gap: 4,
@@ -477,77 +693,102 @@ const styles = StyleSheet.create({
     backgroundColor: '#0F766E',
   },
   checkInText: {
+    color: '#FFFFFF',
     fontSize: 11,
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   rescheduleBtn: {
     backgroundColor: '#CCFBF1',
   },
   rescheduleText: {
+    color: '#0F766E',
     fontSize: 11,
     fontWeight: '700',
-    color: '#0F766E',
   },
   cancelBtn: {
     backgroundColor: '#FEE2E2',
   },
   cancelText: {
+    color: '#DC2626',
     fontSize: 11,
     fontWeight: '700',
-    color: '#DC2626',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.5)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
   },
   modalBox: {
     backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '85%',
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
   },
   modalTitle: {
     fontSize: 16,
     fontWeight: '800',
     color: '#0F172A',
   },
+  modalBody: {
+    padding: 16,
+  },
   inputLabel: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '700',
-    color: '#475569',
+    color: '#334155',
     marginBottom: 6,
     marginTop: 10,
-    textTransform: 'uppercase',
   },
   modalInput: {
     backgroundColor: '#F8FAFC',
-    borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    borderColor: '#CBD5E1',
+    borderRadius: 8,
+    padding: 10,
     fontSize: 13,
     color: '#0F172A',
   },
+  docChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    backgroundColor: '#F8FAFC',
+    marginRight: 8,
+  },
+  docChipActive: {
+    backgroundColor: '#CCFBF1',
+    borderColor: '#0F766E',
+  },
+  docChipText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#64748B',
+  },
+  docChipTextActive: {
+    color: '#0F766E',
+    fontWeight: '700',
+  },
   submitBtn: {
     backgroundColor: '#0F766E',
-    borderRadius: 12,
     paddingVertical: 12,
+    borderRadius: 10,
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   submitBtnText: {
     color: '#FFFFFF',
+    fontSize: 14,
     fontWeight: '800',
-    fontSize: 13,
   },
 });

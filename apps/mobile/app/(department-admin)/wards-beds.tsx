@@ -10,7 +10,7 @@ import {
   TextInput,
   Modal,
 } from 'react-native';
-import { BedDouble, Wrench, AlertTriangle, CheckCircle2, X } from 'lucide-react-native';
+import { BedDouble, Wrench, AlertTriangle, CheckCircle2, X, User, Shield, Info } from 'lucide-react-native';
 import { mobileApiClient } from '../../services/api';
 import { AdminHeader } from '../../components/AdminHeader';
 
@@ -18,9 +18,15 @@ export default function WardBedOverviewScreen() {
   const [wards, setWards] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [reportModal, setReportModal] = useState(false);
+
+  // Bed Detail Modal
+  const [bedDetailModal, setBedDetailModal] = useState(false);
   const [selectedBed, setSelectedBed] = useState<any | null>(null);
+
+  // Maintenance Work Order Modal
+  const [reportModal, setReportModal] = useState(false);
   const [maintenanceNotes, setMaintenanceNotes] = useState('');
+  const [priority, setPriority] = useState('HIGH');
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -41,6 +47,17 @@ export default function WardBedOverviewScreen() {
     loadBeds();
   }, []);
 
+  const handleOpenBedDetail = (bed: any, ward: any) => {
+    setSelectedBed({ ...bed, wardName: ward.name, wardType: ward.type, floor: ward.floorNumber });
+    setBedDetailModal(true);
+  };
+
+  const handleOpenReportModal = () => {
+    setBedDetailModal(false);
+    setMaintenanceNotes('');
+    setReportModal(true);
+  };
+
   const handleReportMaintenance = async () => {
     if (!selectedBed || !maintenanceNotes.trim()) return;
     try {
@@ -49,7 +66,7 @@ export default function WardBedOverviewScreen() {
         type: 'MAINTENANCE',
         title: `Bed #${selectedBed.bedNumber} Maintenance`,
         description: `Bed #${selectedBed.bedNumber} (${selectedBed.wardName || 'Ward'}) issue: ${maintenanceNotes}`,
-        priority: 'HIGH',
+        priority,
       });
       setReportModal(false);
       setSelectedBed(null);
@@ -72,7 +89,7 @@ export default function WardBedOverviewScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Wards & Bed Map" subtitle="Department Occupancy & Census" />
+      <AdminHeader title="Wards & Bed Map" />
 
       {/* Summary KPI Strip */}
       <View style={styles.kpiStrip}>
@@ -99,8 +116,8 @@ export default function WardBedOverviewScreen() {
       >
         {success && (
           <View style={styles.successBanner}>
-            <CheckCircle2 size={16} color="#0F766E" />
-            <Text style={styles.successText}>Bed maintenance ticket dispatched to facilities</Text>
+            <CheckCircle2 size={16} color="#059669" />
+            <Text style={styles.successText}>Bed maintenance ticket dispatched to Engineering</Text>
           </View>
         )}
 
@@ -109,119 +126,211 @@ export default function WardBedOverviewScreen() {
         ) : wards.length === 0 ? (
           <View style={styles.emptyState}>
             <BedDouble size={40} color="#CBD5E1" />
-            <Text style={styles.emptyText}>No wards or beds registered in this department</Text>
+            <Text style={styles.emptyText}>No department wards configured</Text>
           </View>
         ) : (
-          wards.map((ward) => (
-            <View key={ward.id} style={styles.wardCard}>
-              <View style={styles.wardHeader}>
-                <View>
-                  <Text style={styles.wardTitle}>{ward.name}</Text>
-                  <Text style={styles.wardMeta}>
-                    Type: {ward.type || 'General'} • Floor: {ward.floorNumber || 1}
+          wards.map((ward) => {
+            const wardOcc = ward.beds?.filter((b: any) => b.status === 'OCCUPIED').length || 0;
+            const wardTotal = ward.beds?.length || 0;
+            const occPercent = wardTotal > 0 ? Math.round((wardOcc / wardTotal) * 100) : 0;
+
+            return (
+              <View key={ward.id} style={styles.wardCard}>
+                <View style={styles.wardHeader}>
+                  <View>
+                    <Text style={styles.wardTitle}>{ward.name}</Text>
+                    <Text style={styles.wardMeta}>
+                      Type: {ward.type || 'General'} • Floor {ward.floorNumber || 1} • {occPercent}% Occupancy
+                    </Text>
+                  </View>
+                  <Text style={styles.occupancyRatio}>
+                    {wardOcc}/{wardTotal}
                   </Text>
                 </View>
-                <Text style={styles.occupancyRatio}>
-                  {ward.beds?.filter((b: any) => b.status === 'OCCUPIED').length || 0}/
-                  {ward.beds?.length || 0}
-                </Text>
-              </View>
 
-              <View style={styles.bedGrid}>
-                {(ward.beds || []).map((bed: any) => {
-                  const isOcc = bed.status === 'OCCUPIED';
-                  const isMaint = bed.status === 'MAINTENANCE';
+                <View style={styles.bedGrid}>
+                  {(ward.beds || []).map((bed: any) => {
+                    const isOcc = bed.status === 'OCCUPIED';
+                    const isMaint = bed.status === 'MAINTENANCE';
 
-                  return (
-                    <TouchableOpacity
-                      key={bed.id}
-                      style={[
-                        styles.bedTile,
-                        {
-                          backgroundColor: isOcc
-                            ? '#FEE2E2'
-                            : isMaint
-                            ? '#F1F5F9'
-                            : '#CCFBF1',
-                        },
-                      ]}
-                      onPress={() => {
-                        setSelectedBed({ ...bed, wardName: ward.name });
-                        setReportModal(true);
-                      }}
-                      activeOpacity={0.7}
-                    >
-                      <Text
+                    return (
+                      <TouchableOpacity
+                        key={bed.id}
                         style={[
-                          styles.bedNum,
+                          styles.bedTile,
                           {
-                            color: isOcc
-                              ? '#DC2626'
+                            backgroundColor: isOcc
+                              ? '#FEE2E2'
                               : isMaint
-                              ? '#64748B'
-                              : '#0F766E',
+                              ? '#F1F5F9'
+                              : '#CCFBF1',
                           },
                         ]}
+                        onPress={() => handleOpenBedDetail(bed, ward)}
+                        activeOpacity={0.7}
                       >
-                        {bed.bedNumber}
-                      </Text>
-                      <Text style={styles.bedType}>{bed.type || 'Standard'}</Text>
-                      <Text
-                        style={[
-                          styles.bedStatusLabel,
-                          { color: isOcc ? '#DC2626' : '#0F766E' },
-                        ]}
-                      >
-                        {isOcc ? 'Occupied' : isMaint ? 'Maintenance' : 'Available'}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
+                        <Text
+                          style={[
+                            styles.bedNum,
+                            {
+                              color: isOcc
+                                ? '#DC2626'
+                                : isMaint
+                                ? '#64748B'
+                                : '#0F766E',
+                            },
+                          ]}
+                        >
+                          {bed.bedNumber}
+                        </Text>
+                        <Text style={styles.bedType}>{bed.type || 'Standard'}</Text>
+                        <Text
+                          style={[
+                            styles.bedStatusLabel,
+                            { color: isOcc ? '#DC2626' : '#0F766E' },
+                          ]}
+                        >
+                          {isOcc ? 'Occupied' : isMaint ? 'Maintenance' : 'Available'}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               </View>
-            </View>
-          ))
+            );
+          })
         )}
       </ScrollView>
 
-      {/* Bed Maintenance Modal */}
+      {/* Bed Detail Modal */}
+      <Modal visible={bedDetailModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                Bed #{selectedBed?.bedNumber} Information
+              </Text>
+              <TouchableOpacity onPress={() => setBedDetailModal(false)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            {selectedBed && (
+              <View style={styles.modalBody}>
+                <View style={styles.detailSection}>
+                  <Text style={styles.detailSectionTitle}>LOCATION & CATEGORY</Text>
+                  <Text style={styles.detailText}>Ward: {selectedBed.wardName}</Text>
+                  <Text style={styles.detailText}>Floor: Floor {selectedBed.floor || 1}</Text>
+                  <Text style={styles.detailText}>Category: {selectedBed.type || 'Standard Care'}</Text>
+                  <Text style={styles.detailText}>
+                    Status:{' '}
+                    <Text
+                      style={{
+                        fontWeight: '800',
+                        color:
+                          selectedBed.status === 'OCCUPIED'
+                            ? '#DC2626'
+                            : selectedBed.status === 'MAINTENANCE'
+                            ? '#64748B'
+                            : '#059669',
+                      }}
+                    >
+                      {selectedBed.status || 'AVAILABLE'}
+                    </Text>
+                  </Text>
+                </View>
+
+                {selectedBed.status === 'OCCUPIED' && (
+                  <View style={styles.detailSection}>
+                    <Text style={styles.detailSectionTitle}>INPATIENT OCCUPANT</Text>
+                    <Text style={styles.detailText}>
+                      Patient: {selectedBed.admission?.patient?.firstName || 'Admitted Patient'}
+                    </Text>
+                    <Text style={styles.detailText}>
+                      UHID: {selectedBed.admission?.patient?.uhid || 'Active IPD'}
+                    </Text>
+                  </View>
+                )}
+
+                <TouchableOpacity
+                  style={styles.actionBtn}
+                  onPress={handleOpenReportModal}
+                >
+                  <Wrench size={16} color="#FFFFFF" />
+                  <Text style={styles.actionBtnText}>Report Bed Maintenance Issue</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
+
+      {/* Report Maintenance Issue Modal */}
       <Modal visible={reportModal} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>
-                Bed #{selectedBed?.bedNumber} Issue Report
+                Report Bed #{selectedBed?.bedNumber} Issue
               </Text>
               <TouchableOpacity onPress={() => setReportModal(false)}>
                 <X size={20} color="#64748B" />
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.inputLabel}>Ward Location</Text>
-            <TextInput
-              style={[styles.modalInput, { backgroundColor: '#F1F5F9' }]}
-              editable={false}
-              value={`${selectedBed?.wardName || 'Ward'} • Bed #${selectedBed?.bedNumber || ''}`}
-            />
+            <View style={styles.modalBody}>
+              <Text style={styles.inputLabel}>Ward Location</Text>
+              <TextInput
+                style={[styles.modalInput, { backgroundColor: '#F1F5F9' }]}
+                editable={false}
+                value={`${selectedBed?.wardName || 'Ward'} • Bed ${selectedBed?.bedNumber}`}
+              />
 
-            <Text style={styles.inputLabel}>Maintenance Issue / Breakdown Description *</Text>
-            <TextInput
-              style={[styles.modalInput, { height: 80 }]}
-              multiline
-              numberOfLines={3}
-              value={maintenanceNotes}
-              onChangeText={setMaintenanceNotes}
-              placeholder="e.g. Electrical adjustment motor stuck, side rail broken..."
-            />
+              <Text style={styles.inputLabel}>Problem Description *</Text>
+              <TextInput
+                style={[styles.modalInput, { height: 90 }]}
+                multiline
+                numberOfLines={3}
+                placeholder="e.g. Guardrail mechanism broken, remote control malfunctioning, hydraulic leak..."
+                value={maintenanceNotes}
+                onChangeText={setMaintenanceNotes}
+              />
 
-            <TouchableOpacity
-              style={[styles.submitBtn, submitting && { opacity: 0.6 }]}
-              onPress={handleReportMaintenance}
-              disabled={submitting}
-            >
-              <Text style={styles.submitBtnText}>
-                {submitting ? 'Submitting...' : 'Dispatch Maintenance Ticket'}
-              </Text>
-            </TouchableOpacity>
+              <Text style={styles.inputLabel}>Priority Level</Text>
+              <View style={styles.priorityRow}>
+                {['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].map((pr) => (
+                  <TouchableOpacity
+                    key={pr}
+                    style={[
+                      styles.prChip,
+                      priority === pr && styles.prChipActive,
+                    ]}
+                    onPress={() => setPriority(pr)}
+                  >
+                    <Text
+                      style={[
+                        styles.prChipText,
+                        priority === pr && styles.prChipTextActive,
+                      ]}
+                    >
+                      {pr}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <TouchableOpacity
+                style={[styles.submitBtn, submitting && { opacity: 0.6 }]}
+                onPress={handleReportMaintenance}
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.submitBtnText}>Dispatch Maintenance Work Order</Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -241,27 +350,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
-    gap: 8,
+    gap: 12,
   },
   kpiBox: {
     flex: 1,
-    alignItems: 'center',
     backgroundColor: '#F8FAFC',
     borderRadius: 10,
     paddingVertical: 8,
+    alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#F1F5F9',
+    borderColor: '#E2E8F0',
   },
   kpiVal: {
-    fontSize: 18,
-    fontWeight: '900',
+    fontSize: 16,
+    fontWeight: '800',
   },
   kpiLbl: {
     fontSize: 10,
-    fontWeight: '700',
     color: '#64748B',
+    fontWeight: '700',
     marginTop: 2,
-    textTransform: 'uppercase',
   },
   content: {
     flex: 1,
@@ -273,16 +381,18 @@ const styles = StyleSheet.create({
   successBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#D1FAE5',
     padding: 12,
-    borderRadius: 12,
-    marginBottom: 16,
+    borderRadius: 10,
+    marginBottom: 14,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
   },
   successText: {
     fontSize: 12,
+    color: '#065F46',
     fontWeight: '700',
-    color: '#0F766E',
   },
   emptyState: {
     alignItems: 'center',
@@ -298,10 +408,15 @@ const styles = StyleSheet.create({
   wardCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    padding: 16,
+    padding: 14,
     marginBottom: 14,
     borderWidth: 1,
     borderColor: '#E2E8F0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+    elevation: 1,
   },
   wardHeader: {
     flexDirection: 'row',
@@ -310,7 +425,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   wardTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
     color: '#0F172A',
   },
@@ -320,13 +435,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   occupancyRatio: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '800',
     color: '#0F766E',
-    backgroundColor: '#CCFBF1',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
   },
   bedGrid: {
     flexDirection: 'row',
@@ -336,76 +447,140 @@ const styles = StyleSheet.create({
   bedTile: {
     width: '31%',
     borderRadius: 10,
-    padding: 8,
+    padding: 10,
     alignItems: 'center',
   },
   bedNum: {
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: 14,
+    fontWeight: '800',
   },
   bedType: {
-    fontSize: 9,
+    fontSize: 10,
     color: '#64748B',
-    fontWeight: '600',
-    marginTop: 1,
+    marginTop: 2,
   },
   bedStatusLabel: {
-    fontSize: 8,
-    fontWeight: '800',
-    textTransform: 'uppercase',
-    marginTop: 2,
+    fontSize: 9,
+    fontWeight: '700',
+    marginTop: 4,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.5)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
   },
   modalBox: {
     backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '80%',
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
   },
   modalTitle: {
     fontSize: 16,
     fontWeight: '800',
     color: '#0F172A',
   },
-  inputLabel: {
-    fontSize: 11,
+  modalBody: {
+    padding: 16,
+  },
+  detailSection: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  detailSectionTitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#64748B',
+    letterSpacing: 0.8,
+    marginBottom: 6,
+  },
+  detailText: {
+    fontSize: 13,
+    color: '#1E293B',
+    marginBottom: 4,
+    fontWeight: '500',
+  },
+  actionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0F766E',
+    paddingVertical: 12,
+    borderRadius: 10,
+    gap: 8,
+    marginTop: 6,
+    marginBottom: 16,
+  },
+  actionBtnText: {
+    fontSize: 13,
     fontWeight: '700',
-    color: '#475569',
+    color: '#FFFFFF',
+  },
+  inputLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#334155',
     marginBottom: 6,
     marginTop: 10,
-    textTransform: 'uppercase',
   },
   modalInput: {
     backgroundColor: '#F8FAFC',
-    borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    borderColor: '#CBD5E1',
+    borderRadius: 8,
+    padding: 10,
     fontSize: 13,
     color: '#0F172A',
   },
+  priorityRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 6,
+  },
+  prChip: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+  },
+  prChipActive: {
+    backgroundColor: '#FEE2E2',
+    borderColor: '#EF4444',
+  },
+  prChipText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#64748B',
+  },
+  prChipTextActive: {
+    color: '#DC2626',
+  },
   submitBtn: {
     backgroundColor: '#0F766E',
-    borderRadius: 12,
     paddingVertical: 12,
+    borderRadius: 10,
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   submitBtnText: {
     color: '#FFFFFF',
+    fontSize: 14,
     fontWeight: '800',
-    fontSize: 13,
   },
 });

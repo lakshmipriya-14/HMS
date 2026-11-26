@@ -8,16 +8,36 @@ import {
   ActivityIndicator,
   TextInput,
   TouchableOpacity,
+  Modal,
 } from 'react-native';
-import { HeartPulse, Search, Phone, Calendar, User, ChevronRight } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import {
+  HeartPulse,
+  Search,
+  Phone,
+  Calendar,
+  User,
+  ChevronRight,
+  X,
+  FileText,
+  CalendarCheck,
+  Shield,
+  Clock,
+  Droplet,
+} from 'lucide-react-native';
 import { mobileApiClient } from '../../services/api';
 import { AdminHeader } from '../../components/AdminHeader';
 
 export default function DepartmentPatientsScreen() {
+  const router = useRouter();
   const [patients, setPatients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState('');
+
+  // Patient Detail Modal
+  const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
+  const [detailModal, setDetailModal] = useState(false);
 
   const loadPatients = async () => {
     try {
@@ -36,9 +56,14 @@ export default function DepartmentPatientsScreen() {
     loadPatients();
   }, [search]);
 
+  const openPatientDetail = (pat: any) => {
+    setSelectedPatient(pat);
+    setDetailModal(true);
+  };
+
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Patients" subtitle="Clinical Records & Directory" />
+      <AdminHeader title="Department Patients" />
 
       <View style={styles.searchBarContainer}>
         <Search size={16} color="#94A3B8" style={styles.searchIcon} />
@@ -49,6 +74,11 @@ export default function DepartmentPatientsScreen() {
           onChangeText={setSearch}
           style={styles.searchInput}
         />
+        {search ? (
+          <TouchableOpacity onPress={() => setSearch('')}>
+            <X size={16} color="#94A3B8" />
+          </TouchableOpacity>
+        ) : null}
       </View>
 
       <ScrollView
@@ -67,7 +97,12 @@ export default function DepartmentPatientsScreen() {
           </View>
         ) : (
           patients.map((pat) => (
-            <View key={pat.id} style={styles.card}>
+            <TouchableOpacity
+              key={pat.id}
+              style={styles.card}
+              onPress={() => openPatientDetail(pat)}
+              activeOpacity={0.85}
+            >
               <View style={styles.cardTop}>
                 <View style={styles.avatar}>
                   <Text style={styles.avatarText}>
@@ -94,16 +129,101 @@ export default function DepartmentPatientsScreen() {
                   <Text style={styles.metaText}>{pat.phone || 'No phone'}</Text>
                 </View>
                 <View style={styles.metaItem}>
-                  <Calendar size={13} color="#64748B" />
+                  <Droplet size={13} color="#64748B" />
                   <Text style={styles.metaText}>
                     {pat.bloodGroup ? `Blood: ${pat.bloodGroup}` : 'Active File'}
                   </Text>
                 </View>
+                <View style={styles.viewBadge}>
+                  <Text style={styles.viewBadgeText}>View File ›</Text>
+                </View>
               </View>
-            </View>
+            </TouchableOpacity>
           ))
         )}
       </ScrollView>
+
+      {/* Patient Detail Modal */}
+      <Modal visible={detailModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Patient Information</Text>
+              <TouchableOpacity onPress={() => setDetailModal(false)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            {selectedPatient && (
+              <ScrollView style={styles.modalBody}>
+                <View style={styles.profileHeaderBox}>
+                  <View style={styles.profileAvatar}>
+                    <Text style={styles.profileAvatarText}>
+                      {selectedPatient.firstName?.[0] || 'P'}
+                      {selectedPatient.lastName?.[0] || ''}
+                    </Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.profileName}>
+                      {selectedPatient.firstName} {selectedPatient.lastName}
+                    </Text>
+                    <Text style={styles.profileUhid}>UHID: {selectedPatient.uhid || '—'}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.detailSection}>
+                  <Text style={styles.detailSectionTitle}>DEMOGRAPHICS & CONTACT</Text>
+                  <View style={styles.detailRow}>
+                    <User size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>
+                      Gender: {selectedPatient.gender || 'Not specified'} • Age: {selectedPatient.age || 35} yrs
+                    </Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Phone size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>{selectedPatient.phone || 'No contact phone'}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Droplet size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>
+                      Blood Group: {selectedPatient.bloodGroup || 'O+'}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.detailSection}>
+                  <Text style={styles.detailSectionTitle}>CLINICAL & VISIT STATUS</Text>
+                  <View style={styles.detailRow}>
+                    <Clock size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>
+                      Status: {selectedPatient.admissions?.length ? 'Currently Admitted (IPD)' : 'Outpatient (OPD)'}
+                    </Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <FileText size={15} color="#0F766E" />
+                    <Text style={styles.detailValue}>
+                      Department: General Medicine Registry
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.profileActions}>
+                  <TouchableOpacity
+                    style={styles.bookBtn}
+                    onPress={() => {
+                      setDetailModal(false);
+                      router.push('/(department-admin)/appointments');
+                    }}
+                  >
+                    <CalendarCheck size={16} color="#FFFFFF" />
+                    <Text style={styles.bookBtnText}>Manage Appointments</Text>
+                  </TouchableOpacity>
+                </View>
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -139,7 +259,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 32,
+    paddingBottom: 40,
   },
   emptyState: {
     alignItems: 'center',
@@ -173,13 +293,13 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#E0F2FE',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   avatarText: {
-    color: '#0F766E',
+    color: '#0284C7',
     fontWeight: '800',
     fontSize: 14,
   },
@@ -193,10 +313,9 @@ const styles = StyleSheet.create({
   },
   uhidText: {
     fontSize: 11,
-    color: '#0F766E',
-    fontWeight: '700',
+    color: '#64748B',
+    fontWeight: '600',
     marginTop: 2,
-    fontFamily: 'monospace',
   },
   genderBadge: {
     backgroundColor: '#F1F5F9',
@@ -205,15 +324,14 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   genderText: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '700',
-    color: '#64748B',
-    textTransform: 'uppercase',
+    color: '#475569',
   },
   cardFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    justifyContent: 'space-between',
     marginTop: 12,
     paddingTop: 10,
     borderTopWidth: 1,
@@ -228,5 +346,118 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#64748B',
     fontWeight: '500',
+  },
+  viewBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  viewBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#0F766E',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalBox: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '85%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  modalBody: {
+    padding: 16,
+  },
+  profileHeaderBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    backgroundColor: '#F8FAFC',
+    padding: 14,
+    borderRadius: 12,
+  },
+  profileAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#0F766E',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+  },
+  profileAvatarText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 16,
+  },
+  profileName: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  profileUhid: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
+    fontWeight: '600',
+  },
+  detailSection: {
+    marginBottom: 14,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 12,
+    padding: 12,
+  },
+  detailSectionTitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#64748B',
+    letterSpacing: 0.8,
+    marginBottom: 8,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
+  },
+  detailValue: {
+    fontSize: 13,
+    color: '#1E293B',
+    fontWeight: '600',
+  },
+  profileActions: {
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  bookBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0F766E',
+    paddingVertical: 12,
+    borderRadius: 10,
+    gap: 8,
+  },
+  bookBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });
