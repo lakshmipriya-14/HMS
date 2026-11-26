@@ -516,3 +516,30 @@ export interface DepartmentRequestDto {
   submittedAt?: string;
   updatedAt?: string;
 }
+
+export interface DoctorWorkspaceDto {
+  profile: {
+    firstName: string;
+    lastName: string;
+    avatarUrl: string | null;
+    designation: string;
+    specialization: string;
+    licenseNumber: string;
+    experienceYears: number;
+    department: string;
+    branch: string;
+    isAvailableToday: boolean;
+    consultationDurationMin: number;
+    qualifications: { id: string; degree: string; institution: string; yearPassed: number }[];
+    schedules: { id: string; dayOfWeek: string; startTime: string; endTime: string }[];
+    leaves: { id: string; startDate: string; endDate: string; reason: string; isApproved: boolean }[];
+  };
+  counts: Record<string, number>;
+  notifications: { id: string; title: string; message: string; isRead: boolean; type: string }[];
+}
+
+export interface RequestDoctorLeaveDto {
+  startDate: string;
+  endDate: string;
+  reason: string;
+}

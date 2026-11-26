@@ -12,7 +12,8 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
-import { mobileApiClient, apiRequest } from '../../services/api';
+import { useAuth } from '../../hooks/useAuth';
+import { mobileApiClient } from '../../services/api';
 import {
   Calendar,
   Clock,
@@ -41,77 +42,21 @@ interface AppointmentItem {
   type: string;
 }
 
-const INITIAL_APPOINTMENTS: AppointmentItem[] = [
-  {
-    id: 'apt-1',
-    tokenNumber: 1,
-    patientName: 'Kannan Kuppan',
-    patientPhone: '9840123456',
-    uhid: 'ALM-2026-0042',
-    doctorName: 'Dr. K. Senthil Nathan',
-    department: 'Cardiology',
-    appointmentTime: '09:30 AM',
-    appointmentDate: new Date().toISOString().split('T')[0],
-    status: 'IN_PROGRESS',
-    type: 'OPD',
-  },
-  {
-    id: 'apt-2',
-    tokenNumber: 2,
-    patientName: 'Meena Ramasamy',
-    patientPhone: '9789123456',
-    uhid: 'ALM-2026-0089',
-    doctorName: 'Dr. K. Senthil Nathan',
-    department: 'Cardiology',
-    appointmentTime: '10:00 AM',
-    appointmentDate: new Date().toISOString().split('T')[0],
-    status: 'CHECKED_IN',
-    type: 'FOLLOW_UP',
-  },
-  {
-    id: 'apt-3',
-    tokenNumber: 3,
-    patientName: 'Vijay Sundaram',
-    patientPhone: '9444123456',
-    uhid: 'ALM-2026-0114',
-    doctorName: 'Dr. V. Rajesh',
-    department: 'Orthopedics',
-    appointmentTime: '10:30 AM',
-    appointmentDate: new Date().toISOString().split('T')[0],
-    status: 'SCHEDULED',
-    type: 'OPD',
-  },
-  {
-    id: 'apt-4',
-    tokenNumber: 4,
-    patientName: 'Deepa Thiagarajan',
-    patientPhone: '9840987654',
-    uhid: 'ALM-2026-0201',
-    doctorName: 'Dr. V. Rajesh',
-    department: 'Orthopedics',
-    appointmentTime: '11:00 AM',
-    appointmentDate: new Date().toISOString().split('T')[0],
-    status: 'SCHEDULED',
-    type: 'OPD',
-  },
-];
-
 export default function ReceptionAppointmentsScreen() {
-  const [appointments, setAppointments] = useState<AppointmentItem[]>(INITIAL_APPOINTMENTS);
+  const { user } = useAuth();
+  const [appointments, setAppointments] = useState<AppointmentItem[]>([]);
   const [activeTab, setActiveTab] = useState<'TODAY' | 'UPCOMING' | 'COMPLETED' | 'CANCELLED' | 'ALL'>('TODAY');
   const [refreshing, setRefreshing] = useState(false);
 
   // Booking Modal
   const [bookModalVisible, setBookModalVisible] = useState(false);
-  const [patUhid, setPatUhid] = useState('ALM-2026-0042');
-  const [patName, setPatName] = useState('Muthuvel Kuppusamy');
-  const [patPhone, setPatPhone] = useState('9840123456');
-  const [selectedDoctor, setSelectedDoctor] = useState('Dr. K. Senthil Nathan (Cardio)');
-  const [selectedDept, setSelectedDept] = useState('Cardiology');
+  const [patUhid, setPatUhid] = useState('');
+  const [doctors, setDoctors] = useState<NonNullable<Awaited<ReturnType<typeof mobileApiClient.doctor.list>>['data']>>([]);
+  const [doctorId, setDoctorId] = useState('');
   const [aptDate, setAptDate] = useState(new Date().toISOString().split('T')[0]);
-  const [aptTime, setAptTime] = useState('11:30 AM');
+  const [aptTime, setAptTime] = useState('');
   const [aptType, setAptType] = useState('OPD');
-  const [reason, setReason] = useState('Routine blood pressure follow-up and ECG check');
+  const [reason, setReason] = useState('');
   const [isBooking, setIsBooking] = useState(false);
 
   // Reschedule / Cancel Modal
@@ -120,7 +65,7 @@ export default function ReceptionAppointmentsScreen() {
   const fetchAppointments = async () => {
     try {
       const res = await mobileApiClient.reception.getTodayQueue();
-      if (res?.data && res.data.length > 0) {
+      if (res?.data && Array.isArray(res.data)) {
         const mapped = res.data.map((a: any) => ({
           id: a.id,
           tokenNumber: a.tokenNumber,
@@ -145,6 +90,8 @@ export default function ReceptionAppointmentsScreen() {
 
   useEffect(() => {
     fetchAppointments();
+    mobileApiClient.doctor.list().then((res) => setDoctors(res.data ?? []))
+      .catch(() => Alert.alert('Could not load doctors', 'Reopen this screen to retry.'));
   }, []);
 
   const onRefresh = () => {
@@ -153,46 +100,28 @@ export default function ReceptionAppointmentsScreen() {
   };
 
   const handleBookSubmit = async () => {
-    if (!patName.trim()) {
-      Alert.alert('Required', 'Please enter patient name.');
+    const doctor = doctors.find((item) => item.id === doctorId);
+    if (!user || !doctor || !patUhid.trim() || !aptDate || !/^([01]\d|2[0-3]):[0-5]\d$/.test(aptTime)) {
+      Alert.alert('Required', 'Enter the UHID and date, select a doctor, and enter the time in HH:mm format.');
       return;
     }
-
     setIsBooking(true);
     try {
-      const newApt: AppointmentItem = {
-        id: `apt-${Date.now()}`,
-        tokenNumber: appointments.length + 1,
-        patientName: patName.trim(),
-        patientPhone: patPhone.trim(),
-        uhid: patUhid.trim(),
-        doctorName: selectedDoctor,
-        department: selectedDept,
-        appointmentTime: aptTime,
-        appointmentDate: aptDate,
-        status: 'SCHEDULED',
-        type: aptType,
-      };
-
-      // Call API
-      try {
-        await mobileApiClient.reception.bookAppointment({
-          patientId: 'pat-001',
-          doctorId: 'doc-001',
-          departmentId: 'dept-001',
-          appointmentDate: aptDate,
-          appointmentTime: aptTime,
-          type: aptType,
-          reasonForVisit: reason,
-          consultationFee: 500,
-        } as any);
-      } catch {
-        // Safe local persistence fallback
-      }
-
-      setAppointments([newApt, ...appointments]);
+      const matches = (await mobileApiClient.reception.searchPatients(patUhid.trim())).data;
+      const patient = Array.isArray(matches) ? matches.find((item) => item.uhid?.toUpperCase() === patUhid.trim().toUpperCase()) : undefined;
+      if (!patient) throw new Error('No patient in your directory has that UHID.');
+      const response = await mobileApiClient.reception.bookAppointment({
+        patientId: patient.id, doctorId: doctor.id, departmentId: doctor.department.id,
+        hospitalId: user.hospitalId,
+        appointmentDate: aptDate, appointmentTime: aptTime,
+        appointmentType: aptType as Parameters<typeof mobileApiClient.reception.bookAppointment>[0]['appointmentType'],
+        reasonForVisit: reason.trim(),
+      });
       setBookModalVisible(false);
-      Alert.alert('Appointment Confirmed', `Token #${newApt.tokenNumber} allocated for ${newApt.patientName} at ${newApt.appointmentTime}.`);
+      await fetchAppointments();
+      Alert.alert('Appointment confirmed', `Token #${response.data?.tokenNumber} allocated for ${patient.firstName} ${patient.lastName}.`);
+    } catch (error) {
+      Alert.alert('Booking failed', error instanceof Error ? error.message : 'Please try again.');
     } finally {
       setIsBooking(false);
     }
@@ -325,25 +254,16 @@ export default function ReceptionAppointmentsScreen() {
             </View>
 
             <ScrollView>
-              <Text style={styles.fLabel}>Patient Full Name *</Text>
-              <TextInput style={styles.fInput} value={patName} onChangeText={setPatName} />
-
-              <View style={styles.row}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.fLabel}>UHID</Text>
-                  <TextInput style={styles.fInput} value={patUhid} onChangeText={setPatUhid} />
-                </View>
-                <View style={{ flex: 1, marginLeft: 8 }}>
-                  <Text style={styles.fLabel}>Mobile Phone</Text>
-                  <TextInput style={styles.fInput} value={patPhone} onChangeText={setPatPhone} keyboardType="phone-pad" />
-                </View>
-              </View>
-
-              <Text style={styles.fLabel}>Department & Specialty</Text>
-              <TextInput style={styles.fInput} value={selectedDept} onChangeText={setSelectedDept} />
-
+              <Text style={styles.fLabel}>Patient UHID</Text>
+              <TextInput style={styles.fInput} value={patUhid} onChangeText={setPatUhid} autoCapitalize="characters" />
               <Text style={styles.fLabel}>Consultant Doctor</Text>
-              <TextInput style={styles.fInput} value={selectedDoctor} onChangeText={setSelectedDoctor} />
+              {doctors.length === 0 && <Text>No doctors available.</Text>}
+              {doctors.map((doctor) => (
+                <TouchableOpacity key={doctor.id} style={styles.fInput} accessibilityRole="radio"
+                  accessibilityState={{ selected: doctorId === doctor.id }} onPress={() => setDoctorId(doctor.id)}>
+                  <Text>{doctorId === doctor.id ? 'Selected: ' : ''}{doctor.employee.user.firstName} {doctor.employee.user.lastName} · {doctor.department.name}</Text>
+                </TouchableOpacity>
+              ))}
 
               <View style={styles.row}>
                 <View style={{ flex: 1 }}>

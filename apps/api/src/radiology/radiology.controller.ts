@@ -3,7 +3,7 @@ import { RadiologyService } from './radiology.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { RequirePermissions, Scoped } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
-import { CreateRadiologyOrderDto, UploadRadiologyReportDto } from '@multispeciality-hms/contracts';
+import { AuthUserDto, CreateRadiologyOrderDto, UploadRadiologyReportDto } from '@multispeciality-hms/contracts';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Radiology & Imaging')
@@ -27,8 +27,8 @@ export class RadiologyController {
   @Post('orders')
   @RequirePermissions('RADIOLOGY_ORDERS:CREATE')
   @ApiOperation({ summary: 'Order imaging study (X-Ray, CT, MRI, USG)' })
-  async createOrder(@Body() dto: CreateRadiologyOrderDto) {
-    const data = await this.service.createOrder(dto);
+  async createOrder(@Body() dto: CreateRadiologyOrderDto, @CurrentUser() actor: AuthUserDto) {
+    const data = await this.service.createOrder(dto, actor);
     return {
       message: 'Radiology order scheduled',
       data,
@@ -38,8 +38,8 @@ export class RadiologyController {
   @Get('worklist')
   @RequirePermissions('RADIOLOGY_ORDERS:VIEW')
   @ApiOperation({ summary: 'Get radiology worklist' })
-  async getWorklist() {
-    const data = await this.service.getWorklist();
+  async getWorklist(@CurrentUser() actor: AuthUserDto) {
+    const data = await this.service.getWorklist(actor);
     return {
       message: 'Radiology worklist retrieved',
       data,

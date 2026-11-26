@@ -343,11 +343,12 @@ export class DepartmentAdminService {
   // 3. DOCTOR MANAGEMENT & CRUD
   // ==========================================
   async getDoctors(actor: AuthUserDto, search?: string, designation?: string, isAvailable?: boolean) {
-    const { departmentId, hospitalId } = this.resolveScope(actor);
+    const { departmentId, hospitalId, branchId } = this.resolveScope(actor);
     return this.prisma.doctor.findMany({
       where: {
         departmentId,
         hospitalId,
+        branchId,
         ...(designation ? { designation } : {}),
         ...(isAvailable !== undefined ? { isAvailableToday: isAvailable } : {}),
         ...(search

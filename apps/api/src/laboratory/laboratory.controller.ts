@@ -27,7 +27,7 @@ export class LaboratoryController {
   @Post('orders')
   @RequirePermissions('LAB_ORDERS:CREATE')
   @ApiOperation({ summary: 'Create doctor laboratory order' })
-  async createOrder(@Body() dto: CreateLabOrderDto, @CurrentUser() actor?: AuthUserDto) {
+  async createOrder(@Body() dto: CreateLabOrderDto, @CurrentUser() actor: AuthUserDto) {
     const data = await this.service.createOrder(dto, actor);
     return {
       message: 'Laboratory order submitted successfully',

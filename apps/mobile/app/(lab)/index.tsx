@@ -82,298 +82,6 @@ export interface LabOrder {
   items: LabOrderItem[];
 }
 
-const FALLBACK_LAB_ORDERS: LabOrder[] = [
-  {
-    id: 'lo-001',
-    orderNumber: 'LAB-2026-0841',
-    barcode: 'BAR-782101',
-    uhid: 'KZN-2026-0001',
-    patientName: 'Ramasamy Kuppusamy',
-    patientGender: 'Male',
-    patientAge: 58,
-    doctorName: 'Dr. Arun Kumar, MD (Cardiology)',
-    department: 'Cardiology',
-    priority: 'STAT_EMERGENCY',
-    status: 'PROCESSING',
-    clinicalNotes: 'Suspected Acute Coronary Syndrome. Severe chest pain radiating to left arm.',
-    sampleCollectedAt: '2026-11-23 10:15 AM',
-    items: [
-      {
-        id: 'item-1',
-        testId: 't-trop',
-        testName: 'Cardiac Troponin I (High Sensitivity)',
-        category: 'Biochemistry',
-        tubeType: 'Serum / SST (Yellow Top)',
-        specimenType: 'Venous Blood / Serum',
-        parameters: [
-          {
-            id: 'p-trop1',
-            name: 'Troponin I (High Sensitivity)',
-            unit: 'ng/mL',
-            referenceRange: '0.00 - 0.04',
-            measuredValue: '2.84',
-            isAbnormal: true,
-            isCritical: true, // Panic > 1.5
-          },
-          {
-            id: 'p-ckmb',
-            name: 'CK-MB Mass',
-            unit: 'ng/mL',
-            referenceRange: '0.0 - 5.0',
-            measuredValue: '18.6',
-            isAbnormal: true,
-            isCritical: false,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'lo-002',
-    orderNumber: 'LAB-2026-0842',
-    barcode: 'BAR-782102',
-    uhid: 'KZN-2026-0014',
-    patientName: 'Meenakshi Sundaram',
-    patientGender: 'Female',
-    patientAge: 42,
-    doctorName: 'Dr. Priya Ramanathan, MD (Nephrology)',
-    department: 'Nephrology',
-    priority: 'STAT_EMERGENCY',
-    status: 'PROCESSING',
-    clinicalNotes: 'Acute kidney injury with severe metabolic disturbance, ECG tented T-waves.',
-    sampleCollectedAt: '2026-11-23 11:00 AM',
-    items: [
-      {
-        id: 'item-2',
-        testId: 't-elyte',
-        testName: 'Serum Electrolytes & Renal Panel',
-        category: 'Biochemistry',
-        tubeType: 'Serum / SST (Yellow Top)',
-        specimenType: 'Serum',
-        parameters: [
-          {
-            id: 'p-k',
-            name: 'Serum Potassium (K+)',
-            unit: 'mmol/L',
-            referenceRange: '3.5 - 5.1',
-            measuredValue: '6.7',
-            isAbnormal: true,
-            isCritical: true, // Panic > 6.0
-          },
-          {
-            id: 'p-na',
-            name: 'Serum Sodium (Na+)',
-            unit: 'mmol/L',
-            referenceRange: '135 - 145',
-            measuredValue: '131',
-            isAbnormal: true,
-            isCritical: false,
-          },
-          {
-            id: 'p-creat',
-            name: 'Serum Creatinine',
-            unit: 'mg/dL',
-            referenceRange: '0.6 - 1.2',
-            measuredValue: '3.4',
-            isAbnormal: true,
-            isCritical: false,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'lo-003',
-    orderNumber: 'LAB-2026-0843',
-    barcode: 'BAR-782103',
-    uhid: 'KZN-2026-0029',
-    patientName: 'Karthik Raja',
-    patientGender: 'Male',
-    patientAge: 31,
-    doctorName: 'Dr. Mohanraj C., MD (General Medicine)',
-    department: 'General Medicine',
-    priority: 'URGENT',
-    status: 'ORDERED',
-    clinicalNotes: 'High grade fever with chills for 5 days. Petechial spots noted.',
-    items: [
-      {
-        id: 'item-3',
-        testId: 't-cbc',
-        testName: 'Complete Blood Count (CBC) with Platelets',
-        category: 'Hematology',
-        tubeType: 'EDTA (Purple Top)',
-        specimenType: 'Whole Blood EDTA',
-        parameters: [
-          {
-            id: 'p-plt',
-            name: 'Platelet Count',
-            unit: '/uL',
-            referenceRange: '150,000 - 450,000',
-            measuredValue: '16,000',
-            isAbnormal: true,
-            isCritical: true, // Panic < 20,000
-          },
-          {
-            id: 'p-hb',
-            name: 'Hemoglobin (Hb)',
-            unit: 'g/dL',
-            referenceRange: '13.0 - 17.0',
-            measuredValue: '6.4',
-            isAbnormal: true,
-            isCritical: true, // Panic < 7.0
-          },
-          {
-            id: 'p-wbc',
-            name: 'Total Leukocyte Count (WBC)',
-            unit: '/uL',
-            referenceRange: '4,000 - 11,000',
-            measuredValue: '3,200',
-            isAbnormal: true,
-            isCritical: false,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'lo-004',
-    orderNumber: 'LAB-2026-0844',
-    barcode: 'BAR-782104',
-    uhid: 'KZN-2026-0035',
-    patientName: 'Sangeetha Murugan',
-    patientGender: 'Female',
-    patientAge: 29,
-    doctorName: 'Dr. Shalini V., MS (OBG)',
-    department: 'Obstetrics & Gynaecology',
-    priority: 'ROUTINE',
-    status: 'COLLECTED',
-    clinicalNotes: 'Routine antenatal pathology screening 2nd trimester.',
-    sampleCollectedAt: '2026-11-23 09:30 AM',
-    items: [
-      {
-        id: 'item-4',
-        testId: 't-urine',
-        testName: 'Complete Urine Examination (CUE)',
-        category: 'Clinical Pathology',
-        tubeType: 'Sterile Container',
-        specimenType: 'Clean Catch Midstream Urine',
-        parameters: [
-          {
-            id: 'p-uprot',
-            name: 'Urine Protein / Albumin',
-            unit: 'qualitative',
-            referenceRange: 'NIL',
-            measuredValue: 'Trace',
-            isAbnormal: false,
-            isCritical: false,
-          },
-          {
-            id: 'p-usugar',
-            name: 'Urine Sugar',
-            unit: 'qualitative',
-            referenceRange: 'NIL',
-            measuredValue: 'NIL',
-            isAbnormal: false,
-            isCritical: false,
-          },
-          {
-            id: 'p-pus',
-            name: 'Pus Cells',
-            unit: '/hpf',
-            referenceRange: '0 - 5',
-            measuredValue: '2 - 3',
-            isAbnormal: false,
-            isCritical: false,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'lo-005',
-    orderNumber: 'LAB-2026-0845',
-    barcode: 'BAR-782105',
-    uhid: 'KZN-2026-0048',
-    patientName: 'Balamurugan A.',
-    patientGender: 'Male',
-    patientAge: 64,
-    doctorName: 'Dr. Senthil Nathan, MD (Pulmonology)',
-    department: 'Pulmonology',
-    priority: 'URGENT',
-    status: 'ORDERED',
-    clinicalNotes: 'Productive cough x 3 weeks, fever, night sweats. Rule out Pulmonary TB.',
-    items: [
-      {
-        id: 'item-5',
-        testId: 't-sputum',
-        testName: 'Sputum for Acid Fast Bacilli (AFB Stain)',
-        category: 'Microbiology',
-        tubeType: 'Sterile Container',
-        specimenType: 'Early Morning Sputum',
-        parameters: [
-          {
-            id: 'p-afb',
-            name: 'AFB Smear (Ziehl-Neelsen)',
-            unit: 'microscopic',
-            referenceRange: 'Negative / No AFB Seen',
-            measuredValue: '',
-            isAbnormal: false,
-            isCritical: false,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'lo-006',
-    orderNumber: 'LAB-2026-0839',
-    barcode: 'BAR-782099',
-    uhid: 'KZN-2026-0052',
-    patientName: 'Devi Saravanan',
-    patientGender: 'Female',
-    patientAge: 51,
-    doctorName: 'Dr. Arun Kumar, MD (Endocrinology)',
-    department: 'Endocrinology',
-    priority: 'ROUTINE',
-    status: 'COMPLETED',
-    clinicalNotes: 'Type 2 Diabetes mellitus follow up with fasting glycemic evaluation.',
-    sampleCollectedAt: '2026-11-23 08:15 AM',
-    resultsEnteredAt: '2026-11-23 09:40 AM',
-    reportReleasedAt: '2026-11-23 10:05 AM',
-    releasedBy: 'Dr. R. Vasudevan, MD Pathologist',
-    items: [
-      {
-        id: 'item-6',
-        testId: 't-fbs',
-        testName: 'Fasting Blood Sugar (FBS) & HbA1c',
-        category: 'Biochemistry',
-        tubeType: 'Fluoride (Grey Top)',
-        specimenType: 'Fluoride Plasma',
-        parameters: [
-          {
-            id: 'p-fbs',
-            name: 'Fasting Plasma Glucose',
-            unit: 'mg/dL',
-            referenceRange: '70 - 100',
-            measuredValue: '128',
-            isAbnormal: true,
-            isCritical: false,
-          },
-          {
-            id: 'p-hba1c',
-            name: 'Glycosylated Hemoglobin (HbA1c)',
-            unit: '%',
-            referenceRange: '< 5.7',
-            measuredValue: '7.4',
-            isAbnormal: true,
-            isCritical: false,
-          },
-        ],
-      },
-    ],
-  },
-];
-
 // Critical Panic Value Check Rules
 export function evaluatePanicValue(paramName: string, valueStr: string): { isCritical: boolean; isAbnormal: boolean; panicMessage?: string } {
   const val = parseFloat(valueStr);
@@ -427,8 +135,9 @@ export function evaluatePanicValue(paramName: string, valueStr: string): { isCri
 
 export default function LabWorklistScreen() {
   const { user } = useAuth();
-  const [orders, setOrders] = useState<LabOrder[]>(FALLBACK_LAB_ORDERS);
-  const [loading, setLoading] = useState(false);
+  const [orders, setOrders] = useState<LabOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [worklistError, setWorklistError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   // Filters & Tabs
@@ -463,8 +172,9 @@ export default function LabWorklistScreen() {
   const loadWorklist = useCallback(async () => {
     try {
       setLoading(true);
+      setWorklistError(false);
       const res = await apiRequest<any[]>('/laboratory/worklist');
-      if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+      if (res?.data && Array.isArray(res.data)) {
         // Map backend orders to our full LabOrder interface
         const mapped: LabOrder[] = res.data.map((o: any, idx: number) => {
           const defaultItems: LabOrderItem[] = (o.orderItems || []).map((oi: any) => ({
@@ -493,18 +203,21 @@ export default function LabWorklistScreen() {
             patientName: `${o.patient?.firstName || 'Patient'} ${o.patient?.lastName || ''}`.trim(),
             patientGender: o.patient?.gender || 'Unknown',
             patientAge: o.patient?.dateOfBirth ? Math.floor((Date.now() - new Date(o.patient.dateOfBirth).getTime()) / (365.25 * 24 * 3600 * 1000)) : 45,
-            doctorName: o.doctor?.employee?.user ? `Dr. ${o.doctor.employee.user.firstName} ${o.doctor.employee.user.lastName}` : 'Attending Physician',
+            doctorName: o.doctor?.employee?.user ? `Dr. ${o.doctor.employee.user.firstName} ${o.doctor.employee.user.lastName}` : 'Ordering clinician unavailable',
             department: 'Clinical OPD / IPD',
             priority: o.priority || 'ROUTINE',
             status: o.status || 'ORDERED',
             clinicalNotes: o.clinicalNotes || '',
-            items: defaultItems.length > 0 ? defaultItems : FALLBACK_LAB_ORDERS[0].items,
+            items: defaultItems,
           };
         });
         setOrders(mapped);
+      } else {
+        throw new Error("Invalid worklist response");
       }
     } catch {
-      // Graceful fallback to rich realistic demo records
+      setOrders([]);
+      setWorklistError(true);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -854,7 +567,9 @@ export default function LabWorklistScreen() {
         style={styles.orderList}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#EA580C']} />}
       >
-        {loading && !refreshing ? (
+        {worklistError ? (
+          <Text accessibilityRole="button" onPress={loadWorklist} style={styles.loadingText}>Could not load the worklist. Tap to retry.</Text>
+        ) : loading && !refreshing ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#EA580C" />
             <Text style={styles.loadingText}>Fetching Department Worklist...</Text>

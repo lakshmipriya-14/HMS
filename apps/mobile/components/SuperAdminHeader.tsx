@@ -8,7 +8,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Href, useRouter } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Bell,
@@ -37,9 +37,11 @@ interface NotificationItem {
 export function SuperAdminHeader({
   breadcrumbs,
   currentTitle,
+  home = '/(super-admin)',
 }: {
   breadcrumbs?: { label: string; href?: string }[];
   currentTitle?: string;
+  home?: Href;
 }) {
   const router = useRouter();
   const { user, logout } = useAuth();
@@ -93,7 +95,7 @@ export function SuperAdminHeader({
           <View style={styles.leftCol}>
             <TouchableOpacity
               style={styles.brandRow}
-              onPress={() => router.push('/(super-admin)/index' as any)}
+              onPress={() => router.push(home)}
               activeOpacity={0.8}
             >
               <View style={styles.logoBadge}>
@@ -107,7 +109,7 @@ export function SuperAdminHeader({
 
             {(breadcrumbs || currentTitle) && (
               <View style={styles.breadcrumbsRow}>
-                <TouchableOpacity onPress={() => router.push('/(super-admin)/index' as any)}>
+                <TouchableOpacity onPress={() => router.push(home)}>
                   <Text style={styles.breadcrumbLink}>Dashboard</Text>
                 </TouchableOpacity>
                 {breadcrumbs?.map((crumb, idx) => (

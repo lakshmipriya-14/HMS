@@ -180,6 +180,7 @@ model User {
   patient         Patient?
   notifications   Notification[]
   auditLogs       AuditLog[]
+  consultationAmendments ConsultationAmendment[]
   refreshTokens   RefreshToken[]
   accessTokens    AccountAccessToken[] @relation("AccessTokenRecipient")
   issuedAccessTokens AccountAccessToken[] @relation("AccessTokenIssuer")
@@ -532,10 +533,13 @@ model Appointment {
   updatedAt         DateTime       @updatedAt
 
   consultation      Consultation?
+  sourceConsultationId String?
+  sourceConsultation Consultation? @relation("ConsultationFollowUps", fields: [sourceConsultationId, hospitalId, branchId], references: [id, hospitalId, branchId], onDelete: Restrict)
   invoices          Invoice[]
   appointmentRequests AppointmentRequest[]
 
   @@index([patientId])
+  @@index([sourceConsultationId])
   @@unique([branchId, doctorId, appointmentDate, tokenNumber])
   @@index([doctorId, appointmentDate])
 
@@ -602,11 +606,28 @@ model Consultation {
   updatedAt                DateTime       @updatedAt
 
   prescriptions            Prescription[]
+  amendments               ConsultationAmendment[]
+  followUps                 Appointment[] @relation("ConsultationFollowUps")
 
   @@index([patientId])
   @@index([doctorId])
   @@index([hospitalId, branchId])
   @@unique([id, hospitalId, branchId])
+}
+
+model ConsultationAmendment {
+  id             String       @id @default(uuid())
+  consultationId String
+  hospitalId     String       @db.Uuid
+  branchId       String
+  consultation   Consultation @relation(fields: [consultationId, hospitalId, branchId], references: [id, hospitalId, branchId], onDelete: Restrict)
+  authorId       String
+  author         User         @relation(fields: [authorId, hospitalId], references: [id, hospitalId], onDelete: Restrict)
+  reason         String
+  note           String
+  createdAt      DateTime     @default(now())
+
+  @@index([consultationId, createdAt])
 }
 
 model Prescription {

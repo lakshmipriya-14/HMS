@@ -1,3 +1,4 @@
+import type { DoctorRoundNoteDto, DoctorWorkspaceDto, RequestDoctorLeaveDto } from '@multispeciality-hms/contracts';
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import {
   API_ENDPOINTS,
@@ -35,6 +36,18 @@ export interface ApiClientConfig {
   setTokens?: (accessToken: string, refreshToken: string) => void;
   clearTokens?: () => void;
   onUnauthorized?: () => void;
+}
+
+interface DoctorDirectoryItem {
+  id: string;
+  designation: string;
+  specialization: string;
+  isAvailableToday: boolean;
+  branch: { name: string };
+  department: { id: string; name: string };
+  employee: { user: { firstName: string; lastName: string } };
+  qualifications: { id: string; degree: string }[];
+  schedules: { id: string; dayOfWeek: string; startTime: string; endTime: string }[];
 }
 
 export class AalayamApiClient {
@@ -303,6 +316,18 @@ export class AalayamApiClient {
 
   // --- MEMBER 2: Doctor Clinical Module ---
   public doctor = {
+    list: async () =>
+      (await this.instance.get<ApiResponse<DoctorDirectoryItem[]>>(API_ENDPOINTS.DOCTORS.BASE)).data,
+    getInpatients: async () =>
+      (await this.instance.get<ApiResponse<any[]>>(API_ENDPOINTS.DOCTORS.INPATIENTS)).data,
+    saveRound: async (dto: DoctorRoundNoteDto) =>
+      (await this.instance.post<ApiResponse<unknown>>(API_ENDPOINTS.DOCTORS.ROUNDS, dto)).data,
+    getWorkspace: async () => {
+      const res = await this.instance.get<ApiResponse<DoctorWorkspaceDto>>(API_ENDPOINTS.DOCTORS.WORKSPACE);
+      return res.data;
+    },
+    requestLeave: async (dto: RequestDoctorLeaveDto) =>
+      (await this.instance.post<ApiResponse<unknown>>(API_ENDPOINTS.DOCTORS.LEAVE_REQUEST, dto)).data,
     getAppointments: async (doctorId?: string) => {
       const res = await this.instance.get<ApiResponse<any>>(API_ENDPOINTS.APPOINTMENTS.TODAY, {
         params: { doctorId },

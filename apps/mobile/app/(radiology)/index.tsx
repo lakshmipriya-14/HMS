@@ -59,114 +59,13 @@ export interface RadiologyWorklistItem {
   mriMetalCleared?: boolean;
 }
 
-const FALLBACK_WORKLIST: RadiologyWorklistItem[] = [
-  {
-    id: 'rad-ord-1',
-    orderNumber: 'RAD-2026-0101',
-    uhid: 'KZN-2026-0001',
-    patientName: 'Ramasamy Kuppusamy',
-    age: 58,
-    gender: 'Male',
-    scanName: 'CT Coronary Angiogram with IV Contrast',
-    modality: 'CT_SCAN',
-    machineRoom: 'Siemens 128-Slice Dual Source CT (Room 2)',
-    priority: 'STAT',
-    clinicalIndication: 'Chest tightness, atypical angina, rule out severe LAD stenosis',
-    status: 'SCHEDULED',
-    doctorName: 'Dr. Senthil Nathan, MD (Cardiology)',
-    scheduledTime: 'Today, 11:30 AM',
-    contrastRequired: true,
-    requiresMriSafety: false,
-    creatinineClearance: 'Serum Creatinine: 0.9 mg/dL (eGFR: 88 mL/min) - NORMAL',
-    pregnancyCheck: 'Not Applicable (Male)',
-  },
-  {
-    id: 'rad-ord-2',
-    orderNumber: 'RAD-2026-0102',
-    uhid: 'KZN-2026-0014',
-    patientName: 'Deepa Thirunavukarasu',
-    age: 34,
-    gender: 'Female',
-    scanName: 'MRI Brain & Cervical Spine (3.0 Tesla)',
-    modality: 'MRI',
-    machineRoom: 'GE 3.0T SIGNA Pioneer (MRI Bay 1)',
-    priority: 'ROUTINE',
-    clinicalIndication: 'Chronic occipital headaches, paresthesias in bilateral upper limbs',
-    status: 'SAFETY_CLEARED',
-    doctorName: 'Dr. Ananya Sharma, MD (Neurology)',
-    scheduledTime: 'Today, 12:15 PM',
-    contrastRequired: false,
-    requiresMriSafety: true,
-    creatinineClearance: 'eGFR > 90 mL/min - Normal',
-    pregnancyCheck: 'LMP: 14 days ago, UPT Negative verified',
-    mriMetalCleared: true,
-  },
-  {
-    id: 'rad-ord-3',
-    orderNumber: 'RAD-2026-0103',
-    uhid: 'KZN-2026-0009',
-    patientName: 'Vijay Sundaram',
-    age: 46,
-    gender: 'Male',
-    scanName: 'Digital X-Ray Chest PA & Lateral View',
-    modality: 'X_RAY',
-    machineRoom: 'Carestream DR Room 01',
-    priority: 'ROUTINE',
-    clinicalIndication: 'Pre-operative cardiothoracic fitness evaluation',
-    status: 'SCAN_COMPLETED',
-    doctorName: 'Dr. V. Rajesh, MS Ortho',
-    scheduledTime: 'Today, 10:00 AM',
-    contrastRequired: false,
-    requiresMriSafety: false,
-    imageUrl: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80',
-    findings: 'Lungs are clear with no focal consolidation or pleural effusion. Cardiothoracic ratio is within normal limits (48%). Bony thoracic cage intact.',
-    impression: 'Normal study. No active pleuro-parenchymal disease.',
-    criticalAlert: false,
-  },
-  {
-    id: 'rad-ord-4',
-    orderNumber: 'RAD-2026-0104',
-    uhid: 'KZN-2026-0022',
-    patientName: 'Kavitha Manoharan',
-    age: 29,
-    gender: 'Female',
-    scanName: 'USG Whole Abdomen & Pelvis',
-    modality: 'ULTRASOUND',
-    machineRoom: 'Philips EPIQ 7 Ultrasound Room 3',
-    priority: 'ROUTINE',
-    clinicalIndication: 'Right iliac fossa tenderness, rule out acute appendicitis / ovarian pathology',
-    status: 'SCHEDULED',
-    doctorName: 'Dr. Priya Mani, MD (Obs & Gynae)',
-    scheduledTime: 'Today, 02:00 PM',
-    contrastRequired: false,
-    requiresMriSafety: false,
-  },
-  {
-    id: 'rad-ord-5',
-    orderNumber: 'RAD-2026-0105',
-    uhid: 'KZN-2026-0030',
-    patientName: 'Subramanian Natarajan',
-    age: 63,
-    gender: 'Male',
-    scanName: '2D Echocardiogram & Color Doppler',
-    modality: 'SPECIALIZED',
-    machineRoom: 'GE Vivid E95 Echo Lab 1',
-    priority: 'STAT',
-    clinicalIndication: 'Dyspnea on exertion, systolic murmur, assess LVEF and valvular regurgitation',
-    status: 'SCHEDULED',
-    doctorName: 'Dr. Senthil Nathan, MD',
-    scheduledTime: 'Today, 02:30 PM',
-    contrastRequired: false,
-    requiresMriSafety: false,
-  },
-];
-
 export default function RadiologyWorklistScreen() {
   const { user } = useAuth();
   const [activeModality, setActiveModality] = useState<ModalityType>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
-  const [worklist, setWorklist] = useState<RadiologyWorklistItem[]>(FALLBACK_WORKLIST);
-  const [loading, setLoading] = useState(false);
+  const [worklist, setWorklist] = useState<RadiologyWorklistItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [worklistError, setWorklistError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   // Safety Screening Modal
@@ -189,8 +88,9 @@ export default function RadiologyWorklistScreen() {
   const loadWorklist = useCallback(async () => {
     try {
       setLoading(true);
+      setWorklistError(false);
       const res = await apiRequest<any[]>('/radiology/worklist', { method: 'GET' });
-      if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+      if (res?.data && Array.isArray(res.data)) {
         const mapped: RadiologyWorklistItem[] = res.data.map((item: any, idx: number) => {
           let mod: 'X_RAY' | 'CT_SCAN' | 'MRI' | 'ULTRASOUND' | 'SPECIALIZED' = 'X_RAY';
           const testName = item.test?.name || item.scanName || '';
@@ -216,7 +116,7 @@ export default function RadiologyWorklistScreen() {
             status: item.status || 'SCHEDULED',
             doctorName: item.doctor?.employee?.user
               ? `Dr. ${item.doctor.employee.user.firstName} ${item.doctor.employee.user.lastName}`
-              : 'Ordering Doctor',
+              : 'Ordering clinician unavailable',
             scheduledTime: item.createdAt ? new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Today',
             contrastRequired: testName.toLowerCase().includes('contrast'),
             requiresMriSafety: mod === 'MRI',
@@ -227,9 +127,12 @@ export default function RadiologyWorklistScreen() {
           };
         });
         setWorklist(mapped);
+      } else {
+        throw new Error("Invalid worklist response");
       }
     } catch {
-      // Retain fallback data
+      setWorklist([]);
+      setWorklistError(true);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -450,7 +353,9 @@ export default function RadiologyWorklistScreen() {
         style={styles.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#0F766E']} />}
       >
-        {loading && !refreshing ? (
+        {worklistError ? (
+          <Text accessibilityRole="button" onPress={loadWorklist} style={styles.loadingText}>Could not load the worklist. Tap to retry.</Text>
+        ) : loading && !refreshing ? (
           <View style={styles.centerLoading}>
             <ActivityIndicator size="large" color="#0F766E" />
             <Text style={styles.loadingText}>Connecting to Modality RIS/PACS Broker...</Text>
