@@ -95,8 +95,8 @@ export class PatientsController {
 
   @Post('me/appointment-requests')
   @Roles(Role.PATIENT)
-  async requestAppointment(@CurrentUser() actor: AuthUserDto, @Body() body: { doctorId?: string; preferredDate?: string }) {
-    return { message: 'Appointment request sent to Reception', data: await this.service.requestAppointment(actor, body) };
+  async requestAppointment(@CurrentUser() actor: AuthUserDto, @Body() body: { doctorId?: string; preferredDate?: string; reason?: string }) {
+    return { message: 'Appointment request sent to Reception and Department Admin', data: await this.service.requestAppointment(actor, body) };
   }
 
   @Patch('me/photo')

@@ -1,383 +1,326 @@
-import { PatientPortal } from '../../components/PatientPortal';
-
-export default function PatientScreen() {
-  return <PatientPortal section="appointments" />;
-}
-
-interface Appointment {
-  id: string;
-  appointmentNo: string;
-  doctorId: string;
-  doctorName: string;
-  specialty: string;
-  department: string;
-  date: string;
-  slot: string;
-  tokenNumber: number;
-  currentCallingToken: number;
-  status: 'Confirmed' | 'In Queue' | 'In Consultation' | 'Completed' | 'Cancelled';
-  room: string;
-}
-
-const DOCTORS: Doctor[] = [
-  {
-    id: 'doc-1',
-    name: 'Dr. Senthil Nathan',
-    specialty: 'Interventional Cardiology',
-    department: 'Cardiology',
-    qualification: 'MD, DM (Cardio), FACC',
-    fee: 800,
-    room: 'Room 104 (OPD Block A)',
-    experience: '16 Years Exp',
-    slots: ['10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '04:00 PM'],
-  },
-  {
-    id: 'doc-2',
-    name: 'Dr. Meenakshi Sundaram',
-    specialty: 'General Medicine & Diabetology',
-    department: 'General Medicine',
-    qualification: 'MD (Gen Med), FRCP',
-    fee: 500,
-    room: 'Room 202 (OPD Block B)',
-    experience: '12 Years Exp',
-    slots: ['10:30 AM', '11:15 AM', '02:00 PM', '02:30 PM', '03:15 PM'],
-  },
-  {
-    id: 'doc-3',
-    name: 'Dr. Anitha Varma',
-    specialty: 'Orthopaedic & Joint Replacement',
-    department: 'Orthopaedics',
-    qualification: 'MS (Ortho), MCh',
-    fee: 700,
-    room: 'Room 110 (Trauma Block)',
-    experience: '14 Years Exp',
-    slots: ['11:00 AM', '11:45 AM', '03:30 PM', '04:15 PM'],
-  },
-  {
-    id: 'doc-4',
-    name: 'Dr. Balamurugan S.',
-    specialty: 'Diagnostic Neuro & Body Radiology',
-    department: 'Radiology',
-    qualification: 'MD, DNB (Radiodiagnosis)',
-    fee: 600,
-    room: 'Diagnostics Suite 3',
-    experience: '10 Years Exp',
-    slots: ['09:30 AM', '12:00 PM', '04:30 PM'],
-  },
-];
-
-const INITIAL_APPOINTMENTS: Appointment[] = [
-  {
-    id: 'apt-01',
-    appointmentNo: 'APT-2026-1042',
-    doctorId: 'doc-1',
-    doctorName: 'Dr. Senthil Nathan',
-    specialty: 'Interventional Cardiology',
-    department: 'Cardiology',
-    date: 'Today, 24 Nov 2026',
-    slot: '10:00 AM',
-    tokenNumber: 14,
-    currentCallingToken: 11,
-    status: 'In Queue',
-    room: 'Room 104 • 1st Floor',
-  },
-  {
-    id: 'apt-02',
-    appointmentNo: 'APT-2026-0988',
-    doctorId: 'doc-3',
-    doctorName: 'Dr. Anitha Varma',
-    specialty: 'Orthopaedic Surgery',
-    department: 'Orthopaedics',
-    date: '27 Nov 2026',
-    slot: '11:00 AM',
-    tokenNumber: 5,
-    currentCallingToken: 1,
-    status: 'Confirmed',
-    room: 'Room 110 • Ground Floor',
-  },
-];
+import React, { useState } from 'react';
+import {
+  Alert,
+  Modal,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  AlertCircle,
+  Calendar,
+  CalendarPlus,
+  Clock,
+  FileText,
+  History,
+  RotateCcw,
+  Stethoscope,
+  X,
+  XCircle,
+} from 'lucide-react-native';
+import { mobileApiClient } from '../../services/api';
+import { useAuth } from '../../hooks/useAuth';
+import { UyirinaiTheme } from '../../constants/theme';
+import { StatusBadge } from '../../components/ui/StatusBadge';
+import { LoadingIndicator } from '../../components/ui/LoadingIndicator';
+import { ErrorState } from '../../components/ui/ErrorState';
 
 export default function PatientAppointmentsScreen() {
-  const [appointments, setAppointments] = useState<Appointment[]>(INITIAL_APPOINTMENTS);
-  const [search, setSearch] = useState('');
-  const [selectedDept, setSelectedDept] = useState('All');
-  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-  const [selectedSlot, setSelectedSlot] = useState('');
-  const [bookingModal, setBookingModal] = useState(false);
+  const router = useRouter();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  const departments = ['All', 'Cardiology', 'General Medicine', 'Orthopaedics', 'Radiology'];
+  const [rescheduleApt, setRescheduleApt] = useState<any>(null);
+  const [rescheduleDate, setRescheduleDate] = useState('');
+  const [rescheduleTime, setRescheduleTime] = useState('');
+  const [rescheduleError, setRescheduleError] = useState('');
 
-  const filteredDoctors = useMemo(() => {
-    return DOCTORS.filter((d) => {
-      const matchSearch =
-        d.name.toLowerCase().includes(search.toLowerCase()) ||
-        d.specialty.toLowerCase().includes(search.toLowerCase()) ||
-        d.department.toLowerCase().includes(search.toLowerCase());
-      const matchDept = selectedDept === 'All' || d.department === selectedDept;
-      return matchSearch && matchDept;
-    });
-  }, [search, selectedDept]);
+  const { data, isLoading, isError, error, refetch, isRefetching } = useQuery({
+    queryKey: ['patient-portal-active-appointments', user?.id],
+    enabled: !!user,
+    queryFn: async () => (await mobileApiClient.patientPortal.get(1)).data,
+  });
 
-  const handleBookSlot = () => {
-    if (!selectedDoctor || !selectedSlot) {
-      Alert.alert('Select Slot', 'Please select a consultation time slot.');
-      return;
-    }
+  // Reschedule / Cancel mutation
+  const changeMutation = useMutation({
+    mutationFn: async ({
+      id,
+      action,
+      date,
+      time,
+    }: {
+      id: string;
+      action: 'cancel' | 'reschedule';
+      date?: string;
+      time?: string;
+    }) => {
+      return await mobileApiClient.patientPortal.changeAppointment(id, {
+        action,
+        date,
+        time,
+      });
+    },
+    onSuccess: () => {
+      setRescheduleApt(null);
+      setRescheduleError('');
+      queryClient.invalidateQueries({ queryKey: ['patient-portal-active-appointments'] });
+      queryClient.invalidateQueries({ queryKey: ['patient-portal-home'] });
+    },
+    onError: (err) => {
+      setRescheduleError(err instanceof Error ? err.message : 'Could not update appointment.');
+    },
+  });
 
-    const tokenNum = Math.floor(10 + Math.random() * 20);
-    const newApt: Appointment = {
-      id: `apt-${Date.now()}`,
-      appointmentNo: `APT-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      doctorId: selectedDoctor.id,
-      doctorName: selectedDoctor.name,
-      specialty: selectedDoctor.specialty,
-      department: selectedDoctor.department,
-      date: 'Today, 24 Nov 2026',
-      slot: selectedSlot,
-      tokenNumber: tokenNum,
-      currentCallingToken: Math.max(1, tokenNum - 4),
-      status: 'Confirmed',
-      room: selectedDoctor.room,
-    };
-
-    setAppointments([newApt, ...appointments]);
-    setBookingModal(false);
-    setSelectedDoctor(null);
-    setSelectedSlot('');
+  const handleCancel = (apt: any) => {
     Alert.alert(
-      'Appointment Confirmed',
-      `Booking ${newApt.appointmentNo} confirmed with ${newApt.doctorName}. Token #${newApt.tokenNumber} assigned.`
+      'Cancel Appointment',
+      `Are you sure you want to cancel your appointment with Dr. ${
+        apt.doctor?.employee?.user?.firstName || 'Doctor'
+      }?`,
+      [
+        { text: 'Keep Appointment', style: 'cancel' },
+        {
+          text: 'Yes, Cancel',
+          style: 'destructive',
+          onPress: () => changeMutation.mutate({ id: apt.id, action: 'cancel' }),
+        },
+      ]
     );
   };
 
-  const handleCancelAppointment = (id: string) => {
-    Alert.alert('Cancel Appointment', 'Are you sure you want to cancel this consultation slot?', [
-      { text: 'No', style: 'cancel' },
-      {
-        text: 'Yes, Cancel',
-        style: 'destructive',
-        onPress: () => {
-          setAppointments((prev) =>
-            prev.map((a) => (a.id === id ? { ...a, status: 'Cancelled' } : a))
-          );
-        },
-      },
-    ]);
+  const openReschedule = (apt: any) => {
+    setRescheduleApt(apt);
+    setRescheduleDate(apt.appointmentDate?.slice(0, 10) || '');
+    setRescheduleTime(apt.appointmentTime || '10:30');
+    setRescheduleError('');
   };
 
-  return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 30 }}>
-      {/* Active Queue Tracker Banner (P03) */}
-      {appointments.find((a) => a.status === 'In Queue' || a.status === 'Confirmed') && (
-        <View style={styles.activeQueueCard}>
-          <View style={styles.queueHeader}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Clock size={16} color="#38845A" />
-              <Text style={styles.queueHeaderTitle}>Active Token Queue</Text>
-            </View>
-            <View style={styles.liveTag}>
-              <Text style={styles.liveTagText}>LIVE QUEUE</Text>
-            </View>
-          </View>
+  if (isLoading) {
+    return <LoadingIndicator message="Loading appointment details..." />;
+  }
 
-          {(() => {
-            const active = appointments.find((a) => a.status === 'In Queue' || a.status === 'Confirmed')!;
-            const diff = active.tokenNumber - active.currentCallingToken;
+  if (isError) {
+    return (
+      <ErrorState
+        title="Could not load appointments"
+        message={error instanceof Error ? error.message : 'Please check your connection and retry.'}
+        onRetry={() => refetch()}
+      />
+    );
+  }
+
+  const allAppointments = data?.appointments || [];
+
+  // SPEC REQUIREMENT: Show ONLY appointments not met with doctors (exclude COMPLETED and CANCELLED)
+  const unmetAppointments = allAppointments.filter(
+    (apt: { status: string }) => apt.status !== 'COMPLETED' && apt.status !== 'CANCELLED'
+  );
+
+  return (
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefetching}
+          onRefresh={refetch}
+          colors={[UyirinaiTheme.colors.primary]}
+          tintColor={UyirinaiTheme.colors.primary}
+        />
+      }
+    >
+      {/* Notice Header */}
+      <View style={styles.infoBanner}>
+        <View style={styles.infoIconWrap}>
+          <Calendar size={18} color={UyirinaiTheme.colors.primary} />
+        </View>
+        <View style={styles.infoTextWrap}>
+          <Text style={styles.infoTitle}>Active & Upcoming Consultations</Text>
+          <Text style={styles.infoSubtitle}>
+            Completed consultations are moved to Medical History.
+          </Text>
+        </View>
+        <Pressable
+          style={styles.historyLinkBtn}
+          onPress={() => router.push('/(patient)/records' as any)}
+        >
+          <History size={15} color={UyirinaiTheme.colors.primary} />
+          <Text style={styles.historyLinkText}>History</Text>
+        </Pressable>
+      </View>
+
+      {/* Appointment Cards List */}
+      {unmetAppointments.length > 0 ? (
+        <View style={styles.appointmentList}>
+          {unmetAppointments.map((apt: any) => {
+            const docUser = apt.doctor?.employee?.user;
+            const doctorName = docUser ? `Dr. ${docUser.firstName} ${docUser.lastName}` : 'Consultant Doctor';
+            const deptName = apt.department?.name || 'General Medicine';
+            const branchName = apt.branch?.name || 'Main Branch';
+            const dateStr = apt.appointmentDate?.slice(0, 10);
+            const timeStr = apt.appointmentTime || '10:30';
+
             return (
-              <View style={{ marginTop: 8 }}>
-                <View style={styles.queueSplit}>
-                  <View style={styles.queueBox}>
-                    <Text style={styles.queueBoxLabel}>Your Token</Text>
-                    <Text style={styles.queueMyToken}>#{active.tokenNumber}</Text>
-                    <Text style={styles.queueWaitText}>
-                      {diff > 0 ? `${diff} Patients Ahead` : 'Please proceed to room'}
-                    </Text>
+              <View key={apt.id} style={styles.appointmentCard}>
+                {/* Card Top */}
+                <View style={styles.cardHeader}>
+                  <View style={styles.doctorInfoRow}>
+                    <View style={styles.docAvatarCircle}>
+                      <Stethoscope size={20} color={UyirinaiTheme.colors.primary} />
+                    </View>
+                    <View style={styles.docNameCol}>
+                      <Text style={styles.docName}>{doctorName}</Text>
+                      <Text style={styles.docDept}>
+                        {deptName} · {branchName}
+                      </Text>
+                    </View>
                   </View>
-                  <View style={styles.queueDivider} />
-                  <View style={styles.queueBox}>
-                    <Text style={styles.queueBoxLabel}>Calling Now</Text>
-                    <Text style={styles.queueCallingToken}>#{active.currentCallingToken}</Text>
-                    <Text style={styles.queueRoomText}>{active.room}</Text>
-                  </View>
+                  <StatusBadge status={apt.status} />
                 </View>
-                <Text style={styles.queueDocText}>
-                  {active.doctorName} • {active.specialty}
-                </Text>
+
+                {/* Appointment Schedule Info */}
+                <View style={styles.scheduleBox}>
+                  <View style={styles.scheduleItem}>
+                    <Calendar size={15} color={UyirinaiTheme.colors.primary} />
+                    <Text style={styles.scheduleText}>{dateStr}</Text>
+                  </View>
+                  <View style={styles.scheduleItem}>
+                    <Clock size={15} color={UyirinaiTheme.colors.primary} />
+                    <Text style={styles.scheduleText}>{timeStr} IST</Text>
+                  </View>
+                  {apt.tokenNumber ? (
+                    <View style={styles.tokenPill}>
+                      <Text style={styles.tokenPillText}>Token #{apt.tokenNumber}</Text>
+                    </View>
+                  ) : null}
+                </View>
+
+                {apt.reasonForVisit ? (
+                  <Text style={styles.reasonText}>
+                    <Text style={{ fontWeight: '700' }}>Reason: </Text>
+                    {apt.reasonForVisit}
+                  </Text>
+                ) : null}
+
+                {/* Action Buttons */}
+                <View style={styles.cardActionsRow}>
+                  <Pressable
+                    style={styles.rescheduleBtn}
+                    onPress={() => openReschedule(apt)}
+                    disabled={changeMutation.isPending}
+                  >
+                    <RotateCcw size={14} color={UyirinaiTheme.colors.primary} />
+                    <Text style={styles.rescheduleText}>Reschedule</Text>
+                  </Pressable>
+
+                  <Pressable
+                    style={styles.cancelBtn}
+                    onPress={() => handleCancel(apt)}
+                    disabled={changeMutation.isPending}
+                  >
+                    <XCircle size={14} color={UyirinaiTheme.colors.error} />
+                    <Text style={styles.cancelText}>Cancel</Text>
+                  </Pressable>
+                </View>
               </View>
             );
-          })()}
+          })}
+        </View>
+      ) : (
+        <View style={styles.emptyContainer}>
+          <View style={styles.emptyIconCircle}>
+            <Calendar size={36} color={UyirinaiTheme.colors.primary} />
+          </View>
+          <Text style={styles.emptyTitle}>No Active Appointments</Text>
+          <Text style={styles.emptySubtitle}>
+            You do not have any pending or upcoming appointments scheduled right now.
+          </Text>
+
+          <Pressable
+            style={styles.bookActionBtn}
+            onPress={() => router.push('/(patient)/book-appointment' as any)}
+          >
+            <CalendarPlus size={18} color={UyirinaiTheme.colors.white} />
+            <Text style={styles.bookActionText}>Book New Appointment</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.viewHistoryBtn}
+            onPress={() => router.push('/(patient)/records' as any)}
+          >
+            <FileText size={16} color={UyirinaiTheme.colors.primary} />
+            <Text style={styles.viewHistoryText}>View Completed Consultations History</Text>
+          </Pressable>
         </View>
       )}
 
-      {/* Booked Appointments Header */}
-      <Text style={styles.sectionTitle}>My Booked Appointments</Text>
-      {appointments.map((apt) => (
-        <View key={apt.id} style={styles.aptCard}>
-          <View style={styles.aptCardHeader}>
-            <View>
-              <Text style={styles.aptNo}>{apt.appointmentNo}</Text>
-              <Text style={styles.aptDocName}>{apt.doctorName}</Text>
-              <Text style={styles.aptSpec}>{apt.specialty}</Text>
-            </View>
-            <View
-              style={[
-                styles.statusBadge,
-                apt.status === 'In Queue'
-                  ? styles.badgeQueue
-                  : apt.status === 'Confirmed'
-                  ? styles.badgeConfirmed
-                  : styles.badgeCancelled,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.statusBadgeText,
-                  apt.status === 'In Queue'
-                    ? styles.textQueue
-                    : apt.status === 'Confirmed'
-                    ? styles.textConfirmed
-                    : styles.textCancelled,
-                ]}
-              >
-                {apt.status}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.aptMetaRow}>
-            <View style={styles.aptMetaItem}>
-              <Calendar size={12} color="#64748B" />
-              <Text style={styles.aptMetaText}>{apt.date}</Text>
-            </View>
-            <View style={styles.aptMetaItem}>
-              <Clock size={12} color="#64748B" />
-              <Text style={styles.aptMetaText}>{apt.slot}</Text>
-            </View>
-            <View style={styles.tokenPill}>
-              <Text style={styles.tokenPillText}>Token #{apt.tokenNumber}</Text>
-            </View>
-          </View>
-
-          <Text style={styles.aptRoom}>{apt.room}</Text>
-
-          {apt.status !== 'Cancelled' && apt.status !== 'Completed' && (
-            <TouchableOpacity
-              style={styles.cancelLink}
-              onPress={() => handleCancelAppointment(apt.id)}
-            >
-              <Text style={styles.cancelLinkText}>Cancel / Reschedule Appointment</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      ))}
-
-      {/* Doctor & Department Discovery Section (P03 & P04) */}
-      <Text style={[styles.sectionTitle, { marginTop: 18 }]}>Find & Book Specialist</Text>
-      <Text style={styles.sectionSub}>Select doctor, review consultation fee, and book slot</Text>
-
-      {/* Search Input */}
-      <View style={styles.searchBar}>
-        <Search size={16} color="#64748B" />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search doctor name, specialty, or condition..."
-          value={search}
-          onChangeText={setSearch}
-          placeholderTextColor="#94A3B8"
-        />
-      </View>
-
-      {/* Department Filter Pills */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.deptScroll}>
-        {departments.map((dept) => (
-          <TouchableOpacity
-            key={dept}
-            style={[styles.deptPill, selectedDept === dept && styles.deptPillActive]}
-            onPress={() => setSelectedDept(dept)}
-          >
-            <Text style={[styles.deptPillText, selectedDept === dept && styles.deptPillTextActive]}>
-              {dept}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      {/* Doctors List */}
-      <View style={{ marginTop: 10 }}>
-        {filteredDoctors.map((doc) => (
-          <View key={doc.id} style={styles.docCard}>
-            <View style={styles.docTop}>
-              <View style={styles.docAvatar}>
-                <Stethoscope size={22} color="#38845A" />
-              </View>
-              <View style={{ flex: 1, marginLeft: 12 }}>
-                <Text style={styles.docName}>{doc.name}</Text>
-                <Text style={styles.docSpec}>{doc.specialty}</Text>
-                <Text style={styles.docQual}>
-                  {doc.qualification} • {doc.experience}
-                </Text>
-              </View>
-              <Text style={styles.docFee}>₹{doc.fee}</Text>
-            </View>
-
-            <View style={styles.docRoomRow}>
-              <MapPin size={12} color="#64748B" />
-              <Text style={styles.docRoomText}>{doc.room}</Text>
-            </View>
-
-            <TouchableOpacity
-              style={styles.bookSlotBtn}
-              onPress={() => {
-                setSelectedDoctor(doc);
-                setSelectedSlot(doc.slots[0] || '');
-                setBookingModal(true);
-              }}
-            >
-              <Text style={styles.bookSlotBtnText}>Book Consultation Slot</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
-      </View>
-
-      {/* Slot Booking Modal */}
-      <Modal visible={bookingModal} animationType="slide" transparent>
+      {/* Reschedule Modal */}
+      <Modal visible={!!rescheduleApt} transparent={true} animationType="slide">
         <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
+          <View style={styles.modalBox}>
             <View style={styles.modalHeader}>
-              <View>
-                <Text style={styles.modalTitle}>Select Appointment Slot</Text>
-                <Text style={styles.modalSub}>{selectedDoctor?.name}</Text>
+              <Text style={styles.modalTitle}>Reschedule Consultation</Text>
+              <Pressable onPress={() => setRescheduleApt(null)} style={styles.closeBtn}>
+                <X size={20} color={UyirinaiTheme.colors.textSecondary} />
+              </Pressable>
+            </View>
+
+            {!!rescheduleError && (
+              <View style={styles.errorBanner}>
+                <AlertCircle size={16} color={UyirinaiTheme.colors.error} />
+                <Text style={styles.errorText}>{rescheduleError}</Text>
               </View>
-              <TouchableOpacity onPress={() => setBookingModal(false)}>
-                <X size={20} color="#64748B" />
-              </TouchableOpacity>
-            </View>
+            )}
 
-            <View style={styles.docModalInfo}>
-              <Text style={styles.modalDocSpec}>{selectedDoctor?.specialty}</Text>
-              <Text style={styles.modalDocFee}>Consultation Fee: ₹{selectedDoctor?.fee}</Text>
-            </View>
+            <Text style={styles.inputPrompt}>
+              Choose a new preferred date and time for consultation with{' '}
+              <Text style={{ fontWeight: '700' }}>
+                Dr. {rescheduleApt?.doctor?.employee?.user?.firstName || 'Doctor'}
+              </Text>
+              :
+            </Text>
 
-            <Text style={styles.slotSectionTitle}>Available OPD Slots for Today</Text>
-            <View style={styles.slotsGrid}>
-              {selectedDoctor?.slots.map((s) => (
-                <TouchableOpacity
-                  key={s}
-                  style={[styles.slotCard, selectedSlot === s && styles.slotCardActive]}
-                  onPress={() => setSelectedSlot(s)}
-                >
-                  <Clock size={12} color={selectedSlot === s ? '#38845A' : '#64748B'} />
-                  <Text style={[styles.slotText, selectedSlot === s && styles.slotTextActive]}>
-                    {s}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            <Text style={styles.inputLabel}>New Date (YYYY-MM-DD)</Text>
+            <TextInput
+              style={styles.inputField}
+              value={rescheduleDate}
+              onChangeText={setRescheduleDate}
+              placeholder="e.g. 2026-11-28"
+            />
 
-            <TouchableOpacity style={styles.confirmAptBtn} onPress={handleBookSlot}>
-              <CheckCircle2 size={16} color="#fff" />
-              <Text style={styles.confirmAptBtnText}>Confirm Booking & Assign Token</Text>
-            </TouchableOpacity>
+            <Text style={styles.inputLabel}>New Time (HH:mm in 24hr format)</Text>
+            <TextInput
+              style={styles.inputField}
+              value={rescheduleTime}
+              onChangeText={setRescheduleTime}
+              placeholder="e.g. 11:30"
+            />
+
+            <Pressable
+              style={[
+                styles.confirmRescheduleBtn,
+                changeMutation.isPending && styles.btnDisabled,
+              ]}
+              onPress={() =>
+                changeMutation.mutate({
+                  id: rescheduleApt.id,
+                  action: 'reschedule',
+                  date: rescheduleDate.trim(),
+                  time: rescheduleTime.trim(),
+                })
+              }
+              disabled={changeMutation.isPending || !rescheduleDate || !rescheduleTime}
+            >
+              <Text style={styles.confirmRescheduleText}>
+                {changeMutation.isPending ? 'Confirming...' : 'Confirm Rescheduled Time'}
+              </Text>
+            </Pressable>
           </View>
         </View>
       </Modal>
@@ -386,147 +329,335 @@ export default function PatientAppointmentsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC', padding: 16 },
-  activeQueueCard: {
-    backgroundColor: '#EAF5ED',
-    borderRadius: 14,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: '#CDE8D5',
-    marginBottom: 14,
+  container: {
+    flex: 1,
+    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
   },
-  queueHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  queueHeaderTitle: { fontSize: 13, fontWeight: '800', color: '#38845A' },
-  liveTag: { backgroundColor: '#38845A', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  liveTagText: { color: '#fff', fontSize: 9, fontWeight: '900' },
-  queueSplit: { flexDirection: 'row', alignItems: 'center', marginVertical: 8 },
-  queueBox: { flex: 1, alignItems: 'center' },
-  queueBoxLabel: { fontSize: 10, color: '#64748B' },
-  queueMyToken: { fontSize: 24, fontWeight: '900', color: '#38845A' },
-  queueWaitText: { fontSize: 10, fontWeight: '700', color: '#D97706' },
-  queueDivider: { width: 1, height: 35, backgroundColor: '#EAF5ED' },
-  queueCallingToken: { fontSize: 24, fontWeight: '900', color: '#0F172A' },
-  queueRoomText: { fontSize: 10, color: '#64748B' },
-  queueDocText: { fontSize: 11, color: '#334155', fontWeight: '600', textAlign: 'center', marginTop: 4 },
-  sectionTitle: { fontSize: 15, fontWeight: '800', color: '#0F172A', marginBottom: 6 },
-  sectionSub: { fontSize: 12, color: '#64748B', marginBottom: 10 },
-  aptCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+  contentContainer: {
+    padding: 16,
+    paddingBottom: 40,
   },
-  aptCardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  aptNo: { fontSize: 11, fontWeight: '700', color: '#64748B', fontFamily: 'monospace' },
-  aptDocName: { fontSize: 14, fontWeight: '800', color: '#0F172A', marginTop: 2 },
-  aptSpec: { fontSize: 11, color: '#475569' },
-  statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  badgeQueue: { backgroundColor: '#FEF3C7' },
-  badgeConfirmed: { backgroundColor: '#D1FAE5' },
-  badgeCancelled: { backgroundColor: '#EAF5ED' },
-  statusBadgeText: { fontSize: 10, fontWeight: '800' },
-  textQueue: { color: '#B45309' },
-  textConfirmed: { color: '#065F46' },
-  textCancelled: { color: '#DC2626' },
-  aptMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 8 },
-  aptMetaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  aptMetaText: { fontSize: 11, color: '#475569' },
-  tokenPill: { backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },
-  tokenPillText: { fontSize: 10, fontWeight: '800', color: '#38845A' },
-  aptRoom: { fontSize: 11, color: '#64748B', marginTop: 6 },
-  cancelLink: { marginTop: 8, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
-  cancelLinkText: { fontSize: 11, color: '#DC2626', fontWeight: '700' },
-  searchBar: {
+
+  /* Info Banner */
+  infoBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: UyirinaiTheme.colors.softGreenCard,
+    borderRadius: UyirinaiTheme.borderRadius.lg,
+    padding: 12,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    height: 40,
-    gap: 8,
+    borderColor: UyirinaiTheme.colors.lightGreen,
+    marginBottom: 16,
   },
-  searchInput: { flex: 1, fontSize: 13, color: '#0F172A' },
-  deptScroll: { flexDirection: 'row', marginTop: 10, marginBottom: 8 },
-  deptPill: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginRight: 8,
-  },
-  deptPillActive: { backgroundColor: '#38845A', borderColor: '#38845A' },
-  deptPillText: { fontSize: 11, fontWeight: '600', color: '#475569' },
-  deptPillTextActive: { color: '#fff', fontWeight: '700' },
-  docCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  docTop: { flexDirection: 'row', alignItems: 'center' },
-  docAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#EAF5ED',
+  infoIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: UyirinaiTheme.colors.lightGreen,
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: 10,
   },
-  docName: { fontSize: 14, fontWeight: '800', color: '#0F172A' },
-  docSpec: { fontSize: 11, color: '#38845A', fontWeight: '700', marginTop: 1 },
-  docQual: { fontSize: 10, color: '#64748B', marginTop: 1 },
-  docFee: { fontSize: 14, fontWeight: '900', color: '#0F172A' },
-  docRoomRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8 },
-  docRoomText: { fontSize: 11, color: '#64748B' },
-  bookSlotBtn: {
-    backgroundColor: '#38845A',
-    borderRadius: 8,
-    paddingVertical: 8,
-    alignItems: 'center',
-    marginTop: 10,
+  infoTextWrap: {
+    flex: 1,
   },
-  bookSlotBtnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.6)', justifyContent: 'flex-end' },
-  modalCard: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20 },
-  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 },
-  modalTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
-  modalSub: { fontSize: 12, color: '#64748B', marginTop: 2 },
-  docModalInfo: { backgroundColor: '#F8FAFC', padding: 10, borderRadius: 8, marginBottom: 14 },
-  modalDocSpec: { fontSize: 12, fontWeight: '700', color: '#38845A' },
-  modalDocFee: { fontSize: 12, color: '#334155', marginTop: 2 },
-  slotSectionTitle: { fontSize: 12, fontWeight: '700', color: '#475569', marginBottom: 8 },
-  slotsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
-  slotCard: {
+  infoTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.primaryDark,
+  },
+  infoSubtitle: {
+    fontSize: 11,
+    color: UyirinaiTheme.colors.textSecondary,
+    marginTop: 1,
+  },
+  historyLinkBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderRadius: 8,
+    backgroundColor: UyirinaiTheme.colors.white,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: UyirinaiTheme.borderRadius.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    backgroundColor: '#F8FAFC',
+    borderColor: UyirinaiTheme.colors.borderDefault,
   },
-  slotCardActive: { borderColor: '#38845A', backgroundColor: '#EAF5ED' },
-  slotText: { fontSize: 11, color: '#475569' },
-  slotTextActive: { color: '#38845A', fontWeight: '800' },
-  confirmAptBtn: {
+  historyLinkText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.primary,
+  },
+
+  /* Appointment Cards */
+  appointmentList: {
+    gap: 14,
+  },
+  appointmentCard: {
+    backgroundColor: UyirinaiTheme.colors.white,
+    borderRadius: UyirinaiTheme.borderRadius.xl,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderDefault,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  doctorInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flex: 1,
+  },
+  docAvatarCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: UyirinaiTheme.colors.softGreen,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  docNameCol: {
+    flex: 1,
+  },
+  docName: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.textPrimary,
+  },
+  docDept: {
+    fontSize: 12,
+    color: UyirinaiTheme.colors.textSecondary,
+    marginTop: 1,
+  },
+
+  /* Schedule Box */
+  scheduleBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    padding: 10,
+    marginBottom: 10,
+    gap: 14,
+  },
+  scheduleItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  scheduleText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.textPrimary,
+  },
+  tokenPill: {
+    marginLeft: 'auto',
+    backgroundColor: UyirinaiTheme.colors.softGreen,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: UyirinaiTheme.borderRadius.sm,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.lightGreen,
+  },
+  tokenPillText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.primaryDark,
+  },
+  reasonText: {
+    fontSize: 12,
+    color: UyirinaiTheme.colors.textSecondary,
+    marginBottom: 12,
+  },
+
+  /* Action Buttons */
+  cardActionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: UyirinaiTheme.colors.borderLight,
+  },
+  rescheduleBtn: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#38845A',
-    borderRadius: 10,
-    paddingVertical: 12,
-    gap: 8,
+    gap: 6,
+    backgroundColor: UyirinaiTheme.colors.softGreen,
+    paddingVertical: 9,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.lightGreen,
   },
-  confirmAptBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
-});
+  rescheduleText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.primary,
+  },
+  cancelBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: '#FDE8E8',
+    paddingVertical: 9,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: '#F8B4B4',
+  },
+  cancelText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.error,
+  },
 
+  /* Empty State */
+  emptyContainer: {
+    alignItems: 'center',
+    backgroundColor: UyirinaiTheme.colors.white,
+    borderRadius: UyirinaiTheme.borderRadius.xl,
+    padding: 30,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderDefault,
+    marginTop: 20,
+  },
+  emptyIconCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: UyirinaiTheme.colors.softGreen,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.textPrimary,
+    marginBottom: 6,
+  },
+  emptySubtitle: {
+    fontSize: 13,
+    color: UyirinaiTheme.colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 18,
+    marginBottom: 20,
+  },
+  bookActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: UyirinaiTheme.colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: UyirinaiTheme.borderRadius.full,
+    marginBottom: 14,
+  },
+  bookActionText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.white,
+  },
+  viewHistoryBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 8,
+  },
+  viewHistoryText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.primary,
+  },
+
+  /* Modal */
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  modalBox: {
+    backgroundColor: UyirinaiTheme.colors.white,
+    borderRadius: UyirinaiTheme.borderRadius.xl,
+    padding: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  modalTitle: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.textPrimary,
+  },
+  closeBtn: {
+    padding: 4,
+  },
+  inputPrompt: {
+    fontSize: 13,
+    color: UyirinaiTheme.colors.textSecondary,
+    marginBottom: 14,
+    lineHeight: 18,
+  },
+  inputLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.textSecondary,
+    marginBottom: 4,
+    marginTop: 8,
+  },
+  inputField: {
+    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderDefault,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: UyirinaiTheme.colors.textPrimary,
+  },
+  confirmRescheduleBtn: {
+    backgroundColor: UyirinaiTheme.colors.primary,
+    borderRadius: UyirinaiTheme.borderRadius.lg,
+    paddingVertical: 13,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  confirmRescheduleText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.white,
+  },
+  btnDisabled: {
+    opacity: 0.6,
+  },
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#FDE8E8',
+    padding: 10,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    marginBottom: 10,
+  },
+  errorText: {
+    color: UyirinaiTheme.colors.error,
+    fontSize: 12,
+    fontWeight: '700',
+    flex: 1,
+  },
+});

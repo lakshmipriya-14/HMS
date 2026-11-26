@@ -5,8 +5,8 @@ import { UyirinaiTheme } from '../../constants/theme';
 export type StatusType = 'success' | 'pending' | 'error' | 'info' | 'neutral';
 
 export interface StatusBadgeProps {
-  label: string;
-  status?: StatusType;
+  label?: string;
+  status?: StatusType | string;
   icon?: React.ReactNode;
   style?: ViewStyle;
   textStyle?: TextStyle;
@@ -21,8 +21,19 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   textStyle,
   size = 'sm',
 }) => {
+  const normStatus = (() => {
+    const s = String(status || '').toUpperCase();
+    if (['SUCCESS', 'COMPLETED', 'PAID', 'ACTIVE', 'DISPENSED', 'RELEASED'].includes(s)) return 'success';
+    if (['PENDING', 'SCHEDULED', 'REQUESTED', 'IN_PROGRESS'].includes(s)) return 'pending';
+    if (['ERROR', 'CANCELLED', 'FAILED', 'CRITICAL', 'NO_SHOW'].includes(s)) return 'error';
+    if (['INFO', 'CHECKED_IN', 'REPORT_RELEASED'].includes(s)) return 'info';
+    return status as StatusType;
+  })();
+
+  const displayLabel = label || String(status || '').replace(/_/g, ' ');
+
   const getPalette = () => {
-    switch (status) {
+    switch (normStatus) {
       case 'success':
         return {
           bg: UyirinaiTheme.colors.successBg,
@@ -88,7 +99,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
           textStyle,
         ]}
       >
-        {label}
+        {displayLabel}
       </Text>
     </View>
   );

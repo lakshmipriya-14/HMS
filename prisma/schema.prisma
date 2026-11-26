@@ -361,6 +361,8 @@ model Doctor {
   specialization         String
   subSpecialization      String?
   experienceYears        Int                    @default(0)
+  gender                 String?                @default("MALE") // MALE, FEMALE, OTHER
+  bio                    String?
   consultationFee        Decimal                @default(500.00) @db.Decimal(10, 2)
   followUpFee            Decimal                @default(300.00) @db.Decimal(10, 2)
   opdFee                 Decimal                @default(500.00) @db.Decimal(10, 2)
