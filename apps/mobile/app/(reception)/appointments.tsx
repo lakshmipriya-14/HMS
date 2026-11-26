@@ -51,6 +51,17 @@ export default function ReceptionAppointmentsScreen() {
   // Booking Modal
   const [bookModalVisible, setBookModalVisible] = useState(false);
   const [patUhid, setPatUhid] = useState('');
+  const [requests, setRequests] = useState<NonNullable<Awaited<ReturnType<typeof mobileApiClient.reception.getAppointmentRequests>>['data']>>([]);
+  const [requestId, setRequestId] = useState<string>();
+  const [requestError, setRequestError] = useState(false);
+  const fetchRequests = async () => {
+    try {
+      setRequests((await mobileApiClient.reception.getAppointmentRequests()).data ?? []);
+      setRequestError(false);
+    } catch {
+      setRequestError(true);
+    }
+  };
   const [doctors, setDoctors] = useState<NonNullable<Awaited<ReturnType<typeof mobileApiClient.doctor.list>>['data']>>([]);
   const [doctorId, setDoctorId] = useState('');
   const [aptDate, setAptDate] = useState(new Date().toISOString().split('T')[0]);
@@ -61,6 +72,16 @@ export default function ReceptionAppointmentsScreen() {
 
   // Reschedule / Cancel Modal
   const [actionItem, setActionItem] = useState<AppointmentItem | null>(null);
+  const [changing, setChanging] = useState(false);
+  const [newDate, setNewDate] = useState('');
+  const [newTime, setNewTime] = useState('');
+  const [confirmCancel, setConfirmCancel] = useState(false);
+  const openActions = (item: AppointmentItem) => {
+    setNewDate(item.appointmentDate.slice(0, 10));
+    setNewTime(item.appointmentTime);
+    setConfirmCancel(false);
+    setActionItem(item);
+  };
 
   const fetchAppointments = async () => {
     try {
@@ -90,6 +111,7 @@ export default function ReceptionAppointmentsScreen() {
 
   useEffect(() => {
     fetchAppointments();
+    void fetchRequests();
     mobileApiClient.doctor.list().then((res) => setDoctors(res.data ?? []))
       .catch(() => Alert.alert('Could not load doctors', 'Reopen this screen to retry.'));
   }, []);
@@ -97,6 +119,7 @@ export default function ReceptionAppointmentsScreen() {
   const onRefresh = () => {
     setRefreshing(true);
     fetchAppointments();
+    void fetchRequests();
   };
 
   const handleBookSubmit = async () => {
@@ -107,18 +130,20 @@ export default function ReceptionAppointmentsScreen() {
     }
     setIsBooking(true);
     try {
-      const matches = (await mobileApiClient.reception.searchPatients(patUhid.trim())).data;
+      const selected = requests.find((request) => request.id === requestId);
+      const matches = selected ? [selected.patient] : (await mobileApiClient.reception.searchPatients(patUhid.trim())).data;
       const patient = Array.isArray(matches) ? matches.find((item) => item.uhid?.toUpperCase() === patUhid.trim().toUpperCase()) : undefined;
       if (!patient) throw new Error('No patient in your directory has that UHID.');
       const response = await mobileApiClient.reception.bookAppointment({
-        patientId: patient.id, doctorId: doctor.id, departmentId: doctor.department.id,
+        requestId: selected?.id, patientId: patient.id, doctorId: doctor.id, departmentId: doctor.department.id,
         hospitalId: user.hospitalId,
         appointmentDate: aptDate, appointmentTime: aptTime,
         appointmentType: aptType as Parameters<typeof mobileApiClient.reception.bookAppointment>[0]['appointmentType'],
         reasonForVisit: reason.trim(),
       });
       setBookModalVisible(false);
-      await fetchAppointments();
+      setRequestId(undefined);
+      await Promise.all([fetchAppointments(), fetchRequests()]);
       Alert.alert('Appointment confirmed', `Token #${response.data?.tokenNumber} allocated for ${patient.firstName} ${patient.lastName}.`);
     } catch (error) {
       Alert.alert('Booking failed', error instanceof Error ? error.message : 'Please try again.');
@@ -127,20 +152,18 @@ export default function ReceptionAppointmentsScreen() {
     }
   };
 
-  const handleCancelAppointment = (id: string) => {
-    setAppointments((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, status: 'CANCELLED' } : a))
-    );
-    setActionItem(null);
-    Alert.alert('Cancelled', 'Appointment cancelled and slot released.');
-  };
-
-  const handleReschedule = (id: string) => {
-    setAppointments((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, appointmentTime: '02:30 PM' } : a))
-    );
-    setActionItem(null);
-    Alert.alert('Rescheduled', 'Appointment updated to 02:30 PM.');
+  const changeAppointment = async (action: 'cancel' | 'reschedule') => {
+    if (!actionItem || changing) return;
+    setChanging(true);
+    try {
+      await mobileApiClient.reception.changeAppointment(actionItem.id, { action, date: newDate, time: newTime });
+      await fetchAppointments();
+      setActionItem(null);
+    } catch (error) {
+      Alert.alert('Appointment could not be changed', error instanceof Error ? error.message : 'Refresh and try again.');
+    } finally {
+      setChanging(false);
+    }
   };
 
   const filteredAppointments = appointments.filter((a) => {
@@ -195,7 +218,7 @@ export default function ReceptionAppointmentsScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
-            onPress={() => setActionItem(item)}
+            onPress={() => openActions(item)}
             activeOpacity={0.8}
           >
             <View style={styles.cardTop}>
@@ -254,8 +277,20 @@ export default function ReceptionAppointmentsScreen() {
             </View>
 
             <ScrollView>
+              <Text style={styles.fLabel}>Patient appointment requests</Text>
+              {requestError && <Text accessibilityRole="alert" onPress={() => void fetchRequests()}>Could not load requests. Tap to retry.</Text>}
+              {!requestError && requests.length === 0 && <Text>No pending patient requests.</Text>}
+              {requests.map((request) => <TouchableOpacity key={request.id} style={styles.fInput}
+                accessibilityRole="radio" accessibilityState={{ selected: requestId === request.id }}
+                onPress={() => {
+                  setRequestId(request.id);
+                  setPatUhid(request.patient.uhid);
+                  setAptDate(request.preferredDate.slice(0, 10));
+                }}>
+                <Text>{requestId === request.id ? 'Selected: ' : ''}{request.patient.firstName} {request.patient.lastName} · {request.specialty} · {request.preferredDate.slice(0, 10)}</Text>
+              </TouchableOpacity>)}
               <Text style={styles.fLabel}>Patient UHID</Text>
-              <TextInput style={styles.fInput} value={patUhid} onChangeText={setPatUhid} autoCapitalize="characters" />
+              <TextInput style={styles.fInput} value={patUhid} onChangeText={(value) => { setPatUhid(value); setRequestId(undefined); }} autoCapitalize="characters" />
               <Text style={styles.fLabel}>Consultant Doctor</Text>
               {doctors.length === 0 && <Text>No doctors available.</Text>}
               {doctors.map((doctor) => (
@@ -301,16 +336,18 @@ export default function ReceptionAppointmentsScreen() {
 
               <Text style={styles.actionItemName}>{actionItem.patientName} (T-{actionItem.tokenNumber})</Text>
               <Text style={styles.actionItemSub}>{actionItem.doctorName} • {actionItem.appointmentTime}</Text>
+              <TextInput style={styles.fInput} accessibilityLabel="New appointment date" placeholder="YYYY-MM-DD" value={newDate} onChangeText={setNewDate} />
+              <TextInput style={styles.fInput} accessibilityLabel="New appointment time" placeholder="HH:mm (IST)" value={newTime} onChangeText={setNewTime} />
 
               <View style={{ gap: 10, marginTop: 16 }}>
-                <TouchableOpacity style={styles.reschedBtn} onPress={() => handleReschedule(actionItem.id)}>
+                <TouchableOpacity style={styles.reschedBtn} disabled={changing} onPress={() => void changeAppointment('reschedule')}>
                   <Clock size={16} color="#0284C7" />
-                  <Text style={styles.reschedBtnText}>Reschedule to Later Slot</Text>
+                  <Text style={styles.reschedBtnText}>Save new time</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.cancelBtn} onPress={() => handleCancelAppointment(actionItem.id)}>
+                <TouchableOpacity style={styles.cancelBtn} disabled={changing} onPress={() => confirmCancel ? void changeAppointment('cancel') : setConfirmCancel(true)}>
                   <AlertCircle size={16} color="#DC2626" />
-                  <Text style={styles.cancelBtnText}>Cancel Appointment</Text>
+                  <Text style={styles.cancelBtnText}>{confirmCancel ? 'Confirm cancellation' : 'Cancel appointment'}</Text>
                 </TouchableOpacity>
               </View>
             </View>

@@ -1,14 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateNursingTaskDto, RecordVitalsDto } from '@multispeciality-hms/contracts';
+import { resolveOperationalScope } from '../common/utils/operational-scope';
+import { AuthUserDto, CreateNursingTaskDto, RecordVitalsDto } from '@multispeciality-hms/contracts';
 
 @Injectable()
 export class NursingService {
   constructor(private prisma: PrismaService) {}
 
-  async getAssignedPatients() {
+  async getAssignedPatients(actor: AuthUserDto) {
+    const { hospitalId, branchId } = resolveOperationalScope(actor);
     return this.prisma.admission.findMany({
-      where: { status: 'ADMITTED' },
+      where: { hospitalId, branchId, status: 'ADMITTED', patient: { deletedAt: null } },
       include: {
         patient: {
           select: {
@@ -41,7 +43,8 @@ export class NursingService {
     });
   }
 
-  async recordVitals(dto: RecordVitalsDto, userId: string) {
+  async recordVitals(dto: RecordVitalsDto, actor: AuthUserDto) {
+    const scope = resolveOperationalScope(actor);
     // Check if vitals are abnormal
     let isAbnormal = false;
     if (dto.temperature && (dto.temperature > 99.5 || dto.temperature < 96.0)) isAbnormal = true;
@@ -54,12 +57,14 @@ export class NursingService {
     let hospitalId: string;
     let branchId: string;
     if (dto.admissionId) {
-      const admission = await this.prisma.admission.findUnique({ where: { id: dto.admissionId } });
+      const admission = await this.prisma.admission.findFirst({ where: { id: dto.admissionId, hospitalId: scope.hospitalId,
+        branchId: scope.branchId, patientId: dto.patientId, patient: { deletedAt: null }, status: 'ADMITTED' } });
       if (!admission) throw new NotFoundException('Admission not found');
       hospitalId = admission.hospitalId;
       branchId = admission.branchId;
     } else {
-      const patient = await this.prisma.patient.findUnique({ where: { id: dto.patientId } });
+      const patient = await this.prisma.patient.findFirst({ where: { id: dto.patientId, hospitalId: scope.hospitalId,
+        registrationBranchId: scope.branchId, deletedAt: null } });
       if (!patient) throw new NotFoundException('Patient not found');
       hospitalId = patient.hospitalId;
       branchId = patient.registrationBranchId;
@@ -69,7 +74,7 @@ export class NursingService {
       data: {
         patientId: dto.patientId,
         admissionId: dto.admissionId,
-        recordedByUserId: userId,
+        recordedByUserId: actor.id,
         hospitalId,
         branchId,
         temperature: dto.temperature,

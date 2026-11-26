@@ -11,6 +11,7 @@ export class AppointmentsController {
   constructor(private service: AppointmentsService) {}
 
   @Post()
+  @Scoped()
   @RequirePermissions('APPOINTMENTS:CREATE')
   @ApiOperation({ summary: 'Book a doctor appointment and issue queue token' })
   async create(@Body() dto: CreateAppointmentDto, @CurrentUser() actor: AuthUserDto) {
@@ -90,9 +91,11 @@ export class AppointmentsController {
   }
 
   @Post(':id/check-in')
+  @Scoped()
+  @RequirePermissions('APPOINTMENTS:UPDATE')
   @ApiOperation({ summary: 'Check in a patient on arrival at reception' })
-  async checkIn(@Param('id') id: string) {
-    const data = await this.service.checkIn(id);
+  async checkIn(@Param('id') id: string, @CurrentUser() actor: AuthUserDto) {
+    const data = await this.service.checkIn(id, actor);
     return {
       message: 'Patient checked in successfully',
       data,

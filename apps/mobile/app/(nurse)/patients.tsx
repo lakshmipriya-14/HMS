@@ -67,139 +67,10 @@ export default function NursePatientsScreen() {
   const loadPatients = async () => {
     try {
       const res = await mobileApiClient.nursing.getAssignedPatients();
-      if (res?.data && res.data.length > 0) {
-        setPatients(res.data);
-      } else {
-        // High-fidelity fallback admitted inpatient dataset for Uyirinai HMS
-        setPatients([
-          {
-            id: 'adm-001',
-            status: 'ADMITTED',
-            admittedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-            initialDiagnosis: 'Acute Coronary Syndrome – Post PTCA',
-            ward: { name: 'ICCU Ward Floor 2', code: 'ICCU' },
-            bed: { bedNumber: 'ICCU-01', type: 'ICU_BED' },
-            patient: {
-              id: 'pat-001',
-              uhid: 'ALM-2026-0042',
-              firstName: 'Muthuvel',
-              lastName: 'Kuppusamy',
-              dateOfBirth: '1968-04-12',
-              gender: 'MALE',
-              bloodGroup: 'B_POSITIVE',
-              allergies: ['Penicillin', 'Sulfa'],
-              phone: '+91 9840123456',
-            },
-            admittingDoctor: {
-              employee: { user: { firstName: 'Senthil', lastName: 'Nathan' } },
-              specialization: 'Cardiology',
-            },
-            vitals: [
-              { systolicBp: 142, diastolicBp: 92, pulseRate: 88, temperature: 99.1, oxygenSaturation: 97, isAbnormal: true, createdAt: new Date().toISOString() },
-              { systolicBp: 130, diastolicBp: 84, pulseRate: 78, temperature: 98.4, oxygenSaturation: 98, isAbnormal: false, createdAt: new Date(Date.now() - 14400000).toISOString() },
-            ],
-            nursingTasks: [
-              { id: 'tsk-1', taskTitle: 'Q4H Blood Pressure & ECG Rhythm Strip', priority: 'HIGH', isCompleted: false },
-              { id: 'tsk-2', taskTitle: 'Administer Ecosprin 75mg Post-Lunch', priority: 'ROUTINE', isCompleted: false },
-            ],
-            medications: [
-              { id: 'm-1', medicine: 'Ecosprin 75mg', route: 'Oral', dose: '1 tab OD', doctor: 'Dr. Senthil Nathan', schedule: '12:00 PM', status: 'DUE' },
-              { id: 'm-2', medicine: 'Atorvastatin 20mg', route: 'Oral', dose: '1 tab HS', doctor: 'Dr. Senthil Nathan', schedule: '09:00 PM', status: 'SCHEDULED' },
-              { id: 'm-3', medicine: 'Pantoprazole 40mg IV', route: 'IV', dose: '40mg IV OD', doctor: 'Dr. Senthil Nathan', schedule: '08:00 AM', status: 'ADMINISTERED' },
-            ],
-            orders: [
-              { id: 'ord-1', type: 'Medication', detail: 'Continue Heparin Infusion at 1000 IU/hr. Monitor aPTT at 04:00 PM.', doctor: 'Dr. Senthil Nathan', time: '10:30 AM' },
-              { id: 'ord-2', type: 'Diet', detail: 'Cardiac Diabetic Salt-Restricted Diet.', doctor: 'Dr. Senthil Nathan', time: '08:00 AM' },
-            ],
-            notes: [
-              { id: 'not-1', author: 'Staff Nurse Anitha', note: 'Patient reports mild chest tightness relieved after sublingual sorbitrate. Alerted Dr. Senthil.', time: '11:15 AM' },
-              { id: 'not-2', author: 'Staff Nurse Kavitha', note: 'Morning rounds completed. Catheter care performed with sterile technique.', time: '08:45 AM' },
-            ],
-          },
-          {
-            id: 'adm-002',
-            status: 'ADMITTED',
-            admittedAt: new Date(Date.now() - 86400000 * 4).toISOString(),
-            initialDiagnosis: 'Type 2 Diabetes Mellitus with Diabetic Foot Ulcer',
-            ward: { name: 'Stepdown Ward Floor 3', code: 'STEPDOWN' },
-            bed: { bedNumber: 'SDW-04', type: 'SEMI_PRIVATE' },
-            patient: {
-              id: 'pat-002',
-              uhid: 'ALM-2026-0089',
-              firstName: 'Meenakshi',
-              lastName: 'Ramasamy',
-              dateOfBirth: '1975-09-20',
-              gender: 'FEMALE',
-              bloodGroup: 'O_POSITIVE',
-              allergies: [],
-              phone: '+91 9789123456',
-            },
-            admittingDoctor: {
-              employee: { user: { firstName: 'Rajesh', lastName: 'Kumar' } },
-              specialization: 'General Medicine',
-            },
-            vitals: [
-              { systolicBp: 124, diastolicBp: 80, pulseRate: 74, temperature: 98.6, oxygenSaturation: 99, isAbnormal: false, createdAt: new Date().toISOString() },
-            ],
-            nursingTasks: [
-              { id: 'tsk-3', taskTitle: 'Wound Dressing with Normal Saline & Betadine', priority: 'ROUTINE', isCompleted: false },
-              { id: 'tsk-4', taskTitle: 'Check Pre-lunch GRBS', priority: 'HIGH', isCompleted: false },
-            ],
-            medications: [
-              { id: 'm-4', medicine: 'Inj. Human Mixtard 30/70', route: 'SC', dose: '14 Units', doctor: 'Dr. Rajesh Kumar', schedule: '12:30 PM', status: 'DUE' },
-              { id: 'm-5', medicine: 'Tab. Augmentin 625mg', route: 'Oral', dose: '1 tab BD', doctor: 'Dr. Rajesh Kumar', schedule: '01:00 PM', status: 'SCHEDULED' },
-            ],
-            orders: [
-              { id: 'ord-3', type: 'Wound Care', detail: 'Inspect surgical wound margins daily. Keep limb elevated.', doctor: 'Dr. Rajesh Kumar', time: '09:00 AM' },
-            ],
-            notes: [
-              { id: 'not-3', author: 'Staff Nurse Anitha', note: 'Dressing dry and intact. No active foul discharge noted.', time: '09:30 AM' },
-            ],
-          },
-          {
-            id: 'adm-003',
-            status: 'ADMITTED',
-            admittedAt: new Date(Date.now() - 86400000).toISOString(),
-            initialDiagnosis: 'Right Femur Fracture – Open Reduction & Internal Fixation',
-            ward: { name: 'Orthopedic Ward Floor 2', code: 'ORTHO' },
-            bed: { bedNumber: 'ORTHO-12', type: 'GENERAL' },
-            patient: {
-              id: 'pat-003',
-              uhid: 'ALM-2026-0114',
-              firstName: 'Saravanan',
-              lastName: 'Rajendran',
-              dateOfBirth: '1992-11-05',
-              gender: 'MALE',
-              bloodGroup: 'A_POSITIVE',
-              allergies: ['NSAIDs'],
-              phone: '+91 9444123456',
-            },
-            admittingDoctor: {
-              employee: { user: { firstName: 'Venkatesh', lastName: 'Babu' } },
-              specialization: 'Orthopedics',
-            },
-            vitals: [
-              { systolicBp: 118, diastolicBp: 78, pulseRate: 72, temperature: 98.4, oxygenSaturation: 98, isAbnormal: false, createdAt: new Date().toISOString() },
-            ],
-            nursingTasks: [
-              { id: 'tsk-5', taskTitle: 'Neurovascular Assessment of Right Lower Limb', priority: 'HIGH', isCompleted: false },
-              { id: 'tsk-6', taskTitle: 'Spirometry Breathing Exercises', priority: 'ROUTINE', isCompleted: true },
-            ],
-            medications: [
-              { id: 'm-6', medicine: 'Inj. Tramadol 50mg IV', route: 'IV', dose: '50mg PRN', doctor: 'Dr. Venkatesh Babu', schedule: 'SOS Pain', status: 'SCHEDULED' },
-              { id: 'm-7', medicine: 'Tab. Cefuroxime 500mg', route: 'Oral', dose: '1 tab BD', doctor: 'Dr. Venkatesh Babu', schedule: '01:00 PM', status: 'DUE' },
-            ],
-            orders: [
-              { id: 'ord-4', type: 'Physiotherapy', detail: 'Initiate non-weight bearing crutch ambulation after pain relief.', doctor: 'Dr. Venkatesh Babu', time: '11:00 AM' },
-            ],
-            notes: [
-              { id: 'not-4', author: 'Staff Nurse Preethi', note: 'Distal pulses palpable (Dorsalis Pedis +2). Capillary refill < 2s.', time: '10:00 AM' },
-            ],
-          },
-        ]);
-      }
-    } catch (e) {
-      console.error('Failed to load assigned patients:', e);
+      setPatients(Array.isArray(res.data) ? res.data : []);
+    } catch {
+      setPatients([]);
+      Alert.alert('Could not load assigned patients', 'Refresh to try again.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -265,30 +136,26 @@ export default function NursePatientsScreen() {
         createdAt: new Date().toISOString(),
       };
 
-      // Call API
-      try {
-        await mobileApiClient.nursing.recordVitals(newReading as any);
-      } catch {
-        // Fallback local update
-      }
+      const saved = (await mobileApiClient.nursing.recordVitals(newReading as any)).data;
+      if (!saved) throw new Error('The API did not confirm the vitals record.');
 
       // Update in state
       setPatients((prev) =>
         prev.map((pat) =>
           pat.id === activePatient.id
-            ? { ...pat, vitals: [newReading, ...(pat.vitals || [])] }
+            ? { ...pat, vitals: [saved, ...(pat.vitals || [])] }
             : pat
         )
       );
 
       setActivePatient((prev: any) =>
-        prev ? { ...prev, vitals: [newReading, ...(prev.vitals || [])] } : null
+        prev ? { ...prev, vitals: [saved, ...(prev.vitals || [])] } : null
       );
 
       Alert.alert(
         isAbnormal ? '⚠️ Clinical Alert' : 'Vitals Logged',
         isAbnormal
-          ? 'Abnormal vitals threshold exceeded! Doctor alerted on duty dashboard.'
+          ? 'Abnormal vitals were recorded. Review according to ward protocol.'
           : 'Patient vitals successfully recorded to clinical electronic record.'
       );
       setVitalsModalVisible(false);

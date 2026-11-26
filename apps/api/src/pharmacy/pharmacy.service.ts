@@ -79,12 +79,14 @@ export class PharmacyService {
       where,
       orderBy: { createdAt: 'desc' },
       include: {
-        patient: { select: { id: true, uhid: true, firstName: true, lastName: true, phone: true } },
+        patient: { select: { id: true, uhid: true, firstName: true, lastName: true, phone: true, allergies: true, dateOfBirth: true, gender: true } },
         doctor: {
           include: {
+            department: { select: { name: true } },
             employee: { include: { user: { select: { firstName: true, lastName: true } } } },
           },
         },
+        consultation: { select: { appointment: { select: { tokenNumber: true } } } },
         items: {
           include: {
             medicine: {

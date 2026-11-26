@@ -174,6 +174,7 @@ export interface UpdatePatientDto {
 
 // Appointment DTOs
 export interface CreateAppointmentDto {
+  requestId?: string;
   patientId: string;
   doctorId: string;
   departmentId: string;

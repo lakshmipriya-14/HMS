@@ -71,6 +71,16 @@ The Doctor migrations add append-only consultation amendments and a link from a 
 
 Leave the API running. In a second terminal, run `pnpm dev:mobile` and press **w** in Expo to open the mobile browser preview.
 
+### Patient portal and Reception requests
+
+After pulling the Patient update, stop the API and run `pnpm db:team:schema`, then `pnpm build:packages` and `pnpm dev:api`. The migration adds notification triggers and an inbox index. Existing patient records and notifications are preserved. The triggers generate notifications for new qualifying events after deployment.
+
+Sign in with the Patient demo account and open **Appointments** to find a doctor and send a preferred date. Sign in with the Receptionist account for the doctor's branch. The request appears under **Alerts** and in the booking form under **Patient appointment requests**. Select the request, choose the doctor and time, and confirm the appointment. The patient and assigned doctor receive confirmation through their own inboxes.
+
+Patients can reschedule their own future scheduled appointments and cancel unpaid appointments before they start. Paid cancellations are handled by Reception. The API sends in-app appointment and follow-up reminders when a booking enters the next 24 hours. Keep the API running for the five-minute reminder job.
+
+Patient profile photos use the Expo image picker. Run the pinned pnpm install after pulling. If you use a custom Android development build, rebuild it once so the native picker is available.
+
 The first account keeps its original email. Accounts ending in `-02` through `-05` have matching sample records in their scenario's branch. Super Admin and Patient roles use hospital-wide account assignments.
 
 | Workspace role | Account 1 | Account 2 | Account 3 | Account 4 | Account 5 |
