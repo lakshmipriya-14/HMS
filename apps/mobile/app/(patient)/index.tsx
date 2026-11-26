@@ -30,14 +30,10 @@ import {
   X,
   FileText,
 } from 'lucide-react-native';
+import { PatientPortal } from '../../components/PatientPortal';
 
-interface FamilyProfile {
-  id: string;
-  name: string;
-  relation: string;
-  uhid: string;
-  age: number;
-  gender: string;
+export default function PatientScreen() {
+  return <PatientPortal section="home" />;
 }
 
 const FAMILY_PROFILES: FamilyProfile[] = [

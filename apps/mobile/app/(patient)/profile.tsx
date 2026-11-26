@@ -1,46 +1,7 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
-  Modal,
-  Alert,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { useAuth } from '../../hooks/useAuth';
-import {
-  User,
-  LogOut,
-  Phone,
-  QrCode,
-  ShieldCheck,
-  CheckCircle2,
-  HeartPulse,
-  Plus,
-  Star,
-  MessageSquare,
-  AlertCircle,
-  Clock,
-  X,
-  Users,
-  Building,
-  KeyRound,
-} from 'lucide-react-native';
+import { PatientPortal } from '../../components/PatientPortal';
 
-interface HealthVitalLog {
-  id: string;
-  date: string;
-  bpSystolic: number;
-  bpDiastolic: number;
-  bloodSugarFasting: number; // mg/dL
-  bloodSugarPostPrandial?: number;
-  weightKg: number;
-  pulseBpm: number;
-  notes?: string;
-  status: 'Normal' | 'Attention Required';
+export default function PatientScreen() {
+  return <PatientPortal section="profile" />;
 }
 
 interface ComplaintTicket {

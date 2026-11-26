@@ -1,9 +1,11 @@
+import { patientColors } from '../../components/PatientPortal';
 import { WorkspaceGate } from '../../components/WorkspaceGate';
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Home, Calendar, FileText, CreditCard, Bell, User } from 'lucide-react-native';
 import { Platform } from 'react-native';
 import { UyirinaiTheme } from '../../constants/theme';
+import { Home, Calendar, FileText, CreditCard, User } from 'lucide-react-native';
 
 export default function PatientTabsLayout() {
   const bottomInset = Platform.OS === 'web' ? 10 : 12;
@@ -28,12 +30,17 @@ export default function PatientTabsLayout() {
             borderTopColor: UyirinaiTheme.colors.borderLight,
           },
           tabBarLabelStyle: { fontSize: 10, fontWeight: '700', marginBottom: 2 },
+          headerStyle: { backgroundColor: patientColors.green },
+          headerTintColor: '#fff',
+          tabBarActiveTintColor: patientColors.green,
+          tabBarInactiveTintColor: '#64748B',
+          tabBarStyle: { height: 62, paddingBottom: 8, paddingTop: 6 },
         }}
       >
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Home & SOS',
+            title: 'Home',
             tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
           }}
         />
@@ -47,14 +54,14 @@ export default function PatientTabsLayout() {
         <Tabs.Screen
           name="records"
           options={{
-            title: 'Records & Rx',
+            title: 'Records',
             tabBarIcon: ({ color, size }) => <FileText color={color} size={size} />,
           }}
         />
         <Tabs.Screen
           name="billing"
           options={{
-            title: 'Pay & Claims',
+            title: 'Bills',
             tabBarIcon: ({ color, size }) => <CreditCard color={color} size={size} />,
           }}
         />
@@ -62,13 +69,13 @@ export default function PatientTabsLayout() {
           name="notifications"
           options={{
             title: 'Alerts',
-            tabBarIcon: ({ color, size }) => <Bell color={color} size={size} />,
+            href: null,
           }}
         />
         <Tabs.Screen
           name="profile"
           options={{
-            title: 'UHID & Vitals',
+            title: 'Profile',
             tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
           }}
         />

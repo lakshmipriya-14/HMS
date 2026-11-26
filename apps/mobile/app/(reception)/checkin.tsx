@@ -33,72 +33,45 @@ export default function ReceptionCheckInScreen() {
   const [foundAppointment, setFoundAppointment] = useState<any | null>(null);
   const [checkedInResult, setCheckedInResult] = useState<any | null>(null);
 
-  const handleLookup = () => {
-    if (!searchKey.trim()) {
-      Alert.alert('Search Required', 'Please enter a Patient UHID, Mobile, or Appointment Number.');
+  const handleLookup = async () => {
+    const term = searchKey.trim().toUpperCase();
+    if (!term) {
+      Alert.alert('Search required', 'Enter a patient UHID, phone, or appointment number.');
       return;
     }
-
     setLoading(true);
+    setFoundAppointment(null);
     setCheckedInResult(null);
-
-    setTimeout(() => {
-      // High-fidelity appointment matching
-      setFoundAppointment({
-        id: 'apt-lookup-101',
-        tokenNumber: 5,
-        tokenCode: 'A-05',
-        patient: {
-          firstName: 'Vijay',
-          lastName: 'Sundaram',
-          uhid: searchKey.toUpperCase().includes('ALM') ? searchKey.toUpperCase() : 'ALM-2026-0114',
-          phone: '9444123456',
-          gender: 'MALE',
-          age: 34,
-        },
-        doctor: {
-          name: 'Dr. V. Rajesh',
-          specialty: 'Orthopedics & Joint Replacement',
-          room: 'Consultation Room 105 (First Floor)',
-        },
-        appointmentDate: new Date().toLocaleDateString(),
-        appointmentTime: '10:30 AM',
-        status: 'SCHEDULED',
-        type: 'OPD Consultation',
-        feePaid: true,
-      });
+    try {
+      const rows = (await mobileApiClient.reception.getTodayQueue()).data ?? [];
+      const matches = rows.filter((row: any) => [row.appointmentNumber, row.patient.uhid, row.patient.phone]
+        .some((value) => value?.toUpperCase() === term));
+      if (matches.length !== 1) {
+        Alert.alert(matches.length ? 'Multiple appointments found' : 'Appointment not found',
+          matches.length ? 'Search again with the appointment number.' : 'Check the details for today’s appointment.');
+        return;
+      }
+      const row = matches[0];
+      const clinician = row.doctor.employee.user;
+      setFoundAppointment({ ...row, appointmentDate: row.appointmentDate.slice(0, 10),
+        doctor: { name: clinician.firstName + ' ' + clinician.lastName, specialty: row.doctor.specialization } });
+    } catch {
+      Alert.alert('Could not load appointments', 'Check your connection and try again.');
+    } finally {
       setLoading(false);
-    }, 400);
+    }
   };
 
   const handleConfirmCheckIn = async () => {
     if (!foundAppointment) return;
     setCheckingIn(true);
     try {
-      // Call backend API
-      try {
-        await mobileApiClient.reception.checkInAppointment(foundAppointment.id);
-      } catch {
-        // Safe fallback
-      }
-
-      const result = {
-        tokenNumber: foundAppointment.tokenCode || 'T-05',
-        queuePosition: '3rd in queue',
-        estimatedWait: '14 minutes',
-        doctorName: foundAppointment.doctor.name,
-        room: foundAppointment.doctor.room,
-        patientName: `${foundAppointment.patient.firstName} ${foundAppointment.patient.lastName}`,
-        uhid: foundAppointment.patient.uhid,
-      };
-
-      setCheckedInResult(result);
-      setFoundAppointment((prev: any) => ({ ...prev, status: 'CHECKED_IN' }));
-
-      Alert.alert(
-        '✓ Patient Checked In',
-        `Token ${result.tokenNumber} issued. Patient added to ${result.doctorName}'s live queue.`
-      );
+      const saved = (await mobileApiClient.reception.checkInAppointment(foundAppointment.id)).data;
+      if (saved?.status !== 'CHECKED_IN') throw new Error('The API did not confirm check-in.');
+      setCheckedInResult({ tokenNumber: saved.tokenNumber, doctorName: foundAppointment.doctor.name });
+      setFoundAppointment({ ...foundAppointment, status: saved.status });
+    } catch (error) {
+      Alert.alert('Check-in failed', error instanceof Error ? error.message : 'Refresh and try again.');
     } finally {
       setCheckingIn(false);
     }
@@ -144,14 +117,12 @@ export default function ReceptionCheckInScreen() {
           <View style={styles.tokenNumberBox}>
             <Text style={styles.tokenCodeLabel}>QUEUE TOKEN</Text>
             <Text style={styles.tokenCodeText}>{checkedInResult.tokenNumber}</Text>
-            <Text style={styles.queueEstimateText}>Estimated Wait: {checkedInResult.estimatedWait} ({checkedInResult.queuePosition})</Text>
           </View>
 
           <View style={styles.directionBox}>
             <Building2 size={16} color="#0284C7" />
             <View style={{ marginLeft: 8, flex: 1 }}>
               <Text style={styles.directionDoc}>{checkedInResult.doctorName}</Text>
-              <Text style={styles.directionRoom}>{checkedInResult.room}</Text>
             </View>
           </View>
         </View>
@@ -171,7 +142,7 @@ export default function ReceptionCheckInScreen() {
             {foundAppointment.patient.firstName} {foundAppointment.patient.lastName}
           </Text>
           <Text style={styles.patientSub}>
-            UHID: {foundAppointment.patient.uhid} • Phone: {foundAppointment.patient.phone} • Age: {foundAppointment.patient.age} ({foundAppointment.patient.gender})
+            UHID: {foundAppointment.patient.uhid} • Phone: {foundAppointment.patient.phone}
           </Text>
 
           <View style={styles.docDivider} />
@@ -181,7 +152,6 @@ export default function ReceptionCheckInScreen() {
             <View style={{ marginLeft: 10, flex: 1 }}>
               <Text style={styles.docName}>{foundAppointment.doctor.name}</Text>
               <Text style={styles.docSpecialty}>{foundAppointment.doctor.specialty}</Text>
-              <Text style={styles.docRoom}>{foundAppointment.doctor.room}</Text>
             </View>
           </View>
 

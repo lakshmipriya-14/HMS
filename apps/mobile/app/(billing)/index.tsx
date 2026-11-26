@@ -60,110 +60,16 @@ interface Invoice {
   advancePaid: number;
   insuranceCovered: number;
   netPayable: number;
-  status: 'Pending' | 'Paid' | 'Partially Paid' | 'Insurance Approved';
+  status: 'Pending' | 'Paid' | 'Partially Paid' | 'Insurance Approved' | 'Cancelled';
   paidAt?: string;
   paymentMode?: 'Cash' | 'UPI' | 'Card' | 'Net Banking';
   transactionRef?: string;
 }
 
-const FALLBACK_INVOICES: Invoice[] = [
-  {
-    id: 'inv-101',
-    invoiceNo: 'INV-2026-081',
-    patientName: 'Ramasamy Karuppiah',
-    uhid: 'KZN-2026-0001',
-    encounterType: 'OPD',
-    date: '24 Nov 2026, 09:30 AM',
-    doctorName: 'Dr. Senthil Nathan',
-    department: 'Cardiology',
-    breakdown: {
-      consultation: 600,
-      pharmacy: 450,
-      laboratory: 350,
-      radiology: 400,
-      ward: 0,
-    },
-    totalAmount: 1800,
-    advancePaid: 0,
-    insuranceCovered: 0,
-    netPayable: 1800,
-    status: 'Pending',
-  },
-  {
-    id: 'inv-102',
-    invoiceNo: 'INV-2026-082',
-    patientName: 'Meenakshi Sundaram',
-    uhid: 'KZN-2026-0042',
-    encounterType: 'IPD',
-    date: '24 Nov 2026, 10:15 AM',
-    doctorName: 'Dr. Rajesh Kannan',
-    department: 'Cardiothoracic Surgery',
-    wardInfo: 'ICCU - Bed 04 (3 Days)',
-    breakdown: {
-      consultation: 15000,
-      pharmacy: 38000,
-      laboratory: 12000,
-      radiology: 25000,
-      ward: 55000,
-    },
-    totalAmount: 145000,
-    advancePaid: 25000,
-    insuranceCovered: 110000,
-    netPayable: 10000,
-    status: 'Insurance Approved',
-  },
-  {
-    id: 'inv-103',
-    invoiceNo: 'INV-2026-083',
-    patientName: 'Vijay Sethupathi',
-    uhid: 'KZN-2026-0089',
-    encounterType: 'OPD',
-    date: '23 Nov 2026, 04:45 PM',
-    doctorName: 'Dr. Anitha Varma',
-    department: 'Orthopaedics',
-    breakdown: {
-      consultation: 800,
-      pharmacy: 1200,
-      laboratory: 500,
-      radiology: 2000,
-      ward: 0,
-    },
-    totalAmount: 4500,
-    advancePaid: 0,
-    insuranceCovered: 0,
-    netPayable: 4500,
-    status: 'Paid',
-    paidAt: '23 Nov 2026, 05:10 PM',
-    paymentMode: 'UPI',
-    transactionRef: 'UPI-784920384729',
-  },
-  {
-    id: 'inv-104',
-    invoiceNo: 'INV-2026-084',
-    patientName: 'Deepa Lakshmi',
-    uhid: 'KZN-2026-0112',
-    encounterType: 'Emergency',
-    date: '24 Nov 2026, 08:00 AM',
-    doctorName: 'Dr. Vignesh Prabhu',
-    department: 'Emergency & Trauma',
-    breakdown: {
-      consultation: 1000,
-      pharmacy: 2400,
-      laboratory: 1800,
-      radiology: 3200,
-      ward: 1500,
-    },
-    totalAmount: 9900,
-    advancePaid: 2000,
-    insuranceCovered: 0,
-    netPayable: 7900,
-    status: 'Pending',
-  },
-];
-
 export default function BillingCashierScreen() {
-  const [invoices, setInvoices] = useState<Invoice[]>(FALLBACK_INVOICES);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(false);
+  const [invoiceError, setInvoiceError] = useState(false);
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<'ALL' | 'PENDING' | 'SETTLED' | 'INSURANCE'>('ALL');
 
@@ -171,9 +77,7 @@ export default function BillingCashierScreen() {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [paymentMode, setPaymentMode] = useState<'Cash' | 'UPI' | 'Card' | 'Net Banking'>('UPI');
   const [cashTendered, setCashTendered] = useState('');
-  const [cardLast4, setCardLast4] = useState('');
-  const [upiId, setUpiId] = useState('patient@okhdfcbank');
-  const [netBank, setNetBank] = useState('HDFC Bank');
+  const [paymentReference, setPaymentReference] = useState('');
   const [processingPayment, setProcessingPayment] = useState(false);
 
   // Receipt Modal State
@@ -185,39 +89,40 @@ export default function BillingCashierScreen() {
 
   const fetchInvoices = async () => {
     setLoading(true);
+    setInvoiceError(false);
     try {
       const res = await apiRequest<any[]>('/billing/invoices');
-      if (res && Array.isArray(res.data) && res.data.length > 0) {
-        // Map backend response if format differs
-        const mapped: Invoice[] = res.data.map((inv: any, idx: number) => ({
-          id: inv.id || `inv-${idx}`,
-          invoiceNo: inv.invoiceNo || `INV-2026-${100 + idx}`,
-          patientName: inv.patientName || inv.patient?.fullName || 'Patient',
-          uhid: inv.uhid || inv.patient?.uhid || 'KZN-2026-XXXX',
-          encounterType: inv.encounterType || 'OPD',
-          date: inv.createdAt ? new Date(inv.createdAt).toLocaleString() : 'Today',
-          doctorName: inv.doctorName || 'Dr. Hospital Staff',
-          department: inv.department || 'General Medicine',
-          breakdown: {
-            consultation: Number(inv.consultationCharge || inv.breakdown?.consultation || 600),
-            pharmacy: Number(inv.pharmacyCharge || inv.breakdown?.pharmacy || 0),
-            laboratory: Number(inv.labCharge || inv.breakdown?.laboratory || 0),
-            radiology: Number(inv.radiologyCharge || inv.breakdown?.radiology || 0),
-            ward: Number(inv.wardCharge || inv.breakdown?.ward || 0),
-          },
-          totalAmount: Number(inv.totalAmount || 1800),
-          advancePaid: Number(inv.advancePaid || 0),
-          insuranceCovered: Number(inv.insuranceCovered || 0),
-          netPayable: Number(inv.netPayable || inv.balanceAmount || inv.totalAmount || 1800),
-          status: inv.status || 'Pending',
-          paidAt: inv.paidAt,
-          paymentMode: inv.paymentMode,
-          transactionRef: inv.transactionRef,
-        }));
-        setInvoices(mapped);
-      }
+      if (!Array.isArray(res.data)) throw new Error('Invalid invoice response');
+      const statuses = { PENDING: 'Pending', PAID: 'Paid', PARTIALLY_PAID: 'Partially Paid', CANCELLED: 'Cancelled' } as const;
+      const modes = { CASH: 'Cash', UPI: 'UPI', CARD: 'Card', NET_BANKING: 'Net Banking' } as const;
+      setInvoices(res.data.map((inv) => {
+        const doctor = inv.appointment?.doctor ?? inv.admission?.admittingDoctor;
+        const clinician = doctor?.employee?.user;
+        const payment = (inv.payments ?? []).filter((row: any) => row.paymentStatus === 'SUCCESS')
+          .sort((a: any, b: any) => b.createdAt.localeCompare(a.createdAt))[0];
+        const approvedClaim = inv.claims?.find((claim: { status: string }) => claim.status === 'APPROVED');
+        const charges = (category: string) => (inv.items ?? []).filter((item: any) => item.category === category)
+          .reduce((total: number, item: any) => total + Number(item.totalPrice), 0);
+        return {
+          id: inv.id, invoiceNo: inv.invoiceNumber,
+          patientName: `${inv.patient.firstName} ${inv.patient.lastName}`, uhid: inv.patient.uhid,
+          encounterType: inv.admission ? 'IPD' : inv.appointment?.type === 'EMERGENCY' ? 'Emergency' : 'OPD',
+          date: new Date(inv.createdAt).toLocaleString(),
+          doctorName: clinician ? `${clinician.firstName} ${clinician.lastName}` : 'No clinician linked',
+          department: doctor?.department.name ?? '',
+          breakdown: { consultation: charges('CONSULTATION'), pharmacy: charges('PHARMACY'),
+            laboratory: charges('LAB'), radiology: charges('RADIOLOGY'), ward: charges('ROOM') },
+          totalAmount: Number(inv.totalAmount), advancePaid: Number(inv.paidAmount),
+          insuranceCovered: Number(approvedClaim?.approvedAmount ?? 0), netPayable: Math.max(0, Number(inv.totalAmount) - Number(inv.paidAmount)),
+          status: approvedClaim && ['PENDING', 'PARTIALLY_PAID'].includes(inv.status) ? 'Insurance Approved'
+            : statuses[inv.status as keyof typeof statuses] ?? inv.status,
+          paidAt: payment ? new Date(payment.createdAt).toLocaleString() : undefined,
+          paymentMode: modes[payment?.paymentMethod as keyof typeof modes], transactionRef: payment?.transactionReference,
+        };
+      }));
     } catch {
-      // Fallback kept seamlessly
+      setInvoices([]);
+      setInvoiceError(true);
     } finally {
       setLoading(false);
     }
@@ -226,51 +131,45 @@ export default function BillingCashierScreen() {
   const handleOpenPayment = (inv: Invoice) => {
     setSelectedInvoice(inv);
     setCashTendered(String(inv.netPayable));
-    setPaymentMode('UPI');
+    setPaymentMode('Cash');
+    setPaymentReference('');
   };
 
   const handleProcessPayment = async () => {
     if (!selectedInvoice) return;
     setProcessingPayment(true);
 
-    const ref =
-      paymentMode === 'UPI'
-        ? `UPI-${Math.floor(100000000000 + Math.random() * 900000000000)}`
-        : paymentMode === 'Card'
-        ? `CARD-TXN-${Math.floor(100000 + Math.random() * 900000)}`
-        : paymentMode === 'Cash'
-        ? `CASH-REC-${Math.floor(10000 + Math.random() * 90000)}`
-        : `NB-${netBank.slice(0, 4).toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`;
-
-    const payload = {
-      invoiceId: selectedInvoice.id,
-      amount: selectedInvoice.netPayable,
-      paymentMode,
-      transactionRef: ref,
-      cashTendered: paymentMode === 'Cash' ? Number(cashTendered) : undefined,
-    };
-
+    if (selectedInvoice.netPayable <= 0 || (paymentMode === 'Cash' && Number(cashTendered) < selectedInvoice.netPayable)
+      || (paymentMode !== 'Cash' && !paymentReference.trim())) {
+      setProcessingPayment(false);
+      Alert.alert('Payment details required', 'Enter the cash received or the verified transaction reference.');
+      return;
+    }
+    const methods = { Cash: 'CASH', UPI: 'UPI', Card: 'CARD', 'Net Banking': 'NET_BANKING' } as const;
     try {
-      await apiRequest(`/billing/invoices/${selectedInvoice.id}/payments`, {
+      const response = await apiRequest<any>(`/billing/invoices/${selectedInvoice.id}/payments`, {
         method: 'POST',
-        body: payload,
+        body: {
+          invoiceId: selectedInvoice.id, amount: selectedInvoice.netPayable,
+          paymentMethod: methods[paymentMode], transactionReference: paymentReference.trim() || undefined,
+        },
       });
-    } catch {
-      // Offline fallback handling
+      const saved = response.data;
+      if (saved?.status !== 'PAID') throw new Error('The API did not confirm a fully paid invoice.');
+      const updatedInvoice: Invoice = { ...selectedInvoice, status: 'Paid',
+        advancePaid: Number(saved.paidAmount), netPayable: 0, paymentMode,
+        paidAt: new Date(saved.updatedAt).toLocaleString(), transactionRef: paymentReference.trim() || undefined };
+      setSelectedInvoice(null);
+      setReceiptInvoice(updatedInvoice);
+      await fetchInvoices();
+    } catch (error) {
+      setSelectedInvoice(null);
+      Alert.alert('Payment could not be confirmed', error instanceof Error ? error.message : 'Refresh the invoice before retrying.');
+      await fetchInvoices();
+    } finally {
+      setProcessingPayment(false);
     }
 
-    const updatedInvoice: Invoice = {
-      ...selectedInvoice,
-      status: 'Paid',
-      paidAt: new Date().toLocaleString(),
-      paymentMode,
-      transactionRef: ref,
-    };
-
-    setInvoices((prev) => prev.map((item) => (item.id === selectedInvoice.id ? updatedInvoice : item)));
-    setProcessingPayment(false);
-    setSelectedInvoice(null);
-    setReceiptInvoice(updatedInvoice);
   };
 
   const filteredInvoices = useMemo(() => {
@@ -344,6 +243,8 @@ export default function BillingCashierScreen() {
       {/* List of Invoices */}
       <ScrollView style={styles.listContainer} contentContainerStyle={{ paddingBottom: 30 }}>
         {loading && <ActivityIndicator size="small" color="#38845A" style={{ marginVertical: 12 }} />}
+        {invoiceError && <Text accessibilityRole="alert" onPress={() => void fetchInvoices()}>Could not load invoices. Tap to retry.</Text>}
+        {loading && <ActivityIndicator size="small" color="#059669" style={{ marginVertical: 12 }} />}
 
         {filteredInvoices.length === 0 ? (
           <View style={styles.emptyState}>
@@ -457,7 +358,7 @@ export default function BillingCashierScreen() {
                     <TouchableOpacity style={styles.payBtn} onPress={() => handleOpenPayment(inv)}>
                       <CreditCard size={14} color="#fff" />
                       <Text style={styles.payBtnText}>
-                        {inv.status === 'Insurance Approved' ? 'Collect Co-Pay' : 'Collect Payment'}
+                        Collect Payment
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -511,19 +412,10 @@ export default function BillingCashierScreen() {
             </View>
 
             {/* Mode-specific Fields */}
-            {paymentMode === 'UPI' && (
+            {paymentMode !== 'Cash' && (
               <View style={styles.paymentBox}>
-                <View style={styles.qrPlaceholder}>
-                  <QrCode size={70} color="#0F172A" />
-                  <Text style={styles.qrPrompt}>Dynamic Hospital QR Ready</Text>
-                </View>
-                <Text style={styles.fieldLabel}>Customer UPI VPA / Phone</Text>
-                <TextInput
-                  style={styles.textInput}
-                  value={upiId}
-                  onChangeText={setUpiId}
-                  placeholder="name@okaxis"
-                />
+                <Text style={styles.fieldLabel}>Verified transaction reference</Text>
+                <TextInput style={styles.textInput} value={paymentReference} onChangeText={setPaymentReference} />
               </View>
             )}
 
@@ -547,36 +439,7 @@ export default function BillingCashierScreen() {
               </View>
             )}
 
-            {paymentMode === 'Card' && (
-              <View style={styles.paymentBox}>
-                <Text style={styles.fieldLabel}>Card Last 4 Digits</Text>
-                <TextInput
-                  style={styles.textInput}
-                  maxLength={4}
-                  placeholder="e.g. 4022"
-                  value={cardLast4}
-                  onChangeText={setCardLast4}
-                />
-                <Text style={styles.helperText}>Swipe/Insert card on EDC POS Terminal 02</Text>
-              </View>
-            )}
 
-            {paymentMode === 'Net Banking' && (
-              <View style={styles.paymentBox}>
-                <Text style={styles.fieldLabel}>Select Authorized Bank</Text>
-                <View style={styles.bankOptions}>
-                  {['HDFC Bank', 'State Bank of India', 'ICICI Bank', 'Axis Bank'].map((b) => (
-                    <TouchableOpacity
-                      key={b}
-                      style={[styles.bankPill, netBank === b && styles.bankPillActive]}
-                      onPress={() => setNetBank(b)}
-                    >
-                      <Text style={[styles.bankPillText, netBank === b && styles.bankPillTextActive]}>{b}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-            )}
 
             {/* Confirm Payment Button */}
             <TouchableOpacity

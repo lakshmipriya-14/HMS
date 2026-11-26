@@ -52,10 +52,10 @@ export class RadiologyController {
   async uploadReport(
     @Param('id') id: string,
     @Body() dto: UploadRadiologyReportDto,
-    @CurrentUser('id') userId: string
+    @CurrentUser() actor: AuthUserDto
   ) {
     dto.orderId = id;
-    const data = await this.service.uploadReport(id, dto, userId);
+    const data = await this.service.uploadReport(id, dto, actor);
     return {
       message: 'Radiology report released',
       data,

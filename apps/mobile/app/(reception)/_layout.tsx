@@ -4,6 +4,7 @@ import { Tabs } from 'expo-router';
 import { LayoutDashboard, Clock, UserPlus, Calendar, User, Search, UserCheck, Stethoscope, FileBarChart } from 'lucide-react-native';
 import { Platform } from 'react-native';
 import { UyirinaiTheme } from '../../constants/theme';
+import { LayoutDashboard, Clock, UserPlus, Calendar, User, Search, UserCheck, Stethoscope, FileBarChart, Bell } from 'lucide-react-native';
 
 export default function ReceptionTabsLayout() {
   const bottomInset = Platform.OS === 'web' ? 10 : 12;
@@ -65,6 +66,10 @@ export default function ReceptionTabsLayout() {
             tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
           }}
         />
+
+        <Tabs.Screen name="notifications" options={{
+          title: 'Alerts', tabBarIcon: ({ color, size }) => <Bell color={color} size={size} />,
+        }} />
 
         {/* Sub-screens with direct router navigation */}
         <Tabs.Screen

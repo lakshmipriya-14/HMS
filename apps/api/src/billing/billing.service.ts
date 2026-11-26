@@ -1,6 +1,6 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CollectPaymentDto, CreateInvoiceDto, AdvancePaymentDto, AuthUserDto } from '@multispeciality-hms/contracts';
+import { CollectPaymentDto, CreateInvoiceDto, AdvancePaymentDto, AuthUserDto, Role } from '@multispeciality-hms/contracts';
 import { resolveOperationalScope, assertBranchAccess } from '../common/utils/operational-scope';
 
 @Injectable()
@@ -23,7 +23,14 @@ export class BillingService {
     } else if (branchId) {
       where.branchId = branchId;
     }
-    if (patientId) where.patientId = patientId;
+    if (actor?.role === Role.PATIENT) {
+      if (!actor.patientProfileId || (patientId && actor.patientProfileId !== patientId)) return [];
+      where.patientId = actor.patientProfileId;
+      where.patient = { userId: actor.id, deletedAt: null };
+    } else if (patientId) where.patientId = patientId;
+
+    const doctor = { select: { employee: { select: { user: { select: { firstName: true, lastName: true } } } },
+      department: { select: { name: true } } } } as const;
 
     return this.prisma.invoice.findMany({
       where,
@@ -32,13 +39,18 @@ export class BillingService {
         patient: { select: { id: true, uhid: true, firstName: true, lastName: true, phone: true } },
         items: true,
         payments: true,
+        claims: { select: { status: true, approvedAmount: true } },
+        appointment: { select: { doctor, type: true } },
+        admission: { select: { admittingDoctor: doctor } },
       },
     });
   }
 
   async findOne(id: string, actor?: AuthUserDto) {
     const invoice = await this.prisma.invoice.findUnique({
-      where: { id },
+      where: { id, ...(actor && { hospitalId: actor.hospitalId }),
+        ...(actor?.role === Role.PATIENT && { patientId: actor.patientProfileId ?? '',
+          patient: { userId: actor.id, deletedAt: null } }) },
       include: {
         patient: true,
         items: true,
@@ -48,7 +60,7 @@ export class BillingService {
     });
     if (!invoice) throw new NotFoundException('Invoice not found');
     if (actor) {
-      assertBranchAccess(actor, invoice.branchId);
+      if (actor.role !== Role.PATIENT) assertBranchAccess(actor, invoice.branchId);
     }
     return invoice;
   }
@@ -129,16 +141,27 @@ export class BillingService {
 
       if (actor) {
         assertBranchAccess(actor, invoice.branchId);
+        if (invoice.hospitalId !== actor.hospitalId) throw new NotFoundException('Invoice not found');
       }
 
       const currentPaid = Number(invoice.paidAmount);
       const total = Number(invoice.totalAmount);
-      const newPaid = currentPaid + dto.amount;
+      if (invoice.status === 'CANCELLED' || !Number.isFinite(dto.amount) || dto.amount <= 0 ||
+        Math.round(dto.amount * 100) > Math.round((total - currentPaid) * 100)) {
+        throw new BadRequestException('Enter a positive payment within the outstanding balance.');
+      }
+      const newPaid = Math.round((currentPaid + dto.amount) * 100) / 100;
 
       let status = 'PARTIALLY_PAID';
       if (newPaid >= total) {
         status = 'PAID';
       }
+
+      const updated = await tx.invoice.updateMany({
+        where: { id: invoiceId, paidAmount: invoice.paidAmount, status: invoice.status, totalAmount: invoice.totalAmount },
+        data: { paidAmount: newPaid, status },
+      });
+      if (updated.count !== 1) throw new ConflictException('The invoice balance changed. Refresh before recording payment.');
 
       // Record payment transaction
       await tx.payment.create({
@@ -156,13 +179,8 @@ export class BillingService {
         },
       });
 
-      // Update invoice paidAmount and status
-      return tx.invoice.update({
+      return tx.invoice.findUniqueOrThrow({
         where: { id: invoiceId },
-        data: {
-          paidAmount: newPaid,
-          status,
-        },
         include: { payments: true, items: true },
       });
     });
@@ -172,6 +190,12 @@ export class BillingService {
     const where: any = {};
     if (actor) {
       const scope = resolveOperationalScope(actor, branchId);
+      where.hospitalId = scope.hospitalId;
+      if (actor.role === Role.PATIENT) {
+        if (!actor.patientProfileId) return [];
+        where.patientId = actor.patientProfileId;
+        where.patient = { userId: actor.id, deletedAt: null };
+      }
       if (scope.branchId) {
         where.invoice = { branchId: scope.branchId };
       }

@@ -226,6 +226,13 @@ export class AalayamApiClient {
 
   // --- MEMBER 4: Reception & Patient Registration ---
   public reception = {
+    changeAppointment: async (id: string, data: { action: 'cancel' | 'reschedule'; date?: string; time?: string }) =>
+      (await this.instance.patch<ApiResponse<{ id: string; status: string }>>('/patients/reception/appointments/' + id, data)).data,
+    getAppointmentRequests: async () =>
+      (await this.instance.get<ApiResponse<Array<{
+        id: string; specialty: string; preferredDate: string;
+        patient: { id: string; uhid: string; firstName: string; lastName: string };
+      }>>>('/patients/reception-appointment-requests')).data,
     registerPatient: async (dto: RegisterPatientDto) => {
       const res = await this.instance.post<ApiResponse<any>>(API_ENDPOINTS.PATIENTS.BASE, dto);
       return res.data;
@@ -540,6 +547,18 @@ export class AalayamApiClient {
 
   // --- MEMBER 9: Patient Portal & Ambulance Module ---
   public patientPortal = {
+    changeAppointment: async (id: string, data: { action: 'cancel' | 'reschedule'; date?: string; time?: string }) =>
+      (await this.instance.patch<ApiResponse<{ id: string; status: string }>>('/patients/me/appointments/' + id, data)).data,
+    updatePhoto: async (photo: string) =>
+      (await this.instance.patch<ApiResponse<{ avatarUrl: string }>>('/patients/me/photo', { photo })).data,
+    getDoctors: async (search: string) =>
+      (await this.instance.get<ApiResponse<any[]>>('/patients/me/doctors', { params: { search } })).data,
+    requestAppointment: async (data: { doctorId: string; preferredDate: string }) =>
+      (await this.instance.post<ApiResponse<{ id: string; status: string }>>('/patients/me/appointment-requests', data)).data,
+    get: async (page = 1) =>
+      (await this.instance.get<ApiResponse<any>>('/patients/me/portal', { params: { page } })).data,
+    updateContact: async (data: { phone: string; addressLine1: string }) =>
+      (await this.instance.patch<ApiResponse<{ phone: string; addressLine1: string }>>('/patients/me/contact', data)).data,
     getMyProfile: async () => {
       const res = await this.instance.get<ApiResponse<any>>('/patients/me');
       return res.data;

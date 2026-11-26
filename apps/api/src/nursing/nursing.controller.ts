@@ -3,7 +3,7 @@ import { NursingService } from './nursing.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { RequirePermissions, Scoped } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
-import { CreateNursingTaskDto, RecordVitalsDto } from '@multispeciality-hms/contracts';
+import { AuthUserDto, CreateNursingTaskDto, RecordVitalsDto } from '@multispeciality-hms/contracts';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Nursing & Ward Patient Care')
@@ -16,8 +16,8 @@ export class NursingController {
   @Get('patients')
   @RequirePermissions('PATIENTS:VIEW')
   @ApiOperation({ summary: 'List admitted patients with latest vitals and active tasks' })
-  async getAssignedPatients() {
-    const data = await this.service.getAssignedPatients();
+  async getAssignedPatients(@CurrentUser() actor: AuthUserDto) {
+    const data = await this.service.getAssignedPatients(actor);
     return {
       message: 'Admitted inpatient list retrieved',
       data,
@@ -29,9 +29,9 @@ export class NursingController {
   @ApiOperation({ summary: 'Record clinical vitals with abnormal thresholds detection' })
   async recordVitals(
     @Body() dto: RecordVitalsDto,
-    @CurrentUser('id') userId: string
+    @CurrentUser() actor: AuthUserDto
   ) {
-    const data = await this.service.recordVitals(dto, userId);
+    const data = await this.service.recordVitals(dto, actor);
     return {
       message: data.isAbnormal
         ? 'Warning: Abnormal vitals detected and flagged for clinical review'

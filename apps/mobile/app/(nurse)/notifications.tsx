@@ -271,3 +271,4 @@ const styles = StyleSheet.create({
   actionPrompt: { fontSize: 10, fontWeight: '700', color: '#38845A' },
 });
 
+export { NotificationFeed as default } from '../../components/NotificationFeed';

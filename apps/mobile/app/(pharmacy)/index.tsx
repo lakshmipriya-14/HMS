@@ -64,130 +64,13 @@ export interface PrescriptionOrder {
   items: PrescribedDrug[];
 }
 
-// Comprehensive realistic fallback demo data matching Kizuna clinical workflows
-const FALLBACK_PRESCRIPTIONS: PrescriptionOrder[] = [
-  {
-    id: 'rx-2026-001',
-    prescriptionNumber: 'RX-2026-0101',
-    tokenNumber: 'Token #04',
-    uhid: 'KZN-2026-0001',
-    patientName: 'Ramasamy Kuppusamy',
-    age: 58,
-    gender: 'Male',
-    allergies: ['Penicillin (Moderate Rash)', 'Sulfa Drugs'],
-    doctorName: 'Dr. Senthil Nathan, MD',
-    department: 'Cardiology',
-    status: 'READY_FOR_DISPENSE',
-    createdAt: 'Today, 10:15 AM',
-    items: [
-      {
-        id: 'pi-1',
-        medicineId: 'med-amlodipine',
-        medicineName: 'Amlodipine Besylate 5mg',
-        dosage: '1 Tab',
-        frequency: '1-0-0 (Morning)',
-        durationDays: 30,
-        instructions: 'After breakfast with water',
-        batches: [
-          { id: 'b-aml-1', batchNumber: 'BT-AML-2025A', expiryDate: '2026-04-30', quantity: 120, sellingPrice: 4.5 },
-          { id: 'b-aml-2', batchNumber: 'BT-AML-2025B', expiryDate: '2026-11-30', quantity: 850, sellingPrice: 4.5 },
-          { id: 'b-aml-3', batchNumber: 'BT-AML-2026A', expiryDate: '2027-08-15', quantity: 1400, sellingPrice: 4.5 },
-        ],
-      },
-      {
-        id: 'pi-2',
-        medicineId: 'med-atorvastatin',
-        medicineName: 'Atorvastatin Calcium 20mg',
-        dosage: '1 Tab',
-        frequency: '0-0-1 (Night)',
-        durationDays: 30,
-        instructions: 'After dinner',
-        batches: [
-          { id: 'b-ato-1', batchNumber: 'BT-ATO-2025C', expiryDate: '2026-06-15', quantity: 95, sellingPrice: 12.0 },
-          { id: 'b-ato-2', batchNumber: 'BT-ATO-2026A', expiryDate: '2027-03-31', quantity: 500, sellingPrice: 12.0 },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'rx-2026-002',
-    prescriptionNumber: 'RX-2026-0102',
-    tokenNumber: 'Token #07',
-    uhid: 'KZN-2026-0014',
-    patientName: 'Deepa Thirunavukarasu',
-    age: 34,
-    gender: 'Female',
-    allergies: ['No Known Drug Allergies (NKDA)'],
-    doctorName: 'Dr. Ananya Sharma, MD',
-    department: 'General Medicine',
-    status: 'PENDING_VERIFICATION',
-    createdAt: 'Today, 10:45 AM',
-    items: [
-      {
-        id: 'pi-3',
-        medicineId: 'med-pantoprazole',
-        medicineName: 'Pantoprazole Sodium 40mg',
-        dosage: '1 Tab',
-        frequency: '1-0-0 (Morning)',
-        durationDays: 14,
-        instructions: 'Empty stomach 30 mins before breakfast',
-        batches: [
-          { id: 'b-pan-1', batchNumber: 'BT-PAN-2025X', expiryDate: '2026-05-20', quantity: 450, sellingPrice: 8.5 },
-          { id: 'b-pan-2', batchNumber: 'BT-PAN-2026B', expiryDate: '2027-01-10', quantity: 1100, sellingPrice: 8.5 },
-        ],
-      },
-      {
-        id: 'pi-4',
-        medicineId: 'med-paracetamol',
-        medicineName: 'Paracetamol 650mg Dolo',
-        dosage: '1 Tab',
-        frequency: '1-0-1 (Twice Daily SOS)',
-        durationDays: 5,
-        instructions: 'Post meals for acute fever',
-        batches: [
-          { id: 'b-pcm-1', batchNumber: 'BT-PCM-2025D', expiryDate: '2026-03-25', quantity: 60, sellingPrice: 2.2 },
-          { id: 'b-pcm-2', batchNumber: 'BT-PCM-2026A', expiryDate: '2027-09-30', quantity: 3200, sellingPrice: 2.2 },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'rx-2026-003',
-    prescriptionNumber: 'RX-2026-0098',
-    tokenNumber: 'Token #02',
-    uhid: 'KZN-2026-0009',
-    patientName: 'Vijay Sundaram',
-    age: 46,
-    gender: 'Male',
-    allergies: ['NSAID Sensitivity (Ibuprofen / Diclofenac)'],
-    doctorName: 'Dr. V. Rajesh, MS Ortho',
-    department: 'Orthopaedics',
-    status: 'DISPENSED',
-    createdAt: 'Today, 09:30 AM',
-    items: [
-      {
-        id: 'pi-5',
-        medicineId: 'med-tramadol',
-        medicineName: 'Tramadol HCl 50mg',
-        dosage: '1 Capsule',
-        frequency: '1-0-1 (Post Food)',
-        durationDays: 5,
-        instructions: 'Take strictly after food with milk',
-        dispensedQuantity: 10,
-        batches: [
-          { id: 'b-trm-1', batchNumber: 'BT-TRM-2025A', expiryDate: '2026-07-31', quantity: 80, sellingPrice: 15.0 },
-        ],
-      },
-    ],
-  },
-];
-
 export default function PharmacyDispenseScreen() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'PENDING_VERIFICATION' | 'READY_FOR_DISPENSE' | 'DISPENSED'>('READY_FOR_DISPENSE');
   const [searchQuery, setSearchQuery] = useState('');
-  const [prescriptions, setPrescriptions] = useState<PrescriptionOrder[]>(FALLBACK_PRESCRIPTIONS);
-  const [loading, setLoading] = useState(false);
+  const [prescriptions, setPrescriptions] = useState<PrescriptionOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [queueError, setQueueError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   // Modal State for Verification & Dispensing
@@ -212,55 +95,36 @@ export default function PharmacyDispenseScreen() {
   const loadPrescriptions = useCallback(async () => {
     try {
       setLoading(true);
-      // Attempt backend API call (supports /pharmacy/prescriptions or /pharmacy/dispense-queue)
-      const res = await apiRequest<any[]>('/pharmacy/prescriptions', { method: 'GET' })
-        .catch(() => apiRequest<any[]>('/pharmacy/dispense-queue', { method: 'GET' }))
-        .catch(() => apiRequest<any[]>('/prescriptions/queue', { method: 'GET' }));
-
-      if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
-        const mapped: PrescriptionOrder[] = res.data.map((rx: any, idx: number) => ({
-          id: rx.id || `rx-${idx}`,
-          prescriptionNumber: rx.prescriptionNumber || `RX-2026-${1000 + idx}`,
-          tokenNumber: `Token #${(idx + 1).toString().padStart(2, '0')}`,
-          uhid: rx.patient?.uhid || rx.patientId || `KZN-2026-000${idx + 1}`,
-          patientName: rx.patient ? `${rx.patient.firstName || ''} ${rx.patient.lastName || ''}`.trim() : 'Hospital Patient',
-          age: rx.patient?.age || 45,
-          gender: rx.patient?.gender || 'Adult',
-          allergies: rx.patient?.allergies || ['NKDA - No Known Drug Allergies'],
-          doctorName: rx.doctor?.employee?.user
-            ? `Dr. ${rx.doctor.employee.user.firstName} ${rx.doctor.employee.user.lastName}`
-            : rx.doctorName || 'Attending Physician',
-          department: rx.doctor?.department?.name || 'OPD Clinical Care',
-          status: rx.dispensingStatus === 'DISPENSED'
-            ? 'DISPENSED'
-            : rx.dispensingStatus === 'PARTIALLY_DISPENSED'
-            ? 'READY_FOR_DISPENSE'
-            : idx % 2 === 0
-            ? 'READY_FOR_DISPENSE'
-            : 'PENDING_VERIFICATION',
-          createdAt: rx.createdAt ? new Date(rx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Today',
-          items: (rx.items || []).map((item: any, itIdx: number) => ({
-            id: item.id || `item-${itIdx}`,
-            medicineId: item.medicineId || item.medicine?.id || `med-${itIdx}`,
-            medicineName: item.medicine?.brandName || item.medicineName || 'Prescribed Drug',
-            dosage: item.dosage || '1 Tab',
-            frequency: item.frequency || '1-0-1',
-            durationDays: item.durationDays || 5,
-            instructions: item.instructions || 'After food',
-            dispensedQuantity: item.dispensedQuantity || 0,
-            batches: (item.medicine?.batches || []).map((b: any) => ({
-              id: b.id,
-              batchNumber: b.batchNumber,
-              expiryDate: b.expiryDate ? b.expiryDate.split('T')[0] : '2026-12-31',
-              quantity: b.quantity ?? 100,
-              sellingPrice: Number(b.sellingPrice) || 5,
+      setQueueError(false);
+      const res = await apiRequest<any[]>('/pharmacy/prescriptions');
+      if (!Array.isArray(res.data)) throw new Error('Invalid prescription queue response.');
+      setPrescriptions(res.data.map((rx: any) => {
+        const clinician = rx.doctor?.employee?.user;
+        const patient = rx.patient;
+        return {
+          id: rx.id, prescriptionNumber: rx.prescriptionNumber,
+          tokenNumber: rx.consultation?.appointment?.tokenNumber == null ? '' : 'Token #' + rx.consultation.appointment.tokenNumber,
+          uhid: patient.uhid, patientName: patient.firstName + ' ' + patient.lastName,
+          age: patient.dateOfBirth ? Math.floor((Date.now() - new Date(patient.dateOfBirth).getTime()) / 31_557_600_000) : 0,
+          gender: patient.gender, allergies: patient.allergies ?? [],
+          doctorName: clinician ? clinician.firstName + ' ' + clinician.lastName : 'Prescriber unavailable',
+          department: rx.doctor?.department?.name ?? '',
+          status: rx.dispensingStatus === 'DISPENSED' ? 'DISPENSED' : 'READY_FOR_DISPENSE',
+          createdAt: new Date(rx.createdAt).toLocaleString(),
+          items: rx.items.map((item: any) => ({
+            id: item.id, medicineId: item.medicineId, medicineName: item.medicine.brandName,
+            dosage: item.dosage, frequency: item.frequency, durationDays: item.durationDays, instructions: item.instructions,
+            dispensedQuantity: item.dispensedQuantity,
+            batches: item.medicine.batches.map((batch: any) => ({
+              id: batch.id, batchNumber: batch.batchNumber, expiryDate: batch.expiryDate.slice(0, 10),
+              quantity: batch.quantity, sellingPrice: Number(batch.sellingPrice),
             })),
           })),
-        }));
-        setPrescriptions(mapped);
-      }
+        };
+      }));
     } catch {
-      // Retain fallback data gracefully
+      setPrescriptions([]);
+      setQueueError(true);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -313,11 +177,13 @@ export default function PharmacyDispenseScreen() {
 
     setDispensingInProgress(true);
     try {
-      const pharmacistId = user?.id || 'pharmacist-current';
+      if (!user?.id) throw new Error('Sign in again to dispense medication.');
+      const pharmacistId = user.id;
       const itemsPayload = selectedRx.items.map((item) => {
         const selectedBatchId =
           selectedBatches[item.id] ||
-          (item.batches && item.batches.length > 0 ? item.batches[0].id : 'batch-default');
+          item.batches[0]?.id;
+        if (!selectedBatchId) throw new Error('Select an available batch for every item.');
         const qty = dispenseQuantities[item.id] || calculateTotalUnits(item.frequency, item.durationDays);
 
         return {
@@ -327,43 +193,14 @@ export default function PharmacyDispenseScreen() {
         };
       });
 
-      // Invoke backend POST /pharmacy/dispense or /pharmacy/prescriptions/:id/dispense
       await apiRequest(`/pharmacy/prescriptions/${selectedRx.id}/dispense`, {
-        method: 'POST',
-        body: {
-          prescriptionId: selectedRx.id,
-          pharmacistId,
-          items: itemsPayload,
-          dispensingNotes: 'FEFO batch verified and handed over at OPD Counter 01',
-        },
-      }).catch(() =>
-        apiRequest('/pharmacy/dispense', {
-          method: 'POST',
-          body: {
-            prescriptionId: selectedRx.id,
-            pharmacistId,
-            items: itemsPayload,
-          },
-        })
-      );
-
-      // Local state update for immediate UI feedback
-      setPrescriptions((prev) =>
-        prev.map((rx) => (rx.id === selectedRx.id ? { ...rx, status: 'DISPENSED' } : rx))
-      );
-
-      Alert.alert(
-        'Medications Dispensed Successfully',
-        `Prescription ${selectedRx.prescriptionNumber} has been fulfilled. FEFO batch inventory decremented and recorded in audit ledger.`
-      );
+        method: 'POST', body: { prescriptionId: selectedRx.id, pharmacistId, items: itemsPayload },
+      });
       setModalVisible(false);
-    } catch {
-      // Optimistic local update so frontend never freezes
-      setPrescriptions((prev) =>
-        prev.map((rx) => (rx.id === selectedRx.id ? { ...rx, status: 'DISPENSED' } : rx))
-      );
-      Alert.alert('Dispense Recorded', `Prescription ${selectedRx.prescriptionNumber} marked dispensed.`);
-      setModalVisible(false);
+      await loadPrescriptions();
+      Alert.alert('Dispensing recorded', `Prescription ${selectedRx.prescriptionNumber} was updated by the pharmacy API.`);
+    } catch (error) {
+      Alert.alert('Dispensing failed', error instanceof Error ? error.message : 'Refresh and try again.');
     } finally {
       setDispensingInProgress(false);
     }
@@ -449,7 +286,9 @@ export default function PharmacyDispenseScreen() {
         style={styles.scrollArea}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
       >
-        {loading && !refreshing ? (
+        {queueError ? (
+          <Text accessibilityRole="button" onPress={loadPrescriptions}>Could not load prescriptions. Tap to retry.</Text>
+        ) : loading && !refreshing ? (
           <View style={styles.centerBox}>
             <ActivityIndicator size="large" color="#38845A" />
             <Text style={styles.loadingText}>Syncing Central Pharmacy Queue...</Text>

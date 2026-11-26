@@ -1,57 +1,7 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  Alert,
-} from 'react-native';
-import {
-  CreditCard,
-  ShieldCheck,
-  CheckCircle2,
-  Clock,
-  IndianRupee,
-  QrCode,
-  Building,
-  Printer,
-  ChevronRight,
-  Receipt,
-  Download,
-  AlertCircle,
-  X,
-  Stethoscope,
-  Pill,
-  FlaskConical,
-  Scan,
-  BedDouble,
-} from 'lucide-react-native';
-import { downloadFile } from '../../services/downloadHelper';
+import { PatientPortal } from '../../components/PatientPortal';
 
-interface PatientInvoice {
-  id: string;
-  invoiceNo: string;
-  date: string;
-  type: 'OPD Consultation' | 'IPD Stay & Surgery' | 'Pharmacy' | 'Diagnostics';
-  department: string;
-  doctor: string;
-  breakdown: {
-    consultation: number;
-    pharmacy: number;
-    laboratory: number;
-    radiology: number;
-    ward: number;
-  };
-  totalAmount: number;
-  advanceDeducted: number;
-  tpaApproved: number;
-  netPayable: number;
-  status: 'Pending' | 'Paid';
-  paymentMode?: string;
-  transactionRef?: string;
+export default function PatientScreen() {
+  return <PatientPortal section="billing" />;
 }
 
 interface PatientClaim {

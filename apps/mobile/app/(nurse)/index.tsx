@@ -70,7 +70,7 @@ export default function NurseDashboardScreen() {
   };
 
   // Derived statistics
-  const assignedPatientsCount = patients.length || 4;
+  const assignedPatientsCount = patients.length;
   const pendingTasks = tasks.filter((t) => !t.isCompleted);
   const criticalPatients = patients.filter((p) => {
     const latest = p.vitals?.[0];

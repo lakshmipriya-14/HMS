@@ -1,40 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
-  Modal,
-  Alert,
-} from 'react-native';
-import {
-  Calendar,
-  Clock,
-  Stethoscope,
-  Search,
-  Filter,
-  CheckCircle2,
-  ChevronRight,
-  User,
-  X,
-  Building,
-  AlertCircle,
-  MapPin,
-} from 'lucide-react-native';
-import { apiRequest } from '../../services/api';
+import { PatientPortal } from '../../components/PatientPortal';
 
-interface Doctor {
-  id: string;
-  name: string;
-  specialty: string;
-  department: string;
-  qualification: string;
-  fee: number;
-  room: string;
-  experience: string;
-  slots: string[];
+export default function PatientScreen() {
+  return <PatientPortal section="appointments" />;
 }
 
 interface Appointment {

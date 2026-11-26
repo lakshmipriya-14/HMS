@@ -1,51 +1,7 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Modal,
-  Alert,
-} from 'react-native';
-import {
-  FileText,
-  Pill,
-  FlaskConical,
-  Scan,
-  Download,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
-  Truck,
-  Building,
-  ChevronRight,
-  Eye,
-  Calendar,
-  X,
-  Stethoscope,
-  Printer,
-  ShieldCheck,
-} from 'lucide-react-native';
-import { downloadFile } from '../../services/downloadHelper';
+import { PatientPortal } from '../../components/PatientPortal';
 
-interface Prescription {
-  id: string;
-  rxNumber: string;
-  doctor: string;
-  department: string;
-  date: string;
-  diagnosis: string;
-  medicines: {
-    name: string;
-    dosage: string;
-    schedule: { morning: boolean; afternoon: boolean; night: boolean };
-    timing: 'Before Food' | 'After Food';
-    duration: string;
-    remainingDays: number;
-    instructions: string;
-  }[];
-  dispensedStatus: 'Dispensed' | 'Partially Dispensed' | 'Processing';
+export default function PatientScreen() {
+  return <PatientPortal section="records" />;
 }
 
 interface PharmacyOrder {
