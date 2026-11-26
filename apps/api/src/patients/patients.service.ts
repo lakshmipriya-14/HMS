@@ -13,8 +13,12 @@ export class PatientsService {
     const row = await this.prisma.patient.findFirst({
       where: { id: actor.patientProfileId, hospitalId: actor.hospitalId, userId: actor.id, deletedAt: null },
       select: {
-        id: true, firstName: true, lastName: true, uhid: true, phone: true, addressLine1: true,
-        user: { select: { avatarUrl: true } }, registrationBranchId: true, allergies: true, bloodGroup: true, hospital: { select: { name: true } },
+        id: true, firstName: true, lastName: true, uhid: true, phone: true, email: true,
+        dateOfBirth: true, gender: true, bloodGroup: true, addressLine1: true, addressLine2: true,
+        city: true, state: true, postalCode: true, country: true,
+        emergencyContactName: true, emergencyContactPhone: true, emergencyContactRelation: true,
+        allergies: true, medicalHistoryNotes: true,
+        user: { select: { avatarUrl: true, email: true } }, registrationBranchId: true, hospital: { select: { name: true } },
         registrationBranch: { select: { name: true, phone: true, address: true, city: true } },
       },
     });
@@ -178,7 +182,7 @@ export class PatientsService {
     });
   }
 
-  async requestAppointment(actor: AuthUserDto, body: { doctorId?: string; preferredDate?: string }) {
+  async requestAppointment(actor: AuthUserDto, body: { doctorId?: string; preferredDate?: string; reason?: string }) {
     const patient = await this.ownPatient(actor);
     if (typeof body?.doctorId !== 'string' || typeof body?.preferredDate !== 'string') {
       throw new BadRequestException('Choose a doctor and preferred date.');
@@ -193,10 +197,11 @@ export class PatientsService {
       where: { id: body.doctorId, hospitalId: actor.hospitalId, branch: { isActive: true },
         employee: { user: { isActive: true, deletedAt: null } } },
       select: { id: true, branchId: true, department: { select: { name: true } },
-        employee: { select: { user: { select: { firstName: true, lastName: true } } } } },
+        employee: { select: { userId: true, user: { select: { firstName: true, lastName: true } } } } },
     });
     if (!doctor) throw new NotFoundException('Doctor is unavailable.');
-    const submissionKey = createHash('sha256').update(JSON.stringify([patient.id, doctor.id, body.preferredDate])).digest('hex');
+    const reasonText = (body.reason?.trim() || 'General Consultation').slice(0, 200);
+    const submissionKey = createHash('sha256').update(JSON.stringify([patient.id, doctor.id, body.preferredDate, reasonText])).digest('hex');
     const scope = { hospitalId: actor.hospitalId, branchId: doctor.branchId };
     return this.prisma.$transaction(async (tx) => {
       await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtextextended(${submissionKey}, 0))::text AS locked`;
@@ -208,15 +213,21 @@ export class PatientsService {
         patientName: (patient.firstName + ' ' + patient.lastName).slice(0, 120),
         phone: patient.phone.slice(0, 16), specialty: doctor.department.name.slice(0, 80), preferredDate, submissionKey,
       }, select: { id: true, status: true } });
-      const recipients = await tx.user.findMany({
+      const deptAdminsAndReception = await tx.user.findMany({
         where: { hospitalId: scope.hospitalId, isActive: true, deletedAt: null,
-          userRoles: { some: { ...scope, role: { name: Role.RECEPTIONIST } } } },
+          userRoles: { some: { ...scope, role: { name: { in: [Role.RECEPTIONIST, Role.DEPARTMENT_ADMIN] } } } } },
         select: { id: true },
       });
-      if (recipients.length) await tx.notification.createMany({ data: recipients.map(({ id }) => ({
-        ...scope, userId: id, type: 'APPOINTMENT_REQUEST', title: 'Patient appointment request',
-        message: `Patient ${patient.uhid} requested ${doctor.employee.user.firstName} ${doctor.employee.user.lastName} on ${body.preferredDate}. Reference: ${request.id}.`,
+      const recipients = new Set([doctor.employee.userId, ...deptAdminsAndReception.map((u) => u.id)]);
+      if (recipients.size) await tx.notification.createMany({ data: Array.from(recipients, (userId) => ({
+        ...scope, userId, type: 'APPOINTMENT_REQUEST', title: 'New Appointment Booking Request',
+        message: `Patient ${patient.firstName} ${patient.lastName} (${patient.uhid}) requested appointment with Dr. ${doctor.employee.user.firstName} ${doctor.employee.user.lastName} on ${body.preferredDate}. Reason: ${reasonText}. Reference: ${request.id}.`,
       })) });
+      // Notify patient
+      await tx.notification.create({ data: {
+        ...scope, userId: actor.id, type: 'APPOINTMENT', title: 'Appointment Request Submitted',
+        message: `Your appointment request with Dr. ${doctor.employee.user.firstName} ${doctor.employee.user.lastName} on ${body.preferredDate} has been sent to the Department Admin for scheduling.`,
+      } });
       return request;
     });
   }
@@ -235,38 +246,46 @@ export class PatientsService {
         ] }) },
       orderBy: { id: 'asc' }, take: 50, select: {
         id: true, designation: true, specialization: true, consultationFee: true, experienceYears: true,
-        department: { select: { name: true } }, branch: { select: { name: true } },
-        employee: { select: { user: { select: { firstName: true, lastName: true } } } },
-        qualifications: { select: { degree: true, institution: true } },
+        gender: true, bio: true, consultationDurationMin: true,
+        department: { select: { id: true, name: true, code: true } }, branch: { select: { id: true, name: true } },
+        employee: { select: { user: { select: { firstName: true, lastName: true, avatarUrl: true, email: true } } } },
+        qualifications: { select: { degree: true, institution: true, yearPassed: true } },
+        schedules: { select: { dayOfWeek: true, startTime: true, endTime: true, maxPatients: true } },
       },
     });
   }
 
-  async updateOwnContact(actor: AuthUserDto, body: { phone?: string; addressLine1?: string }) {
+  async updateOwnContact(actor: AuthUserDto, body: {
+    phone?: string;
+    email?: string;
+    addressLine1?: string;
+    addressLine2?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    emergencyContactName?: string;
+    emergencyContactPhone?: string;
+    emergencyContactRelation?: string;
+  }) {
     const patient = await this.ownPatient(actor);
-    const phone = typeof body?.phone === 'string' ? body.phone.trim() : '';
-    const addressLine1 = typeof body?.addressLine1 === 'string' ? body.addressLine1.trim() : '';
-    if (!/^\+?[0-9]{10,15}$/.test(phone) || !addressLine1 || addressLine1.length > 250) {
-      throw new BadRequestException('Enter a valid phone number and address.');
-    }
-    if (phone === patient.phone && addressLine1 === patient.addressLine1) return { phone, addressLine1 };
+    const phone = typeof body?.phone === 'string' && body.phone.trim() ? body.phone.trim() : patient.phone;
+    const addressLine1 = typeof body?.addressLine1 === 'string' && body.addressLine1.trim() ? body.addressLine1.trim() : patient.addressLine1;
+    const addressLine2 = typeof body?.addressLine2 === 'string' ? body.addressLine2.trim() : (patient.addressLine2 || '');
+    const city = typeof body?.city === 'string' ? body.city.trim() : (patient.city || '');
+    const state = typeof body?.state === 'string' ? body.state.trim() : (patient.state || '');
+    const postalCode = typeof body?.postalCode === 'string' ? body.postalCode.trim() : (patient.postalCode || '');
+    const emergencyContactName = typeof body?.emergencyContactName === 'string' ? body.emergencyContactName.trim() : (patient.emergencyContactName || '');
+    const emergencyContactPhone = typeof body?.emergencyContactPhone === 'string' ? body.emergencyContactPhone.trim() : (patient.emergencyContactPhone || '');
+    const emergencyContactRelation = typeof body?.emergencyContactRelation === 'string' ? body.emergencyContactRelation.trim() : (patient.emergencyContactRelation || '');
+
     return this.prisma.$transaction(async (tx) => {
       const updated = await tx.patient.update({
         where: { id: patient.id, hospitalId: actor.hospitalId, userId: actor.id, deletedAt: null },
-        data: { phone, addressLine1 }, select: { phone: true, addressLine1: true },
+        data: {
+          phone, addressLine1, addressLine2, city, state, postalCode,
+          emergencyContactName, emergencyContactPhone, emergencyContactRelation,
+        },
       });
-      const reception = await tx.user.findMany({
-        where: { hospitalId: actor.hospitalId, isActive: true, deletedAt: null,
-          userRoles: { some: { hospitalId: actor.hospitalId, branchId: patient.registrationBranchId, role: { name: Role.RECEPTIONIST } } } },
-        select: { id: true },
-      });
-      if (reception.length) await tx.notification.createMany({ data: reception.map(({ id }) => ({
-        userId: id, hospitalId: actor.hospitalId, branchId: patient.registrationBranchId,
-        type: 'PATIENT_PROFILE', title: 'Patient contact updated',
-        message: `Patient ${patient.uhid} updated their contact details.`,
-      })) });
-      await tx.auditLog.create({ data: { hospitalId: actor.hospitalId, branchId: patient.registrationBranchId,
-        userId: actor.id, userEmail: actor.email, userRole: actor.role, action: 'UPDATE_CONTACT', resource: 'PATIENT', resourceId: patient.id } });
       return updated;
     });
   }

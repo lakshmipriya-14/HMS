@@ -22,6 +22,13 @@ export const UyirinaiTheme = {
     // Borders & dividers
     border: '#DDE8E0',           // Default border
     borderLight: '#EAF0EC',      // Light divider
+    borderDefault: '#DDE8E0',
+
+    // Semantic helpers
+    warning: '#D69A32',
+    warningBg: '#FEF9EE',
+    secondaryBackground: '#F3F7F4',
+    softGreenCard: '#EAF5ED',
 
     // Status colors (restrained semantic colors)
     success: '#38845A',          // Success status

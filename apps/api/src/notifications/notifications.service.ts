@@ -55,6 +55,12 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
+  async deleteNotification(id: string, userId: string) {
+    return this.prisma.notification.deleteMany({
+      where: { id, userId },
+    });
+  }
+
   async broadcastAnnouncement(
     actor: AuthUserDto,
     dto: { title: string; message: string; targetRole?: string; branchId?: string }

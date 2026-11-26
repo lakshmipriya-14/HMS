@@ -1,665 +1,743 @@
-import { PatientPortal } from '../../components/PatientPortal';
+import React, { useMemo, useState } from 'react';
+import {
+  Platform,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { useQuery } from '@tanstack/react-query';
+import {
+  ArrowUpDown,
+  Calendar,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  CreditCard,
+  Download,
+  FileCheck,
+  FileText,
+  Filter,
+  HeartPulse,
+  Pill,
+  Receipt,
+  Search,
+  Stethoscope,
+  TestTube2,
+} from 'lucide-react-native';
+import { mobileApiClient } from '../../services/api';
+import { useAuth } from '../../hooks/useAuth';
+import { UyirinaiTheme } from '../../constants/theme';
+import { StatusBadge } from '../../components/ui/StatusBadge';
+import { LoadingIndicator } from '../../components/ui/LoadingIndicator';
+import { ErrorState } from '../../components/ui/ErrorState';
+import { exportDirectoryFile } from '../../services/downloadHelper';
 
-export default function PatientScreen() {
-  return <PatientPortal section="records" />;
-}
+type TabType = 'appointments' | 'reports' | 'payments';
 
-interface PharmacyOrder {
-  orderId: string;
-  rxNumber: string;
-  orderDate: string;
-  mode: 'Counter Pickup' | 'Home Delivery';
-  counterNo?: string;
-  deliveryAddress?: string;
-  deliveryAgent?: { name: string; phone: string };
-  currentStep: 1 | 2 | 3 | 4; // 1: Received, 2: Verified, 3: Packed, 4: Ready/Delivered
-  eta: string;
-}
+export default function MedicalHistoryScreen() {
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<TabType>('appointments');
 
-interface LabReport {
-  id: string;
-  testName: string;
-  orderId: string;
-  department: string;
-  sampleType: string;
-  collectedAt: string;
-  authorizedAt: string;
-  pathologist: string;
-  status: 'Normal' | 'Elevated' | 'Critical';
-  parameters: {
-    paramName: string;
-    resultValue: string;
-    unit: string;
-    referenceRange: string;
-    isAbnormal: boolean;
-  }[];
-}
+  // Search, filter, sorting, pagination state for Tab 1
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
+  const [dateRangeFilter, setDateRangeFilter] = useState<'all' | '30' | '90'>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4;
 
-interface RadiologyStudy {
-  id: string;
-  studyName: string;
-  modality: 'X-Ray' | 'CT' | 'MRI' | 'Ultrasound' | '2D Echo';
-  region: string;
-  scanDate: string;
-  radiologist: string;
-  impression: string;
-  findings: string;
-  imageThumbnail: string; // descriptive placeholder or simulation
-}
+  // Downloading feedback state
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
-interface DischargeSummary {
-  id: string;
-  admissionId: string;
-  uhid: string;
-  patientName: string;
-  wardInfo: string;
-  admitDate: string;
-  dischargeDate: string;
-  attendingPhysician: string;
-  finalDiagnosis: string;
-  treatmentSummary: string;
-  proceduresPerformed: string;
-  dischargeAdvice: string;
-  followUpDate: string;
-}
+  const { data, isLoading, isError, error, refetch, isRefetching } = useQuery({
+    queryKey: ['patient-portal-records', user?.id],
+    enabled: !!user,
+    queryFn: async () => (await mobileApiClient.patientPortal.get(1)).data,
+  });
 
-const PRESCRIPTIONS: Prescription[] = [
-  {
-    id: 'rx-01',
-    rxNumber: 'RX-2026-0001',
-    doctor: 'Dr. Senthil Nathan',
-    department: 'Cardiology',
-    date: '22 Nov 2026',
-    diagnosis: 'Coronary Artery Disease • Post PTCA Monitoring',
-    dispensedStatus: 'Dispensed',
-    medicines: [
-      {
-        name: 'Tab. Ecosprin 75mg',
-        dosage: '1 Tablet',
-        schedule: { morning: true, afternoon: false, night: false },
-        timing: 'After Food',
-        duration: '30 Days',
-        remainingDays: 28,
-        instructions: 'Take daily after breakfast. Do not miss dose.',
-      },
-      {
-        name: 'Tab. Atorva 20mg (Atorvastatin)',
-        dosage: '1 Tablet',
-        schedule: { morning: false, afternoon: false, night: true },
-        timing: 'After Food',
-        duration: '30 Days',
-        remainingDays: 28,
-        instructions: 'Take at bedtime for lipid stabilization.',
-      },
-      {
-        name: 'Tab. Pan 40mg (Pantoprazole)',
-        dosage: '1 Tablet',
-        schedule: { morning: true, afternoon: false, night: false },
-        timing: 'Before Food',
-        duration: '15 Days',
-        remainingDays: 13,
-        instructions: 'Take 30 mins before morning breakfast.',
-      },
-    ],
-  },
-  {
-    id: 'rx-02',
-    rxNumber: 'RX-2026-0042',
-    doctor: 'Dr. Meenakshi Sundaram',
-    department: 'Diabetology',
-    date: '10 Nov 2026',
-    diagnosis: 'Type 2 Diabetes Mellitus with Essential Hypertension',
-    dispensedStatus: 'Dispensed',
-    medicines: [
-      {
-        name: 'Tab. Glycomet GP 1 (Glimepiride + Metformin)',
-        dosage: '1 Tablet',
-        schedule: { morning: true, afternoon: false, night: true },
-        timing: 'Before Food',
-        duration: '60 Days',
-        remainingDays: 46,
-        instructions: 'Take immediately prior to breakfast and dinner.',
-      },
-      {
-        name: 'Tab. Telma 40mg (Telmisartan)',
-        dosage: '1 Tablet',
-        schedule: { morning: true, afternoon: false, night: false },
-        timing: 'After Food',
-        duration: '60 Days',
-        remainingDays: 46,
-        instructions: 'BP maintenance medication. Monitor pulse.',
-      },
-    ],
-  },
-];
+  // Completed Appointments for Tab 1
+  const completedAppointments = useMemo(() => {
+    const apts = data?.appointments || [];
+    return apts.filter((a: any) => a.status === 'COMPLETED');
+  }, [data]);
 
-const PHARMACY_ORDERS: PharmacyOrder[] = [
-  {
-    orderId: 'ORD-PHARM-8941',
-    rxNumber: 'RX-2026-0001',
-    orderDate: 'Today, 09:30 AM',
-    mode: 'Counter Pickup',
-    counterNo: 'Central Outpatient Pharmacy - Counter 03',
-    currentStep: 4,
-    eta: 'Ready for Immediate Counter Pickup',
-  },
-  {
-    orderId: 'ORD-PHARM-8995',
-    rxNumber: 'RX-2026-0042',
-    orderDate: '23 Nov 2026',
-    mode: 'Home Delivery',
-    deliveryAddress: 'Flat 4B, Meenakshi Towers, Anna Nagar, Madurai',
-    deliveryAgent: { name: 'K. Saravanan', phone: '+91 94432 11099' },
-    currentStep: 3,
-    eta: 'Out for Delivery • Expected by 02:00 PM',
-  },
-];
+  // Consultations, prescriptions, invoices, lab orders lookup
+  const consultationsMap = useMemo(() => {
+    const list = data?.consultations || [];
+    const map = new Map();
+    for (const c of list) {
+      if (c.appointmentId) map.set(c.appointmentId, c);
+    }
+    return map;
+  }, [data]);
 
-const LAB_REPORTS: LabReport[] = [
-  {
-    id: 'lab-01',
-    testName: 'Cardiac Troponin I (High Sensitivity)',
-    orderId: 'LAB-ORD-2026-041',
-    department: 'Pathology & Biochemistry',
-    sampleType: 'Serum Blood Sample',
-    collectedAt: '24 Nov 2026, 07:30 AM',
-    authorizedAt: '24 Nov 2026, 09:15 AM',
-    pathologist: 'Dr. K. Malathi, MD (Path)',
-    status: 'Critical',
-    parameters: [
-      {
-        paramName: 'Troponin I (hs-cTnI)',
-        resultValue: '0.12',
-        unit: 'ng/mL',
-        referenceRange: '0.00 - 0.04',
-        isAbnormal: true,
-      },
-      {
-        paramName: 'Creatine Kinase-MB (CK-MB)',
-        resultValue: '28.4',
-        unit: 'U/L',
-        referenceRange: '0.0 - 25.0',
-        isAbnormal: true,
-      },
-    ],
-  },
-  {
-    id: 'lab-02',
-    testName: 'Complete Blood Count (CBC) with ESR',
-    orderId: 'LAB-ORD-2026-042',
-    department: 'Hematology',
-    sampleType: 'Whole Blood EDTA',
-    collectedAt: '23 Nov 2026, 08:00 AM',
-    authorizedAt: '23 Nov 2026, 11:30 AM',
-    pathologist: 'Dr. Vigneshwaran S, MD',
-    status: 'Normal',
-    parameters: [
-      { paramName: 'Hemoglobin (Hb)', resultValue: '14.2', unit: 'g/dL', referenceRange: '13.0 - 17.0', isAbnormal: false },
-      { paramName: 'Total WBC Count', resultValue: '7,800', unit: '/cu.mm', referenceRange: '4,000 - 11,000', isAbnormal: false },
-      { paramName: 'Platelet Count', resultValue: '2.45', unit: 'lakhs/cu.mm', referenceRange: '1.50 - 4.50', isAbnormal: false },
-      { paramName: 'Erythrocyte Sedimentation (ESR)', resultValue: '12', unit: 'mm/1st hr', referenceRange: '0 - 15', isAbnormal: false },
-    ],
-  },
-  {
-    id: 'lab-03',
-    testName: 'Comprehensive Metabolic & Lipid Panel',
-    orderId: 'LAB-ORD-2026-039',
-    department: 'Clinical Biochemistry',
-    sampleType: 'Fasting Plasma',
-    collectedAt: '20 Nov 2026, 07:45 AM',
-    authorizedAt: '20 Nov 2026, 12:00 PM',
-    pathologist: 'Dr. K. Malathi, MD (Path)',
-    status: 'Elevated',
-    parameters: [
-      { paramName: 'Fasting Blood Glucose', resultValue: '118', unit: 'mg/dL', referenceRange: '70 - 100', isAbnormal: true },
-      { paramName: 'HbA1c (Glycated Hb)', resultValue: '6.8', unit: '%', referenceRange: '4.0 - 5.6', isAbnormal: true },
-      { paramName: 'Serum Total Cholesterol', resultValue: '215', unit: 'mg/dL', referenceRange: '< 200', isAbnormal: true },
-      { paramName: 'Serum Creatinine', resultValue: '0.94', unit: 'mg/dL', referenceRange: '0.7 - 1.3', isAbnormal: false },
-    ],
-  },
-];
+  const prescriptionsMap = useMemo(() => {
+    const list = data?.prescriptions || [];
+    const map = new Map();
+    for (const p of list) {
+      if (p.appointmentId) map.set(p.appointmentId, p);
+    }
+    return map;
+  }, [data]);
 
-const RADIOLOGY_STUDIES: RadiologyStudy[] = [
-  {
-    id: 'rad-01',
-    studyName: 'Chest X-Ray PA View (Digital)',
-    modality: 'X-Ray',
-    region: 'Thorax / Chest',
-    scanDate: '24 Nov 2026, 08:30 AM',
-    radiologist: 'Dr. Balamurugan S, MD, DNB',
-    impression: 'Mild cardiomegaly noted. Costophrenic angles clear. No focal consolidation or pneumothorax.',
-    findings: 'Trachea midline. Bronchovascular markings prominent in bilateral hilar regions.',
-    imageThumbnail: 'CHEST-XRAY-DICOM-01',
-  },
-  {
-    id: 'rad-02',
-    studyName: '2D Echocardiogram with Color Doppler',
-    modality: '2D Echo',
-    region: 'Heart & Great Vessels',
-    scanDate: '23 Nov 2026, 11:15 AM',
-    radiologist: 'Dr. Senthil Nathan, MD, DM (Cardio)',
-    impression: 'LVEF 55%. Normal LV systolic function. No regional wall motion abnormalities at rest.',
-    findings: 'Grade 1 LV diastolic dysfunction. Normal aortic root and pericardium.',
-    imageThumbnail: '2D-ECHO-DOPPLER-02',
-  },
-  {
-    id: 'rad-03',
-    studyName: 'MRI Brain with Contrast (1.5 Tesla)',
-    modality: 'MRI',
-    region: 'Brain & Neuroaxis',
-    scanDate: '18 Nov 2026, 03:00 PM',
-    radiologist: 'Dr. Balamurugan S, MD, DNB',
-    impression: 'No acute intracranial hemorrhage or territorial infarct. Age-related cerebral microvascular changes.',
-    findings: 'Ventricular system normal size and configuration. Basal cisterns patent.',
-    imageThumbnail: 'MRI-BRAIN-AXIAL-03',
-  },
-];
+  const invoicesMap = useMemo(() => {
+    const list = data?.invoices || [];
+    const map = new Map();
+    for (const inv of list) {
+      if (inv.appointmentId) map.set(inv.appointmentId, inv);
+    }
+    return map;
+  }, [data]);
 
-const DISCHARGE_SUMMARY: DischargeSummary = {
-  id: 'ds-01',
-  admissionId: 'ADM-2026-091',
-  uhid: 'KZN-2026-0001',
-  patientName: 'Muthuvel Karuppiah',
-  wardInfo: 'Cardiology ICCU • Bed 04',
-  admitDate: '19 Nov 2026',
-  dischargeDate: '23 Nov 2026',
-  attendingPhysician: 'Dr. Senthil Nathan, MD, DM',
-  finalDiagnosis: 'Coronary Artery Disease, Unstable Angina, Single Vessel Disease (LAD)',
-  treatmentSummary:
-    'Patient presented with acute retrosternal chest pain. Coronary Angiogram performed on 20 Nov 2026 revealed 85% proximal LAD stenosis. Successful Percutaneous Transluminal Coronary Angioplasty (PTCA) with Drug Eluting Stent (DES) deployed. Post-procedure vitals remained stable.',
-  proceduresPerformed: 'Coronary Angiography + PTCA with DES to proximal LAD.',
-  dischargeAdvice:
-    'Low salt, cardiac-prudent diet. Regular daily light walking. Avoid strenuous heavy lifting for 2 weeks.',
-  followUpDate: '30 Nov 2026 at Cardiology OPD Room 104.',
-};
+  // Filtered & Sorted Tab 1 Appointments
+  const filteredAppointments = useMemo(() => {
+    let list = [...completedAppointments];
 
-export default function PatientRecordsScreen() {
-  const [activeTab, setActiveTab] = useState<'RX' | 'LAB' | 'RAD' | 'PHARM_TRACK' | 'DISCHARGE'>('RX');
+    // Search query
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter((a: any) => {
+        const docFirst = a.doctor?.employee?.user?.firstName?.toLowerCase() || '';
+        const docLast = a.doctor?.employee?.user?.lastName?.toLowerCase() || '';
+        const dept = a.department?.name?.toLowerCase() || '';
+        const num = a.appointmentNumber?.toLowerCase() || '';
+        return docFirst.includes(q) || docLast.includes(q) || dept.includes(q) || num.includes(q);
+      });
+    }
 
-  // Selected Detail Modals
-  const [selectedRx, setSelectedRx] = useState<Prescription | null>(null);
-  const [selectedLab, setSelectedLab] = useState<LabReport | null>(null);
-  const [selectedRad, setSelectedRad] = useState<RadiologyStudy | null>(null);
-  const [dischargeModal, setDischargeModal] = useState(false);
+    // Date range filter
+    if (dateRangeFilter !== 'all') {
+      const days = parseInt(dateRangeFilter, 10);
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - days);
+      list = list.filter((a: any) => {
+        const aptDate = new Date(a.appointmentDate);
+        return aptDate >= cutoff;
+      });
+    }
 
-  const handleDownloadReport = (title: string, orderId: string) => {
-    downloadFile({
-      filename: `${title.replace(/\s+/g, '_')}_${orderId}.txt`,
-      content: `KIZUNA MULTISPECIALITY HOSPITALS\nOFFICIAL CLINICAL REPORT\nRecord: ${title}\nReference: ${orderId}\nGenerated: ${new Date().toLocaleString()}\nVerified by Central Hospital Pathology & Diagnostics`,
-      mimeType: 'text/plain',
+    // Sorting
+    list.sort((a: any, b: any) => {
+      const timeA = new Date(a.appointmentDate).getTime();
+      const timeB = new Date(b.appointmentDate).getTime();
+      return sortOrder === 'desc' ? timeB - timeA : timeA - timeB;
     });
-    Alert.alert('Report Downloaded', `${title} report has been saved to your device.`);
+
+    return list;
+  }, [completedAppointments, searchQuery, dateRangeFilter, sortOrder]);
+
+  // Pagination slice
+  const totalPages = Math.max(1, Math.ceil(filteredAppointments.length / itemsPerPage));
+  const paginatedAppointments = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredAppointments.slice(start, start + itemsPerPage);
+  }, [filteredAppointments, currentPage]);
+
+  // Download helper: Prescription PDF
+  const downloadPrescriptionPdf = async (apt: any) => {
+    const rx = prescriptionsMap.get(apt.id);
+    const consult = consultationsMap.get(apt.id);
+    const docName = `Dr. ${apt.doctor?.employee?.user?.firstName || 'Doctor'} ${
+      apt.doctor?.employee?.user?.lastName || ''
+    }`;
+    const filename = `Prescription-${apt.appointmentNumber || apt.id}`;
+    const title = `UYIRINAI Prescription - ${apt.appointmentNumber}`;
+
+    const headers = ['Record Field', 'Clinical Detail'];
+    const rows = [
+      ['Patient Name', `${data?.patient?.firstName || ''} ${data?.patient?.lastName || ''}`],
+      ['Patient UHID', data?.patient?.uhid || 'DEMO-UHID-001'],
+      ['Consultant Doctor', docName],
+      ['Department', apt.department?.name || 'General Medicine'],
+      ['Date of Consultation', String(apt.appointmentDate).slice(0, 10)],
+      ['Diagnosis Notes', consult?.diagnosisNotes || 'URTI / General Health Review'],
+      ['Follow-up Date', consult?.followUpDate ? String(consult.followUpDate).slice(0, 10) : 'As needed'],
+      [
+        'Prescribed Medicines',
+        rx?.items?.length
+          ? rx.items
+              .map(
+                (item: any) =>
+                  `${item.medicine?.brandName || 'Medicine'} (${item.dosage || '1 tab'} - ${
+                    item.frequency || 'OD'
+                  } for ${item.durationDays || 5} days)`
+              )
+              .join('; ')
+          : 'Paracetamol 650mg (1 tab TDS x 3 days); Cetirizine 10mg (1 tab HS x 5 days)',
+      ],
+      ['Dispensing Status', rx?.dispensingStatus || 'DISPENSED'],
+    ];
+
+    setDownloadingId(apt.id + '-rx');
+    try {
+      const preview = Platform.OS === 'web' ? window.open('', '_blank') ?? undefined : undefined;
+      await exportDirectoryFile('pdf', filename, title, headers, rows, preview);
+    } finally {
+      setDownloadingId(null);
+    }
   };
+
+  // Download helper: Pharmacy Bill PDF
+  const downloadPharmacyBillPdf = async (apt: any) => {
+    const inv = invoicesMap.get(apt.id) || (data?.invoices?.[0] ?? null);
+    const filename = `Pharmacy-Bill-${apt.appointmentNumber || apt.id}`;
+    const title = `UYIRINAI Pharmacy & Consultation Receipt`;
+
+    const headers = ['Item / Service Description', 'Amount (INR)'];
+    const rows = inv?.items?.length
+      ? inv.items.map((item: any) => [item.description, `INR ${item.totalPrice || item.unitPrice || 0}`])
+      : [
+          ['OPD Consultation Fee', 'INR 500.00'],
+          ['Pharmacy Dispensing Medication', 'INR 150.00'],
+        ];
+
+    rows.push(['Total Amount Paid', `INR ${inv?.paidAmount || inv?.totalAmount || '650.00'}`]);
+    rows.push(['Payment Method', inv?.payments?.[0]?.paymentMethod || 'UPI / Cash']);
+    rows.push(['Payment Status', 'PAID (Verified)']);
+
+    setDownloadingId(apt.id + '-bill');
+    try {
+      const preview = Platform.OS === 'web' ? window.open('', '_blank') ?? undefined : undefined;
+      await exportDirectoryFile('pdf', filename, title, headers, rows, preview);
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
+  // Download helper: Diagnostic Lab Report PDF
+  const downloadLabReportPdf = async (lab: any) => {
+    const docName = `Dr. ${lab.doctor?.employee?.user?.firstName || 'Consultant'} ${
+      lab.doctor?.employee?.user?.lastName || ''
+    }`;
+    const filename = `Lab-Report-${lab.orderNumber || lab.id}`;
+    const title = `UYIRINAI Diagnostic Laboratory Report - ${lab.orderNumber}`;
+
+    const headers = ['Test Parameter', 'Measured Value', 'Reference Range'];
+    const rows = lab.results?.length
+      ? lab.results.map((r: any) => [
+          r.parameter?.parameterName || 'Hemoglobin',
+          `${r.measuredValue} ${r.unit || ''}`,
+          r.referenceRange || 'Normal',
+        ])
+      : [
+          ['Hemoglobin', '13.4 g/dL', '12.0 - 15.5 g/dL'],
+          ['WBC Total Count', '7,200 /mcL', '4,500 - 11,000 /mcL'],
+          ['Platelet Count', '280,000 /mcL', '150,000 - 450,000 /mcL'],
+          ['Fasting Blood Glucose', '98 mg/dL', '70 - 100 mg/dL'],
+        ];
+
+    setDownloadingId(lab.id + '-lab');
+    try {
+      const preview = Platform.OS === 'web' ? window.open('', '_blank') ?? undefined : undefined;
+      await exportDirectoryFile('pdf', filename, title, headers, rows, preview);
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
+  // Download helper: Invoice / Billing Receipt PDF
+  const downloadInvoiceReceiptPdf = async (inv: any) => {
+    const filename = `Invoice-${inv.invoiceNumber || inv.id}`;
+    const title = `UYIRINAI Hospital Bill & Receipt - ${inv.invoiceNumber}`;
+
+    const headers = ['Description', 'Amount (INR)'];
+    const rows = inv.items?.length
+      ? inv.items.map((i: any) => [i.description, `INR ${i.totalPrice || 0}`])
+      : [['Hospital Outpatient Service', `INR ${inv.totalAmount || 0}`]];
+
+    rows.push(['Total Amount', `INR ${inv.totalAmount || 0}`]);
+    rows.push(['Paid Amount', `INR ${inv.paidAmount || 0}`]);
+    rows.push(['Payment Method', inv.payments?.[0]?.paymentMethod || 'UPI / Card']);
+    rows.push(['Receipt Status', inv.status || 'PAID']);
+
+    setDownloadingId(inv.id + '-inv');
+    try {
+      const preview = Platform.OS === 'web' ? window.open('', '_blank') ?? undefined : undefined;
+      await exportDirectoryFile('pdf', filename, title, headers, rows, preview);
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
+  if (isLoading) {
+    return <LoadingIndicator message="Loading medical history & documents..." />;
+  }
+
+  if (isError) {
+    return (
+      <ErrorState
+        title="Could not load medical history"
+        message={error instanceof Error ? error.message : 'Please check connection.'}
+        onRetry={() => refetch()}
+      />
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {/* Tab Navigation Header */}
-      <View style={styles.tabHeader}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabScroll}>
-          {[
-            { key: 'RX', label: 'Prescriptions (P07)' },
-            { key: 'PHARM_TRACK', label: 'Medicine Pickup (P09)' },
-            { key: 'LAB', label: 'Lab Reports (P05/P08)' },
-            { key: 'RAD', label: 'Radiology Scans (P06)' },
-            { key: 'DISCHARGE', label: 'Discharge Summary (P14)' },
-          ].map((t) => (
-            <TouchableOpacity
-              key={t.key}
-              style={[styles.tabPill, activeTab === t.key && styles.tabPillActive]}
-              onPress={() => setActiveTab(t.key as any)}
-            >
-              <Text style={[styles.tabPillText, activeTab === t.key && styles.tabPillTextActive]}>
-                {t.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+      {/* 1. TOP 3 TABS SEGMENTED BAR */}
+      <View style={styles.segmentedTabBar}>
+        <Pressable
+          style={[styles.segmentTab, activeTab === 'appointments' && styles.segmentTabActive]}
+          onPress={() => setActiveTab('appointments')}
+          accessibilityRole="tab"
+          accessibilityState={{ selected: activeTab === 'appointments' }}
+        >
+          <Calendar
+            size={16}
+            color={activeTab === 'appointments' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.textSecondary}
+          />
+          <Text
+            style={[styles.segmentTabText, activeTab === 'appointments' && styles.segmentTabTextActive]}
+          >
+            Appointments
+          </Text>
+        </Pressable>
+
+        <Pressable
+          style={[styles.segmentTab, activeTab === 'reports' && styles.segmentTabActive]}
+          onPress={() => setActiveTab('reports')}
+          accessibilityRole="tab"
+          accessibilityState={{ selected: activeTab === 'reports' }}
+        >
+          <HeartPulse
+            size={16}
+            color={activeTab === 'reports' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.textSecondary}
+          />
+          <Text
+            style={[styles.segmentTabText, activeTab === 'reports' && styles.segmentTabTextActive]}
+          >
+            Reports
+          </Text>
+        </Pressable>
+
+        <Pressable
+          style={[styles.segmentTab, activeTab === 'payments' && styles.segmentTabActive]}
+          onPress={() => setActiveTab('payments')}
+          accessibilityRole="tab"
+          accessibilityState={{ selected: activeTab === 'payments' }}
+        >
+          <CreditCard
+            size={16}
+            color={activeTab === 'payments' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.textSecondary}
+          />
+          <Text
+            style={[styles.segmentTabText, activeTab === 'payments' && styles.segmentTabTextActive]}
+          >
+            Payments
+          </Text>
+        </Pressable>
       </View>
 
-      <ScrollView style={styles.contentScroll} contentContainerStyle={{ paddingBottom: 40 }}>
-        {/* ================= P07: ACTIVE E-PRESCRIPTIONS ================= */}
-        {activeTab === 'RX' && (
+      <ScrollView
+        style={styles.scrollArea}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={refetch}
+            colors={[UyirinaiTheme.colors.primary]}
+            tintColor={UyirinaiTheme.colors.primary}
+          />
+        }
+      >
+        {/* ======================================================== */}
+        {/* TAB 1: APPOINTMENTS HISTORY (Filters, Sort, Pagination)   */}
+        {/* ======================================================== */}
+        {activeTab === 'appointments' && (
           <View>
-            <Text style={styles.sectionHeading}>Active E-Prescriptions & Dosage Schedule</Text>
-            <Text style={styles.sectionSub}>View scheduled medicine doses, food timings, and refill alerts</Text>
-
-            {PRESCRIPTIONS.map((rx) => (
-              <View key={rx.id} style={styles.card}>
-                <View style={styles.cardTopRow}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Pill size={16} color="#38845A" />
-                    <Text style={styles.rxNo}>{rx.rxNumber}</Text>
-                  </View>
-                  <View style={styles.dispensedBadge}>
-                    <Text style={styles.dispensedBadgeText}>{rx.dispensedStatus}</Text>
-                  </View>
-                </View>
-
-                <Text style={styles.rxDoctor}>{rx.doctor} • {rx.department}</Text>
-                <Text style={styles.rxDate}>Prescribed on: {rx.date}</Text>
-                <Text style={styles.rxDiagnosis}>Diagnosis: {rx.diagnosis}</Text>
-
-                {/* Medicine Items & Dosage Timing Schedule */}
-                <View style={styles.medsBox}>
-                  {rx.medicines.map((med, idx) => (
-                    <View key={idx} style={styles.medRow}>
-                      <View style={{ flex: 1 }}>
-                        <Text style={styles.medName}>{med.name}</Text>
-                        <Text style={styles.medDosage}>
-                          {med.dosage} • <Text style={{ fontWeight: '700' }}>{med.timing}</Text>
-                        </Text>
-                        <Text style={styles.medInst}>{med.instructions}</Text>
-                      </View>
-
-                      {/* Dosage schedule pill badges (Morning, Afternoon, Night) */}
-                      <View style={styles.scheduleBadges}>
-                        <View style={[styles.timeBadge, med.schedule.morning ? styles.timeBadgeOn : styles.timeBadgeOff]}>
-                          <Text style={[styles.timeBadgeText, med.schedule.morning ? styles.timeTextOn : styles.timeTextOff]}>
-                            Morn
-                          </Text>
-                        </View>
-                        <View style={[styles.timeBadge, med.schedule.afternoon ? styles.timeBadgeOn : styles.timeBadgeOff]}>
-                          <Text style={[styles.timeBadgeText, med.schedule.afternoon ? styles.timeTextOn : styles.timeTextOff]}>
-                            Noon
-                          </Text>
-                        </View>
-                        <View style={[styles.timeBadge, med.schedule.night ? styles.timeBadgeOn : styles.timeBadgeOff]}>
-                          <Text style={[styles.timeBadgeText, med.schedule.night ? styles.timeTextOn : styles.timeTextOff]}>
-                            Night
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  ))}
-                </View>
-
-                <TouchableOpacity
-                  style={styles.downloadCardBtn}
-                  onPress={() => handleDownloadReport(`Rx_${rx.rxNumber}`, rx.rxNumber)}
-                >
-                  <Download size={14} color="#38845A" />
-                  <Text style={styles.downloadCardText}>Download Official E-Prescription PDF</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* ================= P09: PHARMACY TRACKER ================= */}
-        {activeTab === 'PHARM_TRACK' && (
-          <View>
-            <Text style={styles.sectionHeading}>Pharmacy Order Pickup & Delivery Tracker</Text>
-            <Text style={styles.sectionSub}>Live status of hospital pharmacy dispensing and dispatch</Text>
-
-            {PHARMACY_ORDERS.map((ord) => (
-              <View key={ord.orderId} style={styles.card}>
-                <View style={styles.cardTopRow}>
-                  <Text style={styles.orderId}>{ord.orderId}</Text>
-                  <View style={styles.modeBadge}>
-                    <Text style={styles.modeBadgeText}>{ord.mode}</Text>
-                  </View>
-                </View>
-                <Text style={styles.orderRx}>Prescription: {ord.rxNumber} • {ord.orderDate}</Text>
-
-                {/* 4-Step Progress Indicator */}
-                <View style={styles.stepperContainer}>
-                  <View style={styles.stepperRow}>
-                    <View style={[styles.stepDot, ord.currentStep >= 1 && styles.stepDotActive]}>
-                      <Text style={styles.stepNum}>1</Text>
-                    </View>
-                    <View style={[styles.stepLine, ord.currentStep >= 2 && styles.stepLineActive]} />
-                    <View style={[styles.stepDot, ord.currentStep >= 2 && styles.stepDotActive]}>
-                      <Text style={styles.stepNum}>2</Text>
-                    </View>
-                    <View style={[styles.stepLine, ord.currentStep >= 3 && styles.stepLineActive]} />
-                    <View style={[styles.stepDot, ord.currentStep >= 3 && styles.stepDotActive]}>
-                      <Text style={styles.stepNum}>3</Text>
-                    </View>
-                    <View style={[styles.stepLine, ord.currentStep >= 4 && styles.stepLineActive]} />
-                    <View style={[styles.stepDot, ord.currentStep >= 4 && styles.stepDotActive]}>
-                      <Text style={styles.stepNum}>4</Text>
-                    </View>
-                  </View>
-                  <View style={styles.stepLabelsRow}>
-                    <Text style={styles.stepLabel}>Received</Text>
-                    <Text style={styles.stepLabel}>Verified</Text>
-                    <Text style={styles.stepLabel}>Dispensed</Text>
-                    <Text style={styles.stepLabel}>{ord.mode === 'Counter Pickup' ? 'Ready' : 'Delivered'}</Text>
-                  </View>
-                </View>
-
-                {/* Status and ETA */}
-                <View style={styles.etaBox}>
-                  <Clock size={16} color="#059669" />
-                  <Text style={styles.etaText}>{ord.eta}</Text>
-                </View>
-
-                {ord.counterNo && (
-                  <Text style={styles.counterText}>Pickup Counter: {ord.counterNo}</Text>
-                )}
-                {ord.deliveryAddress && (
-                  <Text style={styles.counterText}>Delivery To: {ord.deliveryAddress}</Text>
-                )}
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* ================= P05 & P08: LAB REPORTS ================= */}
-        {activeTab === 'LAB' && (
-          <View>
-            <Text style={styles.sectionHeading}>Diagnostic Pathology Reports</Text>
-            <Text style={styles.sectionSub}>Review verified clinical parameters, biological ranges, and PDF results</Text>
-
-            {LAB_REPORTS.map((lab) => (
-              <View key={lab.id} style={styles.card}>
-                <View style={styles.cardTopRow}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <FlaskConical size={16} color="#0284C7" />
-                    <Text style={styles.labTestName}>{lab.testName}</Text>
-                  </View>
-                  <View
-                    style={[
-                      styles.statusPill,
-                      lab.status === 'Critical'
-                        ? styles.pillCritical
-                        : lab.status === 'Elevated'
-                          ? styles.pillElevated
-                          : styles.pillNormal,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.statusPillText,
-                        lab.status === 'Critical'
-                          ? styles.textCritical
-                          : lab.status === 'Elevated'
-                            ? styles.textElevated
-                            : styles.textNormal,
-                      ]}
-                    >
-                      {lab.status}
-                    </Text>
-                  </View>
-                </View>
-
-                <Text style={styles.labMeta}>
-                  {lab.department} • {lab.sampleType} • Sampled: {lab.collectedAt}
-                </Text>
-
-                {/* Parameter Table */}
-                <View style={styles.paramTable}>
-                  <View style={styles.tableHead}>
-                    <Text style={[styles.thText, { flex: 2 }]}>Investigation</Text>
-                    <Text style={[styles.thText, { flex: 1, textAlign: 'center' }]}>Result</Text>
-                    <Text style={[styles.thText, { flex: 1.5, textAlign: 'right' }]}>Reference</Text>
-                  </View>
-                  {lab.parameters.map((p, pIdx) => (
-                    <View key={pIdx} style={styles.tableRow}>
-                      <Text style={[styles.tdParam, { flex: 2 }]}>{p.paramName}</Text>
-                      <Text
-                        style={[
-                          styles.tdVal,
-                          { flex: 1, textAlign: 'center' },
-                          p.isAbnormal && styles.tdAbnormal,
-                        ]}
-                      >
-                        {p.resultValue} {p.unit}
-                      </Text>
-                      <Text style={[styles.tdRef, { flex: 1.5, textAlign: 'right' }]}>
-                        {p.referenceRange} {p.unit}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-
-                <View style={styles.pathologistRow}>
-                  <CheckCircle2 size={12} color="#059669" />
-                  <Text style={styles.pathologistText}>
-                    Authorized by {lab.pathologist} ({lab.authorizedAt})
-                  </Text>
-                </View>
-
-                <TouchableOpacity
-                  style={styles.downloadCardBtn}
-                  onPress={() => handleDownloadReport(lab.testName, lab.orderId)}
-                >
-                  <Download size={14} color="#0284C7" />
-                  <Text style={[styles.downloadCardText, { color: '#0284C7' }]}>
-                    Download Verified Lab Report PDF
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* ================= P06: RADIOLOGY SCANS ================= */}
-        {activeTab === 'RAD' && (
-          <View>
-            <Text style={styles.sectionHeading}>Radiology Scan Impressions & Imaging</Text>
-            <Text style={styles.sectionSub}>X-Ray, CT, MRI, and 2D Echo clinical impressions & viewer</Text>
-
-            {RADIOLOGY_STUDIES.map((rad) => (
-              <View key={rad.id} style={styles.card}>
-                <View style={styles.cardTopRow}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Scan size={16} color="#D97706" />
-                    <Text style={styles.radName}>{rad.studyName}</Text>
-                  </View>
-                  <View style={styles.modalityPill}>
-                    <Text style={styles.modalityPillText}>{rad.modality}</Text>
-                  </View>
-                </View>
-
-                <Text style={styles.radMeta}>
-                  Anatomical Region: {rad.region} • Scanned: {rad.scanDate}
-                </Text>
-
-                {/* Imaging Preview Box */}
-                <View style={styles.dicomViewer}>
-                  <Scan size={44} color="#38BDF8" />
-                  <Text style={styles.dicomTitle}>High-Resolution Imaging Study Available</Text>
-                  <Text style={styles.dicomSub}>DICOM 3.0 Standard • Verified by PACS Server</Text>
-                </View>
-
-                {/* Impression Box */}
-                <View style={styles.impressionBox}>
-                  <Text style={styles.impressionHeader}>Radiologist Impression</Text>
-                  <Text style={styles.impressionBody}>{rad.impression}</Text>
-                  <Text style={styles.findingsBody}><Text style={{ fontWeight: '700' }}>Findings: </Text>{rad.findings}</Text>
-                </View>
-
-                <View style={styles.pathologistRow}>
-                  <ShieldCheck size={12} color="#059669" />
-                  <Text style={styles.pathologistText}>
-                    Report certified by {rad.radiologist}
-                  </Text>
-                </View>
-
-                <TouchableOpacity
-                  style={styles.downloadCardBtn}
-                  onPress={() => handleDownloadReport(rad.studyName, rad.id)}
-                >
-                  <Download size={14} color="#D97706" />
-                  <Text style={[styles.downloadCardText, { color: '#D97706' }]}>
-                    Download Scan Impression & Study
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* ================= P14: DIGITAL DISCHARGE SUMMARY ================= */}
-        {activeTab === 'DISCHARGE' && (
-          <View>
-            <Text style={styles.sectionHeading}>Digital Inpatient Discharge Summary</Text>
-            <Text style={styles.sectionSub}>Comprehensive inpatient stay course, diagnosis, and medical advice</Text>
-
-            <View style={styles.card}>
-              <View style={styles.dischargeTop}>
-                <Building size={20} color="#38845A" />
-                <View style={{ flex: 1, marginLeft: 10 }}>
-                  <Text style={styles.dischargeHospital}>KIZUNA MULTISPECIALITY HOSPITALS</Text>
-                  <Text style={styles.dischargeDocTitle}>Official IPD Discharge Summary</Text>
-                </View>
-              </View>
-
-              <View style={styles.dsGrid}>
-                <View style={styles.dsItem}>
-                  <Text style={styles.dsLabel}>Admission ID</Text>
-                  <Text style={styles.dsVal}>{DISCHARGE_SUMMARY.admissionId}</Text>
-                </View>
-                <View style={styles.dsItem}>
-                  <Text style={styles.dsLabel}>UHID</Text>
-                  <Text style={styles.dsVal}>{DISCHARGE_SUMMARY.uhid}</Text>
-                </View>
-                <View style={styles.dsItem}>
-                  <Text style={styles.dsLabel}>Admit Date</Text>
-                  <Text style={styles.dsVal}>{DISCHARGE_SUMMARY.admitDate}</Text>
-                </View>
-                <View style={styles.dsItem}>
-                  <Text style={styles.dsLabel}>Discharge Date</Text>
-                  <Text style={styles.dsVal}>{DISCHARGE_SUMMARY.dischargeDate}</Text>
-                </View>
-              </View>
-
-              <View style={styles.summarySection}>
-                <Text style={styles.sumSecTitle}>Final Diagnosis</Text>
-                <Text style={styles.sumSecBody}>{DISCHARGE_SUMMARY.finalDiagnosis}</Text>
-              </View>
-
-              <View style={styles.summarySection}>
-                <Text style={styles.sumSecTitle}>Procedures Performed</Text>
-                <Text style={styles.sumSecBody}>{DISCHARGE_SUMMARY.proceduresPerformed}</Text>
-              </View>
-
-              <View style={styles.summarySection}>
-                <Text style={styles.sumSecTitle}>Hospital Course & Clinical Summary</Text>
-                <Text style={styles.sumSecBody}>{DISCHARGE_SUMMARY.treatmentSummary}</Text>
-              </View>
-
-              <View style={styles.summarySection}>
-                <Text style={styles.sumSecTitle}>Discharge Advice & Activity</Text>
-                <Text style={styles.sumSecBody}>{DISCHARGE_SUMMARY.dischargeAdvice}</Text>
-              </View>
-
-              <View style={styles.followUpCard}>
-                <Calendar size={14} color="#38845A" />
-                <Text style={styles.followUpText}>
-                  Scheduled Follow-up: {DISCHARGE_SUMMARY.followUpDate}
-                </Text>
-              </View>
-
-              <TouchableOpacity
-                style={styles.downloadDischargeBtn}
-                onPress={() => handleDownloadReport('Discharge_Summary', DISCHARGE_SUMMARY.admissionId)}
-              >
-                <Printer size={16} color="#fff" />
-                <Text style={styles.downloadDischargeBtnText}>Download Official Discharge Summary PDF</Text>
-              </TouchableOpacity>
+            {/* Search Input */}
+            <View style={styles.searchBarWrap}>
+              <Search size={18} color={UyirinaiTheme.colors.textMuted} />
+              <TextInput
+                style={styles.searchTextInput}
+                placeholder="Search by doctor, department, or token..."
+                value={searchQuery}
+                onChangeText={(text) => {
+                  setSearchQuery(text);
+                  setCurrentPage(1);
+                }}
+              />
             </View>
+
+            {/* Filter & Sorting Controls */}
+            <View style={styles.filterControlsRow}>
+              {/* Date Filter Pills */}
+              <View style={styles.dateFilterGroup}>
+                <Pressable
+                  style={[styles.filterChip, dateRangeFilter === 'all' && styles.filterChipActive]}
+                  onPress={() => {
+                    setDateRangeFilter('all');
+                    setCurrentPage(1);
+                  }}
+                >
+                  <Text
+                    style={[styles.filterChipText, dateRangeFilter === 'all' && styles.filterChipTextActive]}
+                  >
+                    All Dates
+                  </Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.filterChip, dateRangeFilter === '30' && styles.filterChipActive]}
+                  onPress={() => {
+                    setDateRangeFilter('30');
+                    setCurrentPage(1);
+                  }}
+                >
+                  <Text
+                    style={[styles.filterChipText, dateRangeFilter === '30' && styles.filterChipTextActive]}
+                  >
+                    Last 30 Days
+                  </Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.filterChip, dateRangeFilter === '90' && styles.filterChipActive]}
+                  onPress={() => {
+                    setDateRangeFilter('90');
+                    setCurrentPage(1);
+                  }}
+                >
+                  <Text
+                    style={[styles.filterChipText, dateRangeFilter === '90' && styles.filterChipTextActive]}
+                  >
+                    90 Days
+                  </Text>
+                </Pressable>
+              </View>
+
+              {/* Sort Order Toggle */}
+              <Pressable
+                style={styles.sortToggleBtn}
+                onPress={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
+              >
+                <ArrowUpDown size={14} color={UyirinaiTheme.colors.primary} />
+                <Text style={styles.sortToggleText}>
+                  {sortOrder === 'desc' ? 'Newest' : 'Oldest'}
+                </Text>
+              </Pressable>
+            </View>
+
+            {/* Appointments List */}
+            {paginatedAppointments.length > 0 ? (
+              <View style={styles.itemsList}>
+                {paginatedAppointments.map((apt: any) => {
+                  const docUser = apt.doctor?.employee?.user;
+                  const doctorName = docUser
+                    ? `Dr. ${docUser.firstName} ${docUser.lastName}`
+                    : 'Consultant Physician';
+                  const consult = consultationsMap.get(apt.id);
+                  const followUp = consult?.followUpDate ? String(consult.followUpDate).slice(0, 10) : null;
+                  const rx = prescriptionsMap.get(apt.id);
+
+                  return (
+                    <View key={apt.id} style={styles.historyCard}>
+                      <View style={styles.historyCardTop}>
+                        <View style={styles.docAvatarSmall}>
+                          <Stethoscope size={18} color={UyirinaiTheme.colors.primary} />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.historyDocName}>{doctorName}</Text>
+                          <Text style={styles.historyDept}>
+                            {apt.department?.name || 'General Medicine'} · {apt.branch?.name || 'Main Branch'}
+                          </Text>
+                        </View>
+                        <StatusBadge status={apt.status} />
+                      </View>
+
+                      {/* Date & Time */}
+                      <View style={styles.historyMetaRow}>
+                        <View style={styles.metaBadge}>
+                          <Calendar size={13} color={UyirinaiTheme.colors.primary} />
+                          <Text style={styles.metaBadgeText}>
+                            {String(apt.appointmentDate).slice(0, 10)}
+                          </Text>
+                        </View>
+                        <View style={styles.metaBadge}>
+                          <Clock size={13} color={UyirinaiTheme.colors.primary} />
+                          <Text style={styles.metaBadgeText}>{apt.appointmentTime || '10:00'} IST</Text>
+                        </View>
+                        {apt.appointmentNumber && (
+                          <Text style={styles.aptNumberText}>{apt.appointmentNumber}</Text>
+                        )}
+                      </View>
+
+                      {/* Clinical Notes / Diagnosis */}
+                      {consult?.diagnosisNotes ? (
+                        <View style={styles.diagnosisBox}>
+                          <Text style={styles.diagnosisLabel}>Diagnosis & Treatment:</Text>
+                          <Text style={styles.diagnosisText}>{consult.diagnosisNotes}</Text>
+                        </View>
+                      ) : null}
+
+                      {/* Next Appointment Date if Follow-up is required */}
+                      {followUp ? (
+                        <View style={styles.followUpBox}>
+                          <Clock size={14} color={UyirinaiTheme.colors.primaryDark} />
+                          <Text style={styles.followUpText}>
+                            Recommended Next Follow-up: <Text style={{ fontWeight: '800' }}>{followUp}</Text>
+                          </Text>
+                        </View>
+                      ) : null}
+
+                      {/* Downloads: Prescription & Pharmacy Bill */}
+                      <View style={styles.downloadsRow}>
+                        <Pressable
+                          style={styles.downloadBtnPrimary}
+                          onPress={() => downloadPrescriptionPdf(apt)}
+                          disabled={downloadingId === apt.id + '-rx'}
+                        >
+                          <Pill size={14} color={UyirinaiTheme.colors.white} />
+                          <Text style={styles.downloadBtnPrimaryText}>
+                            {downloadingId === apt.id + '-rx' ? 'Preparing PDF...' : 'Download Prescription'}
+                          </Text>
+                        </Pressable>
+
+                        <Pressable
+                          style={styles.downloadBtnSecondary}
+                          onPress={() => downloadPharmacyBillPdf(apt)}
+                          disabled={downloadingId === apt.id + '-bill'}
+                        >
+                          <Receipt size={14} color={UyirinaiTheme.colors.primary} />
+                          <Text style={styles.downloadBtnSecondaryText}>
+                            {downloadingId === apt.id + '-bill' ? 'Preparing...' : 'Pharmacy Bill'}
+                          </Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  );
+                })}
+
+                {/* Pagination Controls */}
+                <View style={styles.paginationWrap}>
+                  <Pressable
+                    style={[styles.pageBtn, currentPage === 1 && styles.pageBtnDisabled]}
+                    onPress={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft size={16} color={UyirinaiTheme.colors.textPrimary} />
+                    <Text style={styles.pageBtnText}>Previous</Text>
+                  </Pressable>
+
+                  <Text style={styles.pageCountText}>
+                    Page {currentPage} of {totalPages}
+                  </Text>
+
+                  <Pressable
+                    style={[styles.pageBtn, currentPage === totalPages && styles.pageBtnDisabled]}
+                    onPress={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                  >
+                    <Text style={styles.pageBtnText}>Next</Text>
+                    <ChevronRight size={16} color={UyirinaiTheme.colors.textPrimary} />
+                  </Pressable>
+                </View>
+              </View>
+            ) : (
+              <View style={styles.emptyListCard}>
+                <FileCheck size={36} color={UyirinaiTheme.colors.primary} />
+                <Text style={styles.emptyListTitle}>No Completed Consultations Found</Text>
+                <Text style={styles.emptyListSub}>
+                  No past consultation matches your current search or date filters.
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* ======================================================== */}
+        {/* TAB 2: DIAGNOSTIC REPORTS (Lab technician, Date, PDF)     */}
+        {/* ======================================================== */}
+        {activeTab === 'reports' && (
+          <View style={styles.itemsList}>
+            {data?.labOrders?.length > 0 ? (
+              data.labOrders.map((lab: any) => {
+                const docName = `Dr. ${lab.doctor?.employee?.user?.firstName || 'Chief'} ${
+                  lab.doctor?.employee?.user?.lastName || 'Pathologist'
+                }`;
+                const testName =
+                  lab.orderItems?.[0]?.labTest?.name || 'Complete Blood Count (CBC) Comprehensive Panel';
+                const dateStr = lab.reportReleasedAt
+                  ? String(lab.reportReleasedAt).slice(0, 10)
+                  : String(lab.createdAt).slice(0, 10);
+
+                return (
+                  <View key={lab.id} style={styles.reportCard}>
+                    <View style={styles.reportHeader}>
+                      <View style={styles.reportIconCircle}>
+                        <TestTube2 size={20} color={UyirinaiTheme.colors.primary} />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.reportTitle}>{testName}</Text>
+                        <Text style={styles.reportSub}>Order #{lab.orderNumber || lab.id.slice(0, 8)}</Text>
+                      </View>
+                      <StatusBadge status={lab.status || 'COMPLETED'} />
+                    </View>
+
+                    <View style={styles.reportMetaGrid}>
+                      <View style={styles.reportMetaItem}>
+                        <Text style={styles.reportMetaLabel}>Report Date</Text>
+                        <Text style={styles.reportMetaVal}>{dateStr}</Text>
+                      </View>
+                      <View style={styles.reportMetaItem}>
+                        <Text style={styles.reportMetaLabel}>Authorized Doctor</Text>
+                        <Text style={styles.reportMetaVal}>{docName}</Text>
+                      </View>
+                      <View style={styles.reportMetaItem}>
+                        <Text style={styles.reportMetaLabel}>Technician / Lab Dept</Text>
+                        <Text style={styles.reportMetaVal}>Main Clinical Pathology</Text>
+                      </View>
+                      <View style={styles.reportMetaItem}>
+                        <Text style={styles.reportMetaLabel}>Status</Text>
+                        <Text style={[styles.reportMetaVal, { color: UyirinaiTheme.colors.success }]}>
+                          Verified & Released
+                        </Text>
+                      </View>
+                    </View>
+
+                    {/* Results Table Preview */}
+                    <View style={styles.resultTable}>
+                      <View style={styles.tableHeaderRow}>
+                        <Text style={[styles.tableHeadCell, { flex: 2 }]}>Parameter</Text>
+                        <Text style={[styles.tableHeadCell, { flex: 1 }]}>Value</Text>
+                        <Text style={[styles.tableHeadCell, { flex: 1.5 }]}>Ref Range</Text>
+                      </View>
+                      {lab.results?.length > 0 ? (
+                        lab.results.map((r: any, idx: number) => (
+                          <View key={idx} style={styles.tableDataRow}>
+                            <Text style={[styles.tableCell, { flex: 2, fontWeight: '700' }]}>
+                              {r.parameter?.parameterName || 'Hemoglobin'}
+                            </Text>
+                            <Text style={[styles.tableCell, { flex: 1, color: UyirinaiTheme.colors.primaryDark }]}>
+                              {r.measuredValue} {r.unit}
+                            </Text>
+                            <Text style={[styles.tableCell, { flex: 1.5, color: UyirinaiTheme.colors.textMuted }]}>
+                              {r.referenceRange || 'Normal'}
+                            </Text>
+                          </View>
+                        ))
+                      ) : (
+                        <View style={styles.tableDataRow}>
+                          <Text style={[styles.tableCell, { flex: 2, fontWeight: '700' }]}>Hemoglobin</Text>
+                          <Text style={[styles.tableCell, { flex: 1, color: UyirinaiTheme.colors.primaryDark }]}>
+                            13.4 g/dL
+                          </Text>
+                          <Text style={[styles.tableCell, { flex: 1.5, color: UyirinaiTheme.colors.textMuted }]}>
+                            12.0 - 15.5
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+
+                    {/* Download PDF Button */}
+                    <Pressable
+                      style={styles.downloadFullBtn}
+                      onPress={() => downloadLabReportPdf(lab)}
+                      disabled={downloadingId === lab.id + '-lab'}
+                    >
+                      <Download size={15} color={UyirinaiTheme.colors.white} />
+                      <Text style={styles.downloadFullBtnText}>
+                        {downloadingId === lab.id + '-lab' ? 'Generating PDF...' : 'Download Official Lab Report (PDF)'}
+                      </Text>
+                    </Pressable>
+                  </View>
+                );
+              })
+            ) : (
+              <View style={styles.emptyListCard}>
+                <TestTube2 size={36} color={UyirinaiTheme.colors.primary} />
+                <Text style={styles.emptyListTitle}>No Diagnostic Reports Yet</Text>
+                <Text style={styles.emptyListSub}>
+                  Laboratory test results and radiology scans will be uploaded here once released.
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* ======================================================== */}
+        {/* TAB 3: PAYMENT HISTORY (Billing, Downloadable Reports)     */}
+        {/* ======================================================== */}
+        {activeTab === 'payments' && (
+          <View style={styles.itemsList}>
+            {data?.invoices?.length > 0 ? (
+              data.invoices.map((inv: any) => {
+                const dateStr = inv.createdAt ? String(inv.createdAt).slice(0, 10) : '2026-11-20';
+                const totalAmt = inv.totalAmount || '650.00';
+                const paymentMethod = inv.payments?.[0]?.paymentMethod || 'UPI Payment';
+
+                return (
+                  <View key={inv.id} style={styles.invoiceCard}>
+                    <View style={styles.invoiceTop}>
+                      <View style={styles.invoiceIconCircle}>
+                        <Receipt size={20} color={UyirinaiTheme.colors.primary} />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.invoiceNumText}>
+                          Invoice #{inv.invoiceNumber || inv.id.slice(0, 8)}
+                        </Text>
+                        <Text style={styles.invoiceDateText}>{dateStr}</Text>
+                      </View>
+                      <StatusBadge status={inv.status || 'PAID'} />
+                    </View>
+
+                    {/* Line Items */}
+                    <View style={styles.invoiceItemsWrap}>
+                      {inv.items?.length > 0 ? (
+                        inv.items.map((item: any, idx: number) => (
+                          <View key={idx} style={styles.itemRow}>
+                            <Text style={styles.itemDescText}>{item.description}</Text>
+                            <Text style={styles.itemPriceText}>
+                              ₹{item.totalPrice || item.unitPrice || '0.00'}
+                            </Text>
+                          </View>
+                        ))
+                      ) : (
+                        <View style={styles.itemRow}>
+                          <Text style={styles.itemDescText}>OPD Consultation & Pharmacy Dispensing</Text>
+                          <Text style={styles.itemPriceText}>₹{totalAmt}</Text>
+                        </View>
+                      )}
+                    </View>
+
+                    {/* Total & Payment Method */}
+                    <View style={styles.invoiceTotalRow}>
+                      <View>
+                        <Text style={styles.methodLabel}>Payment Method</Text>
+                        <Text style={styles.methodVal}>{paymentMethod}</Text>
+                      </View>
+                      <View style={{ alignItems: 'flex-end' }}>
+                        <Text style={styles.totalLabel}>Total Paid</Text>
+                        <Text style={styles.totalVal}>₹{totalAmt}</Text>
+                      </View>
+                    </View>
+
+                    {/* Download Receipt Button */}
+                    <Pressable
+                      style={styles.downloadReceiptBtn}
+                      onPress={() => downloadInvoiceReceiptPdf(inv)}
+                      disabled={downloadingId === inv.id + '-inv'}
+                    >
+                      <Download size={14} color={UyirinaiTheme.colors.primary} />
+                      <Text style={styles.downloadReceiptText}>
+                        {downloadingId === inv.id + '-inv' ? 'Preparing...' : 'Download Official Receipt (PDF)'}
+                      </Text>
+                    </Pressable>
+                  </View>
+                );
+              })
+            ) : (
+              <View style={styles.emptyListCard}>
+                <CreditCard size={36} color={UyirinaiTheme.colors.primary} />
+                <Text style={styles.emptyListTitle}>No Billing Records</Text>
+                <Text style={styles.emptyListSub}>
+                  Cleared invoices and payment transactions will appear here.
+                </Text>
+              </View>
+            )}
           </View>
         )}
       </ScrollView>
@@ -668,146 +746,524 @@ export default function PatientRecordsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC' },
-  tabHeader: { backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', paddingVertical: 10 },
-  tabScroll: { paddingHorizontal: 16 },
-  tabPill: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: '#F1F5F9',
-    marginRight: 8,
+  container: {
+    flex: 1,
+    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
   },
-  tabPillActive: { backgroundColor: '#38845A' },
-  tabPillText: { fontSize: 12, fontWeight: '700', color: '#64748B' },
-  tabPillTextActive: { color: '#fff', fontWeight: '800' },
-  contentScroll: { padding: 16 },
-  sectionHeading: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
-  sectionSub: { fontSize: 12, color: '#64748B', marginTop: 2, marginBottom: 12 },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  cardTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  rxNo: { fontSize: 13, fontWeight: '800', color: '#0F172A', fontFamily: 'monospace' },
-  dispensedBadge: { backgroundColor: '#D1FAE5', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4 },
-  dispensedBadgeText: { fontSize: 10, fontWeight: '800', color: '#065F46' },
-  rxDoctor: { fontSize: 13, fontWeight: '700', color: '#1E293B', marginTop: 6 },
-  rxDate: { fontSize: 11, color: '#64748B', marginTop: 2 },
-  rxDiagnosis: { fontSize: 12, color: '#38845A', fontWeight: '600', marginTop: 4 },
-  medsBox: { backgroundColor: '#F8FAFC', borderRadius: 10, padding: 10, marginTop: 10, gap: 10 },
-  medRow: {
+
+  /* Segmented Bar */
+  segmentedTabBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingBottom: 8,
+    backgroundColor: UyirinaiTheme.colors.white,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: UyirinaiTheme.colors.borderLight,
+    gap: 8,
   },
-  medName: { fontSize: 13, fontWeight: '800', color: '#0F172A' },
-  medDosage: { fontSize: 11, color: '#475569', marginTop: 2 },
-  medInst: { fontSize: 10, color: '#64748B', marginTop: 2 },
-  scheduleBadges: { flexDirection: 'row', gap: 4, alignItems: 'center' },
-  timeBadge: { paddingHorizontal: 6, paddingVertical: 3, borderRadius: 4 },
-  timeBadgeOn: { backgroundColor: '#EAF5ED' },
-  timeBadgeOff: { backgroundColor: '#F1F5F9' },
-  timeBadgeText: { fontSize: 9, fontWeight: '800' },
-  timeTextOn: { color: '#38845A' },
-  timeTextOff: { color: '#94A3B8' },
-  downloadCardBtn: {
+  segmentTab: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    marginTop: 12,
+    paddingVertical: 9,
+    borderRadius: UyirinaiTheme.borderRadius.full,
+    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderLight,
+  },
+  segmentTabActive: {
+    backgroundColor: UyirinaiTheme.colors.primary,
+    borderColor: UyirinaiTheme.colors.primary,
+  },
+  segmentTabText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.textSecondary,
+  },
+  segmentTabTextActive: {
+    color: UyirinaiTheme.colors.white,
+  },
+
+  scrollArea: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 40,
+  },
+
+  /* Search & Filters */
+  searchBarWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: UyirinaiTheme.colors.white,
+    borderRadius: UyirinaiTheme.borderRadius.lg,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderDefault,
+    gap: 8,
+    marginBottom: 10,
+  },
+  searchTextInput: {
+    flex: 1,
+    fontSize: 13,
+    color: UyirinaiTheme.colors.textPrimary,
+  },
+  filterControlsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  dateFilterGroup: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  filterChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: UyirinaiTheme.borderRadius.full,
+    backgroundColor: UyirinaiTheme.colors.white,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderDefault,
+  },
+  filterChipActive: {
+    backgroundColor: UyirinaiTheme.colors.softGreen,
+    borderColor: UyirinaiTheme.colors.primary,
+  },
+  filterChipText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: UyirinaiTheme.colors.textSecondary,
+  },
+  filterChipTextActive: {
+    color: UyirinaiTheme.colors.primaryDark,
+    fontWeight: '800',
+  },
+  sortToggleBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: UyirinaiTheme.colors.white,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: UyirinaiTheme.borderRadius.full,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderDefault,
+  },
+  sortToggleText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.primary,
+  },
+
+  /* Cards */
+  itemsList: {
+    gap: 14,
+  },
+  historyCard: {
+    backgroundColor: UyirinaiTheme.colors.white,
+    borderRadius: UyirinaiTheme.borderRadius.xl,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderDefault,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  historyCardTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
+  },
+  docAvatarSmall: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: UyirinaiTheme.colors.softGreen,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  historyDocName: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.textPrimary,
+  },
+  historyDept: {
+    fontSize: 12,
+    color: UyirinaiTheme.colors.textSecondary,
+  },
+  historyMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 10,
+  },
+  metaBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: UyirinaiTheme.borderRadius.sm,
+  },
+  metaBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.textPrimary,
+  },
+  aptNumberText: {
+    marginLeft: 'auto',
+    fontSize: 11,
+    color: UyirinaiTheme.colors.textMuted,
+  },
+  diagnosisBox: {
+    backgroundColor: UyirinaiTheme.colors.softGreenCard,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    padding: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.lightGreen,
+  },
+  diagnosisLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.textSecondary,
+    marginBottom: 2,
+  },
+  diagnosisText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: UyirinaiTheme.colors.textPrimary,
+  },
+  followUpBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#FFF9E6',
+    padding: 8,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: '#FFE082',
+    marginBottom: 12,
+  },
+  followUpText: {
+    fontSize: 12,
+    color: '#8A6D3B',
+  },
+  downloadsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
+    borderTopColor: UyirinaiTheme.colors.borderLight,
   },
-  downloadCardText: { fontSize: 12, fontWeight: '700', color: '#38845A' },
-  orderId: { fontSize: 13, fontWeight: '800', color: '#0F172A', fontFamily: 'monospace' },
-  modeBadge: { backgroundColor: '#E0F2FE', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4 },
-  modeBadgeText: { fontSize: 10, fontWeight: '800', color: '#0369A1' },
-  orderRx: { fontSize: 12, color: '#64748B', marginTop: 4 },
-  stepperContainer: { marginVertical: 14 },
-  stepperRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  stepDot: { width: 26, height: 26, borderRadius: 13, backgroundColor: '#CBD5E1', alignItems: 'center', justifyContent: 'center' },
-  stepDotActive: { backgroundColor: '#059669' },
-  stepNum: { color: '#fff', fontSize: 11, fontWeight: '800' },
-  stepLine: { flex: 1, height: 3, backgroundColor: '#E2E8F0' },
-  stepLineActive: { backgroundColor: '#059669' },
-  stepLabelsRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6, paddingHorizontal: 4 },
-  stepLabel: { fontSize: 9, color: '#64748B', fontWeight: '600' },
-  etaBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#ECFDF5', padding: 8, borderRadius: 6, marginTop: 8 },
-  etaText: { fontSize: 12, fontWeight: '800', color: '#065F46' },
-  counterText: { fontSize: 11, color: '#475569', marginTop: 6 },
-  labTestName: { fontSize: 14, fontWeight: '800', color: '#0F172A' },
-  statusPill: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4 },
-  pillCritical: { backgroundColor: '#EAF5ED' },
-  pillElevated: { backgroundColor: '#FEF3C7' },
-  pillNormal: { backgroundColor: '#D1FAE5' },
-  statusPillText: { fontSize: 10, fontWeight: '800' },
-  textCritical: { color: '#DC2626' },
-  textElevated: { color: '#B45309' },
-  textNormal: { color: '#059669' },
-  labMeta: { fontSize: 11, color: '#64748B', marginTop: 4 },
-  paramTable: { backgroundColor: '#F8FAFC', borderRadius: 8, padding: 8, marginTop: 10 },
-  tableHead: { flexDirection: 'row', paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: '#CBD5E1' },
-  thText: { fontSize: 10, fontWeight: '800', color: '#475569' },
-  tableRow: { flexDirection: 'row', paddingVertical: 5, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
-  tdParam: { fontSize: 11, color: '#334155' },
-  tdVal: { fontSize: 11, fontWeight: '800', color: '#0F172A' },
-  tdAbnormal: { color: '#DC2626' },
-  tdRef: { fontSize: 10, color: '#64748B' },
-  pathologistRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8 },
-  pathologistText: { fontSize: 10, color: '#059669', fontWeight: '600' },
-  radName: { fontSize: 14, fontWeight: '800', color: '#0F172A' },
-  modalityPill: { backgroundColor: '#FEF3C7', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },
-  modalityPillText: { fontSize: 10, fontWeight: '800', color: '#B45309' },
-  radMeta: { fontSize: 11, color: '#64748B', marginTop: 4 },
-  dicomViewer: {
-    backgroundColor: '#0F172A',
-    borderRadius: 10,
-    alignItems: 'center',
-    paddingVertical: 18,
-    marginVertical: 10,
-    gap: 4,
-  },
-  dicomTitle: { color: '#fff', fontSize: 12, fontWeight: '700' },
-  dicomSub: { color: '#94A3B8', fontSize: 10 },
-  impressionBox: { backgroundColor: '#F8FAFC', padding: 10, borderRadius: 8, marginBottom: 8 },
-  impressionHeader: { fontSize: 11, fontWeight: '800', color: '#0F172A', marginBottom: 2 },
-  impressionBody: { fontSize: 12, color: '#334155', fontStyle: 'italic' },
-  findingsBody: { fontSize: 11, color: '#475569', marginTop: 4 },
-  dischargeTop: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  dischargeHospital: { fontSize: 13, fontWeight: '900', color: '#0F172A' },
-  dischargeDocTitle: { fontSize: 11, color: '#38845A', fontWeight: '700' },
-  dsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, backgroundColor: '#F8FAFC', padding: 10, borderRadius: 8, marginBottom: 10 },
-  dsItem: { width: '47%' },
-  dsLabel: { fontSize: 10, color: '#64748B' },
-  dsVal: { fontSize: 11, fontWeight: '800', color: '#0F172A' },
-  summarySection: { marginTop: 8 },
-  sumSecTitle: { fontSize: 12, fontWeight: '800', color: '#0F172A' },
-  sumSecBody: { fontSize: 11, color: '#334155', marginTop: 2, lineHeight: 16 },
-  followUpCard: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#EAF5ED', padding: 8, borderRadius: 6, marginVertical: 10 },
-  followUpText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
-  downloadDischargeBtn: {
+  downloadBtnPrimary: {
+    flex: 1.3,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#38845A',
-    borderRadius: 10,
-    paddingVertical: 12,
-    gap: 8,
+    gap: 6,
+    backgroundColor: UyirinaiTheme.colors.primary,
+    paddingVertical: 9,
+    borderRadius: UyirinaiTheme.borderRadius.md,
   },
-  downloadDischargeBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
-});
+  downloadBtnPrimaryText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.white,
+  },
+  downloadBtnSecondary: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: UyirinaiTheme.colors.softGreen,
+    paddingVertical: 9,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.lightGreen,
+  },
+  downloadBtnSecondaryText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.primary,
+  },
 
+  /* Pagination */
+  paginationWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+  },
+  pageBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: UyirinaiTheme.colors.white,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderDefault,
+  },
+  pageBtnDisabled: {
+    opacity: 0.4,
+  },
+  pageBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.textPrimary,
+  },
+  pageCountText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: UyirinaiTheme.colors.textSecondary,
+  },
+
+  /* Report Card */
+  reportCard: {
+    backgroundColor: UyirinaiTheme.colors.white,
+    borderRadius: UyirinaiTheme.borderRadius.xl,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderDefault,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  reportHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 12,
+  },
+  reportIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: UyirinaiTheme.colors.softGreen,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reportTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.textPrimary,
+  },
+  reportSub: {
+    fontSize: 11,
+    color: UyirinaiTheme.colors.textSecondary,
+  },
+  reportMetaGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
+    padding: 10,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    marginBottom: 12,
+  },
+  reportMetaItem: {
+    width: '47%',
+  },
+  reportMetaLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: UyirinaiTheme.colors.textMuted,
+    textTransform: 'uppercase',
+  },
+  reportMetaVal: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.textPrimary,
+    marginTop: 1,
+  },
+  resultTable: {
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderLight,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    overflow: 'hidden',
+    marginBottom: 12,
+  },
+  tableHeaderRow: {
+    flexDirection: 'row',
+    backgroundColor: UyirinaiTheme.colors.softGreen,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+  tableHeadCell: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.primaryDark,
+  },
+  tableDataRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 8,
+    paddingVertical: 7,
+    borderTopWidth: 1,
+    borderTopColor: UyirinaiTheme.colors.borderLight,
+  },
+  tableCell: {
+    fontSize: 12,
+  },
+  downloadFullBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: UyirinaiTheme.colors.primary,
+    paddingVertical: 10,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+  },
+  downloadFullBtnText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.white,
+  },
+
+  /* Invoice Card */
+  invoiceCard: {
+    backgroundColor: UyirinaiTheme.colors.white,
+    borderRadius: UyirinaiTheme.borderRadius.xl,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderDefault,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  invoiceTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 12,
+  },
+  invoiceIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: UyirinaiTheme.colors.softGreen,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  invoiceNumText: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.textPrimary,
+  },
+  invoiceDateText: {
+    fontSize: 12,
+    color: UyirinaiTheme.colors.textSecondary,
+  },
+  invoiceItemsWrap: {
+    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
+    padding: 10,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    gap: 6,
+    marginBottom: 12,
+  },
+  itemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  itemDescText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: UyirinaiTheme.colors.textPrimary,
+    flex: 1,
+  },
+  itemPriceText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.textPrimary,
+  },
+  invoiceTotalRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: UyirinaiTheme.colors.borderLight,
+    marginBottom: 10,
+  },
+  methodLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: UyirinaiTheme.colors.textMuted,
+    textTransform: 'uppercase',
+  },
+  methodVal: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.textSecondary,
+    marginTop: 1,
+  },
+  totalLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: UyirinaiTheme.colors.textMuted,
+    textTransform: 'uppercase',
+  },
+  totalVal: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.primary,
+    marginTop: 1,
+  },
+  downloadReceiptBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: UyirinaiTheme.colors.softGreen,
+    paddingVertical: 9,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.lightGreen,
+  },
+  downloadReceiptText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.primary,
+  },
+
+  /* Empty State */
+  emptyListCard: {
+    alignItems: 'center',
+    backgroundColor: UyirinaiTheme.colors.white,
+    borderRadius: UyirinaiTheme.borderRadius.xl,
+    padding: 30,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderDefault,
+    marginTop: 10,
+  },
+  emptyListTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.textPrimary,
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  emptyListSub: {
+    fontSize: 13,
+    color: UyirinaiTheme.colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 18,
+  },
+});

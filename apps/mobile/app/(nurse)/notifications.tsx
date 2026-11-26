@@ -270,5 +270,3 @@ const styles = StyleSheet.create({
   cardActionRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8 },
   actionPrompt: { fontSize: 10, fontWeight: '700', color: '#38845A' },
 });
-
-export { NotificationFeed as default } from '../../components/NotificationFeed';

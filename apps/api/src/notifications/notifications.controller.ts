@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
@@ -38,6 +38,15 @@ export class NotificationsController {
     await this.service.markAllAsRead(userId);
     return {
       message: 'All notifications marked as read',
+    };
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete notification' })
+  async deleteNotification(@Param('id') id: string, @CurrentUser('id') userId: string) {
+    await this.service.deleteNotification(id, userId);
+    return {
+      message: 'Notification deleted',
     };
   }
 
