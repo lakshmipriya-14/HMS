@@ -47,7 +47,7 @@ export default function IpdManagementScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="IPD Census & Inpatients" subtitle="Department Ward Bed Occupancy" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="IPD Census & Inpatients" subtitle="Department Ward Bed Occupancy" />
 
       {/* Summary Row */}
       <View style={styles.summaryBar}>

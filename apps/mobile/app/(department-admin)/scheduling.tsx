@@ -102,7 +102,7 @@ export default function DoctorSchedulingScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Doctor Scheduling" subtitle="Timetables & Consultation Quotas" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Doctor Scheduling" subtitle="Timetables & Consultation Quotas" />
 
       {/* Doctor Selector */}
       <View style={styles.selectorBar}>
@@ -123,7 +123,7 @@ export default function DoctorSchedulingScreen() {
                   selectedDoctorId === doc.id && styles.doctorPillTextActive,
                 ]}
               >
-                Dr. {doc.user?.firstName || 'Doctor'}
+                Dr. {doc.employee?.user?.firstName || doc.user?.firstName || 'Doctor'}
               </Text>
             </TouchableOpacity>
           ))}

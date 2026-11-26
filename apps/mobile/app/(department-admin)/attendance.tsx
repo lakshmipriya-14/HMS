@@ -69,7 +69,7 @@ export default function StaffAttendanceScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Staff Attendance" subtitle="Daily Roll Call & Status" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Staff Attendance" subtitle="Daily Roll Call & Status" />
 
       {/* Date Navigation Bar */}
       <View style={styles.dateBar}>
@@ -118,20 +118,22 @@ export default function StaffAttendanceScreen() {
         ) : (
           attendance.map((item) => {
             const currentStatus = item.status || 'PRESENT';
+            const staffName = item.name || `${item.user?.firstName || ''} ${item.user?.lastName || ''}`.trim() || 'Staff Member';
+            const staffRole = item.designation || item.user?.role || 'Staff Member';
 
             return (
               <View key={item.id} style={styles.staffCard}>
                 <View style={styles.staffHeader}>
                   <View style={styles.avatar}>
                     <Text style={styles.avatarText}>
-                      {item.user?.firstName?.[0] || 'S'}
+                      {staffName[0] || 'S'}
                     </Text>
                   </View>
                   <View style={styles.staffCol}>
                     <Text style={styles.staffName}>
-                      {item.user?.firstName} {item.user?.lastName}
+                      {staffName}
                     </Text>
-                    <Text style={styles.staffRole}>{item.user?.role || 'Nursing Staff'}</Text>
+                    <Text style={styles.staffRole}>{staffRole}</Text>
                   </View>
                 </View>
 

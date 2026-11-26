@@ -191,7 +191,7 @@ export default function AdminDepartmentsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Management" subtitle="Clinical Governance & Units" />
+      <AdminHeader showBack={true} fallbackHref="/(admin)/more" title="Department Management" subtitle="Clinical Governance & Units" />
 
       {/* Action Bar */}
       <View style={styles.actionBar}>

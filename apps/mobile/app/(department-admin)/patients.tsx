@@ -63,7 +63,12 @@ export default function DepartmentPatientsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Patients" />
+      <AdminHeader
+        showBack={true}
+        fallbackHref="/(department-admin)/operations"
+        title="Department Patients"
+        subtitle="Department Patient Directory"
+      />
 
       <View style={styles.searchBarContainer}>
         <Search size={16} color="#94A3B8" style={styles.searchIcon} />

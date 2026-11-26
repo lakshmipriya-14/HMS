@@ -181,25 +181,82 @@ async function populate(tx, hospital, passwordHash, roles, index) {
   } });
 
   const labTest = await tx.labTest.create({ data: {
-    testCode: key('DEMO-LAB-TEST'), name: 'Demo Blood Count', category: 'HEMATOLOGY', sampleType: 'BLOOD', price: 250,
+    testCode: key('DEMO-LAB-TEST'), name: 'Complete Blood Count (CBC) & Metabolic Panel', category: 'HEMATOLOGY', sampleType: 'BLOOD', price: 250,
   } });
-  const parameter = await tx.testParameter.create({ data: { labTestId: labTest.id, parameterName: 'Hemoglobin', unit: 'g/dL' } });
-  const order = await tx.labOrder.create({ data: { ...encounter, orderNumber: key('DEMO-LAB-001'), barcode: key('DEMO-BARCODE-001'), status: 'COMPLETED' } });
+  const paramHb = await tx.testParameter.create({ data: { labTestId: labTest.id, parameterName: 'Hemoglobin', unit: 'g/dL' } });
+  const paramWbc = await tx.testParameter.create({ data: { labTestId: labTest.id, parameterName: 'Total Leucocytes (WBC)', unit: '/mcL' } });
+  const paramPlt = await tx.testParameter.create({ data: { labTestId: labTest.id, parameterName: 'Platelet Count', unit: '/mcL' } });
+  const paramFbs = await tx.testParameter.create({ data: { labTestId: labTest.id, parameterName: 'Fasting Blood Glucose', unit: 'mg/dL' } });
+  const paramCreat = await tx.testParameter.create({ data: { labTestId: labTest.id, parameterName: 'Serum Creatinine', unit: 'mg/dL' } });
+
+  const order = await tx.labOrder.create({ data: {
+    ...encounter, orderNumber: key('DEMO-LAB-001'), barcode: key('DEMO-BARCODE-001'),
+    status: 'COMPLETED', reportReleasedAt: today,
+  } });
   await tx.labOrderItem.create({ data: { labOrderId: order.id, labTestId: labTest.id } });
-  await tx.labResult.create({ data: { labOrderId: order.id, parameterId: parameter.id, measuredValue: '13.5', unit: 'g/dL', referenceRange: '12–16' } });
+  await tx.labResult.createMany({ data: [
+    { labOrderId: order.id, parameterId: paramHb.id, measuredValue: '13.8', unit: 'g/dL', referenceRange: '13.0 - 17.0' },
+    { labOrderId: order.id, parameterId: paramWbc.id, measuredValue: '7,200', unit: '/mcL', referenceRange: '4,000 - 11,000' },
+    { labOrderId: order.id, parameterId: paramPlt.id, measuredValue: '275,000', unit: '/mcL', referenceRange: '150,000 - 450,000' },
+    { labOrderId: order.id, parameterId: paramFbs.id, measuredValue: '92', unit: 'mg/dL', referenceRange: '70 - 100' },
+    { labOrderId: order.id, parameterId: paramCreat.id, measuredValue: '0.92', unit: 'mg/dL', referenceRange: '0.60 - 1.20' },
+  ] });
+
   const radiologyTest = await tx.radiologyTest.create({ data: { testCode: key('DEMO-XRAY'), name: 'Demo Chest X-Ray', modality: 'XRAY', price: 400 } });
   await tx.radiologyOrder.create({ data: {
     ...encounter, orderNumber: key('DEMO-RAD-001'), testId: radiologyTest.id, clinicalIndication: 'Demo imaging request',
+    status: 'REPORT_RELEASED', reportReleasedAt: today, findings: 'Normal bronchovascular markings. Cardiac shadow normal.', impression: 'Clear lung fields.',
   } });
 
+  // 1. Consultation Invoice
   const invoice = await tx.invoice.create({ data: {
     ...scope, patientId, appointmentId: appointment.id, invoiceNumber: key('DEMO-INV-001'),
     subTotal: 500, totalAmount: 500, paidAmount: 500, status: 'PAID',
   } });
-  await tx.invoiceItem.create({ data: { invoiceId: invoice.id, description: 'Demo consultation', category: 'CONSULTATION', unitPrice: 500, totalPrice: 500 } });
+  await tx.invoiceItem.create({ data: { invoiceId: invoice.id, description: 'Clinical Consultation Fee (General Medicine)', category: 'CONSULTATION', unitPrice: 500, totalPrice: 500 } });
   await tx.payment.create({ data: {
-    ...scope, invoiceId: invoice.id, amount: 500, paymentMethod: 'CASH', receivedByUserId: accounts.get(Role.BILLING_STAFF),
+    ...scope, invoiceId: invoice.id, amount: 500, paymentMethod: 'UPI', receivedByUserId: accounts.get(Role.BILLING_STAFF),
     idempotencyKey: key('demo-payment-001'), requestFingerprint: digest([key('demo-payment-001'), 500]),
+  } });
+
+  // 2. Pharmacy Bill (Marked PAID by pharmacy counter)
+  const pharmacyInvoice = await tx.invoice.create({ data: {
+    ...scope, patientId, invoiceNumber: key('DEMO-PHARM-INV-001'),
+    subTotal: 380, totalAmount: 380, paidAmount: 380, status: 'PAID',
+  } });
+  await tx.invoiceItem.createMany({ data: [
+    { invoiceId: pharmacyInvoice.id, description: 'Paracetamol 650mg Tablets (Strip of 10)', category: 'PHARMACY', unitPrice: 40, totalPrice: 40 },
+    { invoiceId: pharmacyInvoice.id, description: 'Amoxicillin 500mg Capsules (15 capsules)', category: 'PHARMACY', unitPrice: 180, totalPrice: 180 },
+    { invoiceId: pharmacyInvoice.id, description: 'Pantoprazole 40mg Gastro-Resistant Tablets (10 tabs)', category: 'PHARMACY', unitPrice: 160, totalPrice: 160 },
+  ] });
+  await tx.payment.create({ data: {
+    ...scope, invoiceId: pharmacyInvoice.id, amount: 380, paymentMethod: 'CASH', receivedByUserId: accounts.get(Role.PHARMACIST),
+    idempotencyKey: key('demo-payment-pharm-001'), requestFingerprint: digest([key('demo-payment-pharm-001'), 380]),
+  } });
+
+  // 3. Diagnostic Laboratory & Radiology Bill (PAID)
+  const labInvoice = await tx.invoice.create({ data: {
+    ...scope, patientId, invoiceNumber: key('DEMO-LAB-INV-001'),
+    subTotal: 650, totalAmount: 650, paidAmount: 650, status: 'PAID',
+  } });
+  await tx.invoiceItem.createMany({ data: [
+    { invoiceId: labInvoice.id, description: 'Complete Blood Count (CBC) & Metabolic Panel', category: 'LABORATORY', unitPrice: 250, totalPrice: 250 },
+    { invoiceId: labInvoice.id, description: 'Digital Chest X-Ray PA View', category: 'RADIOLOGY', unitPrice: 400, totalPrice: 400 },
+  ] });
+  await tx.payment.create({ data: {
+    ...scope, invoiceId: labInvoice.id, amount: 650, paymentMethod: 'CARD', receivedByUserId: accounts.get(Role.BILLING_STAFF),
+    idempotencyKey: key('demo-payment-lab-001'), requestFingerprint: digest([key('demo-payment-lab-001'), 650]),
+  } });
+
+  // 4. Past & Cancelled Appointments for History
+  const sevenDaysAgo = new Date(today.getTime() - 7 * 86_400_000);
+  await tx.appointment.create({ data: {
+    ...visit, appointmentDate: sevenDaysAgo, appointmentNumber: key('DEMO-APT-PAST-01'), appointmentTime: '11:00',
+    tokenNumber: 5, status: 'COMPLETED', isPaid: true,
+  } });
+  await tx.appointment.create({ data: {
+    ...visit, appointmentDate: sevenDaysAgo, appointmentNumber: key('DEMO-APT-CANCELLED-01'), appointmentTime: '14:00',
+    tokenNumber: 9, status: 'CANCELLED', isPaid: false,
   } });
   const inpatientInvoice = await tx.invoice.create({ data: {
     ...inpatient, invoiceNumber: key('DEMO-INV-002'), subTotal: 1000, totalAmount: 1000,

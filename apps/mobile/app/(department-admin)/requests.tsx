@@ -65,7 +65,7 @@ export default function DepartmentRequestsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Requisitions" subtitle="Resource & Work Orders" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Department Requisitions" subtitle="Resource & Work Orders" />
 
       <View style={styles.topBar}>
         <Text style={styles.topBarTitle}>Active Tickets & Requisitions</Text>

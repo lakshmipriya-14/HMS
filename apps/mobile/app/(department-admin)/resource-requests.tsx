@@ -71,7 +71,7 @@ export default function ResourceRequestsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Resource Requisitions" subtitle="Extra Beds, Doctors & Clinical Staff" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Resource Requisitions" subtitle="Extra Beds, Doctors & Clinical Staff" />
 
       {/* Top Bar */}
       <View style={styles.topBar}>

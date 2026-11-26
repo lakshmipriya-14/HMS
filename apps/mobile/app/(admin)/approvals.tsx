@@ -104,7 +104,7 @@ export default function AdminApprovalsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader
+      <AdminHeader showBack={true} fallbackHref="/(admin)/more"
         title="Approvals Hub"
         subtitle="Executive Governance"
         alertsCount={summary.totalPending || 0}

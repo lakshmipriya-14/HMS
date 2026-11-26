@@ -11,6 +11,7 @@ import {
 } from 'lucide-react-native';
 import { Platform } from 'react-native';
 import { UyirinaiTheme } from '../../constants/theme';
+import { HeaderBackButton } from '../../components/ui/HeaderBackButton';
 
 export default function ReceptionTabsLayout() {
   const bottomInset = Platform.OS === 'web' ? 10 : 12;
@@ -87,6 +88,7 @@ export default function ReceptionTabsLayout() {
           options={{
             href: null,
             title: 'Patient Directory Lookup',
+            headerLeft: () => <HeaderBackButton fallbackHref="/(reception)" />,
           }}
         />
         <Tabs.Screen
@@ -94,6 +96,7 @@ export default function ReceptionTabsLayout() {
           options={{
             href: null,
             title: 'Patient Arrival Check-In',
+            headerLeft: () => <HeaderBackButton fallbackHref="/(reception)" />,
           }}
         />
         <Tabs.Screen
@@ -101,6 +104,7 @@ export default function ReceptionTabsLayout() {
           options={{
             href: null,
             title: 'Doctor Schedules & OPD Hours',
+            headerLeft: () => <HeaderBackButton fallbackHref="/(reception)" />,
           }}
         />
         <Tabs.Screen
@@ -108,6 +112,7 @@ export default function ReceptionTabsLayout() {
           options={{
             href: null,
             title: 'Reception Daily Analytics',
+            headerLeft: () => <HeaderBackButton fallbackHref="/(reception)" />,
           }}
         />
       </Tabs>

@@ -49,7 +49,7 @@ export default function AdmissionMonitoringScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Admissions" subtitle="Bed Allocations & Inpatient Intake" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Department Admissions" subtitle="Bed Allocations & Inpatient Intake" />
 
       {/* Filter and Search */}
       <View style={styles.topFilterBar}>

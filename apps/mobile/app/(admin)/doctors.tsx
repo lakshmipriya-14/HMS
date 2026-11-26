@@ -205,7 +205,7 @@ export default function AdminDoctorsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Doctor Directory" subtitle="Medical Staff Rostering & Status" />
+      <AdminHeader showBack={true} fallbackHref="/(admin)/more" title="Doctor Directory" subtitle="Medical Staff Rostering & Status" />
 
       {/* Action Bar */}
       <View style={styles.actionBar}>

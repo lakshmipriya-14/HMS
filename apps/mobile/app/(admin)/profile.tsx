@@ -135,7 +135,7 @@ export default function AdminProfileScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Administrator Profile" subtitle="Identity & Governance" />
+      <AdminHeader showBack={true} fallbackHref="/(admin)/more" title="Administrator Profile" subtitle="Identity & Governance" />
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         {/* Profile Card */}

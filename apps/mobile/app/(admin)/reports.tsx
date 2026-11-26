@@ -61,7 +61,7 @@ export default function AdminReportsScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Analytics & Reports" subtitle="Clinical & Financial Telemetry" />
+      <AdminHeader showBack={true} fallbackHref="/(admin)/more" title="Analytics & Reports" subtitle="Clinical & Financial Telemetry" />
 
       {/* Action Bar */}
       <View style={styles.actionBar}>

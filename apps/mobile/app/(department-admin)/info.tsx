@@ -86,7 +86,7 @@ export default function DepartmentInfoScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Profile" subtitle="Operations & Leadership" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Department Profile" subtitle="Operations & Leadership" />
 
       <ScrollView
         style={styles.content}

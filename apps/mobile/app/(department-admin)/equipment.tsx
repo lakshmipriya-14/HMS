@@ -75,7 +75,7 @@ export default function EquipmentManagementScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Equipment" subtitle="Biomedical Assets & Maintenance" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Department Equipment" subtitle="Biomedical Assets & Maintenance" />
 
       {/* Search Bar */}
       <View style={styles.searchBar}>

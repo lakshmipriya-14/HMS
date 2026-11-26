@@ -48,7 +48,7 @@ export default function DischargeMonitoringScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Department Discharges" subtitle="Discharge Readiness & Bed Turnover" />
+      <AdminHeader showBack={true} fallbackHref="/(department-admin)/more" title="Department Discharges" subtitle="Discharge Readiness & Bed Turnover" />
 
       {/* Filter and Search */}
       <View style={styles.topFilterBar}>

@@ -237,7 +237,7 @@ export default function AdminStaffScreen() {
 
   return (
     <View style={styles.container}>
-      <AdminHeader title="Staff & HR Directory" subtitle="Hospital Workforce & Accounts" />
+      <AdminHeader showBack={true} fallbackHref="/(admin)/more" title="Staff & HR Directory" subtitle="Hospital Workforce & Accounts" />
 
       {/* Action Bar */}
       <View style={styles.actionBar}>
