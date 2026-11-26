@@ -62,11 +62,11 @@ export default function ActivityHistoryScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadLogs} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadLogs} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <History size={40} color="#CBD5E1" />
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   actionBadge: {
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
     textTransform: 'uppercase',
   },
   timeText: {

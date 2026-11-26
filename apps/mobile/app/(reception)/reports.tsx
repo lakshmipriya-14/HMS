@@ -73,7 +73,7 @@ export default function ReceptionReportsScreen() {
         </View>
 
         <View style={styles.metricCard}>
-          <Text style={[styles.mNum, { color: '#059669' }]}>91%</Text>
+          <Text style={[styles.mNum, { color: '#38845A' }]}>91%</Text>
           <Text style={styles.mLabel}>Check-In Rate</Text>
           <Text style={styles.mSub}>48 Checked In • 4 Waiting</Text>
         </View>
@@ -91,8 +91,8 @@ export default function ReceptionReportsScreen() {
         {[
           { dept: 'Cardiology & Cardiothoracic', count: 18, pct: '31%', color: '#DC2626' },
           { dept: 'Orthopedics & Joint Surgery', count: 15, pct: '26%', color: '#0284C7' },
-          { dept: 'General & Internal Medicine', count: 14, pct: '24%', color: '#059669' },
-          { dept: 'Pediatrics & Neonatal Care', count: 7, pct: '12%', color: '#7C3AED' },
+          { dept: 'General & Internal Medicine', count: 14, pct: '24%', color: '#38845A' },
+          { dept: 'Pediatrics & Neonatal Care', count: 7, pct: '12%', color: '#38845A' },
           { dept: 'Emergency & Trauma Triage', count: 4, pct: '7%', color: '#D97706' },
         ].map((item, idx) => (
           <View key={idx} style={styles.deptItem}>
@@ -113,7 +113,7 @@ export default function ReceptionReportsScreen() {
       <View style={styles.card}>
         <View style={styles.dispRow}>
           <View style={styles.dispItem}>
-            <CheckCircle2 size={16} color="#059669" />
+            <CheckCircle2 size={16} color="#38845A" />
             <Text style={styles.dispNum}>46</Text>
             <Text style={styles.dispLabel}>Completed</Text>
           </View>

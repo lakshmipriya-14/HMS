@@ -67,7 +67,7 @@ export default function AdminMobileDashboard() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#0F766E" />
+          <ActivityIndicator size="large" color="#38845A" />
           <Text style={styles.loadingText}>Fetching live hospital telemetry...</Text>
         </View>
       ) : (
@@ -75,7 +75,7 @@ export default function AdminMobileDashboard() {
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={fetchTelemetry} tintColor="#0F766E" />
+            <RefreshControl refreshing={refreshing} onRefresh={fetchTelemetry} tintColor="#38845A" />
           }
         >
           {/* Quick Critical Banner if alerts exist */}
@@ -98,9 +98,9 @@ export default function AdminMobileDashboard() {
             <TouchableOpacity
               style={{
                 flex: 1,
-                backgroundColor: '#CCFBF1',
+                backgroundColor: '#EAF5ED',
                 borderWidth: 1,
-                borderColor: '#99F6E4',
+                borderColor: '#CDE8D5',
                 padding: 12,
                 borderRadius: 12,
                 flexDirection: 'row',
@@ -109,9 +109,9 @@ export default function AdminMobileDashboard() {
               }}
               onPress={() => router.push('/(admin)/opd')}
             >
-              <CalendarCheck size={20} color="#0F766E" />
+              <CalendarCheck size={20} color="#38845A" />
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 12, fontWeight: '800', color: '#0F766E' }}>OPD Operations</Text>
+                <Text style={{ fontSize: 12, fontWeight: '800', color: '#38845A' }}>OPD Operations</Text>
                 <Text style={{ fontSize: 10, color: '#115E59' }}>Tokens & Booking</Text>
               </View>
             </TouchableOpacity>
@@ -143,9 +143,9 @@ export default function AdminMobileDashboard() {
             {/* Bed Occupancy */}
             <TouchableOpacity style={styles.kpiCard} onPress={() => router.push('/(admin)/ipd')}>
               <View style={styles.kpiHeader}>
-                <BedDouble size={18} color="#0F766E" />
-                <View style={[styles.kpiBadge, { backgroundColor: '#CCFBF1' }]}>
-                  <Text style={[styles.kpiBadgeText, { color: '#0F766E' }]}>
+                <BedDouble size={18} color="#38845A" />
+                <View style={[styles.kpiBadge, { backgroundColor: '#EAF5ED' }]}>
+                  <Text style={[styles.kpiBadgeText, { color: '#38845A' }]}>
                     {overview.bedOccupancyRate || 0}%
                   </Text>
                 </View>
@@ -211,7 +211,7 @@ export default function AdminMobileDashboard() {
           <View style={styles.financeCard}>
             <View style={styles.financeHeader}>
               <View style={styles.financeIconWrapper}>
-                <TrendingUp size={20} color="#0F766E" />
+                <TrendingUp size={20} color="#38845A" />
               </View>
               <View>
                 <Text style={styles.financeSub}>Collected Hospital Revenue</Text>
@@ -253,7 +253,7 @@ export default function AdminMobileDashboard() {
             >
               <View style={styles.deptHeader}>
                 <View style={styles.deptIcon}>
-                  <Building2 size={16} color="#0F766E" />
+                  <Building2 size={16} color="#38845A" />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.deptName}>{d.name}</Text>
@@ -282,7 +282,7 @@ export default function AdminMobileDashboard() {
               style={styles.quickBtn}
               onPress={() => router.push('/(admin)/doctors')}
             >
-              <Users size={20} color="#0F766E" />
+              <Users size={20} color="#38845A" />
               <Text style={styles.quickBtnText}>Doctors</Text>
             </TouchableOpacity>
 
@@ -416,9 +416,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#CCFBF1',
+    borderColor: '#EAF5ED',
     marginBottom: 20,
-    shadowColor: '#0F766E',
+    shadowColor: '#38845A',
     shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 12,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
   financeMain: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
     marginTop: 2,
   },
   financeDivider: {
@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
   sectionLink: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   deptCard: {
     backgroundColor: '#FFFFFF',
@@ -527,7 +527,7 @@ const styles = StyleSheet.create({
   deptStatText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   deptFooter: {
     marginTop: 8,
@@ -580,7 +580,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   activityAction: {
     fontSize: 12,

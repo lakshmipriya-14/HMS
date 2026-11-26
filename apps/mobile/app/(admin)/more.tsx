@@ -53,8 +53,8 @@ export default function AdminMoreScreen() {
       desc: 'Live tokens, booking desk & patient check-in',
       icon: CalendarCheck,
       route: '/(admin)/opd',
-      color: '#0F766E',
-      bgColor: '#CCFBF1',
+      color: '#38845A',
+      bgColor: '#EAF5ED',
     },
     {
       title: 'IPD Inpatient Census',
@@ -77,8 +77,8 @@ export default function AdminMoreScreen() {
       desc: 'Bed turnover, maintenance status & allocations',
       icon: BedDouble,
       route: '/(admin)/wards',
-      color: '#0F766E',
-      bgColor: '#CCFBF1',
+      color: '#38845A',
+      bgColor: '#EAF5ED',
     },
     {
       title: 'Approvals Hub',
@@ -126,7 +126,7 @@ export default function AdminMoreScreen() {
         {/* User Card */}
         <View style={styles.userCard}>
           <View style={styles.avatar}>
-            <ShieldCheck size={24} color="#0F766E" />
+            <ShieldCheck size={24} color="#38845A" />
           </View>
           <View style={{ flex: 1, marginLeft: 12 }}>
             <Text style={styles.userName}>{displayName}</Text>
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
   },
   sectionTitle: {
     fontSize: 14,
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
     paddingVertical: 14,
     borderRadius: 12,
     marginTop: 20,

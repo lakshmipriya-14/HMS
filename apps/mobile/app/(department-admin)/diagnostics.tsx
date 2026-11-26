@@ -83,11 +83,11 @@ export default function OtherDiagnosticsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadDiagnostics} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadDiagnostics} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <Stethoscope size={40} color="#CBD5E1" />
@@ -111,13 +111,13 @@ export default function OtherDiagnosticsScreen() {
                   <View
                     style={[
                       styles.statusPill,
-                      { backgroundColor: isCompleted ? '#CCFBF1' : '#FEF3C7' },
+                      { backgroundColor: isCompleted ? '#EAF5ED' : '#FEF3C7' },
                     ]}
                   >
                     <Text
                       style={[
                         styles.statusPillText,
-                        { color: isCompleted ? '#0F766E' : '#D97706' },
+                        { color: isCompleted ? '#38845A' : '#D97706' },
                       ]}
                     >
                       {item.status || 'ORDERED'}
@@ -127,7 +127,7 @@ export default function OtherDiagnosticsScreen() {
 
                 <View style={styles.detailsRow}>
                   <View style={styles.serviceTag}>
-                    <Activity size={12} color="#0F766E" />
+                    <Activity size={12} color="#38845A" />
                     <Text style={styles.serviceTagText}>{item.category || 'Specialized Diagnostic'}</Text>
                   </View>
                   <Text style={styles.docText}>
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   chipActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   chipText: {
     fontSize: 11,
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   serviceTagText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   docText: {
     fontSize: 11,

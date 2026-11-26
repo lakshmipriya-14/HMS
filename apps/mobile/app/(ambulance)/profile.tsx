@@ -17,7 +17,7 @@ export default function AmbulanceDriverProfileScreen() {
     <View style={styles.container}>
       <View style={styles.card}>
         <View style={styles.avatar}>
-          <Ambulance size={36} color="#0F766E" />
+          <Ambulance size={36} color="#38845A" />
         </View>
         <Text style={styles.name}>{user?.firstName || 'Velu'} {user?.lastName || 'Pandian'}</Text>
         <Text style={styles.role}>Emergency Response Driver</Text>
@@ -33,7 +33,7 @@ export default function AmbulanceDriverProfileScreen() {
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Duty Status</Text>
-          <Text style={[styles.infoVal, { color: '#059669' }]}>On Duty (Rapid Response)</Text>
+          <Text style={[styles.infoVal, { color: '#38845A' }]}>On Duty (Rapid Response)</Text>
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Dispatch Base</Text>
@@ -63,13 +63,13 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
   },
   name: { fontSize: 18, fontWeight: 'bold', color: '#1E293B' },
-  role: { fontSize: 12, fontWeight: 'bold', color: '#0F766E', marginTop: 2 },
+  role: { fontSize: 12, fontWeight: 'bold', color: '#38845A', marginTop: 2 },
   email: { fontSize: 12, color: '#64748B', marginTop: 2, marginBottom: 20 },
   infoRow: {
     flexDirection: 'row',
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
   },
   logoutText: { color: '#DC2626', fontWeight: 'bold', fontSize: 13 },
 });

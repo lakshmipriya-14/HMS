@@ -218,7 +218,7 @@ export default function PharmacyReturnsScreen() {
 
               <View style={styles.footerRow}>
                 <View style={styles.dispositionPill}>
-                  <ShieldCheck size={12} color="#0F766E" />
+                  <ShieldCheck size={12} color="#38845A" />
                   <Text style={styles.dispositionText}>{memo.disposition.replace(/_/g, ' ')}</Text>
                 </View>
                 <Text style={styles.dateMeta}>{memo.date} · {memo.recordedBy}</Text>
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
   newMemoBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#7C3AED',
+    backgroundColor: '#38845A',
     paddingHorizontal: 12,
     paddingVertical: 7,
     borderRadius: 8,
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 4,
   },
-  filterPillActive: { backgroundColor: '#7C3AED' },
+  filterPillActive: { backgroundColor: '#38845A' },
   filterText: { fontSize: 11, fontWeight: '600', color: '#64748B' },
   filterTextActive: { color: '#fff', fontWeight: '800' },
   scroll: { flex: 1, padding: 14 },
@@ -430,11 +430,11 @@ const styles = StyleSheet.create({
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   memoIdBadge: { backgroundColor: '#F5F3FF', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  memoIdText: { fontSize: 11, fontWeight: '800', color: '#7C3AED' },
+  memoIdText: { fontSize: 11, fontWeight: '800', color: '#38845A' },
   typeBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  typeReturn: { backgroundColor: '#EDE9FE' },
+  typeReturn: { backgroundColor: '#EAF5ED' },
   typeReturnText: { color: '#6D28D9', fontSize: 10, fontWeight: '800' },
-  typeWastage: { backgroundColor: '#FEE2E2' },
+  typeWastage: { backgroundColor: '#EAF5ED' },
   typeWastageText: { color: '#DC2626', fontSize: 10, fontWeight: '800' },
   typeBadgeText: { fontSize: 10, fontWeight: '800' },
   drugTitle: { fontSize: 15, fontWeight: '800', color: '#0F172A' },
@@ -445,8 +445,8 @@ const styles = StyleSheet.create({
   reasonLabel: { fontSize: 10, fontWeight: '700', color: '#64748B', textTransform: 'uppercase' },
   reasonText: { fontSize: 12, color: '#334155', marginTop: 2 },
   footerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 },
-  dispositionPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#F0FDFA', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  dispositionText: { fontSize: 10, fontWeight: '700', color: '#0F766E' },
+  dispositionPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  dispositionText: { fontSize: 10, fontWeight: '700', color: '#38845A' },
   dateMeta: { fontSize: 11, color: '#94A3B8' },
   // Modal styles
   modalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.6)', justifyContent: 'flex-end' },
@@ -476,15 +476,15 @@ const styles = StyleSheet.create({
   },
   typeRow: { flexDirection: 'row', gap: 6 },
   typeSelectBtn: { flex: 1, paddingVertical: 8, borderRadius: 8, borderWidth: 1, borderColor: '#CBD5E1', backgroundColor: '#F8FAFC', alignItems: 'center' },
-  typeSelectBtnActive: { borderColor: '#7C3AED', backgroundColor: '#FAF5FF' },
+  typeSelectBtnActive: { borderColor: '#38845A', backgroundColor: '#FAF5FF' },
   typeSelectText: { fontSize: 11, fontWeight: '600', color: '#64748B' },
-  typeSelectTextActive: { color: '#7C3AED', fontWeight: '800' },
+  typeSelectTextActive: { color: '#38845A', fontWeight: '800' },
   twoCol: { flexDirection: 'row' },
   dispRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   dispPill: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: '#CBD5E1', backgroundColor: '#F8FAFC' },
-  dispPillActive: { borderColor: '#0F766E', backgroundColor: '#F0FDFA' },
+  dispPillActive: { borderColor: '#38845A', backgroundColor: '#EAF5ED' },
   dispText: { fontSize: 11, color: '#64748B', fontWeight: '600' },
-  dispTextActive: { color: '#0F766E', fontWeight: '800' },
+  dispTextActive: { color: '#38845A', fontWeight: '800' },
   modalFooter: {
     flexDirection: 'row',
     paddingHorizontal: 18,
@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
   confirmBtn: {
     flex: 2,
     flexDirection: 'row',
-    backgroundColor: '#7C3AED',
+    backgroundColor: '#38845A',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',

@@ -171,7 +171,7 @@ export default function ReceptionRegisterScreen() {
       {registeredPatient && (
         <View style={styles.receiptCard}>
           <View style={styles.receiptHeader}>
-            <CheckCircle2 size={24} color="#059669" />
+            <CheckCircle2 size={24} color="#38845A" />
             <View style={{ flex: 1, marginLeft: 10 }}>
               <Text style={styles.receiptTitle}>Official Patient Registration Receipt</Text>
               <Text style={styles.receiptSub}>Uyirinai Multispeciality Hospital • Ground Floor Front Desk</Text>
@@ -388,14 +388,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#FEE2E2',
+    borderColor: '#EAF5ED',
     borderRadius: 10,
     paddingVertical: 10,
     gap: 6,
   },
-  modeTabActive: { backgroundColor: '#B5121B', borderColor: '#B5121B' },
+  modeTabActive: { backgroundColor: '#38845A', borderColor: '#38845A' },
   modeTabEmergency: { backgroundColor: '#DC2626', borderColor: '#DC2626' },
-  modeTabText: { fontSize: 11, fontWeight: '700', color: '#B5121B' },
+  modeTabText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
   modeTabTextActive: { color: '#fff' },
   receiptCard: {
     backgroundColor: '#F0FDF4',
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
     padding: 16,
   },
-  formCardEmergency: { borderColor: '#FECACA', backgroundColor: '#FFFDFD' },
+  formCardEmergency: { borderColor: '#CDE8D5', backgroundColor: '#FFFDFD' },
   formTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
   formSub: { fontSize: 11, color: '#64748B', marginTop: 2, marginBottom: 14 },
   row: { flexDirection: 'row', gap: 10, marginBottom: 8 },
@@ -466,15 +466,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F8FAFC',
   },
-  genderChipActive: { backgroundColor: '#B5121B', borderColor: '#B5121B' },
+  genderChipActive: { backgroundColor: '#38845A', borderColor: '#38845A' },
   genderText: { fontSize: 11, fontWeight: '800', color: '#475569' },
   genderTextActive: { color: '#fff' },
-  sectionDivider: { fontSize: 12, fontWeight: '800', color: '#B5121B', marginTop: 8, marginBottom: 8 },
+  sectionDivider: { fontSize: 12, fontWeight: '800', color: '#38845A', marginTop: 8, marginBottom: 8 },
   submitBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#B5121B',
+    backgroundColor: '#38845A',
     paddingVertical: 14,
     borderRadius: 10,
     marginTop: 14,

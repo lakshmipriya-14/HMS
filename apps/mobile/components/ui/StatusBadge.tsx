@@ -1,0 +1,112 @@
+import React from 'react';
+import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { UyirinaiTheme } from '../../constants/theme';
+
+export type StatusType = 'success' | 'pending' | 'error' | 'info' | 'neutral';
+
+export interface StatusBadgeProps {
+  label: string;
+  status?: StatusType;
+  icon?: React.ReactNode;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
+  size?: 'sm' | 'md';
+}
+
+export const StatusBadge: React.FC<StatusBadgeProps> = ({
+  label,
+  status = 'neutral',
+  icon,
+  style,
+  textStyle,
+  size = 'sm',
+}) => {
+  const getPalette = () => {
+    switch (status) {
+      case 'success':
+        return {
+          bg: UyirinaiTheme.colors.successBg,
+          text: UyirinaiTheme.colors.success,
+          border: UyirinaiTheme.colors.lightGreen,
+        };
+      case 'pending':
+        return {
+          bg: UyirinaiTheme.colors.pendingBg,
+          text: UyirinaiTheme.colors.pending,
+          border: '#F6E5B8',
+        };
+      case 'error':
+        return {
+          bg: UyirinaiTheme.colors.errorBg,
+          text: UyirinaiTheme.colors.error,
+          border: '#F8C8C7',
+        };
+      case 'info':
+        return {
+          bg: UyirinaiTheme.colors.infoBg,
+          text: UyirinaiTheme.colors.info,
+          border: '#C5DFED',
+        };
+      case 'neutral':
+      default:
+        return {
+          bg: UyirinaiTheme.colors.neutralBg,
+          text: UyirinaiTheme.colors.neutral,
+          border: UyirinaiTheme.colors.border,
+        };
+    }
+  };
+
+  const palette = getPalette();
+
+  const sizeStyles = {
+    sm: { paddingVertical: 2, paddingHorizontal: 8, fontSize: 11 },
+    md: { paddingVertical: 4, paddingHorizontal: 10, fontSize: 12 },
+  }[size];
+
+  return (
+    <View
+      style={[
+        styles.badge,
+        {
+          backgroundColor: palette.bg,
+          borderColor: palette.border,
+          paddingVertical: sizeStyles.paddingVertical,
+          paddingHorizontal: sizeStyles.paddingHorizontal,
+        },
+        style,
+      ]}
+    >
+      {icon && <View style={styles.iconContainer}>{icon}</View>}
+      <Text
+        style={[
+          styles.text,
+          {
+            color: palette.text,
+            fontSize: sizeStyles.fontSize,
+          },
+          textStyle,
+        ]}
+      >
+        {label}
+      </Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    borderRadius: UyirinaiTheme.borderRadius.full,
+    borderWidth: 1,
+  },
+  iconContainer: {
+    marginRight: 4,
+  },
+  text: {
+    fontWeight: UyirinaiTheme.typography.fontWeights.semibold,
+    textTransform: 'uppercase',
+  },
+});

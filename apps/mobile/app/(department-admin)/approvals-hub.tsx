@@ -104,11 +104,11 @@ export default function ApprovalsHubScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadAll} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadAll} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <CheckSquare size={40} color="#CBD5E1" />
@@ -132,7 +132,7 @@ export default function ApprovalsHubScreen() {
                         {
                           backgroundColor:
                             item.priority === 'URGENT' || item.priority === 'HIGH'
-                              ? '#FEE2E2'
+                              ? '#EAF5ED'
                               : '#F1F5F9',
                         },
                       ]}
@@ -155,13 +155,13 @@ export default function ApprovalsHubScreen() {
                   <View
                     style={[
                       styles.statusPill,
-                      { backgroundColor: isApproved ? '#CCFBF1' : isPending ? '#FEF3C7' : '#FEE2E2' },
+                      { backgroundColor: isApproved ? '#EAF5ED' : isPending ? '#FEF3C7' : '#EAF5ED' },
                     ]}
                   >
                     <Text
                       style={[
                         styles.statusPillText,
-                        { color: isApproved ? '#0F766E' : isPending ? '#D97706' : '#DC2626' },
+                        { color: isApproved ? '#38845A' : isPending ? '#D97706' : '#DC2626' },
                       ]}
                     >
                       {item.status || 'PENDING'}
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   chipActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   chipText: {
     fontSize: 12,

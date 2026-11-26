@@ -109,6 +109,14 @@ export default function RadiologyReportsScreen() {
               Patient: <Text style={styles.boldText}>{rep.patientName}</Text> ({rep.uhid})
             </Text>
 
+            {/* Simulated PACS Thumbnail */}
+            <View style={styles.pacsPreviewBox}>
+              <View style={styles.pacsBar}>
+                <Eye size={14} color="#38845A" />
+                <Text style={styles.pacsBarText}>PACS DICOM Preview (Verified Series)</Text>
+              </View>
+            </View>
+
             {/* Findings */}
             <View style={styles.textBox}>
               <Text style={styles.textLabel}>Radiographic Findings:</Text>
@@ -150,20 +158,20 @@ const styles = StyleSheet.create({
   idText: { fontSize: 11, fontWeight: '800', color: '#334155' },
   modalityBadge: { backgroundColor: '#E0F2FE', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   modalityText: { fontSize: 10, fontWeight: '800', color: '#0369A1' },
-  criticalPill: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FEE2E2', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, gap: 4, marginLeft: 'auto' },
+  criticalPill: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, gap: 4, marginLeft: 'auto' },
   criticalPillText: { fontSize: 10, fontWeight: '800', color: '#DC2626' },
   scanTitle: { fontSize: 15, fontWeight: '800', color: '#0F172A', marginTop: 8 },
   patientMeta: { fontSize: 12, color: '#64748B', marginTop: 2 },
   boldText: { fontWeight: '700', color: '#1E293B' },
-  pacsPreviewBox: { backgroundColor: '#F0FDFA', borderRadius: 8, padding: 8, marginVertical: 8, borderWidth: 1, borderColor: '#CCFBF1' },
+  pacsPreviewBox: { backgroundColor: '#EAF5ED', borderRadius: 8, padding: 8, marginVertical: 8, borderWidth: 1, borderColor: '#EAF5ED' },
   pacsBar: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  pacsBarText: { fontSize: 11, fontWeight: '700', color: '#0F766E' },
+  pacsBarText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
   textBox: { marginVertical: 4 },
   textLabel: { fontSize: 10, fontWeight: '700', color: '#64748B', textTransform: 'uppercase' },
   textContent: { fontSize: 12, color: '#334155', marginTop: 2, lineHeight: 17 },
   impressionBox: { backgroundColor: '#F8FAFC', borderRadius: 8, padding: 10, marginVertical: 6, borderWidth: 1, borderColor: '#E2E8F0' },
-  impressionCritical: { backgroundColor: '#FEF2F2', borderColor: '#FECACA' },
-  impressionLabel: { fontSize: 11, fontWeight: '800', color: '#0F766E', textTransform: 'uppercase' },
+  impressionCritical: { backgroundColor: '#FEF2F2', borderColor: '#CDE8D5' },
+  impressionLabel: { fontSize: 11, fontWeight: '800', color: '#38845A', textTransform: 'uppercase' },
   impressionCriticalLabel: { color: '#DC2626' },
   impressionContent: { fontSize: 12, color: '#0F172A', marginTop: 2, fontWeight: '600' },
   impressionCriticalContent: { color: '#991B1B' },

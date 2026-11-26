@@ -5,8 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Modal,
-  ScrollView,
-  SafeAreaView,
   Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -50,11 +48,11 @@ export function AdminHeader({
       <View style={styles.topRow}>
         <View style={styles.brandRow}>
           <View style={styles.iconCircle}>
-            <HeartPulse size={20} color="#0F766E" />
+            <HeartPulse size={20} color={UyirinaiTheme.colors.primary} />
           </View>
-          <View>
-            {subtitle ? <Text style={styles.hospitalText}>{subtitle}</Text> : null}
-            <Text style={styles.titleText}>{title}</Text>
+          <View style={{ flex: 1 }}>
+            {subtitle ? <Text style={styles.hospitalText} numberOfLines={1}>{subtitle}</Text> : null}
+            <Text style={styles.titleText} numberOfLines={1}>{title}</Text>
           </View>
         </View>
 
@@ -64,7 +62,7 @@ export function AdminHeader({
             style={styles.actionBtn}
             onPress={() => router.push('/(admin)/approvals')}
           >
-            <Bell size={20} color="#FFFFFF" />
+            <Bell size={20} color={UyirinaiTheme.colors.textPrimary} />
             {alertsCount > 0 && (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{alertsCount > 9 ? '9+' : alertsCount}</Text>
@@ -76,7 +74,7 @@ export function AdminHeader({
             style={styles.avatarBtn}
             onPress={() => setMenuVisible(true)}
           >
-            <ShieldCheck size={18} color="#0F766E" />
+            <ShieldCheck size={18} color={UyirinaiTheme.colors.primary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -98,7 +96,7 @@ export function AdminHeader({
                 </View>
               </View>
               <TouchableOpacity onPress={() => setMenuVisible(false)}>
-                <X size={20} color="#64748B" />
+                <X size={20} color={UyirinaiTheme.colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
@@ -111,9 +109,9 @@ export function AdminHeader({
                 router.push('/(admin)/profile');
               }}
             >
-              <ShieldCheck size={18} color="#0F766E" />
+              <ShieldCheck size={18} color={UyirinaiTheme.colors.primary} />
               <Text style={styles.menuItemText}>Admin Profile & Credentials</Text>
-              <ChevronRight size={16} color="#94A3B8" />
+              <ChevronRight size={16} color={UyirinaiTheme.colors.textMuted} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -124,14 +122,14 @@ export function AdminHeader({
               }}
             >
               <Text style={[styles.menuItemText, { marginLeft: 26 }]}>Analytics & Reports</Text>
-              <ChevronRight size={16} color="#94A3B8" />
+              <ChevronRight size={16} color={UyirinaiTheme.colors.textMuted} />
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[styles.menuItem, styles.logoutMenuItem]}
               onPress={handleLogout}
             >
-              <LogOut size={18} color="#DC2626" />
+              <LogOut size={18} color={UyirinaiTheme.colors.error} />
               <Text style={styles.logoutText}>Sign Out</Text>
             </TouchableOpacity>
           </View>
@@ -143,12 +141,12 @@ export function AdminHeader({
 
 const styles = StyleSheet.create({
   headerContainer: {
-    backgroundColor: '#0F172A',
+    backgroundColor: UyirinaiTheme.colors.white,
     paddingHorizontal: 16,
     paddingTop: Platform.OS === 'web' ? 14 : 48,
     paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#1E293B',
+    borderBottomColor: UyirinaiTheme.colors.borderLight,
   },
   topRow: {
     flexDirection: 'row',
@@ -164,22 +162,24 @@ const styles = StyleSheet.create({
   iconCircle: {
     width: 38,
     height: 38,
-    borderRadius: 12,
-    backgroundColor: '#CCFBF1',
+    borderRadius: 10,
+    backgroundColor: UyirinaiTheme.colors.softGreen,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.lightGreen,
   },
   hospitalText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#14B8A6',
+    color: UyirinaiTheme.colors.primary,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
   titleText: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: UyirinaiTheme.colors.textPrimary,
     marginTop: 1,
   },
   actionRow: {
@@ -191,7 +191,9 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: '#1E293B',
+    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderLight,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
@@ -200,7 +202,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -4,
     right: -4,
-    backgroundColor: '#E11D48',
+    backgroundColor: UyirinaiTheme.colors.error,
     borderRadius: 10,
     paddingHorizontal: 4,
     paddingVertical: 1,
@@ -208,7 +210,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   badgeText: {
-    color: '#FFFFFF',
+    color: UyirinaiTheme.colors.white,
     fontSize: 9,
     fontWeight: '800',
   },
@@ -216,15 +218,15 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: UyirinaiTheme.colors.softGreen,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#0F766E',
+    borderWidth: 1.5,
+    borderColor: UyirinaiTheme.colors.lightGreen,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(38, 53, 44, 0.4)',
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
     paddingTop: Platform.OS === 'web' ? 60 : 90,
@@ -232,13 +234,15 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: 290,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: UyirinaiTheme.colors.white,
     borderRadius: 16,
     padding: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.border,
+    shadowColor: UyirinaiTheme.colors.primaryDark,
+    shadowOpacity: 0.1,
     shadowRadius: 10,
-    elevation: 8,
+    elevation: 4,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -248,29 +252,31 @@ const styles = StyleSheet.create({
   modalName: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#0F172A',
+    color: UyirinaiTheme.colors.textPrimary,
   },
   modalEmail: {
     fontSize: 12,
-    color: '#64748B',
+    color: UyirinaiTheme.colors.textSecondary,
     marginTop: 2,
   },
   roleTag: {
-    backgroundColor: '#CCFBF1',
+    backgroundColor: UyirinaiTheme.colors.softGreen,
     alignSelf: 'flex-start',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 6,
     marginTop: 6,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.lightGreen,
   },
   roleTagText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#0F766E',
+    color: UyirinaiTheme.colors.primaryDark,
   },
   modalDivider: {
     height: 1,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: UyirinaiTheme.colors.borderLight,
     marginVertical: 12,
   },
   menuItem: {
@@ -283,17 +289,17 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     fontWeight: '600',
-    color: '#334155',
+    color: UyirinaiTheme.colors.textPrimary,
   },
   logoutMenuItem: {
     borderTopWidth: 1,
-    borderTopColor: '#FEE2E2',
+    borderTopColor: UyirinaiTheme.colors.borderLight,
     marginTop: 6,
     paddingTop: 12,
   },
   logoutText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#DC2626',
+    color: UyirinaiTheme.colors.error,
   },
 });

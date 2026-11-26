@@ -894,7 +894,7 @@ export default function DoctorOPDQueueScreen() {
                   </View>
 
                   <TouchableOpacity style={styles.addMedBtn} onPress={addRxItem}>
-                    <Plus size={16} color="#0F766E" />
+                    <Plus size={16} color="#38845A" />
                     <Text style={styles.addMedBtnText}>Add Item to Prescription</Text>
                   </TouchableOpacity>
                 </View>
@@ -912,7 +912,7 @@ export default function DoctorOPDQueueScreen() {
                 </View>
 
                 {historyLoading ? (
-                  <ActivityIndicator size="small" color="#0F766E" style={{ marginVertical: 20 }} />
+                  <ActivityIndicator size="small" color="#38845A" style={{ marginVertical: 20 }} />
                 ) : pastConsultations.length > 0 ? (
                   pastConsultations.map((c) => (
                     <View key={c.id} style={styles.historyCard}>
@@ -996,11 +996,11 @@ const styles = StyleSheet.create({
   bannerTitle: { color: '#fff', fontSize: 18, fontWeight: '700' },
   refreshBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#134E4A', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12, gap: 4 },
   refreshText: { color: '#fff', fontSize: 11, fontWeight: '600' },
-  bannerSub: { color: '#99F6E4', fontSize: 13, marginTop: 4 },
+  bannerSub: { color: '#CDE8D5', fontSize: 13, marginTop: 4 },
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
   statBox: { backgroundColor: 'rgba(255,255,255,0.12)', flex: 1, marginHorizontal: 4, padding: 10, borderRadius: 10, alignItems: 'center' },
   statNum: { color: '#fff', fontSize: 20, fontWeight: '800' },
-  statLabel: { color: '#CCFBF1', fontSize: 11, marginTop: 2 },
+  statLabel: { color: '#EAF5ED', fontSize: 11, marginTop: 2 },
   filterBar: { flexDirection: 'row', paddingHorizontal: 16, paddingTop: 14, gap: 8 },
   filterChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, backgroundColor: '#E2E8F0' },
   filterChipActive: { backgroundColor: UyirinaiTheme.colors.primary },
@@ -1010,7 +1010,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 16, fontWeight: '700', color: '#1E293B', marginBottom: 12 },
   card: { backgroundColor: '#fff', padding: 16, borderRadius: 12, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 2 },
   cardHeader: { flexDirection: 'row', alignItems: 'center' },
-  tokenBadge: { backgroundColor: '#CCFBF1', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, marginRight: 12 },
+  tokenBadge: { backgroundColor: '#EAF5ED', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, marginRight: 12 },
   tokenBadgeDone: { backgroundColor: '#E2E8F0' },
   tokenText: { color: UyirinaiTheme.colors.primary, fontWeight: '800', fontSize: 15 },
   tokenTextDone: { color: '#64748B' },
@@ -1019,7 +1019,7 @@ const styles = StyleSheet.create({
   patientMeta: { fontSize: 12, color: '#64748B', marginTop: 2 },
   reasonText: { fontSize: 13, color: '#334155', marginTop: 10 },
   boldLabel: { fontWeight: '700', color: '#0F172A' },
-  allergyWarning: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FEE2E2', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6, marginTop: 8, gap: 6 },
+  allergyWarning: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EAF5ED', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6, marginTop: 8, gap: 6 },
   allergyText: { fontSize: 12, color: '#B91C1C', fontWeight: '600' },
   cardActions: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
   statusTag: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 },
@@ -1037,7 +1037,7 @@ const styles = StyleSheet.create({
   modalContainer: { flex: 1, backgroundColor: '#F8FAFC' },
   modalHeader: { backgroundColor: UyirinaiTheme.colors.primary, paddingHorizontal: 16, paddingVertical: 14, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   modalHeaderTitle: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  modalHeaderSub: { color: '#99F6E4', fontSize: 12, marginTop: 2 },
+  modalHeaderSub: { color: '#CDE8D5', fontSize: 12, marginTop: 2 },
   closeBtn: { padding: 4 },
   modalTabBar: { flexDirection: 'row', backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
   modalTab: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, gap: 6, borderBottomWidth: 2, borderBottomColor: 'transparent' },
@@ -1050,7 +1050,7 @@ const styles = StyleSheet.create({
   subLabel: { fontSize: 12, fontWeight: '600', color: '#475569', marginBottom: 4 },
   modalInput: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: '#0F172A' },
   textArea: { minHeight: 64, textAlignVertical: 'top' },
-  admissionCard: { backgroundColor: '#F0FDFA', borderWidth: 1, borderColor: '#99F6E4', borderRadius: 10, padding: 12, marginTop: 16 },
+  admissionCard: { backgroundColor: '#EAF5ED', borderWidth: 1, borderColor: '#CDE8D5', borderRadius: 10, padding: 12, marginTop: 16 },
   admissionToggleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   admissionToggleText: { fontSize: 13, fontWeight: '700', color: UyirinaiTheme.colors.primary },
   checkbox: { width: 20, height: 20, borderRadius: 4, borderWidth: 2, borderColor: '#94A3B8', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' },
@@ -1069,7 +1069,7 @@ const styles = StyleSheet.create({
   priorityPillTextStat: { color: '#fff' },
   testList: { gap: 8 },
   testItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderWidth: 1, borderColor: '#E2E8F0', padding: 12, borderRadius: 8 },
-  testItemActive: { borderColor: UyirinaiTheme.colors.primary, backgroundColor: '#F0FDFA' },
+  testItemActive: { borderColor: UyirinaiTheme.colors.primary, backgroundColor: '#EAF5ED' },
   testName: { fontSize: 14, fontWeight: '600', color: '#0F172A' },
   testMeta: { fontSize: 12, color: '#64748B', marginTop: 2 },
 
@@ -1082,7 +1082,7 @@ const styles = StyleSheet.create({
   deleteRxBtn: { padding: 4 },
   addMedBox: { backgroundColor: '#F8FAFC', borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 10, padding: 12, marginTop: 10 },
   grid2: { flexDirection: 'row', gap: 10, marginTop: 6 },
-  addMedBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#CCFBF1', paddingVertical: 10, borderRadius: 8, marginTop: 12, gap: 6 },
+  addMedBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#EAF5ED', paddingVertical: 10, borderRadius: 8, marginTop: 12, gap: 6 },
   addMedBtnText: { color: UyirinaiTheme.colors.primary, fontSize: 13, fontWeight: '700' },
 
   // History styles

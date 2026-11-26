@@ -82,11 +82,11 @@ export default function DischargeMonitoringScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadDischarges} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadDischarges} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <LogOut size={40} color="#CBD5E1" />
@@ -108,10 +108,10 @@ export default function DischargeMonitoringScreen() {
                     {
                       backgroundColor:
                         item.status === 'DISCHARGED'
-                          ? '#CCFBF1'
+                          ? '#EAF5ED'
                           : item.status === 'PLANNED'
                           ? '#FEF3C7'
-                          : '#FEE2E2',
+                          : '#EAF5ED',
                     },
                   ]}
                 >
@@ -121,7 +121,7 @@ export default function DischargeMonitoringScreen() {
                       {
                         color:
                           item.status === 'DISCHARGED'
-                            ? '#0F766E'
+                            ? '#38845A'
                             : item.status === 'PLANNED'
                             ? '#D97706'
                             : '#DC2626',
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   chipActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   chipText: {
     fontSize: 11,
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
   },
   patUhid: {
     fontSize: 11,
-    color: '#0F766E',
+    color: '#38845A',
     fontFamily: 'monospace',
     marginTop: 1,
   },

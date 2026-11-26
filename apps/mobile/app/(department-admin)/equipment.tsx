@@ -93,18 +93,18 @@ export default function EquipmentManagementScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadEquipment} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadEquipment} tintColor="#38845A" />
         }
       >
         {success && (
           <View style={styles.successBanner}>
-            <CheckCircle2 size={16} color="#0F766E" />
+            <CheckCircle2 size={16} color="#38845A" />
             <Text style={styles.successText}>Biomedical maintenance ticket created</Text>
           </View>
         )}
 
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <Wrench size={40} color="#CBD5E1" />
@@ -126,13 +126,13 @@ export default function EquipmentManagementScreen() {
                   <View
                     style={[
                       styles.statusPill,
-                      { backgroundColor: isOperational ? '#CCFBF1' : '#FEE2E2' },
+                      { backgroundColor: isOperational ? '#EAF5ED' : '#EAF5ED' },
                     ]}
                   >
                     <Text
                       style={[
                         styles.statusPillText,
-                        { color: isOperational ? '#0F766E' : '#DC2626' },
+                        { color: isOperational ? '#38845A' : '#DC2626' },
                       ]}
                     >
                       {item.status || 'OPERATIONAL'}
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     padding: 12,
     borderRadius: 12,
     marginBottom: 16,
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   emptyState: {
     alignItems: 'center',
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
     color: '#0F172A',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',

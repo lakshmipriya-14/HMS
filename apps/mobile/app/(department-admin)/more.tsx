@@ -100,7 +100,7 @@ export default function DepartmentAdminMoreScreen() {
           desc: 'Code, working hours, capacity & HOD',
           icon: Building2,
           route: '/(department-admin)/info',
-          color: '#0F766E',
+          color: '#38845A',
         },
         {
           title: 'Department Reports',
@@ -133,7 +133,7 @@ export default function DepartmentAdminMoreScreen() {
           desc: 'Specimens, barcodes & released test results',
           icon: FlaskConical,
           route: '/(department-admin)/lab-requests',
-          color: '#0F766E',
+          color: '#38845A',
         },
         {
           title: 'Radiology & Imaging',
@@ -206,7 +206,7 @@ export default function DepartmentAdminMoreScreen() {
           desc: 'Centralized tracking of all department requests',
           icon: CheckSquare,
           route: '/(department-admin)/approvals-hub',
-          color: '#0F766E',
+          color: '#38845A',
         },
         {
           title: 'Department Announcements',
@@ -286,8 +286,8 @@ export default function DepartmentAdminMoreScreen() {
               onPress={() => router.push('/(department-admin)/profile')}
               activeOpacity={0.7}
             >
-              <View style={[styles.iconBox, { backgroundColor: '#0F766E15' }]}>
-                <User size={20} color="#0F766E" />
+              <View style={[styles.iconBox, { backgroundColor: '#38845A15' }]}>
+                <User size={20} color="#38845A" />
               </View>
               <View style={styles.menuTextCol}>
                 <Text style={styles.menuTitle}>Admin Profile</Text>
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
   },
   userRole: {
     fontSize: 11,
-    color: '#0F766E',
+    color: '#38845A',
     fontWeight: '700',
     letterSpacing: 0.5,
     marginTop: 2,
@@ -607,7 +607,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,

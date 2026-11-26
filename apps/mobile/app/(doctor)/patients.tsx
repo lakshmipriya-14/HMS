@@ -148,7 +148,7 @@ export default function DoctorInpatientsScreen() {
             <View key={adm.id} style={styles.card}>
               <View style={styles.cardRow}>
                 <View style={styles.bedBadge}>
-                  <BedDouble size={16} color="#0F766E" />
+                  <BedDouble size={16} color="#38845A" />
                   <Text style={styles.bedText}>{bedCode}</Text>
                   <Text style={styles.wardText}>• {wardName}</Text>
                 </View>
@@ -185,7 +185,7 @@ export default function DoctorInpatientsScreen() {
 
               {vitalsSummary && (
                 <View style={styles.vitalsBox}>
-                  <Activity size={14} color="#0F766E" />
+                  <Activity size={14} color="#38845A" />
                   <Text style={styles.vitalsText}>{vitalsSummary}</Text>
                 </View>
               )}
@@ -311,20 +311,20 @@ const styles = StyleSheet.create({
   bannerTitle: { color: '#fff', fontSize: 18, fontWeight: '700' },
   refreshBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#134E4A', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12, gap: 4 },
   refreshText: { color: '#fff', fontSize: 11, fontWeight: '600' },
-  bannerSub: { color: '#99F6E4', fontSize: 12, marginTop: 4 },
+  bannerSub: { color: '#CDE8D5', fontSize: 12, marginTop: 4 },
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
   statBox: { backgroundColor: 'rgba(255,255,255,0.12)', flex: 1, marginHorizontal: 4, padding: 10, borderRadius: 10, alignItems: 'center' },
   statNum: { color: '#fff', fontSize: 20, fontWeight: '800' },
-  statLabel: { color: '#CCFBF1', fontSize: 11, marginTop: 2 },
+  statLabel: { color: '#EAF5ED', fontSize: 11, marginTop: 2 },
   list: { padding: 16 },
   card: { backgroundColor: '#fff', padding: 16, borderRadius: 12, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 2 },
   cardRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  bedBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#CCFBF1', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 6 },
+  bedBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EAF5ED', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 6 },
   bedText: { color: UyirinaiTheme.colors.primary, fontSize: 13, fontWeight: '800', marginLeft: 6 },
   wardText: { color: UyirinaiTheme.colors.primary, fontSize: 11, marginLeft: 4 },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   statusOk: { backgroundColor: '#D1FAE5' },
-  statusAlert: { backgroundColor: '#FEE2E2' },
+  statusAlert: { backgroundColor: '#EAF5ED' },
   statusText: { fontSize: 11, fontWeight: '600' },
   okText: { color: '#065F46' },
   alertText: { color: '#991B1B' },
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
   modalContainer: { flex: 1, backgroundColor: '#F8FAFC' },
   modalHeader: { backgroundColor: UyirinaiTheme.colors.primary, paddingHorizontal: 16, paddingVertical: 14, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   modalHeaderTitle: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  modalHeaderSub: { color: '#99F6E4', fontSize: 12, marginTop: 2 },
+  modalHeaderSub: { color: '#CDE8D5', fontSize: 12, marginTop: 2 },
   closeBtn: { padding: 4 },
   modalScroll: { flex: 1 },
   formPadding: { padding: 16 },

@@ -324,7 +324,7 @@ export default function DischargeClearanceScreen() {
                   onPress={() => toggleClearance(pat.id, 'pharmacy')}
                 >
                   <View style={styles.checkLeft}>
-                    <Pill size={16} color={pat.clearances.pharmacy.signed ? '#059669' : '#64748B'} />
+                    <Pill size={16} color={pat.clearances.pharmacy.signed ? '#38845A' : '#64748B'} />
                     <View style={{ flex: 1 }}>
                       <Text style={styles.checkLabel}>1. Pharmacy Clearance</Text>
                       <Text style={styles.checkDesc}>
@@ -339,7 +339,7 @@ export default function DischargeClearanceScreen() {
                   </View>
                   <CheckCircle2
                     size={20}
-                    color={pat.clearances.pharmacy.signed ? '#059669' : '#CBD5E1'}
+                    color={pat.clearances.pharmacy.signed ? '#38845A' : '#CBD5E1'}
                   />
                 </TouchableOpacity>
 
@@ -351,7 +351,7 @@ export default function DischargeClearanceScreen() {
                   <View style={styles.checkLeft}>
                     <FlaskConical
                       size={16}
-                      color={pat.clearances.laboratory.signed ? '#059669' : '#64748B'}
+                      color={pat.clearances.laboratory.signed ? '#38845A' : '#64748B'}
                     />
                     <View style={{ flex: 1 }}>
                       <Text style={styles.checkLabel}>2. Laboratory Clearance</Text>
@@ -365,7 +365,7 @@ export default function DischargeClearanceScreen() {
                   </View>
                   <CheckCircle2
                     size={20}
-                    color={pat.clearances.laboratory.signed ? '#059669' : '#CBD5E1'}
+                    color={pat.clearances.laboratory.signed ? '#38845A' : '#CBD5E1'}
                   />
                 </TouchableOpacity>
 
@@ -377,7 +377,7 @@ export default function DischargeClearanceScreen() {
                   <View style={styles.checkLeft}>
                     <HeartPulse
                       size={16}
-                      color={pat.clearances.nursing.signed ? '#059669' : '#64748B'}
+                      color={pat.clearances.nursing.signed ? '#38845A' : '#64748B'}
                     />
                     <View style={{ flex: 1 }}>
                       <Text style={styles.checkLabel}>3. Nursing Ward Handover Clearance</Text>
@@ -393,7 +393,7 @@ export default function DischargeClearanceScreen() {
                   </View>
                   <CheckCircle2
                     size={20}
-                    color={pat.clearances.nursing.signed ? '#059669' : '#CBD5E1'}
+                    color={pat.clearances.nursing.signed ? '#38845A' : '#CBD5E1'}
                   />
                 </TouchableOpacity>
 
@@ -405,7 +405,7 @@ export default function DischargeClearanceScreen() {
                   <View style={styles.checkLeft}>
                     <CreditCard
                       size={16}
-                      color={pat.clearances.billing.signed ? '#059669' : '#64748B'}
+                      color={pat.clearances.billing.signed ? '#38845A' : '#64748B'}
                     />
                     <View style={{ flex: 1 }}>
                       <Text style={styles.checkLabel}>4. Final Billing Settlement</Text>
@@ -421,7 +421,7 @@ export default function DischargeClearanceScreen() {
                   </View>
                   <CheckCircle2
                     size={20}
-                    color={pat.clearances.billing.signed ? '#059669' : '#CBD5E1'}
+                    color={pat.clearances.billing.signed ? '#38845A' : '#CBD5E1'}
                   />
                 </TouchableOpacity>
               </View>
@@ -449,7 +449,7 @@ export default function DischargeClearanceScreen() {
                   <Text
                     style={[
                       styles.finVal,
-                      { color: pat.financials.balancePayable > 0 ? '#DC2626' : '#059669' },
+                      { color: pat.financials.balancePayable > 0 ? '#DC2626' : '#38845A' },
                     ]}
                   >
                     ₹{pat.financials.balancePayable.toLocaleString('en-IN')}
@@ -554,19 +554,19 @@ export default function DischargeClearanceScreen() {
               <Text style={styles.sectionHeading}>4-Way Clearance Verification Audit</Text>
               <View style={styles.auditGrid}>
                 <View style={styles.auditItem}>
-                  <CheckCircle2 size={14} color="#059669" />
+                  <CheckCircle2 size={14} color="#38845A" />
                   <Text style={styles.auditText}>Pharmacy: Reconciled & Billed</Text>
                 </View>
                 <View style={styles.auditItem}>
-                  <CheckCircle2 size={14} color="#059669" />
+                  <CheckCircle2 size={14} color="#38845A" />
                   <Text style={styles.auditText}>Laboratory: All Tests Verified</Text>
                 </View>
                 <View style={styles.auditItem}>
-                  <CheckCircle2 size={14} color="#059669" />
+                  <CheckCircle2 size={14} color="#38845A" />
                   <Text style={styles.auditText}>Nursing: Lines Removed & Vitals Logged</Text>
                 </View>
                 <View style={styles.auditItem}>
-                  <CheckCircle2 size={14} color="#059669" />
+                  <CheckCircle2 size={14} color="#38845A" />
                   <Text style={styles.auditText}>Billing: Zero Balance Settled</Text>
                 </View>
               </View>
@@ -706,7 +706,7 @@ const styles = StyleSheet.create({
   checkLeft: { flexDirection: 'row', gap: 10, flex: 1, alignItems: 'center' },
   checkLabel: { fontSize: 12, fontWeight: '700', color: '#1E293B' },
   checkDesc: { fontSize: 10, color: '#64748B', marginTop: 1 },
-  signNote: { fontSize: 10, color: '#059669', fontWeight: '600', marginTop: 2 },
+  signNote: { fontSize: 10, color: '#38845A', fontWeight: '600', marginTop: 2 },
   financeBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -723,7 +723,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#059669',
+    backgroundColor: '#38845A',
     borderRadius: 10,
     paddingVertical: 12,
     gap: 8,
@@ -756,7 +756,7 @@ const styles = StyleSheet.create({
   slipHospital: { fontSize: 13, fontWeight: '900', color: '#0F172A' },
   slipSub: { fontSize: 10, color: '#64748B' },
   gatePassBanner: {
-    backgroundColor: '#059669',
+    backgroundColor: '#38845A',
     borderRadius: 10,
     padding: 14,
     alignItems: 'center',
@@ -779,7 +779,7 @@ const styles = StyleSheet.create({
   settleLabel: { fontSize: 11, color: '#64748B' },
   settleVal: { fontSize: 11, fontWeight: '700', color: '#0F172A' },
   settleGrandLabel: { fontSize: 12, fontWeight: '800', color: '#0F172A' },
-  settleGrandVal: { fontSize: 12, fontWeight: '900', color: '#059669' },
+  settleGrandVal: { fontSize: 12, fontWeight: '900', color: '#38845A' },
   signatureRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, paddingHorizontal: 10 },
   signBox: { alignItems: 'center' },
   signTitle: { fontSize: 11, fontWeight: '700', color: '#334155' },

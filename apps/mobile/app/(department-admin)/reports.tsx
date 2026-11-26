@@ -70,11 +70,11 @@ export default function DepartmentReportsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadReport} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadReport} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : (
           <View>
             {/* Summary KPI Strip */}
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   chipActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   chipText: {
     fontSize: 12,

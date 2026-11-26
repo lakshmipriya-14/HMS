@@ -210,7 +210,7 @@ export default function LabAlertsScreen() {
               {/* Acknowledgment status */}
               {isAcknowledged ? (
                 <View style={styles.ackBox}>
-                  <CheckCircle2 size={14} color="#059669" />
+                  <CheckCircle2 size={14} color="#38845A" />
                   <Text style={styles.ackText}>Acknowledged by {record.acknowledgedBy} ({record.acknowledgedAt})</Text>
                 </View>
               ) : (
@@ -231,10 +231,10 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
   header: { backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', padding: 16 },
   headerTop: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
-  iconBox: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#FEE2E2', alignItems: 'center', justifyContent: 'center' },
+  iconBox: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#EAF5ED', alignItems: 'center', justifyContent: 'center' },
   title: { fontSize: 17, fontWeight: '800', color: '#0F172A' },
   subtitle: { fontSize: 11, color: '#64748B' },
-  policyBox: { backgroundColor: '#FEF2F2', padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#FECACA' },
+  policyBox: { backgroundColor: '#FEF2F2', padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#CDE8D5' },
   policyText: { fontSize: 11, color: '#991B1B', lineHeight: 16 },
   list: { padding: 16 },
   card: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 12 },
@@ -242,11 +242,11 @@ const styles = StyleSheet.create({
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   orderNoPill: { backgroundColor: '#F1F5F9', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   orderNoText: { fontSize: 11, fontWeight: '800', color: '#334155', fontFamily: 'monospace' },
-  panicPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#FEE2E2', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  panicPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   panicPillText: { fontSize: 10, fontWeight: '900', color: '#DC2626' },
   patientRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 },
   patientName: { fontSize: 15, fontWeight: '700', color: '#0F172A' },
-  uhidText: { fontSize: 11, color: '#0F766E', fontWeight: '700' },
+  uhidText: { fontSize: 11, color: '#38845A', fontWeight: '700' },
   paramBox: { backgroundColor: '#FEF2F2', padding: 10, borderRadius: 8, marginTop: 8, borderWidth: 1, borderColor: '#FCA5A5' },
   paramName: { fontSize: 12, fontWeight: '700', color: '#991B1B' },
   valueRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 2 },

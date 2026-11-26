@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import { mobileApiClient, apiRequest } from '../../services/api';
+import { UyirinaiTheme } from '../../constants/theme';
 import {
   HeartPulse,
   AlertCircle,
@@ -79,7 +80,7 @@ export default function NurseDashboardScreen() {
   return (
     <ScrollView
       style={styles.container}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#0F766E']} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
     >
       {/* Shift & Ward Header */}
       <View style={styles.banner}>
@@ -95,14 +96,14 @@ export default function NurseDashboardScreen() {
             onPress={() => router.push('/(nurse)/notifications' as any)}
             accessibilityLabel="Notifications"
           >
-            <BellRing size={20} color="#fff" />
+            <BellRing size={20} color={UyirinaiTheme.colors.textPrimary} />
             {notifications.length > 0 && <View style={styles.notifDot} />}
           </TouchableOpacity>
         </View>
 
         <View style={styles.wardInfoRow}>
           <View style={styles.wardTag}>
-            <BedDouble size={14} color="#0F766E" />
+            <BedDouble size={14} color={UyirinaiTheme.colors.primary} />
             <Text style={styles.wardTagText}>{wardInfo.name}</Text>
           </View>
           <Text style={styles.shiftPill}>Day Shift: 08:00 AM – 04:00 PM</Text>
@@ -141,7 +142,7 @@ export default function NurseDashboardScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.metricCard} onPress={() => router.push('/(nurse)/vitals' as any)}>
-          <View style={[styles.iconCircle, { backgroundColor: '#FEE2E2' }]}>
+          <View style={[styles.iconCircle, { backgroundColor: '#EAF5ED' }]}>
             <HeartPulse size={18} color="#DC2626" />
           </View>
           <Text style={[styles.metricNumber, { color: '#DC2626' }]}>
@@ -161,8 +162,8 @@ export default function NurseDashboardScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.metricCard} onPress={() => router.push('/(nurse)/tasks')}>
-          <View style={[styles.iconCircle, { backgroundColor: '#CCFBF1' }]}>
-            <ClipboardList size={18} color="#0F766E" />
+          <View style={[styles.iconCircle, { backgroundColor: '#EAF5ED' }]}>
+            <ClipboardList size={18} color="#38845A" />
           </View>
           <Text style={styles.metricNumber}>{pendingTasks.length || 4}</Text>
           <Text style={styles.metricLabel}>Pending Tasks</Text>
@@ -177,7 +178,7 @@ export default function NurseDashboardScreen() {
           style={styles.actionBtn}
           onPress={() => router.push('/(nurse)/vitals' as any)}
         >
-          <HeartPulse size={20} color="#0F766E" />
+          <HeartPulse size={20} color="#38845A" />
           <Text style={styles.actionBtnText}>Record Vitals</Text>
         </TouchableOpacity>
 
@@ -185,7 +186,7 @@ export default function NurseDashboardScreen() {
           style={styles.actionBtn}
           onPress={() => router.push('/(nurse)/medications')}
         >
-          <Pill size={20} color="#0F766E" />
+          <Pill size={20} color="#38845A" />
           <Text style={styles.actionBtnText}>Administer MAR</Text>
         </TouchableOpacity>
 
@@ -193,7 +194,7 @@ export default function NurseDashboardScreen() {
           style={styles.actionBtn}
           onPress={() => router.push('/(nurse)/tasks')}
         >
-          <FileText size={20} color="#0F766E" />
+          <FileText size={20} color="#38845A" />
           <Text style={styles.actionBtnText}>Doctor Orders</Text>
         </TouchableOpacity>
 
@@ -201,7 +202,7 @@ export default function NurseDashboardScreen() {
           style={styles.actionBtn}
           onPress={() => router.push('/(nurse)/handover' as any)}
         >
-          <RotateCcw size={20} color="#0F766E" />
+          <RotateCcw size={20} color="#38845A" />
           <Text style={styles.actionBtnText}>Shift Handover</Text>
         </TouchableOpacity>
       </View>
@@ -234,7 +235,7 @@ export default function NurseDashboardScreen() {
       <View style={styles.careCard}>
         <View style={styles.careItem}>
           <View style={styles.timeBadge}>
-            <Clock size={12} color="#0F766E" />
+            <Clock size={12} color="#38845A" />
             <Text style={styles.timeText}>12:00 PM</Text>
           </View>
           <View style={{ flex: 1, marginLeft: 10 }}>
@@ -294,29 +295,33 @@ export default function NurseDashboardScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC', padding: 16 },
+  container: { flex: 1, backgroundColor: UyirinaiTheme.colors.backgroundSecondary, padding: 16 },
   banner: {
-    backgroundColor: '#B5121B',
+    backgroundColor: UyirinaiTheme.colors.white,
     borderRadius: 16,
     padding: 18,
     marginBottom: 14,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.border,
+    shadowColor: UyirinaiTheme.colors.primaryDark,
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
   bannerTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
-  greeting: { fontSize: 18, fontWeight: '800', color: '#fff' },
-  roleTitle: { fontSize: 12, color: '#FECACA', marginTop: 3, fontWeight: '600' },
+  greeting: { fontSize: 18, fontWeight: '800', color: UyirinaiTheme.colors.textPrimary },
+  roleTitle: { fontSize: 12, color: UyirinaiTheme.colors.primary, marginTop: 3, fontWeight: '600' },
   notifBadge: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -327,7 +332,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#EF4444',
+    backgroundColor: UyirinaiTheme.colors.error,
   },
   wardInfoRow: {
     flexDirection: 'row',
@@ -340,38 +345,40 @@ const styles = StyleSheet.create({
   wardTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: UyirinaiTheme.colors.softGreen,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 8,
     gap: 6,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.lightGreen,
   },
-  wardTagText: { fontSize: 11, fontWeight: '700', color: '#fff' },
-  shiftPill: { fontSize: 11, color: '#FECACA', fontWeight: '600' },
+  wardTagText: { fontSize: 11, fontWeight: '700', color: UyirinaiTheme.colors.primaryDark },
+  shiftPill: { fontSize: 11, color: UyirinaiTheme.colors.textSecondary, fontWeight: '600' },
   criticalBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEF2F2',
+    backgroundColor: UyirinaiTheme.colors.errorBg,
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: '#F8C8C7',
     borderRadius: 14,
     padding: 14,
     marginBottom: 16,
   },
-  criticalTitle: { fontSize: 13, fontWeight: '800', color: '#DC2626' },
+  criticalTitle: { fontSize: 13, fontWeight: '800', color: UyirinaiTheme.colors.error },
   criticalDesc: { fontSize: 11, color: '#991B1B', marginTop: 2 },
-  sectionHeader: { fontSize: 15, fontWeight: '800', color: '#1E293B', marginBottom: 10 },
+  sectionHeader: { fontSize: 15, fontWeight: '800', color: UyirinaiTheme.colors.textPrimary, marginBottom: 10 },
   sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  seeAllText: { fontSize: 12, fontWeight: '700', color: '#B5121B' },
+  seeAllText: { fontSize: 12, fontWeight: '700', color: UyirinaiTheme.colors.primary },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 16 },
   metricCard: {
     width: '48.5%',
-    backgroundColor: '#fff',
+    backgroundColor: UyirinaiTheme.colors.white,
     borderRadius: 14,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000',
+    borderColor: UyirinaiTheme.colors.border,
+    shadowColor: UyirinaiTheme.colors.primaryDark,
     shadowOpacity: 0.03,
     shadowRadius: 4,
     elevation: 1,
@@ -384,9 +391,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 8,
   },
-  metricNumber: { fontSize: 22, fontWeight: '900', color: '#0F172A' },
-  metricLabel: { fontSize: 12, fontWeight: '700', color: '#334155', marginTop: 2 },
-  metricSub: { fontSize: 10, color: '#94A3B8', marginTop: 1 },
+  metricNumber: { fontSize: 22, fontWeight: '900', color: UyirinaiTheme.colors.textPrimary },
+  metricLabel: { fontSize: 12, fontWeight: '700', color: UyirinaiTheme.colors.textSecondary, marginTop: 2 },
+  metricSub: { fontSize: 10, color: UyirinaiTheme.colors.textMuted, marginTop: 1 },
   actionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -395,61 +402,63 @@ const styles = StyleSheet.create({
   },
   actionBtn: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: UyirinaiTheme.colors.white,
     borderWidth: 1,
-    borderColor: '#FEE2E2',
+    borderColor: UyirinaiTheme.colors.border,
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    shadowColor: '#000',
+    shadowColor: UyirinaiTheme.colors.primaryDark,
     shadowOpacity: 0.02,
     shadowRadius: 3,
     elevation: 1,
   },
-  actionBtnText: { fontSize: 10, fontWeight: '700', color: '#B5121B', textAlign: 'center' },
+  actionBtnText: { fontSize: 10, fontWeight: '700', color: UyirinaiTheme.colors.textPrimary, textAlign: 'center' },
   supervisorCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#F5F3FF',
+    backgroundColor: UyirinaiTheme.colors.softGreen,
     borderWidth: 1,
-    borderColor: '#DDD6FE',
+    borderColor: UyirinaiTheme.colors.lightGreen,
     borderRadius: 14,
     padding: 14,
     marginBottom: 16,
   },
   supervisorLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  supervisorTitle: { fontSize: 14, fontWeight: '800', color: '#6D28D9' },
-  supervisorDesc: { fontSize: 11, color: '#5B21B6', marginTop: 2 },
+  supervisorTitle: { fontSize: 14, fontWeight: '800', color: UyirinaiTheme.colors.primaryDark },
+  supervisorDesc: { fontSize: 11, color: UyirinaiTheme.colors.textSecondary, marginTop: 2 },
   careCard: {
-    backgroundColor: '#fff',
+    backgroundColor: UyirinaiTheme.colors.white,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: UyirinaiTheme.colors.border,
     padding: 14,
   },
   careItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 4 },
   timeBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEE2E2',
+    backgroundColor: UyirinaiTheme.colors.softGreen,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
     gap: 4,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.lightGreen,
   },
-  timeText: { fontSize: 10, fontWeight: '700', color: '#B5121B' },
-  careTitle: { fontSize: 13, fontWeight: '700', color: '#1E293B' },
-  carePatient: { fontSize: 11, color: '#64748B', marginTop: 2 },
+  timeText: { fontSize: 10, fontWeight: '700', color: UyirinaiTheme.colors.primaryDark },
+  careTitle: { fontSize: 13, fontWeight: '700', color: UyirinaiTheme.colors.textPrimary },
+  carePatient: { fontSize: 11, color: UyirinaiTheme.colors.textSecondary, marginTop: 2 },
   chartBtn: {
-    backgroundColor: '#B5121B',
+    backgroundColor: UyirinaiTheme.colors.primary,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
   },
-  chartBtnText: { color: '#fff', fontSize: 11, fontWeight: '700' },
-  careDivider: { height: 1, backgroundColor: '#F1F5F9', marginVertical: 10 },
+  chartBtnText: { color: UyirinaiTheme.colors.white, fontSize: 11, fontWeight: '700' },
+  careDivider: { height: 1, backgroundColor: UyirinaiTheme.colors.borderLight, marginVertical: 10 },
 });
 

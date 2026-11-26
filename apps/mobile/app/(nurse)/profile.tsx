@@ -30,7 +30,7 @@ export default function NurseProfileScreen() {
     <ScrollView style={styles.container}>
       <View style={styles.card}>
         <View style={styles.avatar}>
-          <User size={36} color="#0F766E" />
+          <User size={36} color="#38845A" />
         </View>
         <Text style={styles.name}>{user?.firstName} {user?.lastName}</Text>
         <Text style={styles.role}>
@@ -61,7 +61,7 @@ export default function NurseProfileScreen() {
           onPress={() => router.push('/(nurse)/handover' as any)}
         >
           <View style={styles.menuLeft}>
-            <RotateCcw size={18} color="#0F766E" />
+            <RotateCcw size={18} color="#38845A" />
             <Text style={styles.menuText}>Shift Handover Protocol</Text>
           </View>
           <ChevronRight size={16} color="#94A3B8" />
@@ -85,7 +85,7 @@ export default function NurseProfileScreen() {
           onPress={() => router.push('/(nurse)/notifications' as any)}
         >
           <View style={styles.menuLeft}>
-            <BellRing size={18} color="#0F766E" />
+            <BellRing size={18} color="#38845A" />
             <Text style={styles.menuText}>Nurse Alerts & Notifications</Text>
           </View>
           <ChevronRight size={16} color="#94A3B8" />
@@ -96,7 +96,7 @@ export default function NurseProfileScreen() {
           onPress={() => router.push('/(nurse)/vitals' as any)}
         >
           <View style={styles.menuLeft}>
-            <HeartPulse size={18} color="#0F766E" />
+            <HeartPulse size={18} color="#38845A" />
             <Text style={styles.menuText}>Clinical Vitals Charting</Text>
           </View>
           <ChevronRight size={16} color="#94A3B8" />
@@ -128,13 +128,13 @@ const styles = StyleSheet.create({
     width: 68,
     height: 68,
     borderRadius: 34,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 10,
   },
   name: { fontSize: 17, fontWeight: '800', color: '#0F172A' },
-  role: { fontSize: 12, fontWeight: '700', color: '#0F766E', marginTop: 2 },
+  role: { fontSize: 12, fontWeight: '700', color: '#38845A', marginTop: 2 },
   email: { fontSize: 11, color: '#64748B', marginTop: 2, marginBottom: 16 },
   infoRow: {
     flexDirection: 'row',
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 14,
     borderRadius: 10,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
   },
   logoutText: { color: '#DC2626', fontWeight: '800', fontSize: 13 },
 });

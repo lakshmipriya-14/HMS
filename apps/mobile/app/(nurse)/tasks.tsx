@@ -285,7 +285,7 @@ export default function NurseTasksScreen() {
       <FlatList
         data={filteredTasks}
         keyExtractor={(item) => item.id}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#0F766E']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
         ListEmptyComponent={
           <View style={styles.emptyBox}>
             <CheckCircle2 size={36} color="#059669" />
@@ -303,7 +303,7 @@ export default function NurseTasksScreen() {
                 onPress={() => toggleTaskStatus(item)}
               >
                 {item.isCompleted ? (
-                  <CheckSquare size={22} color="#0F766E" />
+                  <CheckSquare size={22} color="#38845A" />
                 ) : (
                   <Square size={22} color={isUrgent ? '#DC2626' : '#94A3B8'} />
                 )}
@@ -338,7 +338,7 @@ export default function NurseTasksScreen() {
 
                 {item.doctorInstruction ? (
                   <View style={styles.docInstrBox}>
-                    <Stethoscope size={12} color="#0F766E" />
+                    <Stethoscope size={12} color="#38845A" />
                     <Text style={styles.docInstrText}>{item.doctorInstruction}</Text>
                   </View>
                 ) : null}
@@ -425,11 +425,11 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
   headerTitle: { fontSize: 17, fontWeight: '800', color: '#0F172A' },
   headerSub: { fontSize: 11, color: '#64748B', marginTop: 2 },
-  addBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#0F766E', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, gap: 6 },
+  addBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#38845A', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, gap: 6 },
   addBtnText: { color: '#fff', fontSize: 11, fontWeight: '700' },
   tabBar: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 10, padding: 4, marginBottom: 12 },
   tab: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 8 },
-  tabActive: { backgroundColor: '#0F766E' },
+  tabActive: { backgroundColor: '#38845A' },
   tabText: { fontSize: 11, fontWeight: '700', color: '#64748B' },
   tabTextActive: { color: '#fff' },
   emptyBox: { alignItems: 'center', padding: 30, backgroundColor: '#fff', borderRadius: 12 },
@@ -446,13 +446,13 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   taskCardDone: { backgroundColor: '#F8FAFC', opacity: 0.65 },
-  taskCardUrgent: { borderColor: '#FECACA', backgroundColor: '#FFFDFD' },
+  taskCardUrgent: { borderColor: '#CDE8D5', backgroundColor: '#FFFDFD' },
   checkboxTouch: { paddingRight: 10, paddingTop: 2 },
   taskContent: { flex: 1 },
   taskMetaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
   priorityPill: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   pillRoutine: { backgroundColor: '#E0F2FE' },
-  pillUrgent: { backgroundColor: '#FEE2E2' },
+  pillUrgent: { backgroundColor: '#EAF5ED' },
   priorityText: { fontSize: 9, fontWeight: '800' },
   textRoutine: { color: '#0284C7' },
   textUrgent: { color: '#DC2626' },
@@ -462,9 +462,9 @@ const styles = StyleSheet.create({
   taskTitleDone: { textDecorationLine: 'line-through', color: '#64748B' },
   taskDesc: { fontSize: 11, color: '#475569', marginTop: 3, lineHeight: 16 },
   patientRow: { marginTop: 6 },
-  patientText: { fontSize: 11, fontWeight: '700', color: '#0F766E' },
-  docInstrBox: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#CCFBF1', padding: 6, borderRadius: 6, marginTop: 6 },
-  docInstrText: { fontSize: 10, fontWeight: '700', color: '#0F766E' },
+  patientText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
+  docInstrBox: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EAF5ED', padding: 6, borderRadius: 6, marginTop: 6 },
+  docInstrText: { fontSize: 10, fontWeight: '700', color: '#38845A' },
   completedAtText: { fontSize: 10, color: '#059669', fontStyle: 'italic', marginTop: 6 },
 
   // Modal
@@ -477,10 +477,10 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row' },
   prioRow: { flexDirection: 'row', gap: 6 },
   prioChip: { flex: 1, paddingVertical: 8, borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, alignItems: 'center' },
-  prioChipActive: { backgroundColor: '#0F766E', borderColor: '#0F766E' },
+  prioChipActive: { backgroundColor: '#38845A', borderColor: '#38845A' },
   prioText: { fontSize: 10, fontWeight: '700', color: '#475569' },
   prioTextActive: { color: '#fff' },
-  submitBtn: { backgroundColor: '#0F766E', paddingVertical: 12, borderRadius: 10, alignItems: 'center', marginTop: 18 },
+  submitBtn: { backgroundColor: '#38845A', paddingVertical: 12, borderRadius: 10, alignItems: 'center', marginTop: 18 },
   submitBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
 });
 

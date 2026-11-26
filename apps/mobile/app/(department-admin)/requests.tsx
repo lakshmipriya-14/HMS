@@ -83,11 +83,11 @@ export default function DepartmentRequestsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadRequests} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadRequests} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : requests.length === 0 ? (
           <View style={styles.emptyState}>
             <Layers size={40} color="#CBD5E1" />
@@ -111,7 +111,7 @@ export default function DepartmentRequestsScreen() {
                         {
                           backgroundColor:
                             item.priority === 'URGENT' || item.priority === 'HIGH'
-                              ? '#FEE2E2'
+                              ? '#EAF5ED'
                               : '#F1F5F9',
                         },
                       ]}
@@ -134,13 +134,13 @@ export default function DepartmentRequestsScreen() {
                   <View
                     style={[
                       styles.statusBadge,
-                      { backgroundColor: isApproved ? '#CCFBF1' : isPending ? '#FEF3C7' : '#FEE2E2' },
+                      { backgroundColor: isApproved ? '#EAF5ED' : isPending ? '#FEF3C7' : '#EAF5ED' },
                     ]}
                   >
                     <Text
                       style={[
                         styles.statusBadgeText,
-                        { color: isApproved ? '#0F766E' : isPending ? '#D97706' : '#DC2626' },
+                        { color: isApproved ? '#38845A' : isPending ? '#D97706' : '#DC2626' },
                       ]}
                     >
                       {item.status || 'PENDING'}
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   typeSelectBtnActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   typeSelectText: {
     fontSize: 11,
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
     color: '#0F172A',
   },
   submitButton: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',

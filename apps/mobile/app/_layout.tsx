@@ -4,13 +4,14 @@ import { StatusBar } from 'expo-status-bar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '../hooks/useAuth';
 import { View, StyleSheet, Platform, useWindowDimensions } from 'react-native';
+import { UyirinaiTheme } from '../constants/theme';
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const { width, height } = useWindowDimensions();
   const content = (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: UyirinaiTheme.colors.white } }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="(auth)/login" />
       <Stack.Screen name="(super-admin)" />
@@ -31,7 +32,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <StatusBar style="light" backgroundColor="#0F766E" />
+        <StatusBar style="dark" backgroundColor={UyirinaiTheme.colors.white} />
         {Platform.OS === 'web' && width > 500 ? (
           <View style={styles.webWrapper}>
             <View style={[styles.phoneFrame, { maxHeight: Math.min(height - 24, 920) }]}>
@@ -53,13 +54,13 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
-    backgroundColor: '#F7F7F7',
+    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
   },
   webWrapper: {
     flex: 1,
     width: '100%',
     height: '100%',
-    backgroundColor: '#0F172A',
+    backgroundColor: '#1E2B23',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 12,
@@ -68,14 +69,14 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 430,
     height: '100%',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: UyirinaiTheme.colors.white,
     borderRadius: 20,
     overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: '#334155',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
+    borderWidth: 1.5,
+    borderColor: UyirinaiTheme.colors.border,
+    shadowColor: UyirinaiTheme.colors.primaryDark,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
     shadowRadius: 20,
   },
 });

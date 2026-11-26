@@ -312,7 +312,7 @@ export default function PharmacyInventoryScreen() {
             <Text style={styles.sub}>FEFO Batch Surveillance Matrix · Central Store</Text>
           </View>
           <View style={styles.statsPill}>
-            <Package size={14} color="#7C3AED" />
+            <Package size={14} color="#38845A" />
             <Text style={styles.statsPillText}>{medicines.length} Drugs</Text>
           </View>
         </View>
@@ -370,11 +370,11 @@ export default function PharmacyInventoryScreen() {
       {/* Drug List */}
       <ScrollView
         style={styles.scroll}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#7C3AED']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
       >
         {loading && !refreshing ? (
           <View style={styles.centerLoading}>
-            <ActivityIndicator size="large" color="#7C3AED" />
+            <ActivityIndicator size="large" color="#38845A" />
             <Text style={styles.loadingLabel}>Loading Formulary Ledgers...</Text>
           </View>
         ) : filteredMedicines.length === 0 ? (
@@ -448,7 +448,7 @@ export default function PharmacyInventoryScreen() {
                     style={styles.adjustBtn}
                     onPress={() => openAdjustModal(med)}
                   >
-                    <ArrowUpDown size={14} color="#7C3AED" />
+                    <ArrowUpDown size={14} color="#38845A" />
                     <Text style={styles.adjustBtnText}>Adjust Stock</Text>
                   </TouchableOpacity>
                 </View>
@@ -510,7 +510,7 @@ export default function PharmacyInventoryScreen() {
                     ]}
                     onPress={() => setAdjustmentType('INCREASE')}
                   >
-                    <Plus size={16} color={adjustmentType === 'INCREASE' ? '#059669' : '#64748B'} />
+                    <Plus size={16} color={adjustmentType === 'INCREASE' ? '#38845A' : '#64748B'} />
                     <Text
                       style={[
                         styles.typeBtnText,
@@ -633,7 +633,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#DDD6FE',
   },
-  statsPillText: { fontSize: 11, fontWeight: '800', color: '#7C3AED' },
+  statsPillText: { fontSize: 11, fontWeight: '800', color: '#38845A' },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -655,8 +655,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 4,
   },
-  filterPillActive: { backgroundColor: '#7C3AED' },
-  filterPillActiveLow: { backgroundColor: '#FEE2E2', borderWidth: 1, borderColor: '#FCA5A5' },
+  filterPillActive: { backgroundColor: '#38845A' },
+  filterPillActiveLow: { backgroundColor: '#EAF5ED', borderWidth: 1, borderColor: '#FCA5A5' },
   filterPillActiveExp: { backgroundColor: '#FEF3C7', borderWidth: 1, borderColor: '#FCD34D' },
   filterText: { fontSize: 11, fontWeight: '700', color: '#64748B' },
   filterTextActive: { color: '#fff' },
@@ -682,16 +682,16 @@ const styles = StyleSheet.create({
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   categoryCodeRow: { flexDirection: 'row', gap: 6, alignItems: 'center', marginBottom: 4 },
-  medCode: { fontSize: 10, fontWeight: '800', color: '#7C3AED', backgroundColor: '#F5F3FF', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
+  medCode: { fontSize: 10, fontWeight: '800', color: '#38845A', backgroundColor: '#F5F3FF', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   categoryBadge: { fontSize: 10, fontWeight: '700', color: '#64748B', backgroundColor: '#F1F5F9', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  dosageBadge: { fontSize: 10, fontWeight: '700', color: '#0F766E', backgroundColor: '#F0FDFA', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
+  dosageBadge: { fontSize: 10, fontWeight: '700', color: '#38845A', backgroundColor: '#EAF5ED', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   brandTitle: { fontSize: 15, fontWeight: '800', color: '#0F172A' },
   genericSub: { fontSize: 12, color: '#64748B', marginTop: 1 },
   stockSummaryBox: { alignItems: 'flex-end', marginLeft: 10 },
-  stockNumber: { fontSize: 20, fontWeight: '900', color: '#059669' },
+  stockNumber: { fontSize: 20, fontWeight: '900', color: '#38845A' },
   stockNumberLow: { color: '#DC2626' },
   stockUnitsLabel: { fontSize: 10, color: '#94A3B8' },
-  lowAlertTag: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FEE2E2', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginTop: 4, gap: 3 },
+  lowAlertTag: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EAF5ED', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginTop: 4, gap: 3 },
   lowAlertText: { fontSize: 9, fontWeight: '800', color: '#DC2626' },
   batchesSection: {
     backgroundColor: '#F8FAFC',
@@ -705,7 +705,7 @@ const styles = StyleSheet.create({
   batchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 3 },
   batchLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   batchIdText: { fontSize: 12, fontWeight: '700', color: '#1E293B' },
-  earliestBadge: { backgroundColor: '#EDE9FE', paddingHorizontal: 6, paddingVertical: 1.5, borderRadius: 4 },
+  earliestBadge: { backgroundColor: '#EAF5ED', paddingHorizontal: 6, paddingVertical: 1.5, borderRadius: 4 },
   earliestText: { fontSize: 9, fontWeight: '800', color: '#6D28D9' },
   batchRight: { alignItems: 'flex-end' },
   expiryText: { fontSize: 11, color: '#64748B' },
@@ -733,7 +733,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#DDD6FE',
   },
-  adjustBtnText: { fontSize: 12, fontWeight: '700', color: '#7C3AED' },
+  adjustBtnText: { fontSize: 12, fontWeight: '700', color: '#38845A' },
   // Modal styles
   modalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.6)', justifyContent: 'center', padding: 18 },
   modalCard: { backgroundColor: '#fff', borderRadius: 18, maxHeight: '85%', paddingBottom: 16 },
@@ -746,15 +746,15 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E2E8F0',
   },
   modalHeading: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
-  modalDrugName: { fontSize: 12, color: '#7C3AED', fontWeight: '700', marginTop: 2 },
+  modalDrugName: { fontSize: 12, color: '#38845A', fontWeight: '700', marginTop: 2 },
   modalCloseBtn: { padding: 4 },
   modalScroll: { padding: 18 },
   inputLabel: { fontSize: 12, fontWeight: '700', color: '#334155', marginTop: 10, marginBottom: 6 },
   batchPickerBox: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   pickerPill: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: '#CBD5E1', backgroundColor: '#F8FAFC' },
-  pickerPillActive: { borderColor: '#7C3AED', backgroundColor: '#FAF5FF' },
+  pickerPillActive: { borderColor: '#38845A', backgroundColor: '#FAF5FF' },
   pickerPillText: { fontSize: 11, color: '#475569', fontWeight: '600' },
-  pickerPillTextActive: { color: '#7C3AED', fontWeight: '800' },
+  pickerPillTextActive: { color: '#38845A', fontWeight: '800' },
   typeSelectorRow: { flexDirection: 'row', gap: 8 },
   typeBtn: {
     flex: 1,
@@ -771,7 +771,7 @@ const styles = StyleSheet.create({
   typeBtnActiveInc: { borderColor: '#10B981', backgroundColor: '#ECFDF5' },
   typeBtnActiveDec: { borderColor: '#EF4444', backgroundColor: '#FEF2F2' },
   typeBtnText: { fontSize: 11, fontWeight: '700', color: '#64748B' },
-  typeBtnTextInc: { color: '#059669' },
+  typeBtnTextInc: { color: '#38845A' },
   typeBtnTextDec: { color: '#DC2626' },
   textInputBox: {
     backgroundColor: '#F8FAFC',
@@ -793,9 +793,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
     marginVertical: 3,
   },
-  reasonOptionPillSelected: { borderColor: '#7C3AED', backgroundColor: '#FAF5FF' },
+  reasonOptionPillSelected: { borderColor: '#38845A', backgroundColor: '#FAF5FF' },
   reasonOptionText: { fontSize: 11, color: '#475569', fontWeight: '600' },
-  reasonOptionTextSelected: { color: '#7C3AED', fontWeight: '800' },
+  reasonOptionTextSelected: { color: '#38845A', fontWeight: '800' },
   modalActionRow: {
     flexDirection: 'row',
     paddingHorizontal: 18,
@@ -809,7 +809,7 @@ const styles = StyleSheet.create({
   saveActionBtn: {
     flex: 2,
     flexDirection: 'row',
-    backgroundColor: '#7C3AED',
+    backgroundColor: '#38845A',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',

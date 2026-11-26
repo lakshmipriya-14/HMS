@@ -88,18 +88,18 @@ export default function MaintenanceRequestsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadRequests} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadRequests} tintColor="#38845A" />
         }
       >
         {success && (
           <View style={styles.successBanner}>
-            <CheckCircle2 size={16} color="#0F766E" />
+            <CheckCircle2 size={16} color="#38845A" />
             <Text style={styles.successText}>Maintenance ticket dispatched to engineering</Text>
           </View>
         )}
 
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : requests.length === 0 ? (
           <View style={styles.emptyState}>
             <Hammer size={40} color="#CBD5E1" />
@@ -119,13 +119,13 @@ export default function MaintenanceRequestsScreen() {
                   <View
                     style={[
                       styles.statusPill,
-                      { backgroundColor: isResolved ? '#CCFBF1' : '#FEF3C7' },
+                      { backgroundColor: isResolved ? '#EAF5ED' : '#FEF3C7' },
                     ]}
                   >
                     <Text
                       style={[
                         styles.statusPillText,
-                        { color: isResolved ? '#0F766E' : '#D97706' },
+                        { color: isResolved ? '#38845A' : '#D97706' },
                       ]}
                     >
                       {item.status || 'PENDING'}
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     padding: 12,
     borderRadius: 12,
     marginBottom: 16,
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   emptyState: {
     alignItems: 'center',
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   priorityBtnActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   priorityBtnText: {
     fontSize: 11,
@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
     color: '#0F172A',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',

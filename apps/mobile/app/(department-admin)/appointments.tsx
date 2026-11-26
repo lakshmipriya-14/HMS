@@ -229,11 +229,11 @@ export default function DepartmentAppointmentsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <CalendarCheck size={40} color="#CBD5E1" />
@@ -259,11 +259,11 @@ export default function DepartmentAppointmentsScreen() {
                       styles.statusPill,
                       {
                         backgroundColor: isCheckedIn
-                          ? '#CCFBF1'
+                          ? '#EAF5ED'
                           : isCompleted
                           ? '#E0F2FE'
                           : isCancelled
-                          ? '#FEE2E2'
+                          ? '#EAF5ED'
                           : '#FEF3C7',
                       },
                     ]}
@@ -273,7 +273,7 @@ export default function DepartmentAppointmentsScreen() {
                         styles.statusPillText,
                         {
                           color: isCheckedIn
-                            ? '#0F766E'
+                            ? '#38845A'
                             : isCompleted
                             ? '#0284C7'
                             : isCancelled
@@ -319,7 +319,7 @@ export default function DepartmentAppointmentsScreen() {
                         setRescheduleModal(true);
                       }}
                     >
-                      <Calendar size={13} color="#0F766E" />
+                      <Calendar size={13} color="#38845A" />
                       <Text style={styles.rescheduleText}>Reschedule</Text>
                     </TouchableOpacity>
 
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
   bookBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
@@ -588,8 +588,8 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   chipActive: {
-    backgroundColor: '#CCFBF1',
-    borderColor: '#0F766E',
+    backgroundColor: '#EAF5ED',
+    borderColor: '#38845A',
   },
   chipText: {
     fontSize: 11,
@@ -597,7 +597,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   chipTextActive: {
-    color: '#0F766E',
+    color: '#38845A',
   },
   content: {
     flex: 1,
@@ -690,7 +690,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   checkInBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   checkInText: {
     color: '#FFFFFF',
@@ -698,15 +698,15 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   rescheduleBtn: {
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
   },
   rescheduleText: {
-    color: '#0F766E',
+    color: '#38845A',
     fontSize: 11,
     fontWeight: '700',
   },
   cancelBtn: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#EAF5ED',
   },
   cancelText: {
     color: '#DC2626',
@@ -766,8 +766,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   docChipActive: {
-    backgroundColor: '#CCFBF1',
-    borderColor: '#0F766E',
+    backgroundColor: '#EAF5ED',
+    borderColor: '#38845A',
   },
   docChipText: {
     fontSize: 12,
@@ -775,11 +775,11 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   docChipTextActive: {
-    color: '#0F766E',
+    color: '#38845A',
     fontWeight: '700',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',

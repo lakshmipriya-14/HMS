@@ -62,7 +62,7 @@ export default function NotificationsScreen() {
       <View style={styles.topBar}>
         <Text style={styles.topTitle}>Alerts & Notifications</Text>
         <TouchableOpacity style={styles.markAllBtn} onPress={handleMarkAllRead}>
-          <CheckCheck size={14} color="#0F766E" />
+          <CheckCheck size={14} color="#38845A" />
           <Text style={styles.markAllText}>Mark all read</Text>
         </TouchableOpacity>
       </View>
@@ -71,11 +71,11 @@ export default function NotificationsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadNotifications} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadNotifications} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : notifications.length === 0 ? (
           <View style={styles.emptyState}>
             <Bell size={40} color="#CBD5E1" />
@@ -87,17 +87,17 @@ export default function NotificationsScreen() {
               key={item.id}
               style={[
                 styles.notifCard,
-                { backgroundColor: item.isRead ? '#FFFFFF' : '#F0FDFA' },
+                { backgroundColor: item.isRead ? '#FFFFFF' : '#EAF5ED' },
               ]}
             >
               <View style={styles.cardTop}>
                 <View
                   style={[
                     styles.iconBox,
-                    { backgroundColor: item.isRead ? '#F1F5F9' : '#CCFBF1' },
+                    { backgroundColor: item.isRead ? '#F1F5F9' : '#EAF5ED' },
                   ]}
                 >
-                  <Megaphone size={16} color={item.isRead ? '#64748B' : '#0F766E'} />
+                  <Megaphone size={16} color={item.isRead ? '#64748B' : '#38845A'} />
                 </View>
                 <View style={styles.textCol}>
                   <Text style={[styles.notifTitle, !item.isRead && { fontWeight: '900' }]}>
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   markAllText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   content: {
     flex: 1,
@@ -232,14 +232,14 @@ const styles = StyleSheet.create({
   readBtn: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     borderRadius: 6,
     marginLeft: 8,
   },
   readBtnText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
     textTransform: 'uppercase',
   },
 });

@@ -17,7 +17,7 @@ export default function BillingProfileScreen() {
     <View style={styles.container}>
       <View style={styles.card}>
         <View style={styles.avatar}>
-          <CreditCard size={36} color="#059669" />
+          <CreditCard size={36} color="#38845A" />
         </View>
         <Text style={styles.name}>Hospital Billing Officer</Text>
         <Text style={styles.sub}>billing@Uyirinaihospital.com</Text>
@@ -38,8 +38,8 @@ const styles = StyleSheet.create({
   avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#D1FAE5', alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
   name: { fontSize: 18, fontWeight: '800', color: '#0F172A' },
   sub: { fontSize: 13, color: '#64748B', marginTop: 4 },
-  deskTag: { backgroundColor: '#D1FAE5', color: '#059669', fontSize: 11, fontWeight: '700', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, marginTop: 12 },
-  logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEE2E2', paddingVertical: 14, borderRadius: 10, gap: 8 },
+  deskTag: { backgroundColor: '#D1FAE5', color: '#38845A', fontSize: 11, fontWeight: '700', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, marginTop: 12 },
+  logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#EAF5ED', paddingVertical: 14, borderRadius: 10, gap: 8 },
   logoutText: { color: '#DC2626', fontSize: 14, fontWeight: '700' },
 });
 

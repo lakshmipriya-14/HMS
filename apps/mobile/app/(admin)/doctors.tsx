@@ -271,14 +271,14 @@ export default function AdminDoctorsScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#0F766E" />
+          <ActivityIndicator size="large" color="#38845A" />
         </View>
       ) : (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#0F766E" />
+            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />
           }
         >
           {filtered.length === 0 ? (
@@ -297,7 +297,7 @@ export default function AdminDoctorsScreen() {
                 <View key={doc.id} style={styles.card}>
                   <View style={styles.cardHeader}>
                     <View style={styles.avatar}>
-                      <Stethoscope size={18} color="#0F766E" />
+                      <Stethoscope size={18} color="#38845A" />
                     </View>
                     <View style={{ flex: 1, marginLeft: 10 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -305,7 +305,7 @@ export default function AdminDoctorsScreen() {
                         <View
                           style={[
                             styles.statusTag,
-                            { backgroundColor: isActive ? '#D1FAE5' : '#FEE2E2' },
+                            { backgroundColor: isActive ? '#D1FAE5' : '#EAF5ED' },
                           ]}
                         >
                           <Text
@@ -329,8 +329,8 @@ export default function AdminDoctorsScreen() {
                       <Switch
                         value={isAvail}
                         onValueChange={() => handleToggleAvailability(doc)}
-                        trackColor={{ false: '#E2E8F0', true: '#CCFBF1' }}
-                        thumbColor={isAvail ? '#0F766E' : '#94A3B8'}
+                        trackColor={{ false: '#E2E8F0', true: '#EAF5ED' }}
+                        thumbColor={isAvail ? '#38845A' : '#94A3B8'}
                       />
                     </View>
                   </View>
@@ -361,7 +361,7 @@ export default function AdminDoctorsScreen() {
                         setEditShift(doc.shift || 'GENERAL');
                       }}
                     >
-                      <Edit2 size={13} color="#0F766E" />
+                      <Edit2 size={13} color="#38845A" />
                       <Text style={styles.actionBtnText}>Edit Profile</Text>
                     </TouchableOpacity>
 
@@ -567,7 +567,7 @@ const styles = StyleSheet.create({
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingHorizontal: 14,
     borderRadius: 10,
     gap: 6,
@@ -594,7 +594,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   chipActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   chipText: {
     fontSize: 12,
@@ -634,7 +634,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -700,12 +700,12 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#CCFBF1',
+    borderColor: '#EAF5ED',
   },
   actionBtnText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   modalBg: {
     flex: 1,
@@ -762,8 +762,8 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   deptChipSelected: {
-    backgroundColor: '#CCFBF1',
-    borderColor: '#0F766E',
+    backgroundColor: '#EAF5ED',
+    borderColor: '#38845A',
   },
   deptChipText: {
     fontSize: 11,
@@ -771,10 +771,10 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   deptChipTextSelected: {
-    color: '#0F766E',
+    color: '#38845A',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: 'center',

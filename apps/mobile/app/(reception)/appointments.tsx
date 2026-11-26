@@ -207,7 +207,7 @@ export default function ReceptionAppointmentsScreen() {
       <FlatList
         data={filteredAppointments}
         keyExtractor={(item) => item.id}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#B5121B']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
         ListEmptyComponent={
           <View style={styles.emptyBox}>
             <Calendar size={36} color="#94A3B8" />
@@ -363,11 +363,11 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
   headerTitle: { fontSize: 17, fontWeight: '800', color: '#0F172A' },
   headerSub: { fontSize: 11, color: '#64748B', marginTop: 2 },
-  bookBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#B5121B', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, gap: 6 },
+  bookBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#38845A', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, gap: 6 },
   bookBtnText: { color: '#fff', fontSize: 11, fontWeight: '700' },
   tabBar: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 10, padding: 4, marginBottom: 12 },
   tab: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 8 },
-  tabActive: { backgroundColor: '#B5121B' },
+  tabActive: { backgroundColor: '#38845A' },
   tabText: { fontSize: 11, fontWeight: '700', color: '#64748B' },
   tabTextActive: { color: '#fff' },
   emptyBox: { alignItems: 'center', padding: 30, backgroundColor: '#fff', borderRadius: 12 },
@@ -375,14 +375,14 @@ const styles = StyleSheet.create({
   emptySub: { fontSize: 11, color: '#64748B', marginTop: 2 },
   card: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 10 },
   cardTop: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
-  tokenPill: { backgroundColor: '#FEE2E2', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, marginRight: 8 },
-  tokenPillText: { fontSize: 11, fontWeight: '800', color: '#B5121B' },
+  tokenPill: { backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, marginRight: 8 },
+  tokenPillText: { fontSize: 11, fontWeight: '800', color: '#38845A' },
   timePill: { fontSize: 11, fontWeight: '700', color: '#64748B', flex: 1 },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   badgeProgress: { backgroundColor: '#DCFCE7' },
   badgeCheckedIn: { backgroundColor: '#FEF3C7' },
   badgeScheduled: { backgroundColor: '#F1F5F9' },
-  badgeCancelled: { backgroundColor: '#FEE2E2' },
+  badgeCancelled: { backgroundColor: '#EAF5ED' },
   statusBadgeText: { fontSize: 9, fontWeight: '800' },
   textProgress: { color: '#166534' },
   textCheckedIn: { color: '#B45309' },
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
   docText: { fontSize: 11, color: '#334155', fontWeight: '600' },
   cardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, paddingTop: 8, borderTopWidth: 1, borderTopColor: '#F8FAFC' },
   typeText: { fontSize: 10, fontWeight: '700', color: '#64748B' },
-  actionPrompt: { fontSize: 10, color: '#B5121B', fontWeight: '700' },
+  actionPrompt: { fontSize: 10, color: '#38845A', fontWeight: '700' },
 
   // Modal
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
@@ -404,13 +404,13 @@ const styles = StyleSheet.create({
   fLabel: { fontSize: 11, fontWeight: '700', color: '#475569', marginTop: 10, marginBottom: 4 },
   fInput: { borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, padding: 10, fontSize: 12, backgroundColor: '#F8FAFC' },
   row: { flexDirection: 'row' },
-  submitBtn: { backgroundColor: '#B5121B', paddingVertical: 12, borderRadius: 10, alignItems: 'center', marginTop: 16 },
+  submitBtn: { backgroundColor: '#38845A', paddingVertical: 12, borderRadius: 10, alignItems: 'center', marginTop: 16 },
   submitBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
   actionItemName: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
   actionItemSub: { fontSize: 12, color: '#64748B', marginTop: 2 },
   reschedBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#E0F2FE', paddingVertical: 12, borderRadius: 8, gap: 8 },
   reschedBtnText: { color: '#0284C7', fontSize: 12, fontWeight: '700' },
-  cancelBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEE2E2', paddingVertical: 12, borderRadius: 8, gap: 8 },
+  cancelBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#EAF5ED', paddingVertical: 12, borderRadius: 8, gap: 8 },
   cancelBtnText: { color: '#DC2626', fontSize: 12, fontWeight: '700' },
 });
 

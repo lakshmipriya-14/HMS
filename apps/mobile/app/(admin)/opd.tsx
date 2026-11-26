@@ -244,7 +244,7 @@ export default function AdminOpdScreen() {
               style={[styles.tabItem, isActive && styles.tabItemActive]}
               onPress={() => setActiveTab(tab.id as OpdTab)}
             >
-              <Icon size={14} color={isActive ? '#0F766E' : '#64748B'} />
+              <Icon size={14} color={isActive ? '#38845A' : '#64748B'} />
               <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>{tab.label}</Text>
             </TouchableOpacity>
           );
@@ -253,14 +253,14 @@ export default function AdminOpdScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#0F766E" />
+          <ActivityIndicator size="large" color="#38845A" />
           <Text style={styles.loadingText}>Loading OPD telemetry & live queue...</Text>
         </View>
       ) : (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#0F766E" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />}
         >
           {/* Header Action Button */}
           <TouchableOpacity
@@ -337,7 +337,7 @@ export default function AdminOpdScreen() {
                               styles.statusBadge,
                               {
                                 backgroundColor: isChecked
-                                  ? '#CCFBF1'
+                                  ? '#EAF5ED'
                                   : isInProgress
                                   ? '#DBEAFE'
                                   : '#FEF3C7',
@@ -349,7 +349,7 @@ export default function AdminOpdScreen() {
                                 styles.statusBadgeText,
                                 {
                                   color: isChecked
-                                    ? '#0F766E'
+                                    ? '#38845A'
                                     : isInProgress
                                     ? '#1D4ED8'
                                     : '#B45309',
@@ -405,7 +405,7 @@ export default function AdminOpdScreen() {
                               setReschedTime(apt.slotTime || apt.appointmentTime || '10:00');
                             }}
                           >
-                            <Edit2 size={13} color="#0F766E" />
+                            <Edit2 size={13} color="#38845A" />
                             <Text style={styles.actionBtnText}>Reschedule</Text>
                           </TouchableOpacity>
 
@@ -610,7 +610,7 @@ export default function AdminOpdScreen() {
               <View style={styles.revenueCard}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                   <View style={styles.revenueIcon}>
-                    <DollarSign size={20} color="#0F766E" />
+                    <DollarSign size={20} color="#38845A" />
                   </View>
                   <View>
                     <Text style={styles.revenueTitle}>Est. Consultation Revenue</Text>
@@ -820,7 +820,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   tabItemActive: {
-    borderBottomColor: '#0F766E',
+    borderBottomColor: '#38845A',
   },
   tabLabel: {
     fontSize: 11,
@@ -828,7 +828,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   tabLabelActive: {
-    color: '#0F766E',
+    color: '#38845A',
   },
   scroll: { flex: 1 },
   scrollContent: { padding: 14, paddingBottom: 30 },
@@ -837,7 +837,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 11,
     borderRadius: 12,
     marginBottom: 14,
@@ -890,14 +890,14 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     alignItems: 'center',
     justifyContent: 'center',
   },
   tokenNum: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
   },
   patientName: {
     fontSize: 14,
@@ -943,12 +943,12 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#CCFBF1',
+    borderColor: '#EAF5ED',
   },
   actionBtnText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   searchBox: {
     flexDirection: 'row',
@@ -975,7 +975,7 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   filterChipActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   filterChipText: {
     fontSize: 11,
@@ -1083,7 +1083,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1094,7 +1094,7 @@ const styles = StyleSheet.create({
   revenueVal: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
     marginTop: 2,
   },
   chipSelect: {
@@ -1107,8 +1107,8 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   chipSelectActive: {
-    backgroundColor: '#CCFBF1',
-    borderColor: '#0F766E',
+    backgroundColor: '#EAF5ED',
+    borderColor: '#38845A',
   },
   chipSelectText: {
     fontSize: 11,
@@ -1116,7 +1116,7 @@ const styles = StyleSheet.create({
     color: '#475569',
   },
   chipSelectTextActive: {
-    color: '#0F766E',
+    color: '#38845A',
     fontWeight: '700',
   },
   modalBg: {
@@ -1160,7 +1160,7 @@ const styles = StyleSheet.create({
     color: '#0F172A',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: 'center',

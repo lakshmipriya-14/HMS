@@ -2,18 +2,32 @@ import { WorkspaceGate } from '../../components/WorkspaceGate';
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ambulance, Navigation, HeartPulse, ListOrdered, User } from 'lucide-react-native';
+import { Platform } from 'react-native';
+import { UyirinaiTheme } from '../../constants/theme';
 
 export default function AmbulanceTabsLayout() {
+  const bottomInset = Platform.OS === 'web' ? 10 : 12;
+  const tabHeight = Platform.OS === 'web' ? 64 : 70;
+
   return (
     <WorkspaceGate home="/(ambulance)">
       <Tabs
         screenOptions={{
           headerShown: true,
-          headerStyle: { backgroundColor: '#0F766E' },
-          headerTintColor: '#fff',
-          tabBarActiveTintColor: '#0F766E',
-          tabBarInactiveTintColor: '#64748B',
-          tabBarStyle: { height: 60, paddingBottom: 8, paddingTop: 6 },
+          headerStyle: { backgroundColor: UyirinaiTheme.colors.white },
+          headerTintColor: UyirinaiTheme.colors.textPrimary,
+          headerTitleStyle: { fontWeight: '700', fontSize: 17, color: UyirinaiTheme.colors.textPrimary },
+          tabBarActiveTintColor: UyirinaiTheme.colors.primary,
+          tabBarInactiveTintColor: UyirinaiTheme.colors.textMuted,
+          tabBarStyle: {
+            height: tabHeight,
+            paddingBottom: bottomInset,
+            paddingTop: 6,
+            backgroundColor: UyirinaiTheme.colors.white,
+            borderTopWidth: 1,
+            borderTopColor: UyirinaiTheme.colors.borderLight,
+          },
+          tabBarLabelStyle: { fontSize: 10, fontWeight: '700', marginBottom: 2 },
         }}
       >
         <Tabs.Screen

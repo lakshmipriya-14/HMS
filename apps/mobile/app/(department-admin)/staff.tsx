@@ -189,7 +189,7 @@ export default function DepartmentStaffScreen() {
           onPress={() => router.push('/(department-admin)/attendance')}
           activeOpacity={0.8}
         >
-          <Clock size={15} color="#0F766E" />
+          <Clock size={15} color="#38845A" />
           <Text style={styles.navChipText}>Roll-Call</Text>
         </TouchableOpacity>
 
@@ -213,11 +213,11 @@ export default function DepartmentStaffScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadStaff} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadStaff} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <Users size={40} color="#CBD5E1" />
@@ -250,7 +250,7 @@ export default function DepartmentStaffScreen() {
                   <TouchableOpacity
                     style={[
                       styles.attendanceBadge,
-                      { backgroundColor: isPresent ? '#CCFBF1' : '#FEE2E2' },
+                      { backgroundColor: isPresent ? '#EAF5ED' : '#EAF5ED' },
                     ]}
                     onPress={(e) => {
                       e.stopPropagation();
@@ -260,7 +260,7 @@ export default function DepartmentStaffScreen() {
                     <Text
                       style={[
                         styles.attendanceText,
-                        { color: isPresent ? '#0F766E' : '#DC2626' },
+                        { color: isPresent ? '#38845A' : '#DC2626' },
                       ]}
                     >
                       {isPresent ? 'Present' : 'Absent'}
@@ -285,7 +285,7 @@ export default function DepartmentStaffScreen() {
                     }}
                     activeOpacity={0.7}
                   >
-                    <Edit2 size={13} color="#0F766E" />
+                    <Edit2 size={13} color="#38845A" />
                     <Text style={styles.editText}>Edit</Text>
                   </TouchableOpacity>
                 </View>
@@ -328,15 +328,15 @@ export default function DepartmentStaffScreen() {
                 <View style={styles.detailSection}>
                   <Text style={styles.detailSectionTitle}>CONTACT & EMPLOYMENT</Text>
                   <View style={styles.detailRow}>
-                    <Mail size={15} color="#0F766E" />
+                    <Mail size={15} color="#38845A" />
                     <Text style={styles.detailValue}>{profileStaff.email || 'N/A'}</Text>
                   </View>
                   <View style={styles.detailRow}>
-                    <Phone size={15} color="#0F766E" />
+                    <Phone size={15} color="#38845A" />
                     <Text style={styles.detailValue}>{profileStaff.phone || 'N/A'}</Text>
                   </View>
                   <View style={styles.detailRow}>
-                    <Briefcase size={15} color="#0F766E" />
+                    <Briefcase size={15} color="#38845A" />
                     <Text style={styles.detailValue}>
                       Employment Status: Active Department Staff
                     </Text>
@@ -346,13 +346,13 @@ export default function DepartmentStaffScreen() {
                 <View style={styles.detailSection}>
                   <Text style={styles.detailSectionTitle}>ATTENDANCE & DUTY</Text>
                   <View style={styles.detailRow}>
-                    <Clock size={15} color="#0F766E" />
+                    <Clock size={15} color="#38845A" />
                     <Text style={styles.detailValue}>
                       Assigned Shift: {profileStaff.shift || 'General Shift'}
                     </Text>
                   </View>
                   <View style={styles.detailRow}>
-                    <UserCheck size={15} color="#0F766E" />
+                    <UserCheck size={15} color="#38845A" />
                     <Text style={styles.detailValue}>
                       Today's Status: {profileStaff.attendanceStatus !== 'ABSENT' ? 'Present on Duty' : 'Absent'}
                     </Text>
@@ -367,7 +367,7 @@ export default function DepartmentStaffScreen() {
                       router.push('/(department-admin)/attendance');
                     }}
                   >
-                    <Clock size={16} color="#0F766E" />
+                    <Clock size={16} color="#38845A" />
                     <Text style={styles.profileNavBtnText}>Attendance History</Text>
                   </TouchableOpacity>
 
@@ -378,7 +378,7 @@ export default function DepartmentStaffScreen() {
                       router.push('/(department-admin)/leaves');
                     }}
                   >
-                    <CalendarOff size={16} color="#0F766E" />
+                    <CalendarOff size={16} color="#38845A" />
                     <Text style={styles.profileNavBtnText}>Staff Leave Requests</Text>
                   </TouchableOpacity>
 
@@ -589,7 +589,7 @@ const styles = StyleSheet.create({
   navChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 8,
@@ -598,13 +598,13 @@ const styles = StyleSheet.create({
   navChipText: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
   },
   addBtn: {
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -725,12 +725,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
-    backgroundColor: '#F0FDFA',
+    backgroundColor: '#EAF5ED',
   },
   editText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   modalOverlay: {
     flex: 1,
@@ -827,7 +827,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     paddingVertical: 12,
     borderRadius: 10,
     gap: 8,
@@ -835,13 +835,13 @@ const styles = StyleSheet.create({
   profileNavBtnText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0F766E',
+    color: '#38845A',
   },
   profileEditBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 12,
     borderRadius: 10,
     gap: 8,
@@ -882,8 +882,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
   roleChipActive: {
-    backgroundColor: '#CCFBF1',
-    borderColor: '#0F766E',
+    backgroundColor: '#EAF5ED',
+    borderColor: '#38845A',
   },
   roleChipText: {
     fontSize: 11,
@@ -891,7 +891,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   roleChipTextActive: {
-    color: '#0F766E',
+    color: '#38845A',
   },
   modalFooter: {
     flexDirection: 'row',
@@ -914,7 +914,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   submitBtn: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,

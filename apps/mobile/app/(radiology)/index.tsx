@@ -301,7 +301,7 @@ export default function RadiologyWorklistScreen() {
             <Text style={styles.sub}>CT · MRI · X-Ray · Ultrasound · 2D Echo</Text>
           </View>
           <View style={styles.pacsPill}>
-            <Scan size={14} color="#0F766E" />
+            <Scan size={14} color="#38845A" />
             <Text style={styles.pacsPillText}>PACS Online</Text>
           </View>
         </View>
@@ -351,13 +351,13 @@ export default function RadiologyWorklistScreen() {
       {/* Worklist cards */}
       <ScrollView
         style={styles.scroll}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#0F766E']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
       >
         {worklistError ? (
           <Text accessibilityRole="button" onPress={loadWorklist} style={styles.loadingText}>Could not load the worklist. Tap to retry.</Text>
         ) : loading && !refreshing ? (
           <View style={styles.centerLoading}>
-            <ActivityIndicator size="large" color="#0F766E" />
+            <ActivityIndicator size="large" color="#38845A" />
             <Text style={styles.loadingText}>Connecting to Modality RIS/PACS Broker...</Text>
           </View>
         ) : filteredList.length === 0 ? (
@@ -392,7 +392,7 @@ export default function RadiologyWorklistScreen() {
                 {/* Patient Information */}
                 <View style={styles.patientInfoRow}>
                   <View style={styles.avatarBox}>
-                    <User size={18} color="#0F766E" />
+                    <User size={18} color="#38845A" />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.patientName}>
@@ -423,7 +423,7 @@ export default function RadiologyWorklistScreen() {
                       style={styles.safetyBtn}
                       onPress={() => openSafetyModal(order)}
                     >
-                      <ShieldCheck size={14} color="#0F766E" />
+                      <ShieldCheck size={14} color="#38845A" />
                       <Text style={styles.safetyBtnText}>Pre-Scan Safety Clearance</Text>
                     </TouchableOpacity>
                   ) : order.status === 'SAFETY_CLEARED' ? (
@@ -436,7 +436,7 @@ export default function RadiologyWorklistScreen() {
                     </TouchableOpacity>
                   ) : (
                     <View style={styles.releasedTag}>
-                      <CheckCircle2 size={16} color="#059669" />
+                      <CheckCircle2 size={16} color="#38845A" />
                       <Text style={styles.releasedTagText}>Report Signed & Released</Text>
                     </View>
                   )}
@@ -520,7 +520,7 @@ export default function RadiologyWorklistScreen() {
                 {selectedSafetyOrder.modality === 'MRI' || selectedSafetyOrder.requiresMriSafety ? (
                   <View style={styles.safetyBlock}>
                     <View style={styles.safetyBlockHeader}>
-                      <AlertCircle size={16} color="#7C3AED" />
+                      <AlertCircle size={16} color="#38845A" />
                       <Text style={styles.safetyBlockTitle}>3. 3.0T MRI Ferromagnetic & Implant Screening</Text>
                     </View>
                     <Text style={styles.safetyDesc}>
@@ -595,7 +595,7 @@ export default function RadiologyWorklistScreen() {
               <ScrollView style={styles.modalBody}>
                 {/* PACS Image Link Simulation */}
                 <View style={styles.imageViewerBox}>
-                  <Eye size={20} color="#0F766E" />
+                  <Eye size={20} color="#38845A" />
                   <View style={{ flex: 1, marginLeft: 10 }}>
                     <Text style={styles.imageViewerTitle}>PACS DICOM Series Linked (32 Frames)</Text>
                     <Text style={styles.imageViewerUrl}>DICOM UID: 1.2.840.10008.5.1.4.1.1.{selectedReportOrder.orderNumber}</Text>
@@ -683,15 +683,15 @@ const styles = StyleSheet.create({
   pacsPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F0FDFA',
+    backgroundColor: '#EAF5ED',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
     gap: 4,
     borderWidth: 1,
-    borderColor: '#99F6E4',
+    borderColor: '#CDE8D5',
   },
-  pacsPillText: { fontSize: 11, fontWeight: '800', color: '#0F766E' },
+  pacsPillText: { fontSize: 11, fontWeight: '800', color: '#38845A' },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -736,20 +736,20 @@ const styles = StyleSheet.create({
   orderIdBadge: { backgroundColor: '#F1F5F9', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   orderIdText: { fontSize: 11, fontWeight: '800', color: '#334155' },
   modalityBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, backgroundColor: '#E2E8F0' },
-  modality_CT_SCAN: { backgroundColor: '#EDE9FE' },
+  modality_CT_SCAN: { backgroundColor: '#EAF5ED' },
   modality_MRI: { backgroundColor: '#FCE7F3' },
   modality_X_RAY: { backgroundColor: '#E0F2FE' },
   modality_ULTRASOUND: { backgroundColor: '#FEF3C7' },
   modality_SPECIALIZED: { backgroundColor: '#D1FAE5' },
   modalityBadgeText: { fontSize: 10, fontWeight: '800', color: '#1E293B' },
   priorityBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 7, paddingVertical: 3, borderRadius: 6, marginLeft: 'auto', gap: 3 },
-  priorityStat: { backgroundColor: '#FEE2E2' },
+  priorityStat: { backgroundColor: '#EAF5ED' },
   priorityStatText: { color: '#DC2626', fontSize: 10, fontWeight: '800' },
   priorityRoutine: { backgroundColor: '#F1F5F9' },
   priorityRoutineText: { color: '#64748B', fontSize: 10, fontWeight: '700' },
   priorityText: { fontSize: 10, fontWeight: '800' },
   patientInfoRow: { flexDirection: 'row', alignItems: 'center', marginTop: 12, gap: 10 },
-  avatarBox: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#F0FDFA', alignItems: 'center', justifyContent: 'center' },
+  avatarBox: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#EAF5ED', alignItems: 'center', justifyContent: 'center' },
   patientName: { fontSize: 14, fontWeight: '700', color: '#1E293B' },
   dimMeta: { fontSize: 12, fontWeight: '400', color: '#64748B' },
   uhidMeta: { fontSize: 11, color: '#64748B', fontWeight: '500' },
@@ -766,26 +766,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F0FDFA',
+    backgroundColor: '#EAF5ED',
     paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#99F6E4',
+    borderColor: '#CDE8D5',
     gap: 6,
   },
-  safetyBtnText: { fontSize: 12, fontWeight: '800', color: '#0F766E' },
+  safetyBtnText: { fontSize: 12, fontWeight: '800', color: '#38845A' },
   reportBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 10,
     borderRadius: 8,
     gap: 6,
   },
   reportBtnText: { fontSize: 12, fontWeight: '800', color: '#fff' },
   releasedTag: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 4 },
-  releasedTagText: { fontSize: 12, fontWeight: '700', color: '#059669' },
+  releasedTagText: { fontSize: 12, fontWeight: '700', color: '#38845A' },
   // Modal styles
   modalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.6)', justifyContent: 'flex-end' },
   modalContent: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '90%', paddingBottom: 20 },
@@ -823,19 +823,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 2,
   },
-  checkBoxActive: { backgroundColor: '#0F766E', borderColor: '#0F766E' },
+  checkBoxActive: { backgroundColor: '#38845A', borderColor: '#38845A' },
   checkText: { flex: 1, fontSize: 11, color: '#334155', lineHeight: 16 },
   imageViewerBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F0FDFA',
+    backgroundColor: '#EAF5ED',
     padding: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#99F6E4',
+    borderColor: '#CDE8D5',
     marginBottom: 14,
   },
-  imageViewerTitle: { fontSize: 12, fontWeight: '800', color: '#0F766E' },
+  imageViewerTitle: { fontSize: 12, fontWeight: '800', color: '#38845A' },
   imageViewerUrl: { fontSize: 10, color: '#64748B', marginTop: 2 },
   formLabel: { fontSize: 12, fontWeight: '700', color: '#334155', marginTop: 8, marginBottom: 4 },
   textArea: {
@@ -858,7 +858,7 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
     marginTop: 14,
   },
-  criticalToggleRowActive: { backgroundColor: '#FEF2F2', borderColor: '#FECACA' },
+  criticalToggleRowActive: { backgroundColor: '#FEF2F2', borderColor: '#CDE8D5' },
   criticalToggleTitle: { fontSize: 12, fontWeight: '700', color: '#334155' },
   criticalToggleTitleActive: { color: '#DC2626', fontWeight: '800' },
   criticalToggleSub: { fontSize: 10, color: '#64748B', marginTop: 2 },
@@ -877,7 +877,7 @@ const styles = StyleSheet.create({
   certifyBtn: {
     flex: 2,
     flexDirection: 'row',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
@@ -888,7 +888,7 @@ const styles = StyleSheet.create({
   releaseSubmitBtn: {
     flex: 2,
     flexDirection: 'row',
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',

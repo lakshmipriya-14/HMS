@@ -229,7 +229,7 @@ export default function InsuranceDeskScreen() {
           </View>
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <TouchableOpacity style={styles.calcHeaderBtn} onPress={() => setCalcVisible(true)}>
-              <Calculator size={16} color="#059669" />
+              <Calculator size={16} color="#38845A" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.addBtn} onPress={() => setNewPreAuthVisible(true)}>
               <Plus size={16} color="#fff" />
@@ -293,7 +293,7 @@ export default function InsuranceDeskScreen() {
 
             {/* Policy & TPA Details */}
             <View style={styles.policyRow}>
-              <Building size={14} color="#059669" />
+              <Building size={14} color="#38845A" />
               <Text style={styles.tpaText}>{c.tpaName}</Text>
             </View>
             <Text style={styles.policyNoText}>Policy #: {c.policyNo}</Text>
@@ -306,7 +306,7 @@ export default function InsuranceDeskScreen() {
               </View>
               <View style={styles.amountBox}>
                 <Text style={styles.amtLabel}>Sanctioned Amount</Text>
-                <Text style={[styles.amtVal, { color: '#059669' }]}>
+                <Text style={[styles.amtVal, { color: '#38845A' }]}>
                   ₹{c.initialSanctionedAmount.toLocaleString('en-IN')}
                 </Text>
               </View>
@@ -341,13 +341,13 @@ export default function InsuranceDeskScreen() {
                   setCalcVisible(true);
                 }}
               >
-                <Calculator size={13} color="#059669" />
+                <Calculator size={13} color="#38845A" />
                 <Text style={styles.openCalcBtnText}>Co-Pay Audit</Text>
               </TouchableOpacity>
 
               {c.status === 'Cashless Approved' && (
                 <View style={styles.approvedTag}>
-                  <CheckCircle2 size={13} color="#059669" />
+                  <CheckCircle2 size={13} color="#38845A" />
                   <Text style={styles.approvedTagText}>Cashless Sanction Ready</Text>
                 </View>
               )}
@@ -531,7 +531,7 @@ const styles = StyleSheet.create({
     borderColor: '#A7F3D0',
   },
   addBtn: {
-    backgroundColor: '#059669',
+    backgroundColor: '#38845A',
     padding: 8,
     borderRadius: 8,
   },
@@ -568,14 +568,14 @@ const styles = StyleSheet.create({
   uhidText: { fontSize: 11, color: '#64748B' },
   statusPill: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   pillApproved: { backgroundColor: '#D1FAE5' },
-  pillQuery: { backgroundColor: '#FEE2E2' },
+  pillQuery: { backgroundColor: '#EAF5ED' },
   pillPending: { backgroundColor: '#FEF3C7' },
   statusPillText: { fontSize: 10, fontWeight: '800' },
   textGreen: { color: '#065F46' },
   textRed: { color: '#DC2626' },
   textAmber: { color: '#92400E' },
   policyRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10 },
-  tpaText: { fontSize: 12, fontWeight: '700', color: '#059669' },
+  tpaText: { fontSize: 12, fontWeight: '700', color: '#38845A' },
   policyNoText: { fontSize: 11, color: '#64748B', marginTop: 2 },
   amountGrid: {
     flexDirection: 'row',
@@ -615,9 +615,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#A7F3D0',
   },
-  openCalcBtnText: { color: '#059669', fontSize: 11, fontWeight: '700' },
+  openCalcBtnText: { color: '#38845A', fontSize: 11, fontWeight: '700' },
   approvedTag: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  approvedTagText: { fontSize: 11, color: '#059669', fontWeight: '700' },
+  approvedTagText: { fontSize: 11, color: '#38845A', fontWeight: '700' },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(15, 23, 42, 0.6)',
@@ -656,13 +656,13 @@ const styles = StyleSheet.create({
   calcResultsTitle: { fontSize: 12, fontWeight: '800', color: '#065F46', marginBottom: 4 },
   splitRow: { flexDirection: 'row', justifyContent: 'space-between' },
   splitLabel: { fontSize: 11, color: '#047857' },
-  splitTpaVal: { fontSize: 13, fontWeight: '800', color: '#059669' },
+  splitTpaVal: { fontSize: 13, fontWeight: '800', color: '#38845A' },
   splitVal: { fontSize: 12, fontWeight: '700', color: '#1E293B' },
   splitTotalRow: { borderTopWidth: 1, borderTopColor: '#A7F3D0', paddingTop: 6, marginTop: 4 },
   splitTotalLabel: { fontSize: 12, fontWeight: '800', color: '#0F172A' },
   splitTotalVal: { fontSize: 15, fontWeight: '900', color: '#DC2626' },
   closeModalBtn: {
-    backgroundColor: '#059669',
+    backgroundColor: '#38845A',
     borderRadius: 10,
     paddingVertical: 12,
     alignItems: 'center',
@@ -677,14 +677,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
-  tpaPillActive: { backgroundColor: '#ECFDF5', borderColor: '#059669' },
+  tpaPillActive: { backgroundColor: '#ECFDF5', borderColor: '#38845A' },
   tpaPillText: { fontSize: 11, color: '#475569' },
-  tpaPillTextActive: { color: '#059669', fontWeight: '700' },
+  tpaPillTextActive: { color: '#38845A', fontWeight: '700' },
   submitClaimBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#059669',
+    backgroundColor: '#38845A',
     borderRadius: 10,
     paddingVertical: 14,
     marginTop: 14,

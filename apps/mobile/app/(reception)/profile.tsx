@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   menuItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#F8FAFC' },
   menuLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   menuText: { fontSize: 13, fontWeight: '700', color: '#1E293B' },
-  logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEE2E2', paddingVertical: 14, borderRadius: 10, gap: 8 },
+  logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#EAF5ED', paddingVertical: 14, borderRadius: 10, gap: 8 },
   logoutText: { color: '#DC2626', fontSize: 13, fontWeight: '800' },
 });
 

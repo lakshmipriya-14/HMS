@@ -69,7 +69,7 @@ export default function AdminReportsScreen() {
           style={styles.backBtn}
           onPress={() => router.replace('/(admin)/more')}
         >
-          <ChevronLeft size={20} color="#0F766E" />
+          <ChevronLeft size={20} color="#38845A" />
         </TouchableOpacity>
         <Text style={styles.actionTitle}>Hospital Reports Generator</Text>
       </View>
@@ -96,14 +96,14 @@ export default function AdminReportsScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#0F766E" />
+          <ActivityIndicator size="large" color="#38845A" />
         </View>
       ) : (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={fetchReport} tintColor="#0F766E" />
+            <RefreshControl refreshing={refreshing} onRefresh={fetchReport} tintColor="#38845A" />
           }
         >
           {/* Summary Box */}
@@ -119,7 +119,7 @@ export default function AdminReportsScreen() {
               {summary.totalRevenue !== undefined && (
                 <View style={styles.statCol}>
                   <Text style={styles.statLabel}>Total Revenue</Text>
-                  <Text style={[styles.statVal, { color: '#0F766E' }]}>
+                  <Text style={[styles.statVal, { color: '#38845A' }]}>
                     ₹ {(summary.totalRevenue || 0).toLocaleString('en-IN')}
                   </Text>
                 </View>
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   catChipActive: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   catChipText: {
     fontSize: 11,
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#CCFBF1',
+    borderColor: '#EAF5ED',
     marginBottom: 16,
   },
   summaryTitle: {
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
   recordAmount: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#0F766E',
+    color: '#38845A',
   },
   recordSub: {
     fontSize: 11,

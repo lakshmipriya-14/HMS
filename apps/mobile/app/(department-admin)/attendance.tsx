@@ -74,21 +74,21 @@ export default function StaffAttendanceScreen() {
       {/* Date Navigation Bar */}
       <View style={styles.dateBar}>
         <TouchableOpacity style={styles.arrowBtn} onPress={() => changeDay(-1)}>
-          <ChevronLeft size={18} color="#0F766E" />
+          <ChevronLeft size={18} color="#38845A" />
         </TouchableOpacity>
         <View style={styles.dateCenter}>
-          <Calendar size={14} color="#0F766E" />
+          <Calendar size={14} color="#38845A" />
           <Text style={styles.dateLabel}>{selectedDate}</Text>
         </View>
         <TouchableOpacity style={styles.arrowBtn} onPress={() => changeDay(1)}>
-          <ChevronRight size={18} color="#0F766E" />
+          <ChevronRight size={18} color="#38845A" />
         </TouchableOpacity>
       </View>
 
       {/* Daily Summary */}
       <View style={styles.summaryGrid}>
         <View style={styles.sumCard}>
-          <Text style={[styles.sumNumber, { color: '#0F766E' }]}>{presentCount}</Text>
+          <Text style={[styles.sumNumber, { color: '#38845A' }]}>{presentCount}</Text>
           <Text style={styles.sumLabel}>Present</Text>
         </View>
         <View style={styles.sumCard}>
@@ -105,11 +105,11 @@ export default function StaffAttendanceScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => loadAttendance()} tintColor="#0F766E" />
+          <RefreshControl refreshing={refreshing} onRefresh={() => loadAttendance()} tintColor="#38845A" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
         ) : attendance.length === 0 ? (
           <View style={styles.emptyState}>
             <Clock size={40} color="#CBD5E1" />
@@ -263,13 +263,13 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#CCFBF1',
+    backgroundColor: '#EAF5ED',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
   },
   avatarText: {
-    color: '#0F766E',
+    color: '#38845A',
     fontWeight: '800',
     fontSize: 13,
   },
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   chipPresent: {
-    backgroundColor: '#0F766E',
+    backgroundColor: '#38845A',
   },
   chipAbsent: {
     backgroundColor: '#DC2626',
