@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthUserDto, CreateAppointmentDto, Role } from '@multispeciality-hms/contracts';
@@ -41,11 +41,21 @@ export class AppointmentsService {
     return `APT-${year}-${sequence}`;
   }
 
-  async create(dto: CreateAppointmentDto) {
+  async create(dto: CreateAppointmentDto, actor: AuthUserDto) {
+    const scope = resolveOperationalScope(actor, dto.branchId, dto.departmentId);
     const doctor = await this.prisma.doctor.findUnique({
-      where: { id: dto.doctorId },
+      where: { id: dto.doctorId, ...scope, employee: { user: { isActive: true, deletedAt: null } } },
+      include: { employee: { select: { userId: true } } },
     });
     if (!doctor) throw new NotFoundException('Doctor not found');
+
+    const patient = await this.prisma.patient.findFirst({
+      where: { id: dto.patientId, hospitalId: scope.hospitalId, deletedAt: null,
+        OR: [{ registrationBranchId: doctor.branchId }, { appointments: { some: { branchId: doctor.branchId } } },
+          { admissions: { some: { branchId: doctor.branchId } } }] },
+      select: { id: true },
+    });
+    if (!patient) throw new NotFoundException('Patient not found in the selected branch');
 
     const appointmentDate = new Date(dto.appointmentDate);
 
@@ -73,36 +83,62 @@ export class AppointmentsService {
 
     const appointmentNumber = await this.generateAppointmentNumber();
 
-    const appointment = await this.prisma.appointment.create({
-      data: {
-        appointmentNumber,
-        patientId: dto.patientId,
-        doctorId: dto.doctorId,
-        departmentId: dto.departmentId,
-        appointmentDate,
-        appointmentTime: dto.appointmentTime,
-        tokenNumber,
-        type: dto.appointmentType,
-        priority: dto.priority || 'ROUTINE',
-        reasonForVisit: dto.reasonForVisit,
-        consultationFee: doctor.consultationFee,
-        status: 'SCHEDULED',
-        isPaid: false,
-        hospitalId: doctor.hospitalId,
-        branchId: doctor.branchId,
-      },
-      include: {
-        patient: { select: { id: true, uhid: true, firstName: true, lastName: true, phone: true } },
-        doctor: {
-          include: {
-            employee: { include: { user: { select: { firstName: true, lastName: true } } } },
-            department: { select: { name: true } },
+    return this.prisma.$transaction(async (tx) => {
+      const appointment = await tx.appointment.create({
+        data: {
+          appointmentNumber,
+          patientId: dto.patientId,
+          doctorId: dto.doctorId,
+          departmentId: doctor.departmentId,
+          appointmentDate,
+          appointmentTime: dto.appointmentTime,
+          tokenNumber,
+          type: dto.appointmentType,
+          priority: dto.priority || 'ROUTINE',
+          reasonForVisit: dto.reasonForVisit,
+          consultationFee: doctor.consultationFee,
+          status: 'SCHEDULED',
+          isPaid: false,
+          hospitalId: doctor.hospitalId,
+          branchId: doctor.branchId,
+        },
+        include: {
+          patient: { select: { id: true, uhid: true, firstName: true, lastName: true, phone: true } },
+          doctor: {
+            include: {
+              employee: { include: { user: { select: { firstName: true, lastName: true } } } },
+              department: { select: { name: true } },
+            },
           },
         },
-      },
-    });
+      });
 
-    return appointment;
+      await tx.notification.create({ data: {
+        hospitalId: appointment.hospitalId, branchId: appointment.branchId, userId: doctor.employee.userId,
+        title: 'New patient appointment',
+        message: `${appointment.patient.firstName} ${appointment.patient.lastName} has an appointment (${appointment.appointmentNumber}).`,
+        type: 'APPOINTMENT',
+      } });
+      return appointment;
+    });
+  }
+
+  async startConsultation(id: string, actor: AuthUserDto) {
+    if (actor.role !== Role.DOCTOR) throw new ForbiddenException('Only the assigned doctor can start a consultation.');
+    const where = { ...appointmentReadScope(actor), id };
+    return this.prisma.$transaction(async (tx) => {
+      const appointment = await tx.appointment.findFirst({ where });
+      if (!appointment) throw new NotFoundException('Appointment not found.');
+      if (appointment.status === 'IN_PROGRESS') return { id, status: appointment.status };
+      const updated = await tx.appointment.updateMany({ where: { ...where, status: 'CHECKED_IN' }, data: { status: 'IN_PROGRESS' } });
+      if (!updated.count) throw new ConflictException('Check in the patient before starting a consultation.');
+      await tx.auditLog.create({ data: {
+        hospitalId: appointment.hospitalId, branchId: appointment.branchId, userId: actor.id,
+        userEmail: actor.email, userRole: actor.role, action: 'UPDATE', resource: 'APPOINTMENT', resourceId: id,
+        details: { status: 'IN_PROGRESS' },
+      } });
+      return { id, status: 'IN_PROGRESS' };
+    });
   }
 
   async getTodayQueue(actor: AuthUserDto, doctorId?: string, requestedBranchId?: string) {

@@ -39,6 +39,10 @@ export const API_ENDPOINTS = {
   // Doctors
   DOCTORS: {
     BASE: '/doctors',
+    WORKSPACE: '/doctors/me/workspace',
+    LEAVE_REQUEST: '/doctors/me/leaves',
+    INPATIENTS: '/doctors/inpatients',
+    ROUNDS: '/doctors/rounds',
     BY_ID: (id: string) => `/doctors/${id}`,
     SCHEDULES: (id: string) => `/doctors/${id}/schedules`,
     APPOINTMENTS: (id: string) => `/doctors/${id}/appointments`,

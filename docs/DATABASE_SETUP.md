@@ -53,6 +53,24 @@ pnpm dev:api
 
 Start the web UI in another terminal with `pnpm dev:web`. All 80 accounts start with the password **`UyirinaiTeamDemo!24`**. The PostgreSQL role password is only for the database connection.
 
+### Doctor mobile setup after pulling
+
+Stop the local API before regenerating Prisma Client on Windows. With PostgreSQL running and the root `.env` pointing to your local team database, run these commands from the repository root:
+
+```powershell
+pnpm install --frozen-lockfile
+pnpm db:team:schema
+pnpm db:team:seed:doctor
+pnpm build:packages
+pnpm dev:api
+```
+
+For a fresh database or one without the baseline demo accounts, run `pnpm db:team:seed` after `pnpm db:team:schema` and before the Doctor seed. The Doctor seed uses the baseline demo doctors and patients to add dated OPD cases and sample appointment and lab-report notifications. Repeating it on the same day preserves the existing fixtures.
+
+The Doctor migrations add append-only consultation amendments and a link from a follow-up appointment to its original consultation. Working-hours edits and the notification categories use existing tables. The migration command applies pending SQL files in order.
+
+Leave the API running. In a second terminal, run `pnpm dev:mobile` and press **w** in Expo to open the mobile browser preview.
+
 The first account keeps its original email. Accounts ending in `-02` through `-05` have matching sample records in their scenario's branch. Super Admin and Patient roles use hospital-wide account assignments.
 
 | Workspace role | Account 1 | Account 2 | Account 3 | Account 4 | Account 5 |

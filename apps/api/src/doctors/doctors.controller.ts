@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { DoctorsService } from './doctors.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { RequirePermissions, Scoped } from '../common/decorators/roles.decorator';
+import { RequirePermissions, Roles, Scoped } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
-import { AuthUserDto, DoctorRoundNoteDto } from '@multispeciality-hms/contracts';
+import { AuthUserDto, DoctorRoundNoteDto, RequestDoctorLeaveDto, Role } from '@multispeciality-hms/contracts';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Doctors')
@@ -66,10 +66,11 @@ export class DoctorsController {
   }
 
   @Get('inpatients')
-  @RequirePermissions('DOCTORS:VIEW')
+  @Roles(Role.DOCTOR)
+  @RequirePermissions('ADMISSIONS:VIEW')
   @ApiOperation({ summary: 'Get active admitted inpatients assigned to doctor' })
   async getInpatients(
-    @CurrentUser() actor?: AuthUserDto,
+    @CurrentUser() actor: AuthUserDto,
     @Query('branchId') branchId?: string,
   ) {
     const data = await this.service.getInpatients(actor, branchId);
@@ -80,17 +81,47 @@ export class DoctorsController {
   }
 
   @Post('rounds')
-  @RequirePermissions('CONSULTATIONS:CREATE')
+  @Roles(Role.DOCTOR)
+  @RequirePermissions('CONSULTATIONS:CREATE', 'ADMISSIONS:VIEW')
   @ApiOperation({ summary: 'Record daily doctor round progress notes' })
   async recordProgressNote(
     @Body() dto: DoctorRoundNoteDto,
-    @CurrentUser() actor?: AuthUserDto,
+    @CurrentUser() actor: AuthUserDto,
   ) {
     const data = await this.service.recordProgressNote(dto, actor);
     return {
       message: 'Doctor round progress note recorded successfully',
       data,
     };
+  }
+
+  @Get('me/workspace')
+  @Roles(Role.DOCTOR)
+  @ApiOperation({ summary: 'Read the signed-in doctor profile, schedule and permitted statistics' })
+  async workspace(@CurrentUser() actor: AuthUserDto) {
+    return { message: 'Doctor workspace retrieved successfully', data: await this.service.workspace(actor) };
+  }
+
+  @Get('me/patients/:id/history')
+  @Roles(Role.DOCTOR)
+  @RequirePermissions('PATIENTS:VIEW')
+  @ApiOperation({ summary: 'Read the scoped history of a patient assigned to the signed-in doctor' })
+  async patientHistory(@Param('id') id: string, @CurrentUser() actor: AuthUserDto) {
+    return { message: 'Patient history retrieved', data: await this.service.patientHistory(actor, id) };
+  }
+
+  @Post('me/leaves')
+  @Roles(Role.DOCTOR)
+  @ApiOperation({ summary: 'Request leave for the signed-in doctor' })
+  async requestLeave(@CurrentUser() actor: AuthUserDto, @Body() dto: RequestDoctorLeaveDto) {
+    return { message: 'Leave requested', data: await this.service.requestLeave(actor, dto) };
+  }
+
+  @Patch('me/schedules/:id')
+  @Roles(Role.DOCTOR)
+  async editWorkingHours(@Param('id') id: string, @CurrentUser() actor: AuthUserDto,
+    @Body() dto: { startTime: string; endTime: string }) {
+    return { message: 'Working hours updated', data: await this.service.editWorkingHours(actor, id, dto) };
   }
 
   @Get(':id')

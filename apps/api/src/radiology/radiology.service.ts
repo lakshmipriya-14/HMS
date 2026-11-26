@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { auditClinicalOrder, resolveClinicalOrderScope } from '../common/utils/clinical-order-scope';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { resolveOperationalScope } from '../common/utils/operational-scope';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateRadiologyOrderDto, UploadRadiologyReportDto } from '@multispeciality-hms/contracts';
+import { AuthUserDto, CreateRadiologyOrderDto, UploadRadiologyReportDto, Role } from '@multispeciality-hms/contracts';
 
 @Injectable()
 export class RadiologyService {
@@ -20,35 +22,41 @@ export class RadiologyService {
     });
   }
 
-  async createOrder(dto: CreateRadiologyOrderDto) {
-    const doctor = await this.prisma.doctor.findUnique({
-      where: { id: dto.doctorId },
-    });
-    if (!doctor) throw new NotFoundException('Doctor not found');
+  async createOrder(dto: CreateRadiologyOrderDto, actor: AuthUserDto) {
+    const doctor = await resolveClinicalOrderScope(this.prisma, actor, dto.doctorId, dto.patientId);
 
     const orderNumber = await this.generateOrderNumber();
 
-    return this.prisma.radiologyOrder.create({
-      data: {
-        orderNumber,
-        patientId: dto.patientId,
-        doctorId: dto.doctorId,
-        testId: dto.testId,
-        priority: dto.priority || 'ROUTINE',
-        clinicalIndication: dto.clinicalIndication,
-        status: 'ORDERED',
-        hospitalId: doctor.hospitalId,
-        branchId: doctor.branchId,
-      },
-      include: {
-        patient: { select: { id: true, uhid: true, firstName: true, lastName: true } },
-        test: true,
-      },
+    return this.prisma.$transaction(async (tx) => {
+      const order = await tx.radiologyOrder.create({
+        data: {
+          orderNumber,
+          patientId: dto.patientId,
+          doctorId: dto.doctorId,
+          testId: dto.testId,
+          priority: dto.priority || 'ROUTINE',
+          clinicalIndication: dto.clinicalIndication,
+          status: 'ORDERED',
+          hospitalId: doctor.hospitalId,
+          branchId: doctor.branchId,
+        },
+        include: {
+          patient: { select: { id: true, uhid: true, firstName: true, lastName: true } },
+          test: true,
+        },
+      });
+      await auditClinicalOrder(tx, actor, doctor, 'RADIOLOGY_ORDER', order.id);
+      return order;
     });
   }
 
-  async getWorklist() {
-    return this.prisma.radiologyOrder.findMany({
+  async getWorklist(actor: AuthUserDto) {
+    const { hospitalId, branchId, departmentId } = resolveOperationalScope(actor);
+    const isDoctor = actor.role === Role.DOCTOR;
+    if (isDoctor && !actor.doctorProfileId) throw new ForbiddenException('Missing doctor assignment.');
+    const rows = await this.prisma.radiologyOrder.findMany({
+      where: { hospitalId, branchId, doctorId: isDoctor ? actor.doctorProfileId : undefined,
+        doctor: departmentId ? { departmentId } : undefined },
       orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
       include: {
         patient: { select: { id: true, uhid: true, firstName: true, lastName: true, gender: true, dateOfBirth: true } },
@@ -60,6 +68,9 @@ export class RadiologyService {
         test: true,
       },
     });
+    if (!isDoctor) return rows;
+    return rows.map((row) => row.reportReleasedAt && actor.permissions.includes('RADIOLOGY_REPORTS:VIEW')
+      ? row : { ...row, findings: null, impression: null, imageUrl: null, criticalAlert: false });
   }
 
   async uploadReport(orderId: string, dto: UploadRadiologyReportDto, radiologistUserId: string) {

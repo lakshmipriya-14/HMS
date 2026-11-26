@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { auditClinicalOrder, resolveClinicalOrderScope } from '../common/utils/clinical-order-scope';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateLabOrderDto, EnterLabResultsDto, AuthUserDto } from '@multispeciality-hms/contracts';
+import { CreateLabOrderDto, EnterLabResultsDto, AuthUserDto, Role } from '@multispeciality-hms/contracts';
 import { resolveOperationalScope, assertBranchAccess } from '../common/utils/operational-scope';
 
 @Injectable()
@@ -22,54 +23,58 @@ export class LaboratoryService {
     });
   }
 
-  async createOrder(dto: CreateLabOrderDto, actor?: AuthUserDto) {
-    const doctor = await this.prisma.doctor.findUnique({
-      where: { id: dto.doctorId },
-    });
-    if (!doctor) throw new NotFoundException('Doctor not found');
-
-    if (actor) {
-      assertBranchAccess(actor, doctor.branchId);
-    }
+  async createOrder(dto: CreateLabOrderDto, actor: AuthUserDto) {
+    const doctor = await resolveClinicalOrderScope(this.prisma, actor, dto.doctorId, dto.patientId);
 
     const orderNumber = await this.generateOrderNumber();
     const barcode = `BAR-${Date.now().toString().slice(-6)}`;
 
-    return this.prisma.labOrder.create({
-      data: {
-        orderNumber,
-        barcode,
-        patientId: dto.patientId,
-        doctorId: dto.doctorId,
-        hospitalId: doctor.hospitalId,
-        branchId: doctor.branchId,
-        priority: dto.priority || 'ROUTINE',
-        clinicalNotes: dto.clinicalNotes,
-        status: 'ORDERED',
-        orderItems: {
-          create: dto.testIds.map((testId) => ({ labTestId: testId })),
+    return this.prisma.$transaction(async (tx) => {
+      const order = await tx.labOrder.create({
+        data: {
+          orderNumber,
+          barcode,
+          patientId: dto.patientId,
+          doctorId: dto.doctorId,
+          hospitalId: doctor.hospitalId,
+          branchId: doctor.branchId,
+          priority: dto.priority || 'ROUTINE',
+          clinicalNotes: dto.clinicalNotes,
+          status: 'ORDERED',
+          orderItems: {
+            create: dto.testIds.map((testId) => ({ labTestId: testId })),
+          },
         },
-      },
-      include: {
-        patient: { select: { id: true, uhid: true, firstName: true, lastName: true } },
-        orderItems: { include: { labTest: { include: { parameters: true } } } },
-      },
+        include: {
+          patient: { select: { id: true, uhid: true, firstName: true, lastName: true } },
+          orderItems: { include: { labTest: { include: { parameters: true } } } },
+        },
+      });
+      await auditClinicalOrder(tx, actor, doctor, 'LAB_ORDER', order.id);
+      return order;
     });
   }
 
   async getWorklist(actor?: AuthUserDto, branchId?: string) {
+    const isDoctor = actor?.role === Role.DOCTOR;
+    if (isDoctor && !actor.doctorProfileId) throw new ForbiddenException('Missing doctor assignment.');
     const where: any = {
       status: { in: ['ORDERED', 'COLLECTED', 'RECEIVED_IN_LAB', 'PROCESSING'] },
     };
     if (actor) {
       const scope = resolveOperationalScope(actor, branchId);
       where.hospitalId = scope.hospitalId;
+      if (isDoctor) {
+        where.doctorId = actor.doctorProfileId;
+        if (actor.permissions.includes('LAB_RESULTS:VIEW')) delete where.status;
+      }
+      if (scope.departmentId) where.doctor = { departmentId: scope.departmentId };
       if (scope.branchId) where.branchId = scope.branchId;
     } else if (branchId) {
       where.branchId = branchId;
     }
 
-    return this.prisma.labOrder.findMany({
+    const rows = await this.prisma.labOrder.findMany({
       where,
       orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
       include: {
@@ -83,6 +88,10 @@ export class LaboratoryService {
         results: { include: { parameter: true } },
       },
     });
+    if (!isDoctor) return rows;
+    return rows.map((row) => ({
+      ...row, results: row.reportReleasedAt && actor.permissions.includes('LAB_RESULTS:VIEW') ? row.results : [],
+    }));
   }
 
   async collectSample(orderId: string, barcode?: string, actor?: AuthUserDto) {
@@ -142,13 +151,23 @@ export class LaboratoryService {
       assertBranchAccess(actor, order.branchId);
     }
 
-    return this.prisma.labOrder.update({
-      where: { id: orderId },
-      data: {
-        status: 'COMPLETED',
-        reportReleasedAt: new Date(),
-        releasedByUserId,
-      },
+    return this.prisma.$transaction(async (tx) => {
+      const updated = await tx.labOrder.updateMany({
+        where: { id: orderId, reportReleasedAt: null },
+        data: { status: 'COMPLETED', reportReleasedAt: new Date(), releasedByUserId },
+      });
+      if (updated.count) {
+        const doctor = await tx.doctor.findUniqueOrThrow({
+          where: { id: order.doctorId },
+          select: { employee: { select: { userId: true } } },
+        });
+        await tx.notification.create({ data: {
+          hospitalId: order.hospitalId, branchId: order.branchId, userId: doctor.employee.userId,
+          title: 'Lab report available', message: `Lab order ${order.orderNumber} has a released report.`,
+          type: 'LAB_RESULT',
+        } });
+      }
+      return tx.labOrder.findUniqueOrThrow({ where: { id: orderId } });
     });
   }
 }

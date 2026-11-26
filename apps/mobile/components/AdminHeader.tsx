@@ -18,12 +18,14 @@ interface AdminHeaderProps {
   title?: string;
   subtitle?: string;
   alertsCount?: number;
+  rightAction?: React.ReactNode;
 }
 
 export function AdminHeader({
   title = 'Executive Hospital Command',
   subtitle = 'Uyirinai Multispeciality Hospital',
   alertsCount = 0,
+  rightAction,
 }: AdminHeaderProps) {
   const router = useRouter();
   const { user, logout } = useAuth();
@@ -57,6 +59,7 @@ export function AdminHeader({
         </View>
 
         <View style={styles.actionRow}>
+          {rightAction}
           <TouchableOpacity
             style={styles.actionBtn}
             onPress={() => router.push('/(admin)/approvals')}

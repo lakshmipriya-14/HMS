@@ -1,59 +1,51 @@
+import { UyirinaiTheme } from '../../constants/theme';
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useAuth } from '../../hooks/useAuth';
-import { User, LogOut, Award, Stethoscope } from 'lucide-react-native';
+import { useDoctorWorkspace } from '../../hooks/useDoctorWorkspace';
 
 export default function DoctorProfileScreen() {
   const { logout } = useAuth();
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await logout();
-    router.replace('/(auth)/login');
-  };
-
+  const workspace = useDoctorWorkspace();
+  const profile = workspace.data?.profile;
   return (
-    <View style={styles.container}>
-      <View style={styles.profileCard}>
-        <View style={styles.avatar}>
-          <User size={36} color="#0F766E" />
-        </View>
-        <Text style={styles.name}>Dr. K. Senthil Nathan</Text>
-        <Text style={styles.spec}>MBBS, MD (Gen Med), DM (Cardiology)</Text>
-        <Text style={styles.dept}>Department of Interventional Cardiology</Text>
-      </View>
-
-      <View style={styles.infoCard}>
-        <View style={styles.infoRow}>
-          <Award size={18} color="#0F766E" />
-          <Text style={styles.infoLabel}>Medical Council Reg: TN-MC-68421</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Stethoscope size={18} color="#0F766E" />
-          <Text style={styles.infoLabel}>Designation: Senior Consultant Cardiologist</Text>
-        </View>
-      </View>
-
-      <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-        <LogOut size={18} color="#DC2626" />
-        <Text style={styles.logoutText}>Sign Out of Doctor Terminal</Text>
-      </TouchableOpacity>
-    </View>
+    <ScrollView contentContainerStyle={styles.page}>
+      {workspace.isFetching && !profile && <ActivityIndicator accessibilityLabel="Loading doctor profile" />}
+      {workspace.isError && (
+        <Pressable onPress={() => void workspace.refetch()}>
+          <Text accessibilityRole="alert">{workspace.error.message} Tap to retry.</Text>
+        </Pressable>
+      )}
+      {!workspace.isFetching && !workspace.isError && !profile && <Text>No doctor profile is assigned.</Text>}
+      {profile && <>
+        {profile.avatarUrl && <Image source={{ uri: profile.avatarUrl }} style={styles.avatar} accessibilityLabel="Profile photo" />}
+        <Text style={styles.title}>{profile.firstName} {profile.lastName}</Text>
+        <Text>{profile.designation.replace(/_/g, ' ')} · {profile.specialization}</Text>
+        <Text>{profile.department} · {profile.branch}</Text>
+        <Text>Registration number {profile.licenseNumber} · {profile.experienceYears} years of experience</Text>
+        <Text>{profile.isAvailableToday ? 'Available today' : 'Unavailable today'} · {profile.consultationDurationMin} minute consultations</Text>
+        <Text style={styles.heading}>Qualifications</Text>
+        {profile.qualifications.length === 0 && <Text>No qualifications on file.</Text>}
+        {profile.qualifications.map((item) => <View key={item.id} style={styles.card}>
+          <Text>{item.degree} · {item.yearPassed}</Text><Text>{item.institution}</Text>
+        </View>)}
+        <Text style={styles.heading}>Working hours</Text>
+        {profile.schedules.length === 0 && <Text>No working hours on file.</Text>}
+        {profile.schedules.map((item) => <Text key={item.id}>{item.dayOfWeek} · {item.startTime}–{item.endTime}</Text>)}
+      </>}
+      <Pressable accessibilityRole="button" style={styles.signOut} onPress={() => void logout().catch(() => undefined)}>
+        <Text style={styles.action}>Log out</Text>
+      </Pressable>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC', padding: 16 },
-  profileCard: { backgroundColor: '#fff', borderRadius: 16, padding: 24, alignItems: 'center', marginBottom: 16, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 2 },
-  avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#CCFBF1', alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-  name: { fontSize: 18, fontWeight: '800', color: '#0F172A' },
-  spec: { fontSize: 13, color: '#0F766E', fontWeight: '600', marginTop: 4 },
-  dept: { fontSize: 12, color: '#64748B', marginTop: 4 },
-  infoCard: { backgroundColor: '#fff', borderRadius: 12, padding: 16, marginBottom: 20 },
-  infoRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
-  infoLabel: { fontSize: 13, color: '#334155', fontWeight: '500' },
-  logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEE2E2', paddingVertical: 14, borderRadius: 10, gap: 8 },
-  logoutText: { color: '#DC2626', fontSize: 14, fontWeight: '700' },
+  page: { padding: 18, gap: 10, backgroundColor: '#fff', flexGrow: 1 },
+  avatar: { width: 64, height: 64, borderRadius: 32 },
+  title: { fontSize: 23, fontWeight: '800', color: UyirinaiTheme.colors.primary },
+  heading: { marginTop: 8, fontSize: 16, fontWeight: '700', color: UyirinaiTheme.colors.primary },
+  card: { padding: 10, gap: 3, backgroundColor: '#fff5f5', borderRadius: 8 },
+  signOut: { alignSelf: 'flex-start', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 8, backgroundColor: '#fff5f5' },
+  action: { color: UyirinaiTheme.colors.primary, fontWeight: '700' },
 });
-

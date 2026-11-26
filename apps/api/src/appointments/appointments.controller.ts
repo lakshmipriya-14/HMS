@@ -11,9 +11,10 @@ export class AppointmentsController {
   constructor(private service: AppointmentsService) {}
 
   @Post()
+  @RequirePermissions('APPOINTMENTS:CREATE')
   @ApiOperation({ summary: 'Book a doctor appointment and issue queue token' })
-  async create(@Body() dto: CreateAppointmentDto) {
-    const data = await this.service.create(dto);
+  async create(@Body() dto: CreateAppointmentDto, @CurrentUser() actor: AuthUserDto) {
+    const data = await this.service.create(dto, actor);
     return {
       message: 'Appointment booked successfully. Token issued.',
       data,
@@ -77,6 +78,15 @@ export class AppointmentsController {
       message: 'Appointments retrieved',
       data,
     };
+  }
+
+  @Post(':id/start-consultation')
+  @Scoped()
+  @RequirePermissions('APPOINTMENTS:UPDATE', 'CONSULTATIONS:CREATE')
+  @ApiOperation({ summary: 'Start a checked-in appointment as its assigned doctor' })
+  async startConsultation(@Param('id') id: string, @CurrentUser() actor: AuthUserDto) {
+    const data = await this.service.startConsultation(id, actor);
+    return { message: 'Consultation started', data };
   }
 
   @Post(':id/check-in')
