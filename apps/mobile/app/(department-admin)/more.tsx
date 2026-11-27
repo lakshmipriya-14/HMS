@@ -100,28 +100,28 @@ export default function DepartmentAdminMoreScreen() {
           desc: 'Code, working hours, capacity & HOD',
           icon: Building2,
           route: '/(department-admin)/info',
-          color: '#38845A',
+          color: '#1565C0',
         },
         {
           title: 'Department Reports',
           desc: 'OPD/IPD census, doctor volume & metrics',
           icon: BarChart3,
           route: '/(department-admin)/reports',
-          color: '#7C3AED',
+          color: '#1565C0',
         },
         {
           title: 'Activity History',
           desc: 'Chronological department operational audit log',
           icon: History,
           route: '/(department-admin)/activity-history',
-          color: '#334155',
+          color: '#475569',
         },
         {
           title: 'Notifications',
           desc: 'Department notices & system alerts',
           icon: Bell,
           route: '/(department-admin)/notifications',
-          color: '#D97706',
+          color: '#F59E0B',
         },
       ],
     },
@@ -133,21 +133,21 @@ export default function DepartmentAdminMoreScreen() {
           desc: 'Specimens, barcodes & released test results',
           icon: FlaskConical,
           route: '/(department-admin)/lab-requests',
-          color: '#38845A',
+          color: '#1565C0',
         },
         {
           title: 'Radiology & Imaging',
           desc: 'X-Ray, CT, MRI, Ultrasound orders & findings',
           icon: Scan,
           route: '/(department-admin)/radiology-requests',
-          color: '#0284C7',
+          color: '#1565C0',
         },
         {
           title: 'Other Diagnostic Services',
           desc: 'ECG, Echo, Endoscopy & Special Tests',
           icon: Stethoscope,
           route: '/(department-admin)/diagnostics',
-          color: '#7C3AED',
+          color: '#1565C0',
         },
       ],
     },
@@ -159,35 +159,35 @@ export default function DepartmentAdminMoreScreen() {
           desc: 'Biomedical asset registry & issue reporting',
           icon: Wrench,
           route: '/(department-admin)/equipment',
-          color: '#D97706',
+          color: '#F59E0B',
         },
         {
           title: 'Department Inventory',
           desc: 'Consumables, drugs & restock indents',
           icon: Pill,
           route: '/(department-admin)/inventory',
-          color: '#059669',
+          color: '#00897B',
         },
         {
           title: 'Resource Requests',
           desc: 'Requisition additional beds, staff & equipment',
           icon: Layers,
           route: '/(department-admin)/resource-requests',
-          color: '#0284C7',
+          color: '#1565C0',
         },
         {
           title: 'Purchase Requests',
           desc: 'Procurement indents & cost estimation',
           icon: ShoppingCart,
           route: '/(department-admin)/purchase-requests',
-          color: '#7C3AED',
+          color: '#1565C0',
         },
         {
           title: 'Maintenance Requests',
           desc: 'Facility electrical, plumbing & HVAC tickets',
           icon: Hammer,
           route: '/(department-admin)/maintenance-requests',
-          color: '#D97706',
+          color: '#F59E0B',
         },
       ],
     },
@@ -206,14 +206,14 @@ export default function DepartmentAdminMoreScreen() {
           desc: 'Centralized tracking of all department requests',
           icon: CheckSquare,
           route: '/(department-admin)/approvals-hub',
-          color: '#38845A',
+          color: '#1565C0',
         },
         {
           title: 'Department Announcements',
           desc: 'Broadcast memos & administrative notices',
           icon: Megaphone,
           route: '/(department-admin)/notifications',
-          color: '#0284C7',
+          color: '#1565C0',
         },
       ],
     },
@@ -287,7 +287,7 @@ export default function DepartmentAdminMoreScreen() {
               activeOpacity={0.7}
             >
               <View style={[styles.iconBox, { backgroundColor: '#38845A15' }]}>
-                <User size={20} color="#38845A" />
+                <User size={20} color="#1565C0" />
               </View>
               <View style={styles.menuTextCol}>
                 <Text style={styles.menuTitle}>Admin Profile</Text>
@@ -302,7 +302,7 @@ export default function DepartmentAdminMoreScreen() {
               activeOpacity={0.7}
             >
               <View style={[styles.iconBox, { backgroundColor: '#7C3AED15' }]}>
-                <KeyRound size={20} color="#7C3AED" />
+                <KeyRound size={20} color="#1565C0" />
               </View>
               <View style={styles.menuTextCol}>
                 <Text style={styles.menuTitle}>Change Password</Text>
@@ -343,7 +343,7 @@ export default function DepartmentAdminMoreScreen() {
             <View style={styles.modalBody}>
               {passwordMsg ? (
                 <View style={styles.successToast}>
-                  <CheckCircle2 size={16} color="#059669" />
+                  <CheckCircle2 size={16} color="#00897B" />
                   <Text style={styles.successToastText}>{passwordMsg}</Text>
                 </View>
               ) : null}
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -452,11 +452,11 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   userRole: {
     fontSize: 11,
-    color: '#38845A',
+    color: '#1565C0',
     fontWeight: '700',
     letterSpacing: 0.5,
     marginTop: 2,
@@ -514,7 +514,7 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   menuDesc: {
     fontSize: 11,
@@ -543,7 +543,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   modalBody: {
     padding: 16,
@@ -551,7 +551,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#334155',
+    color: '#475569',
     marginBottom: 6,
     marginTop: 10,
   },
@@ -562,7 +562,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   errorText: {
     fontSize: 12,
@@ -573,17 +573,17 @@ const styles = StyleSheet.create({
   successToast: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#D1FAE5',
+    backgroundColor: '#DCFCE7',
     padding: 10,
     borderRadius: 8,
     gap: 8,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#A7F3D0',
+    borderColor: '#B2DFDB',
   },
   successToastText: {
     fontSize: 12,
-    color: '#065F46',
+    color: '#183153',
     fontWeight: '600',
   },
   modalFooter: {
@@ -607,7 +607,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,

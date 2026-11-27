@@ -84,11 +84,11 @@ export default function LaboratoryRequestsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadOrders} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadOrders} tintColor="#1565C0" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <FlaskConical size={40} color="#CBD5E1" />
@@ -110,13 +110,13 @@ export default function LaboratoryRequestsScreen() {
                   <View
                     style={[
                       styles.statusPill,
-                      { backgroundColor: isCompleted ? '#EAF5ED' : '#FEF3C7' },
+                      { backgroundColor: isCompleted ? '#E8F1FC' : '#FEF3C7' },
                     ]}
                   >
                     <Text
                       style={[
                         styles.statusPillText,
-                        { color: isCompleted ? '#38845A' : '#D97706' },
+                        { color: isCompleted ? '#1565C0' : '#F59E0B' },
                       ]}
                     >
                       {item.status || 'ORDERED'}
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 8,
     fontSize: 12,
-    color: '#0F172A',
+    color: '#183153',
     marginLeft: 6,
   },
   statusChips: {
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   chipActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   chipText: {
     fontSize: 11,
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   testName: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   patUhid: {
     fontSize: 11,
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   },
   docText: {
     fontSize: 11,
-    color: '#334155',
+    color: '#475569',
     fontWeight: '500',
   },
 });

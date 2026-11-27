@@ -13,6 +13,7 @@ export default function RootLayout() {
   const content = (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: UyirinaiTheme.colors.white } }}>
       <Stack.Screen name="index" />
+      <Stack.Screen name="home" />
       <Stack.Screen name="(auth)/login" />
       <Stack.Screen name="(super-admin)" />
       <Stack.Screen name="(admin)" />
@@ -32,7 +33,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <StatusBar style="dark" backgroundColor={UyirinaiTheme.colors.white} />
+        <StatusBar style="dark" backgroundColor={UyirinaiTheme.colors.surface} />
         {Platform.OS === 'web' && width > 500 ? (
           <View style={styles.webWrapper}>
             <View style={[styles.phoneFrame, { maxHeight: Math.min(height - 24, 920) }]}>
@@ -54,13 +55,13 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
-    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
+    backgroundColor: UyirinaiTheme.colors.background,
   },
   webWrapper: {
     flex: 1,
     width: '100%',
     height: '100%',
-    backgroundColor: '#1E2B23',
+    backgroundColor: UyirinaiTheme.colors.heading,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 12,

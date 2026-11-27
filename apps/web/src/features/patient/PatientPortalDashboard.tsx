@@ -42,14 +42,14 @@ export const PatientPortalDashboard: React.FC = () => {
     <div className="space-y-6 max-w-5xl">
       {/* UHID Digital Health Card */}
       <div className="bg-gradient-to-r from-teal-800 to-teal-950 text-white rounded-2xl p-6 shadow-xl border border-teal-700/50 relative overflow-hidden">
-        <div className="absolute right-0 top-0 -mt-6 -mr-6 w-48 h-48 bg-teal-600/20 rounded-full blur-2xl"></div>
+        <div className="absolute right-0 top-0 -mt-6 -mr-6 w-48 h-48 bg-[#1565C0]/20 rounded-full blur-2xl"></div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
           <div className="flex items-center space-x-4">
             <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-xl font-bold">
               {patientRecord?.firstName?.[0] || 'M'}
             </div>
             <div>
-              <p className="text-teal-300 text-xs font-semibold tracking-wider uppercase">
+              <p className="text-[#B2DFDB] text-xs font-semibold tracking-wider uppercase">
                 Kizuna Digital Health Card (கிஜுனா)
               </p>
               <h2 className="text-xl font-bold mt-0.5">
@@ -62,13 +62,13 @@ export const PatientPortalDashboard: React.FC = () => {
             </div>
           </div>
           <div className="text-right sm:border-l sm:border-white/20 sm:pl-6">
-            <p className="text-[10px] text-teal-300 uppercase tracking-widest font-mono">
+            <p className="text-[10px] text-[#B2DFDB] uppercase tracking-widest font-mono">
               Unique Hospital ID
             </p>
             <p className="text-lg font-bold font-mono tracking-wider text-white">
               {patientRecord?.uhid || 'ALY-2026-0001'}
             </p>
-            <span className="inline-block mt-1 px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 rounded-full text-[10px] font-semibold">
+            <span className="inline-block mt-1 px-2.5 py-0.5 bg-[#16A34A]/20 text-emerald-300 border border-emerald-400/30 rounded-full text-[10px] font-semibold">
               Verified Inpatient
             </span>
           </div>
@@ -80,7 +80,7 @@ export const PatientPortalDashboard: React.FC = () => {
         {/* Active Prescriptions */}
         <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-5">
           <div className="flex items-center space-x-2 pb-3 border-b border-slate-100 text-slate-800 font-bold text-sm mb-4">
-            <Pill className="w-4 h-4 text-teal-600" />
+            <Pill className="w-4 h-4 text-[#00897B]" />
             <h3>My Active Prescribed Medicines</h3>
           </div>
           <div className="space-y-3">
@@ -88,9 +88,9 @@ export const PatientPortalDashboard: React.FC = () => {
               <div>
                 <p className="font-bold text-slate-800">Ecosprin 75mg</p>
                 <p className="text-slate-500 text-[11px]">0-1-0 (After Lunch) • 30 Days</p>
-                <p className="text-teal-700 text-[11px] font-medium mt-0.5">Advice: Take with water</p>
+                <p className="text-[#00897B] text-[11px] font-medium mt-0.5">Advice: Take with water</p>
               </div>
-              <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[10px] font-semibold">
+              <span className="px-2 py-0.5 bg-[#DCFCE7] text-[#16A34A] rounded text-[10px] font-semibold">
                 Dispensed
               </span>
             </div>
@@ -98,9 +98,9 @@ export const PatientPortalDashboard: React.FC = () => {
               <div>
                 <p className="font-bold text-slate-800">Atorva 20mg</p>
                 <p className="text-slate-500 text-[11px]">0-0-1 (Bedtime) • 30 Days</p>
-                <p className="text-teal-700 text-[11px] font-medium mt-0.5">Advice: Night after dinner</p>
+                <p className="text-[#00897B] text-[11px] font-medium mt-0.5">Advice: Night after dinner</p>
               </div>
-              <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[10px] font-semibold">
+              <span className="px-2 py-0.5 bg-[#DCFCE7] text-[#16A34A] rounded text-[10px] font-semibold">
                 Dispensed
               </span>
             </div>
@@ -108,9 +108,9 @@ export const PatientPortalDashboard: React.FC = () => {
               <div>
                 <p className="font-bold text-slate-800">Pan 40mg</p>
                 <p className="text-slate-500 text-[11px]">1-0-0 (Morning) • 14 Days</p>
-                <p className="text-teal-700 text-[11px] font-medium mt-0.5">Advice: 30 mins before breakfast</p>
+                <p className="text-[#00897B] text-[11px] font-medium mt-0.5">Advice: 30 mins before breakfast</p>
               </div>
-              <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[10px] font-semibold">
+              <span className="px-2 py-0.5 bg-[#DCFCE7] text-[#16A34A] rounded text-[10px] font-semibold">
                 Dispensed
               </span>
             </div>
@@ -120,7 +120,7 @@ export const PatientPortalDashboard: React.FC = () => {
         {/* Diagnostic Reports */}
         <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-5">
           <div className="flex items-center space-x-2 pb-3 border-b border-slate-100 text-slate-800 font-bold text-sm mb-4">
-            <FlaskConical className="w-4 h-4 text-sky-600" />
+            <FlaskConical className="w-4 h-4 text-[#1565C0]" />
             <h3>Laboratory & Diagnostic Reports</h3>
           </div>
           <div className="space-y-3 text-xs">
@@ -128,11 +128,11 @@ export const PatientPortalDashboard: React.FC = () => {
               <div>
                 <p className="font-bold text-slate-800">Cardiac Troponin I (High Sensitivity)</p>
                 <p className="text-slate-500 text-[11px]">Assay Date: Today • Specimen: Serum</p>
-                <p className="text-rose-600 font-semibold text-[11px] mt-0.5">
+                <p className="text-[#DC2626] font-semibold text-[11px] mt-0.5">
                   Result: 0.12 ng/mL (Ref: 0.0 - 0.04)
                 </p>
               </div>
-              <button className="px-3 py-1 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded text-xs font-semibold border border-teal-200">
+              <button className="px-3 py-1 bg-[#E0F2F1] text-[#00897B] hover:bg-[#E0F2F1] rounded text-xs font-semibold border border-[#B2DFDB]">
                 Download PDF
               </button>
             </div>
@@ -140,11 +140,11 @@ export const PatientPortalDashboard: React.FC = () => {
               <div>
                 <p className="font-bold text-slate-800">Complete Blood Count (CBC)</p>
                 <p className="text-slate-500 text-[11px]">Assay Date: Today • Automated Counter</p>
-                <p className="text-emerald-700 font-semibold text-[11px] mt-0.5">
+                <p className="text-[#16A34A] font-semibold text-[11px] mt-0.5">
                   All parameters within normal reference limits
                 </p>
               </div>
-              <button className="px-3 py-1 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded text-xs font-semibold border border-teal-200">
+              <button className="px-3 py-1 bg-[#E0F2F1] text-[#00897B] hover:bg-[#E0F2F1] rounded text-xs font-semibold border border-[#B2DFDB]">
                 Download PDF
               </button>
             </div>

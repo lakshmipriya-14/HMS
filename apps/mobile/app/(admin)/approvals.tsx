@@ -116,7 +116,7 @@ export default function AdminApprovalsScreen() {
           style={[styles.tabBtn, activeTab === 'pending' && styles.tabBtnActive]}
           onPress={() => setActiveTab('pending')}
         >
-          <CheckSquare size={16} color={activeTab === 'pending' ? '#38845A' : '#64748B'} />
+          <CheckSquare size={16} color={activeTab === 'pending' ? '#1565C0' : '#64748B'} />
           <Text style={[styles.tabBtnText, activeTab === 'pending' && styles.tabBtnTextActive]}>
             Pending ({summary.totalPending || 0})
           </Text>
@@ -126,7 +126,7 @@ export default function AdminApprovalsScreen() {
           style={[styles.tabBtn, activeTab === 'history' && styles.tabBtnActive]}
           onPress={() => setActiveTab('history')}
         >
-          <History size={16} color={activeTab === 'history' ? '#38845A' : '#64748B'} />
+          <History size={16} color={activeTab === 'history' ? '#1565C0' : '#64748B'} />
           <Text style={[styles.tabBtnText, activeTab === 'history' && styles.tabBtnTextActive]}>
             Approval History ({historyData.length})
           </Text>
@@ -173,7 +173,7 @@ export default function AdminApprovalsScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#38845A" />
+          <ActivityIndicator size="large" color="#1565C0" />
           <Text style={styles.loadingText}>Fetching live approval queues...</Text>
         </View>
       ) : activeTab === 'history' ? (
@@ -182,12 +182,12 @@ export default function AdminApprovalsScreen() {
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={loadApprovals} tintColor="#38845A" />
+            <RefreshControl refreshing={refreshing} onRefresh={loadApprovals} tintColor="#1565C0" />
           }
         >
           {historyData.length === 0 ? (
             <View style={styles.emptyCard}>
-              <CheckCircle size={28} color="#059669" />
+              <CheckCircle size={28} color="#00897B" />
               <Text style={styles.emptyTitle}>No Approval History Yet</Text>
               <Text style={styles.emptySub}>
                 Actions on appointment requests, leaves, and bed turnovers will appear here.
@@ -202,13 +202,13 @@ export default function AdminApprovalsScreen() {
                     <View
                       style={[
                         styles.historyActionBadge,
-                        { backgroundColor: isApproved ? '#D1FAE5' : '#EAF5ED' },
+                        { backgroundColor: isApproved ? '#DCFCE7' : '#E8F1FC' },
                       ]}
                     >
                       <Text
                         style={[
                           styles.historyActionText,
-                          { color: isApproved ? '#059669' : '#DC2626' },
+                          { color: isApproved ? '#00897B' : '#DC2626' },
                         ]}
                       >
                         {item.action}
@@ -245,14 +245,14 @@ export default function AdminApprovalsScreen() {
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={loadApprovals} tintColor="#38845A" />
+            <RefreshControl refreshing={refreshing} onRefresh={loadApprovals} tintColor="#1565C0" />
           }
         >
           {/* SECTION 1: APPOINTMENT REQUESTS */}
           {(categoryFilter === 'ALL' || categoryFilter === 'APPOINTMENTS') && (
             <View style={styles.sectionWrap}>
               <View style={styles.sectionTitleRow}>
-                <CalendarCheck size={16} color="#2563EB" />
+                <CalendarCheck size={16} color="#1565C0" />
                 <Text style={styles.sectionTitle}>Online Appointment Requests ({apptRequests.length})</Text>
               </View>
 
@@ -319,7 +319,7 @@ export default function AdminApprovalsScreen() {
           {(categoryFilter === 'ALL' || categoryFilter === 'LEAVES') && (
             <View style={styles.sectionWrap}>
               <View style={styles.sectionTitleRow}>
-                <UserCheck size={16} color="#38845A" />
+                <UserCheck size={16} color="#1565C0" />
                 <Text style={styles.sectionTitle}>Doctor Leave Applications ({doctorLeaves.length})</Text>
               </View>
 
@@ -344,7 +344,7 @@ export default function AdminApprovalsScreen() {
                           <Text style={styles.reasonText}>Reason: {leave.reason}</Text>
                         </View>
                         <View style={[styles.pendingBadge, { backgroundColor: '#FEF3C7' }]}>
-                          <Text style={[styles.pendingBadgeText, { color: '#D97706' }]}>
+                          <Text style={[styles.pendingBadgeText, { color: '#F59E0B' }]}>
                             LEAVE
                           </Text>
                         </View>
@@ -394,7 +394,7 @@ export default function AdminApprovalsScreen() {
           {(categoryFilter === 'ALL' || categoryFilter === 'BEDS') && (
             <View style={styles.sectionWrap}>
               <View style={styles.sectionTitleRow}>
-                <BedDouble size={16} color="#E11D48" />
+                <BedDouble size={16} color="#DC2626" />
                 <Text style={styles.sectionTitle}>Bed Sanitization Clearances ({bedTurnovers.length})</Text>
               </View>
 
@@ -420,7 +420,7 @@ export default function AdminApprovalsScreen() {
                           styles.pendingBadge,
                           {
                             backgroundColor:
-                              bed.status === 'CLEANING' ? '#FEF3C7' : '#EAF5ED',
+                              bed.status === 'CLEANING' ? '#FEF3C7' : '#E8F1FC',
                           },
                         ]}
                       >
@@ -429,7 +429,7 @@ export default function AdminApprovalsScreen() {
                             styles.pendingBadgeText,
                             {
                               color:
-                                bed.status === 'CLEANING' ? '#D97706' : '#DC2626',
+                                bed.status === 'CLEANING' ? '#F59E0B' : '#DC2626',
                             },
                           ]}
                         >
@@ -481,7 +481,7 @@ export default function AdminApprovalsScreen() {
           {unassignedDepts.length > 0 && (
             <View style={styles.sectionWrap}>
               <View style={styles.sectionTitleRow}>
-                <Building2 size={16} color="#D97706" />
+                <Building2 size={16} color="#F59E0B" />
                 <Text style={styles.sectionTitle}>
                   Department Leadership Coverage ({unassignedDepts.length})
                 </Text>
@@ -540,14 +540,14 @@ export default function AdminApprovalsScreen() {
                 styles.confirmBtn,
                 {
                   backgroundColor:
-                    actionItem?.action === 'APPROVE' ? '#38845A' : '#DC2626',
+                    actionItem?.action === 'APPROVE' ? '#1565C0' : '#DC2626',
                 },
               ]}
               onPress={handleExecuteAction}
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.confirmBtnText}>
                   Confirm {actionItem?.action === 'APPROVE' ? 'Approval' : 'Rejection'}
@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   tabBtnActive: {
-    borderBottomColor: '#38845A',
+    borderBottomColor: '#1565C0',
   },
   tabBtnText: {
     fontSize: 12,
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   tabBtnTextActive: {
-    color: '#38845A',
+    color: '#1565C0',
   },
   filterScroll: {
     backgroundColor: '#FFFFFF',
@@ -608,7 +608,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   filterChipActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   filterChipText: {
     fontSize: 11,
@@ -632,7 +632,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#1E293B',
+    color: '#183153',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -652,7 +652,7 @@ const styles = StyleSheet.create({
   cardMain: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   cardSub: {
     fontSize: 11,
@@ -662,12 +662,12 @@ const styles = StyleSheet.create({
   cardDate: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#38845A',
+    color: '#1565C0',
     marginTop: 2,
   },
   reasonText: {
     fontSize: 11,
-    color: '#334155',
+    color: '#475569',
     backgroundColor: '#F8FAFC',
     padding: 6,
     borderRadius: 6,
@@ -682,7 +682,7 @@ const styles = StyleSheet.create({
   pendingBadgeText: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#2563EB',
+    color: '#1565C0',
   },
   btnRow: {
     flexDirection: 'row',
@@ -702,7 +702,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   approveBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   approveBtnText: {
     color: '#FFFFFF',
@@ -710,9 +710,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   rejectBtn: {
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     borderWidth: 1,
-    borderColor: '#FECDD3',
+    borderColor: '#FEE2E2',
   },
   rejectBtnText: {
     color: '#DC2626',
@@ -738,7 +738,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   emptySub: {
     fontSize: 12,
@@ -775,7 +775,7 @@ const styles = StyleSheet.create({
   historyResource: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#1E293B',
+    color: '#183153',
   },
   historyApprover: {
     fontSize: 11,
@@ -810,7 +810,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   modalDesc: {
     fontSize: 12,
@@ -821,7 +821,7 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#334155',
+    color: '#475569',
     marginBottom: 4,
   },
   fieldInput: {
@@ -832,7 +832,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
     marginBottom: 16,
   },
   confirmBtn: {

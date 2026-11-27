@@ -236,14 +236,14 @@ export default function AdminDepartmentsScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#38845A" />
+          <ActivityIndicator size="large" color="#1565C0" />
         </View>
       ) : (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />
+            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#1565C0" />
           }
         >
           {filtered.length === 0 ? (
@@ -268,14 +268,14 @@ export default function AdminDepartmentsScreen() {
                     <TouchableOpacity
                       style={[
                         styles.statusPill,
-                        { backgroundColor: dept.isActive ? '#D1FAE5' : '#EAF5ED' },
+                        { backgroundColor: dept.isActive ? '#DCFCE7' : '#E8F1FC' },
                       ]}
                       onPress={() => handleToggleStatus(dept.id)}
                     >
                       <Text
                         style={[
                           styles.statusText,
-                          { color: dept.isActive ? '#059669' : '#DC2626' },
+                          { color: dept.isActive ? '#00897B' : '#DC2626' },
                         ]}
                       >
                         {dept.isActive ? 'ACTIVE' : 'INACTIVE'}
@@ -286,7 +286,7 @@ export default function AdminDepartmentsScreen() {
                   {/* HOD & Admin Details */}
                   <View style={styles.metaBox}>
                     <View style={styles.metaRow}>
-                      <UserCheck size={14} color="#38845A" />
+                      <UserCheck size={14} color="#1565C0" />
                       <Text style={styles.metaLabel}>Head of Dept:</Text>
                       <Text style={styles.metaVal}>
                         {dept.hod?.user?.name || 'Unassigned'}
@@ -299,7 +299,7 @@ export default function AdminDepartmentsScreen() {
                     </View>
 
                     <View style={styles.metaRow}>
-                      <Shield size={14} color="#2563EB" />
+                      <Shield size={14} color="#1565C0" />
                       <Text style={styles.metaLabel}>Dept Admin:</Text>
                       <Text style={styles.metaVal}>
                         {admin?.name || 'Unassigned (Required)'}
@@ -307,7 +307,7 @@ export default function AdminDepartmentsScreen() {
                       <TouchableOpacity
                         onPress={() => setAssignModal({ type: 'admin', dept })}
                       >
-                        <Text style={[styles.changeLink, { color: '#2563EB' }]}>
+                        <Text style={[styles.changeLink, { color: '#1565C0' }]}>
                           {admin ? 'Replace' : 'Assign'}
                         </Text>
                       </TouchableOpacity>
@@ -334,16 +334,16 @@ export default function AdminDepartmentsScreen() {
                           setEditDesc(dept.description || '');
                         }}
                       >
-                        <Edit2 size={15} color="#38845A" />
+                        <Edit2 size={15} color="#1565C0" />
                         <Text style={styles.actionIconText}>Edit</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
-                        style={[styles.actionIconBtn, { borderColor: '#FECDD3' }]}
+                        style={[styles.actionIconBtn, { borderColor: '#FEE2E2' }]}
                         onPress={() => handleArchive(dept)}
                       >
-                        <Archive size={15} color="#E11D48" />
-                        <Text style={[styles.actionIconText, { color: '#E11D48' }]}>Archive</Text>
+                        <Archive size={15} color="#DC2626" />
+                        <Text style={[styles.actionIconText, { color: '#DC2626' }]}>Archive</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -397,7 +397,7 @@ export default function AdminDepartmentsScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Create Department</Text>
               )}
@@ -440,7 +440,7 @@ export default function AdminDepartmentsScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Save Changes</Text>
               )}
@@ -489,7 +489,7 @@ export default function AdminDepartmentsScreen() {
                         {p.specialization || p.employee?.designation || p.email}
                       </Text>
                     </View>
-                    {isSelected && <CheckCircle size={18} color="#38845A" />}
+                    {isSelected && <CheckCircle size={18} color="#1565C0" />}
                   </TouchableOpacity>
                 );
               })}
@@ -501,7 +501,7 @@ export default function AdminDepartmentsScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Confirm Assignment</Text>
               )}
@@ -536,13 +536,13 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
     paddingVertical: 8,
   },
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingHorizontal: 14,
     borderRadius: 10,
     gap: 6,
@@ -568,7 +568,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   filterChipActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   filterChipText: {
     fontSize: 12,
@@ -605,20 +605,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   codeBadge: {
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
   },
   codeText: {
-    color: '#38845A',
+    color: '#1565C0',
     fontSize: 11,
     fontWeight: '800',
   },
   cardTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   cardDesc: {
     fontSize: 11,
@@ -655,12 +655,12 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 12,
     fontWeight: '700',
-    color: '#1E293B',
+    color: '#183153',
   },
   changeLink: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   cardFooter: {
     flexDirection: 'row',
@@ -691,13 +691,13 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#EAF5ED',
+    borderColor: '#E8F1FC',
     gap: 4,
   },
   actionIconText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   modalBg: {
     flex: 1,
@@ -720,7 +720,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   fieldLabel: {
     fontSize: 12,
@@ -737,10 +737,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#0F172A',
+    color: '#183153',
   },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: 'center',
@@ -767,13 +767,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   personOptionSelected: {
-    borderColor: '#38845A',
-    backgroundColor: '#EAF5ED',
+    borderColor: '#1565C0',
+    backgroundColor: '#E8F1FC',
   },
   personName: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   personSub: {
     fontSize: 11,

@@ -70,7 +70,7 @@ export const DischargeMonitoring: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <LogOut className="w-6 h-6 text-teal-600" />
+            <LogOut className="w-6 h-6 text-[#00897B]" />
             Inpatient Discharge Progress & Turnover Monitoring
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -80,15 +80,15 @@ export const DischargeMonitoring: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600" />
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-[#DC2626]" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Notice */}
       <div className="p-3.5 bg-slate-50 border border-slate-200 text-slate-600 rounded-xl text-xs flex items-center gap-2">
-        <ShieldCheck className="w-4 h-4 text-teal-600 shrink-0" />
+        <ShieldCheck className="w-4 h-4 text-[#00897B] shrink-0" />
         <span>
           <strong>Operational Monitoring:</strong> Final clinical discharge summaries are signed by attending doctors, and financial clearance is handled by Billing. Department Admin tracks readiness and bed turnover.
         </span>
@@ -103,7 +103,7 @@ export const DischargeMonitoring: React.FC = () => {
             placeholder="Search by patient name, UHID, admission ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500"
+            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B]"
           />
         </div>
       </div>
@@ -132,7 +132,7 @@ export const DischargeMonitoring: React.FC = () => {
                   const doc = item.admittingDoctor?.employee?.user;
                   return (
                     <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 px-4 font-mono font-bold text-teal-800">
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#183153]">
                         {item.admissionNumber}
                       </td>
                       <td className="py-3.5 px-4">

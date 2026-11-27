@@ -123,7 +123,7 @@ export const DoctorScheduling: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <Calendar className="w-6 h-6 text-teal-600" />
+            <Calendar className="w-6 h-6 text-[#00897B]" />
             Doctor Duty Scheduling & Shift Roster
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -133,7 +133,7 @@ export const DoctorScheduling: React.FC = () => {
         <button
           onClick={handleSaveSchedule}
           disabled={saving}
-          className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md shadow-teal-900/20 disabled:opacity-50"
+          className="px-4 py-2 bg-[#1565C0] hover:bg-[#00897B] text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md shadow-teal-900/20 disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
           {saving ? 'Saving...' : 'Save Schedule'}
@@ -141,18 +141,18 @@ export const DoctorScheduling: React.FC = () => {
       </div>
 
       {success && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-medium flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-medium flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             <span>{success}</span>
           </div>
-          <button onClick={() => setSuccess('')} className="text-emerald-600 hover:text-emerald-900 font-bold">×</button>
+          <button onClick={() => setSuccess('')} className="text-[#16A34A] hover:text-emerald-900 font-bold">×</button>
         </div>
       )}
 
       {error && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600" />
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-[#DC2626]" />
           <span>{error}</span>
         </div>
       )}
@@ -174,7 +174,7 @@ export const DoctorScheduling: React.FC = () => {
                   onClick={() => setSelectedDoctorId(doc.id)}
                   className={`w-full text-left p-3 rounded-xl transition-all flex items-center justify-between text-xs ${
                     isSelected
-                      ? 'bg-teal-50 border border-teal-300 text-teal-900 font-bold shadow-sm'
+                      ? 'bg-[#E0F2F1] border border-teal-300 text-teal-900 font-bold shadow-sm'
                       : 'hover:bg-slate-50 border border-transparent text-slate-700'
                   }`}
                 >
@@ -184,7 +184,7 @@ export const DoctorScheduling: React.FC = () => {
                     </p>
                     <p className="text-[11px] text-slate-400 font-normal truncate">{doc.specialization}</p>
                   </div>
-                  <ChevronRight className={`w-4 h-4 ${isSelected ? 'text-teal-600' : 'text-slate-300'}`} />
+                  <ChevronRight className={`w-4 h-4 ${isSelected ? 'text-[#00897B]' : 'text-slate-300'}`} />
                 </button>
               );
             })}
@@ -216,7 +216,7 @@ export const DoctorScheduling: React.FC = () => {
                     type="checkbox"
                     checked={s.isActive}
                     onChange={(e) => updateDaySchedule(s.dayOfWeek, 'isActive', e.target.checked)}
-                    className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500 border-slate-300"
+                    className="w-4 h-4 text-[#00897B] rounded focus:ring-teal-500 border-slate-300"
                   />
                   <span className={`font-bold ${s.isActive ? 'text-slate-800' : 'text-slate-400'}`}>
                     {s.dayOfWeek}
@@ -231,7 +231,7 @@ export const DoctorScheduling: React.FC = () => {
                       disabled={!s.isActive}
                       value={s.startTime}
                       onChange={(e) => updateDaySchedule(s.dayOfWeek, 'startTime', e.target.value)}
-                      className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none focus:border-teal-500 disabled:opacity-40"
+                      className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none focus:border-[#00897B] disabled:opacity-40"
                     />
                   </div>
 
@@ -242,7 +242,7 @@ export const DoctorScheduling: React.FC = () => {
                       disabled={!s.isActive}
                       value={s.endTime}
                       onChange={(e) => updateDaySchedule(s.dayOfWeek, 'endTime', e.target.value)}
-                      className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none focus:border-teal-500 disabled:opacity-40"
+                      className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none focus:border-[#00897B] disabled:opacity-40"
                     />
                   </div>
 
@@ -253,14 +253,14 @@ export const DoctorScheduling: React.FC = () => {
                       disabled={!s.isActive}
                       value={s.maxPatients}
                       onChange={(e) => updateDaySchedule(s.dayOfWeek, 'maxPatients', Number(e.target.value))}
-                      className="w-16 px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none focus:border-teal-500 font-bold disabled:opacity-40"
+                      className="w-16 px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none focus:border-[#00897B] font-bold disabled:opacity-40"
                     />
                   </div>
                 </div>
 
                 <span
                   className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                    s.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-400'
+                    s.isActive ? 'bg-[#DCFCE7] text-[#16A34A]' : 'bg-slate-100 text-slate-400'
                   }`}
                 >
                   {s.isActive ? 'Active Duty' : 'Off'}
@@ -269,15 +269,15 @@ export const DoctorScheduling: React.FC = () => {
             ))}
           </div>
 
-          <div className="p-4 bg-teal-50/60 border border-teal-200 rounded-xl text-teal-900 text-xs flex items-center justify-between">
+          <div className="p-4 bg-[#E0F2F1]/60 border border-[#B2DFDB] rounded-xl text-teal-900 text-xs flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-teal-600 shrink-0" />
+              <Clock className="w-4 h-4 text-[#00897B] shrink-0" />
               <span>Schedules automatically restrict appointment token limits and validate consultation availability.</span>
             </div>
             <button
               onClick={handleSaveSchedule}
               disabled={saving}
-              className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-500 text-white rounded-lg font-bold text-xs shadow-sm"
+              className="px-3.5 py-1.5 bg-[#1565C0] hover:bg-[#00897B] text-white rounded-lg font-bold text-xs shadow-sm"
             >
               {saving ? 'Saving...' : 'Save Schedule'}
             </button>

@@ -84,10 +84,10 @@ export default function DoctorScheduleScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { padding: 16, gap: 10, flexGrow: 1, backgroundColor: '#fff' },
+  page: { padding: 16, gap: 10, flexGrow: 1, backgroundColor: '#FFFFFF' },
   title: { fontSize: 19, fontWeight: '800', color: UyirinaiTheme.colors.primary },
-  card: { gap: 5, backgroundColor: '#fff5f5', padding: 12, borderRadius: 8 },
+  card: { gap: 5, backgroundColor: '#FEE2E2', padding: 12, borderRadius: 8 },
   input: { borderWidth: 1, borderColor: '#cbd5e1', borderRadius: 8, minHeight: 44, padding: 10 },
   button: { padding: 12, borderRadius: 8, minHeight: 44, backgroundColor: UyirinaiTheme.colors.primary },
-  buttonText: { color: '#fff', fontWeight: '700' },
+  buttonText: { color: '#FFFFFF', fontWeight: '700' },
 });

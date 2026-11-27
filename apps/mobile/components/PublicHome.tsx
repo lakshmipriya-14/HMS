@@ -35,11 +35,14 @@ import {
 import { UyirinaiTheme } from '../constants/theme';
 import { UyirinaiHeader } from './UyirinaiHeader';
 import { mobileApiClient } from '../services/api';
+import { useAuth } from '../hooks/useAuth';
+import { roleHome } from '../constants/role-home';
 
 const appointmentSpecialities = ['Cardiology', 'Neurology', 'Orthopedics', 'Pediatrics', 'General Medicine'];
 
 export function PublicHome() {
   const router = useRouter();
+  const { user } = useAuth();
   const scrollRef = useRef<ScrollView>(null);
 
   // Form states for contact / appointment
@@ -125,6 +128,10 @@ export function PublicHome() {
   };
 
   const openLogin = () => router.push('/(auth)/login');
+  const openPortal = () => {
+    if (user) router.replace(roleHome[user.role]);
+    else openLogin();
+  };
   const formSpecialities = appointmentSpecialities.includes(selectedSpeciality)
     ? appointmentSpecialities
     : [...appointmentSpecialities, selectedSpeciality];
@@ -219,6 +226,7 @@ export function PublicHome() {
       <UyirinaiHeader
         onNavigateSection={handleScrollToSection}
         onLogin={openLogin}
+        onPortal={openPortal}
       />
 
       <ScrollView
@@ -864,7 +872,7 @@ export function PublicHome() {
             onPress={openLogin}
           >
             <ShieldCheck size={16} color={UyirinaiTheme.colors.white} />
-            <Text style={styles.footerStaffLoginText}>Hospital Staff & Admin Login</Text>
+            <Text style={styles.footerStaffLoginText}>Portal Login</Text>
           </TouchableOpacity>
 
           <View style={styles.footerLegalRow}>
@@ -929,7 +937,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
   },
   heroHospitalName: {
-    color: '#FCA5A5',
+    color: UyirinaiTheme.colors.secondaryBorder,
     fontSize: 12,
     fontWeight: '800',
     letterSpacing: 1.5,
@@ -943,7 +951,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   heroHeadlineAccent: {
-    color: '#FEF08A',
+    color: '#B2DFDB',
   },
   quoteCard: {
     backgroundColor: UyirinaiTheme.colors.primaryDark,
@@ -951,7 +959,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginTop: 16,
     borderLeftWidth: 4,
-    borderLeftColor: '#FEF08A',
+    borderLeftColor: UyirinaiTheme.colors.secondary,
   },
   quoteText: {
     color: UyirinaiTheme.colors.white,
@@ -961,7 +969,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   heroIntroText: {
-    color: UyirinaiTheme.colors.lightGreen,
+    color: UyirinaiTheme.colors.primaryLight,
     fontSize: 13,
     lineHeight: 20,
     marginTop: 16,
@@ -977,10 +985,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: UyirinaiTheme.colors.black,
+    backgroundColor: UyirinaiTheme.colors.secondary,
     paddingVertical: 14,
     borderRadius: 12,
-    shadowColor: '#000',
+    shadowColor: UyirinaiTheme.colors.heading,
     shadowOpacity: 0.25,
     shadowRadius: 5,
     elevation: 3,
@@ -1596,23 +1604,23 @@ const styles = StyleSheet.create({
   footerHospitalSub: {
     fontSize: 8.5,
     fontWeight: '700',
-    color: '#9CA3AF',
+    color: UyirinaiTheme.colors.secondaryBorder,
     letterSpacing: 0.5,
   },
   footerDesc: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: UyirinaiTheme.colors.disabledText,
     lineHeight: 17,
   },
   footerDivider: {
     height: 1,
-    backgroundColor: '#333333',
+    backgroundColor: 'rgba(255,255,255,0.14)',
     marginVertical: 18,
   },
   footerLinksHeader: {
     fontSize: 10,
     fontWeight: '800',
-    color: UyirinaiTheme.colors.primary,
+    color: UyirinaiTheme.colors.secondaryBorder,
     letterSpacing: 1.2,
     marginBottom: 8,
   },
@@ -1628,7 +1636,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   footerLinkDot: {
-    color: '#666666',
+    color: UyirinaiTheme.colors.textMuted,
     fontSize: 12,
   },
   footerStaffLoginBtn: {
@@ -1648,13 +1656,13 @@ const styles = StyleSheet.create({
   },
   footerLegalRow: {
     borderTopWidth: 1,
-    borderTopColor: '#262626',
+    borderTopColor: 'rgba(255,255,255,0.14)',
     paddingTop: 14,
     gap: 4,
   },
   footerLegalText: {
     fontSize: 10,
-    color: '#737373',
+    color: UyirinaiTheme.colors.disabledText,
     textAlign: 'center',
   },
 });

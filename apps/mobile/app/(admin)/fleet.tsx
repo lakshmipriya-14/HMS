@@ -160,12 +160,12 @@ export default function AdminFleetScreen() {
           style={styles.backBtn}
           onPress={() => router.replace('/(admin)/more')}
         >
-          <ChevronLeft size={20} color="#38845A" />
+          <ChevronLeft size={20} color="#1565C0" />
         </TouchableOpacity>
         <Text style={styles.actionTitle}>Hospital Fleet & Active Radar</Text>
         <View style={{ flexDirection: 'row', gap: 6 }}>
           <TouchableOpacity
-            style={[styles.dispatchBtn, { backgroundColor: '#38845A' }]}
+            style={[styles.dispatchBtn, { backgroundColor: '#1565C0' }]}
             onPress={() => setAddVehicleModal(true)}
           >
             <Plus size={16} color="#FFFFFF" />
@@ -183,14 +183,14 @@ export default function AdminFleetScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#38845A" />
+          <ActivityIndicator size="large" color="#1565C0" />
         </View>
       ) : (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />
+            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#1565C0" />
           }
         >
           {/* Active Dispatches Radar */}
@@ -198,7 +198,7 @@ export default function AdminFleetScreen() {
 
           {trips.length === 0 ? (
             <View style={styles.emptyRadar}>
-              <Radio size={20} color="#059669" />
+              <Radio size={20} color="#00897B" />
               <Text style={styles.emptyRadarText}>
                 All response units on standby at hospital base stations. No active transit trips.
               </Text>
@@ -231,7 +231,7 @@ export default function AdminFleetScreen() {
               <View key={v.id} style={styles.vehicleCard}>
                 <View style={styles.vHeader}>
                   <View style={styles.vIcon}>
-                    <Ambulance size={18} color="#38845A" />
+                    <Ambulance size={18} color="#1565C0" />
                   </View>
                   <View style={{ flex: 1, marginLeft: 10 }}>
                     <Text style={styles.vReg}>{v.registrationNumber}</Text>
@@ -242,13 +242,13 @@ export default function AdminFleetScreen() {
                   <View
                     style={[
                       styles.vStatus,
-                      { backgroundColor: isAvail ? '#D1FAE5' : '#FFE4E6' },
+                      { backgroundColor: isAvail ? '#DCFCE7' : '#FEE2E2' },
                     ]}
                   >
                     <Text
                       style={[
                         styles.vStatusText,
-                        { color: isAvail ? '#059669' : '#E11D48' },
+                        { color: isAvail ? '#00897B' : '#DC2626' },
                       ]}
                     >
                       {v.status}
@@ -269,11 +269,11 @@ export default function AdminFleetScreen() {
                     style={styles.vActionBtn}
                     onPress={() => handleToggleVehicleStatus(v)}
                   >
-                    <Power size={12} color={isAvail ? '#DC2626' : '#059669'} />
+                    <Power size={12} color={isAvail ? '#DC2626' : '#00897B'} />
                     <Text
                       style={[
                         styles.vActionBtnText,
-                        { color: isAvail ? '#DC2626' : '#059669' },
+                        { color: isAvail ? '#DC2626' : '#00897B' },
                       ]}
                     >
                       {isAvail ? 'Maint' : 'Ready'}
@@ -360,7 +360,7 @@ export default function AdminFleetScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Trigger 108 Dispatch</Text>
               )}
@@ -440,7 +440,7 @@ export default function AdminFleetScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Register Vehicle</Text>
               )}
@@ -473,12 +473,12 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   dispatchBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#E11D48',
+    backgroundColor: '#DC2626',
     paddingHorizontal: 12,
     paddingVertical: 7,
     borderRadius: 8,
@@ -509,7 +509,7 @@ const styles = StyleSheet.create({
   },
   emptyRadarText: {
     fontSize: 12,
-    color: '#059669',
+    color: '#00897B',
     fontWeight: '600',
     textAlign: 'center',
   },
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#FECDD3',
+    borderColor: '#FEE2E2',
     backgroundColor: '#FFF1F2',
     marginBottom: 10,
   },
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   tripBadge: {
-    backgroundColor: '#E11D48',
+    backgroundColor: '#DC2626',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -541,12 +541,12 @@ const styles = StyleSheet.create({
   tripEta: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#BE123C',
+    color: '#DC2626',
   },
   tripLoc: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#9F1239',
+    color: '#DC2626',
   },
   tripMeta: {
     fontSize: 11,
@@ -569,14 +569,14 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     alignItems: 'center',
     justifyContent: 'center',
   },
   vReg: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   vModel: {
     fontSize: 11,
@@ -646,12 +646,12 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   fieldLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#334155',
+    color: '#475569',
     marginTop: 10,
     marginBottom: 4,
   },
@@ -663,7 +663,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   severityRow: {
     flexDirection: 'row',
@@ -678,8 +678,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
   severityChipActive: {
-    backgroundColor: '#FFE4E6',
-    borderColor: '#E11D48',
+    backgroundColor: '#FEE2E2',
+    borderColor: '#DC2626',
   },
   severityChipText: {
     fontSize: 11,
@@ -687,10 +687,10 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   severityChipTextActive: {
-    color: '#E11D48',
+    color: '#DC2626',
   },
   submitBtn: {
-    backgroundColor: '#E11D48',
+    backgroundColor: '#DC2626',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',

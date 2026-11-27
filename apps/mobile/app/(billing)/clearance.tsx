@@ -324,7 +324,7 @@ export default function DischargeClearanceScreen() {
                   onPress={() => toggleClearance(pat.id, 'pharmacy')}
                 >
                   <View style={styles.checkLeft}>
-                    <Pill size={16} color={pat.clearances.pharmacy.signed ? '#38845A' : '#64748B'} />
+                    <Pill size={16} color={pat.clearances.pharmacy.signed ? '#1565C0' : '#64748B'} />
                     <View style={{ flex: 1 }}>
                       <Text style={styles.checkLabel}>1. Pharmacy Clearance</Text>
                       <Text style={styles.checkDesc}>
@@ -339,7 +339,7 @@ export default function DischargeClearanceScreen() {
                   </View>
                   <CheckCircle2
                     size={20}
-                    color={pat.clearances.pharmacy.signed ? '#38845A' : '#CBD5E1'}
+                    color={pat.clearances.pharmacy.signed ? '#1565C0' : '#CBD5E1'}
                   />
                 </TouchableOpacity>
 
@@ -351,7 +351,7 @@ export default function DischargeClearanceScreen() {
                   <View style={styles.checkLeft}>
                     <FlaskConical
                       size={16}
-                      color={pat.clearances.laboratory.signed ? '#38845A' : '#64748B'}
+                      color={pat.clearances.laboratory.signed ? '#1565C0' : '#64748B'}
                     />
                     <View style={{ flex: 1 }}>
                       <Text style={styles.checkLabel}>2. Laboratory Clearance</Text>
@@ -365,7 +365,7 @@ export default function DischargeClearanceScreen() {
                   </View>
                   <CheckCircle2
                     size={20}
-                    color={pat.clearances.laboratory.signed ? '#38845A' : '#CBD5E1'}
+                    color={pat.clearances.laboratory.signed ? '#1565C0' : '#CBD5E1'}
                   />
                 </TouchableOpacity>
 
@@ -377,7 +377,7 @@ export default function DischargeClearanceScreen() {
                   <View style={styles.checkLeft}>
                     <HeartPulse
                       size={16}
-                      color={pat.clearances.nursing.signed ? '#38845A' : '#64748B'}
+                      color={pat.clearances.nursing.signed ? '#1565C0' : '#64748B'}
                     />
                     <View style={{ flex: 1 }}>
                       <Text style={styles.checkLabel}>3. Nursing Ward Handover Clearance</Text>
@@ -393,7 +393,7 @@ export default function DischargeClearanceScreen() {
                   </View>
                   <CheckCircle2
                     size={20}
-                    color={pat.clearances.nursing.signed ? '#38845A' : '#CBD5E1'}
+                    color={pat.clearances.nursing.signed ? '#1565C0' : '#CBD5E1'}
                   />
                 </TouchableOpacity>
 
@@ -405,7 +405,7 @@ export default function DischargeClearanceScreen() {
                   <View style={styles.checkLeft}>
                     <CreditCard
                       size={16}
-                      color={pat.clearances.billing.signed ? '#38845A' : '#64748B'}
+                      color={pat.clearances.billing.signed ? '#1565C0' : '#64748B'}
                     />
                     <View style={{ flex: 1 }}>
                       <Text style={styles.checkLabel}>4. Final Billing Settlement</Text>
@@ -421,7 +421,7 @@ export default function DischargeClearanceScreen() {
                   </View>
                   <CheckCircle2
                     size={20}
-                    color={pat.clearances.billing.signed ? '#38845A' : '#CBD5E1'}
+                    color={pat.clearances.billing.signed ? '#1565C0' : '#CBD5E1'}
                   />
                 </TouchableOpacity>
               </View>
@@ -449,7 +449,7 @@ export default function DischargeClearanceScreen() {
                   <Text
                     style={[
                       styles.finVal,
-                      { color: pat.financials.balancePayable > 0 ? '#DC2626' : '#38845A' },
+                      { color: pat.financials.balancePayable > 0 ? '#DC2626' : '#1565C0' },
                     ]}
                   >
                     ₹{pat.financials.balancePayable.toLocaleString('en-IN')}
@@ -467,7 +467,7 @@ export default function DischargeClearanceScreen() {
                       setSlipModalVisible(true);
                     }}
                   >
-                    <FileCheck size={16} color="#fff" />
+                    <FileCheck size={16} color="#FFFFFF" />
                     <Text style={styles.gatePassBtnText}>
                       View Official Discharge Slip & Gate Pass
                     </Text>
@@ -482,7 +482,7 @@ export default function DischargeClearanceScreen() {
                       );
                     }}
                   >
-                    <ShieldAlert size={16} color="#D97706" />
+                    <ShieldAlert size={16} color="#F59E0B" />
                     <Text style={styles.pendingActionText}>
                       Complete all 4 sign-offs to issue Gate Pass
                     </Text>
@@ -554,19 +554,19 @@ export default function DischargeClearanceScreen() {
               <Text style={styles.sectionHeading}>4-Way Clearance Verification Audit</Text>
               <View style={styles.auditGrid}>
                 <View style={styles.auditItem}>
-                  <CheckCircle2 size={14} color="#38845A" />
+                  <CheckCircle2 size={14} color="#1565C0" />
                   <Text style={styles.auditText}>Pharmacy: Reconciled & Billed</Text>
                 </View>
                 <View style={styles.auditItem}>
-                  <CheckCircle2 size={14} color="#38845A" />
+                  <CheckCircle2 size={14} color="#1565C0" />
                   <Text style={styles.auditText}>Laboratory: All Tests Verified</Text>
                 </View>
                 <View style={styles.auditItem}>
-                  <CheckCircle2 size={14} color="#38845A" />
+                  <CheckCircle2 size={14} color="#1565C0" />
                   <Text style={styles.auditText}>Nursing: Lines Removed & Vitals Logged</Text>
                 </View>
                 <View style={styles.auditItem}>
-                  <CheckCircle2 size={14} color="#38845A" />
+                  <CheckCircle2 size={14} color="#1565C0" />
                   <Text style={styles.auditText}>Billing: Zero Balance Settled</Text>
                 </View>
               </View>
@@ -623,7 +623,7 @@ export default function DischargeClearanceScreen() {
                 setSlipModalVisible(false);
               }}
             >
-              <Printer size={16} color="#fff" />
+              <Printer size={16} color="#FFFFFF" />
               <Text style={styles.printSlipBtnText}>Print Official Discharge Gate Pass</Text>
             </TouchableOpacity>
           </View>
@@ -637,11 +637,11 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
   header: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
   },
-  title: { fontSize: 18, fontWeight: '800', color: '#0F172A' },
+  title: { fontSize: 18, fontWeight: '800', color: '#183153' },
   sub: { fontSize: 12, color: '#64748B', marginTop: 2 },
   searchBox: {
     flexDirection: 'row',
@@ -653,10 +653,10 @@ const styles = StyleSheet.create({
     height: 38,
     gap: 8,
   },
-  searchInput: { flex: 1, fontSize: 13, color: '#0F172A' },
+  searchInput: { flex: 1, fontSize: 13, color: '#183153' },
   listContainer: { padding: 16 },
   patientCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 16,
     marginBottom: 16,
@@ -669,15 +669,15 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  patientName: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
+  patientName: { fontSize: 16, fontWeight: '800', color: '#183153' },
   patientMeta: { fontSize: 12, color: '#64748B', marginTop: 2 },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  statusApproved: { backgroundColor: '#D1FAE5' },
+  statusApproved: { backgroundColor: '#DCFCE7' },
   statusProgress: { backgroundColor: '#FEF3C7' },
   statusBadgeText: { fontSize: 10, fontWeight: '800' },
-  textApproved: { color: '#065F46' },
-  textProgress: { color: '#92400E' },
-  diagText: { fontSize: 12, color: '#334155', marginTop: 8 },
+  textApproved: { color: '#183153' },
+  textProgress: { color: '#F59E0B' },
+  diagText: { fontSize: 12, color: '#475569', marginTop: 8 },
   docText: { fontSize: 11, color: '#64748B', marginTop: 2 },
   checklistSection: {
     marginTop: 12,
@@ -692,7 +692,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#E2E8F0',
     borderRadius: 8,
@@ -700,13 +700,13 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   checkRowSigned: {
-    borderColor: '#A7F3D0',
-    backgroundColor: '#F0FDF4',
+    borderColor: '#B2DFDB',
+    backgroundColor: '#DCFCE7',
   },
   checkLeft: { flexDirection: 'row', gap: 10, flex: 1, alignItems: 'center' },
-  checkLabel: { fontSize: 12, fontWeight: '700', color: '#1E293B' },
+  checkLabel: { fontSize: 12, fontWeight: '700', color: '#183153' },
   checkDesc: { fontSize: 10, color: '#64748B', marginTop: 1 },
-  signNote: { fontSize: 10, color: '#38845A', fontWeight: '600', marginTop: 2 },
+  signNote: { fontSize: 10, color: '#1565C0', fontWeight: '600', marginTop: 2 },
   financeBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -717,18 +717,18 @@ const styles = StyleSheet.create({
   },
   financeItem: { alignItems: 'center' },
   finLabel: { fontSize: 10, color: '#64748B' },
-  finVal: { fontSize: 12, fontWeight: '800', color: '#0F172A', marginTop: 2 },
+  finVal: { fontSize: 12, fontWeight: '800', color: '#183153', marginTop: 2 },
   actionRow: { marginTop: 12 },
   gatePassBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 10,
     paddingVertical: 12,
     gap: 8,
   },
-  gatePassBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  gatePassBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
   pendingActionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -740,59 +740,59 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     gap: 8,
   },
-  pendingActionText: { color: '#92400E', fontSize: 11, fontWeight: '700' },
+  pendingActionText: { color: '#F59E0B', fontSize: 11, fontWeight: '700' },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(15, 23, 42, 0.6)',
     justifyContent: 'flex-end',
   },
   modalCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
   },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 },
-  slipHospital: { fontSize: 13, fontWeight: '900', color: '#0F172A' },
+  slipHospital: { fontSize: 13, fontWeight: '900', color: '#183153' },
   slipSub: { fontSize: 10, color: '#64748B' },
   gatePassBanner: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 10,
     padding: 14,
     alignItems: 'center',
     marginVertical: 10,
   },
-  gatePassLabel: { color: '#D1FAE5', fontSize: 10, fontWeight: '800', letterSpacing: 1 },
-  gatePassCode: { color: '#fff', fontSize: 22, fontWeight: '900', marginTop: 2, fontFamily: 'monospace' },
-  gatePassSub: { color: '#A7F3D0', fontSize: 11, marginTop: 2 },
+  gatePassLabel: { color: '#DCFCE7', fontSize: 10, fontWeight: '800', letterSpacing: 1 },
+  gatePassCode: { color: '#FFFFFF', fontSize: 22, fontWeight: '900', marginTop: 2, fontFamily: 'monospace' },
+  gatePassSub: { color: '#B2DFDB', fontSize: 11, marginTop: 2 },
   slipTable: { backgroundColor: '#F8FAFC', padding: 10, borderRadius: 8, gap: 5, marginBottom: 12 },
   slipRow: { flexDirection: 'row', justifyContent: 'space-between' },
   slipColLabel: { fontSize: 11, color: '#64748B' },
-  slipColVal: { fontSize: 11, fontWeight: '700', color: '#0F172A' },
-  sectionHeading: { fontSize: 12, fontWeight: '800', color: '#334155', marginBottom: 6 },
-  auditGrid: { backgroundColor: '#ECFDF5', padding: 10, borderRadius: 8, gap: 4, marginBottom: 12 },
+  slipColVal: { fontSize: 11, fontWeight: '700', color: '#183153' },
+  sectionHeading: { fontSize: 12, fontWeight: '800', color: '#475569', marginBottom: 6 },
+  auditGrid: { backgroundColor: '#E0F2F1', padding: 10, borderRadius: 8, gap: 4, marginBottom: 12 },
   auditItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  auditText: { fontSize: 11, color: '#065F46', fontWeight: '600' },
+  auditText: { fontSize: 11, color: '#183153', fontWeight: '600' },
   settleSummary: { backgroundColor: '#F8FAFC', borderWidth: 1, borderColor: '#E2E8F0', padding: 10, borderRadius: 8, marginBottom: 12 },
-  settleTitle: { fontSize: 11, fontWeight: '800', color: '#334155', marginBottom: 6 },
+  settleTitle: { fontSize: 11, fontWeight: '800', color: '#475569', marginBottom: 6 },
   settleRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 2 },
   settleLabel: { fontSize: 11, color: '#64748B' },
-  settleVal: { fontSize: 11, fontWeight: '700', color: '#0F172A' },
-  settleGrandLabel: { fontSize: 12, fontWeight: '800', color: '#0F172A' },
-  settleGrandVal: { fontSize: 12, fontWeight: '900', color: '#38845A' },
+  settleVal: { fontSize: 11, fontWeight: '700', color: '#183153' },
+  settleGrandLabel: { fontSize: 12, fontWeight: '800', color: '#183153' },
+  settleGrandVal: { fontSize: 12, fontWeight: '900', color: '#1565C0' },
   signatureRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, paddingHorizontal: 10 },
   signBox: { alignItems: 'center' },
-  signTitle: { fontSize: 11, fontWeight: '700', color: '#334155' },
+  signTitle: { fontSize: 11, fontWeight: '700', color: '#475569' },
   signSub: { fontSize: 9, color: '#94A3B8', marginTop: 2 },
   printSlipBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0F172A',
+    backgroundColor: '#183153',
     borderRadius: 10,
     paddingVertical: 12,
     marginTop: 14,
     gap: 8,
   },
-  printSlipBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  printSlipBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
 });

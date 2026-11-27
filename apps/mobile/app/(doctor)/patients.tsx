@@ -101,7 +101,7 @@ export default function DoctorInpatientsScreen() {
         <View style={styles.bannerHeader}>
           <Text style={styles.bannerTitle}>Inpatient Ward Census</Text>
           <TouchableOpacity onPress={fetchInpatients} style={styles.refreshBtn}>
-            <RefreshCw size={14} color="#fff" />
+            <RefreshCw size={14} color="#FFFFFF" />
             <Text style={styles.refreshText}>Refresh</Text>
           </TouchableOpacity>
         </View>
@@ -148,7 +148,7 @@ export default function DoctorInpatientsScreen() {
             <View key={adm.id} style={styles.card}>
               <View style={styles.cardRow}>
                 <View style={styles.bedBadge}>
-                  <BedDouble size={16} color="#38845A" />
+                  <BedDouble size={16} color="#1565C0" />
                   <Text style={styles.bedText}>{bedCode}</Text>
                   <Text style={styles.wardText}>• {wardName}</Text>
                 </View>
@@ -185,7 +185,7 @@ export default function DoctorInpatientsScreen() {
 
               {vitalsSummary && (
                 <View style={styles.vitalsBox}>
-                  <Activity size={14} color="#38845A" />
+                  <Activity size={14} color="#1565C0" />
                   <Text style={styles.vitalsText}>{vitalsSummary}</Text>
                 </View>
               )}
@@ -207,7 +207,7 @@ export default function DoctorInpatientsScreen() {
                   style={styles.roundBtn}
                   onPress={() => openRoundModal(adm)}
                 >
-                  <HeartPulse size={16} color="#fff" />
+                  <HeartPulse size={16} color="#FFFFFF" />
                   <Text style={styles.roundBtnText}>Record Daily Round Note</Text>
                 </TouchableOpacity>
               </View>
@@ -232,7 +232,7 @@ export default function DoctorInpatientsScreen() {
               onPress={() => setRoundModalOpen(false)}
               style={styles.closeBtn}
             >
-              <X size={22} color="#fff" />
+              <X size={22} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
 
@@ -286,10 +286,10 @@ export default function DoctorInpatientsScreen() {
               disabled={savingNote}
             >
               {savingNote ? (
-                <ActivityIndicator size="small" color="#fff" />
+                <ActivityIndicator size="small" color="#FFFFFF" />
               ) : (
                 <>
-                  <CheckCircle2 size={18} color="#fff" />
+                  <CheckCircle2 size={18} color="#FFFFFF" />
                   <Text style={styles.saveNoteBtnText}>
                     Sign & Save Doctor Round Note
                   </Text>
@@ -308,51 +308,51 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
   banner: { backgroundColor: UyirinaiTheme.colors.primary, padding: 20, borderBottomLeftRadius: 20, borderBottomRightRadius: 20 },
   bannerHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  bannerTitle: { color: '#fff', fontSize: 18, fontWeight: '700' },
-  refreshBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#134E4A', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12, gap: 4 },
-  refreshText: { color: '#fff', fontSize: 11, fontWeight: '600' },
-  bannerSub: { color: '#CDE8D5', fontSize: 12, marginTop: 4 },
+  bannerTitle: { color: '#FFFFFF', fontSize: 18, fontWeight: '700' },
+  refreshBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#183153', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12, gap: 4 },
+  refreshText: { color: '#FFFFFF', fontSize: 11, fontWeight: '600' },
+  bannerSub: { color: '#BFDBFE', fontSize: 12, marginTop: 4 },
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
   statBox: { backgroundColor: 'rgba(255,255,255,0.12)', flex: 1, marginHorizontal: 4, padding: 10, borderRadius: 10, alignItems: 'center' },
-  statNum: { color: '#fff', fontSize: 20, fontWeight: '800' },
-  statLabel: { color: '#EAF5ED', fontSize: 11, marginTop: 2 },
+  statNum: { color: '#FFFFFF', fontSize: 20, fontWeight: '800' },
+  statLabel: { color: '#E8F1FC', fontSize: 11, marginTop: 2 },
   list: { padding: 16 },
-  card: { backgroundColor: '#fff', padding: 16, borderRadius: 12, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 2 },
+  card: { backgroundColor: '#FFFFFF', padding: 16, borderRadius: 12, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 2 },
   cardRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  bedBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EAF5ED', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 6 },
+  bedBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E8F1FC', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 6 },
   bedText: { color: UyirinaiTheme.colors.primary, fontSize: 13, fontWeight: '800', marginLeft: 6 },
   wardText: { color: UyirinaiTheme.colors.primary, fontSize: 11, marginLeft: 4 },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  statusOk: { backgroundColor: '#D1FAE5' },
-  statusAlert: { backgroundColor: '#EAF5ED' },
+  statusOk: { backgroundColor: '#DCFCE7' },
+  statusAlert: { backgroundColor: '#E8F1FC' },
   statusText: { fontSize: 11, fontWeight: '600' },
-  okText: { color: '#065F46' },
-  alertText: { color: '#991B1B' },
-  patientName: { fontSize: 16, fontWeight: '700', color: '#0F172A', marginTop: 2 },
+  okText: { color: '#183153' },
+  alertText: { color: '#DC2626' },
+  patientName: { fontSize: 16, fontWeight: '700', color: '#183153', marginTop: 2 },
   patientSubMeta: { fontSize: 12, color: '#64748B', fontWeight: '400' },
-  diagnosis: { fontSize: 13, color: '#334155', marginTop: 4 },
-  boldLabel: { fontWeight: '700', color: '#0F172A' },
+  diagnosis: { fontSize: 13, color: '#475569', marginTop: 4 },
+  boldLabel: { fontWeight: '700', color: '#183153' },
   vitalsBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', padding: 8, borderRadius: 8, marginTop: 10 },
-  vitalsText: { fontSize: 12, color: '#334155', fontWeight: '500', marginLeft: 6 },
+  vitalsText: { fontSize: 12, color: '#475569', fontWeight: '500', marginLeft: 6 },
   noteBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F8FAFC', padding: 8, borderRadius: 8, marginTop: 8, borderWidth: 1, borderColor: '#E2E8F0', gap: 6 },
   noteText: { fontSize: 12, color: '#475569', flex: 1 },
   actionRow: { marginTop: 12, paddingTop: 10, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
   roundBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: UyirinaiTheme.colors.primary, paddingVertical: 10, borderRadius: 8, gap: 6 },
-  roundBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
+  roundBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
 
   // Modal Styles
   modalContainer: { flex: 1, backgroundColor: '#F8FAFC' },
   modalHeader: { backgroundColor: UyirinaiTheme.colors.primary, paddingHorizontal: 16, paddingVertical: 14, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  modalHeaderTitle: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  modalHeaderSub: { color: '#CDE8D5', fontSize: 12, marginTop: 2 },
+  modalHeaderTitle: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+  modalHeaderSub: { color: '#BFDBFE', fontSize: 12, marginTop: 2 },
   closeBtn: { padding: 4 },
   modalScroll: { flex: 1 },
   formPadding: { padding: 16 },
-  inputLabel: { fontSize: 13, fontWeight: '700', color: '#1E293B', marginTop: 12, marginBottom: 6 },
-  modalInput: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: '#0F172A' },
+  inputLabel: { fontSize: 13, fontWeight: '700', color: '#183153', marginTop: 12, marginBottom: 6 },
+  modalInput: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: '#183153' },
   textArea: { minHeight: 70, textAlignVertical: 'top' },
-  modalFooter: { backgroundColor: '#fff', padding: 16, borderTopWidth: 1, borderTopColor: '#E2E8F0' },
+  modalFooter: { backgroundColor: '#FFFFFF', padding: 16, borderTopWidth: 1, borderTopColor: '#E2E8F0' },
   saveNoteBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: UyirinaiTheme.colors.primary, paddingVertical: 14, borderRadius: 10, gap: 8 },
-  saveNoteBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
+  saveNoteBtnText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
 });
 

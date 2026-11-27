@@ -132,7 +132,7 @@ export const AppointmentManagement: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <CalendarCheck className="w-6 h-6 text-teal-600" />
+            <CalendarCheck className="w-6 h-6 text-[#00897B]" />
             Department Appointments & Token Scheduling
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -142,18 +142,18 @@ export const AppointmentManagement: React.FC = () => {
       </div>
 
       {success && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-medium flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-medium flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             <span>{success}</span>
           </div>
-          <button onClick={() => setSuccess('')} className="text-emerald-600 hover:text-emerald-900 font-bold">×</button>
+          <button onClick={() => setSuccess('')} className="text-[#16A34A] hover:text-emerald-900 font-bold">×</button>
         </div>
       )}
 
       {error && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600" />
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-[#DC2626]" />
           <span>{error}</span>
         </div>
       )}
@@ -167,7 +167,7 @@ export const AppointmentManagement: React.FC = () => {
               type="date"
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
-              className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500"
+              className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B]"
             />
           </div>
 
@@ -176,7 +176,7 @@ export const AppointmentManagement: React.FC = () => {
             <select
               value={doctorFilter}
               onChange={(e) => setDoctorFilter(e.target.value)}
-              className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500"
+              className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B]"
             >
               <option value="">All Department Doctors</option>
               {doctors.map((d) => (
@@ -192,7 +192,7 @@ export const AppointmentManagement: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500"
+              className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B]"
             >
               <option value="">All Statuses</option>
               <option value="SCHEDULED">Scheduled</option>
@@ -237,7 +237,7 @@ export const AppointmentManagement: React.FC = () => {
                   const doc = apt.doctor?.employee?.user;
                   return (
                     <tr key={apt.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 px-4 font-mono font-black text-teal-700 text-sm">
+                      <td className="py-3.5 px-4 font-mono font-black text-[#00897B] text-sm">
                         #{apt.tokenNumber}
                       </td>
                       <td className="py-3.5 px-4">
@@ -261,7 +261,7 @@ export const AppointmentManagement: React.FC = () => {
                           {apt.status === 'SCHEDULED' && (
                             <button
                               onClick={() => handleStatusChange(apt.id, 'CHECKED_IN')}
-                              className="px-2.5 py-1 bg-sky-50 text-sky-700 border border-sky-200 rounded-lg text-[11px] font-bold hover:bg-sky-100"
+                              className="px-2.5 py-1 bg-[#E8F1FC] text-[#1565C0] border border-[#BFDBFE] rounded-lg text-[11px] font-bold hover:bg-sky-100"
                             >
                               Check-In
                             </button>
@@ -276,7 +276,7 @@ export const AppointmentManagement: React.FC = () => {
                               </button>
                               <button
                                 onClick={() => openCancel(apt)}
-                                className="px-2 py-1 text-rose-600 hover:bg-rose-50 rounded-lg text-[11px] font-semibold"
+                                className="px-2 py-1 text-[#DC2626] hover:bg-[#FEE2E2] rounded-lg text-[11px] font-semibold"
                               >
                                 Cancel
                               </button>
@@ -339,7 +339,7 @@ export const AppointmentManagement: React.FC = () => {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-semibold shadow-md shadow-teal-900/20 disabled:opacity-50"
+              className="px-4 py-2 bg-[#1565C0] hover:bg-[#00897B] text-white rounded-xl font-semibold shadow-md shadow-teal-900/20 disabled:opacity-50"
             >
               {saving ? 'Updating...' : 'Confirm Reschedule'}
             </button>
@@ -379,7 +379,7 @@ export const AppointmentManagement: React.FC = () => {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-semibold shadow-md shadow-rose-900/20 disabled:opacity-50"
+              className="px-4 py-2 bg-[#DC2626] hover:bg-rose-500 text-white rounded-xl font-semibold shadow-md shadow-rose-900/20 disabled:opacity-50"
             >
               {saving ? 'Cancelling...' : 'Confirm Cancellation'}
             </button>

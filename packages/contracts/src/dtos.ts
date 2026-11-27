@@ -1,5 +1,6 @@
 import {
   AdmissionStatus,
+  AppointmentSource,
   AppointmentStatus,
   AppointmentType,
   BedStatus,
@@ -35,12 +36,16 @@ export interface AuthUserDto {
   roles: Role[];
   permissions: string[];
   hospitalId?: string;
+  hospitalName?: string;
   branchId?: string;
+  branchName?: string;
   departmentId?: string;
   doctorProfileId?: string;
   patientProfileId?: string;
   nurseProfileId?: string;
   employeeId?: string;
+  employeeCode?: string;
+  avatarUrl?: string;
 }
 
 export interface SwitchRoleRequestDto {
@@ -185,6 +190,56 @@ export interface CreateAppointmentDto {
   appointmentType: AppointmentType;
   reasonForVisit: string;
   priority?: Priority;
+  source?: AppointmentSource;
+}
+
+export interface AppointmentSlotItemDto {
+  time: string;
+  endTime: string;
+  available: boolean;
+  reason?: 'BOOKED' | 'ON_LEAVE' | 'CAPACITY_FULL' | 'PAST_TIME';
+}
+
+export interface DoctorSlotAvailabilityDto {
+  doctorId: string;
+  branchId: string;
+  date: string;
+  dayOfWeek: string;
+  isOnLeave: boolean;
+  consultationDurationMin: number;
+  slots: AppointmentSlotItemDto[];
+}
+
+export interface BookingOptionsDto {
+  branches: {
+    id: string;
+    name: string;
+    code: string;
+    city: string;
+    address: string;
+    phone: string;
+    hospital: { id: string; name: string };
+  }[];
+  departments: {
+    id: string;
+    name: string;
+    code: string;
+    branchId: string;
+  }[];
+  doctors: {
+    id: string;
+    designation: string;
+    specialization: string;
+    consultationFee: number;
+    consultationDurationMin: number;
+    isAvailableToday: boolean;
+    branchId: string;
+    departmentId: string;
+    branch: { id: string; name: string; city?: string; hospital?: { name: string } };
+    department: { id: string; name: string; code: string };
+    employee: { user: { firstName: string; lastName: string } };
+    schedules: { id: string; dayOfWeek: string; startTime: string; endTime: string; maxPatients: number }[];
+  }[];
 }
 
 export interface RescheduleAppointmentDto {

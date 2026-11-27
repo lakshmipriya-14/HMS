@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { HeartPulse } from 'lucide-react';
+import { Eye, EyeOff, HeartPulse } from 'lucide-react';
 import type { PasswordResetProof } from '@multispeciality-hms/contracts';
 import { useAuth } from '../hooks/useAuth';
 import { apiClient } from '../services/api';
 
 type Step = 'login' | 'request' | 'verify' | 'reset' | 'redeem';
 const titles: Record<Step, string> = {
-  login: 'Staff login', request: 'Forgot password', verify: 'Verify recovery code',
+  login: 'Login', request: 'Forgot password', verify: 'Verify recovery code',
   reset: 'Set new password', redeem: 'One-time account access',
 };
 
@@ -16,14 +16,16 @@ export function Login() {
   const [step, setStep] = useState<Step>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [confirmation, setConfirmation] = useState('');
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [code, setCode] = useState('');
   const [proof, setProof] = useState<PasswordResetProof>();
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
   function change(next: Step) {
-    setStep(next); setError(''); setStatus(''); setPassword(''); setConfirmation(''); setCode('');
+    setStep(next); setError(''); setStatus(''); setPassword(''); setShowPassword(false); setConfirmation(''); setShowConfirmation(false); setCode('');
     if (next !== 'reset') setProof(undefined);
   }
   async function submit(event: React.FormEvent) {
@@ -59,12 +61,17 @@ export function Login() {
   if (user) return <Navigate to="/" replace />;
   const newPassword = step === 'reset' || step === 'redeem';
   const input = 'block w-full rounded border border-slate-300 p-2 mt-1';
-  return <main className="min-h-screen bg-slate-100 grid place-items-center p-6">
-    <form onSubmit={submit} className="bg-white rounded-xl shadow-md max-w-md w-full p-6 space-y-4">
-      <HeartPulse className="text-red-700" /><p className="text-sm font-bold">UYIRINAI MULTISPECIALITY HOSPITAL</p>
-      <h1 className="text-2xl font-bold">{titles[step]}</h1>
-      {error && <p role="alert" className="text-red-700">{error}</p>}
-      {status && <p role="status">{status}</p>}
+  return <main className="min-h-screen bg-[#F8FAFC] grid place-items-center p-6">
+    <form onSubmit={submit} className="bg-white rounded-xl border border-slate-200 shadow-md max-w-md w-full p-6 space-y-4">
+      <div className="flex items-center gap-2">
+        <div className="w-9 h-9 rounded-lg bg-[#1565C0] flex items-center justify-center text-white">
+          <HeartPulse className="w-5 h-5" />
+        </div>
+        <p className="text-sm font-bold text-[#183153]">UYIRINAI MULTISPECIALITY HOSPITAL</p>
+      </div>
+      <h1 className="text-2xl font-bold text-[#183153]">{titles[step]}</h1>
+      {error && <p role="alert" className="text-[#DC2626] bg-red-50 border border-red-200 rounded px-3 py-2 text-sm font-medium">{error}</p>}
+      {status && <p role="status" className="text-[#00897B] bg-[#E0F2F1] border border-[#B2DFDB] rounded px-3 py-2 text-sm font-medium">{status}</p>}
       {(step === 'login' || step === 'request') && <label className="block">Registered email
         <input type="email" autoComplete="username" className={input} value={email} onChange={event => setEmail(event.target.value)} required maxLength={254} disabled={busy} />
       </label>}
@@ -83,13 +90,51 @@ export function Login() {
         />
       </label>}
       {(step === 'login' || newPassword) && <label className="block">{newPassword ? 'New password' : 'Password'}
-        <input type="password" autoComplete={newPassword ? 'new-password' : 'current-password'} className={input} value={password}
-          onChange={event => setPassword(event.target.value)} required minLength={newPassword ? 12 : undefined} disabled={busy} />
+        <div className="relative mt-1">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            autoComplete={newPassword ? 'new-password' : 'current-password'}
+            className="block w-full rounded border border-slate-300 p-2 pr-10"
+            value={password}
+            onChange={event => setPassword(event.target.value)}
+            required
+            minLength={newPassword ? 12 : undefined}
+            disabled={busy}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(prev => !prev)}
+            disabled={busy}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            className="absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500 hover:text-slate-700"
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
       </label>}
       {newPassword && <label className="block">Confirm password
-        <input className={input} type="password" autoComplete="new-password" value={confirmation} onChange={event => setConfirmation(event.target.value)} required disabled={busy} />
+        <div className="relative mt-1">
+          <input
+            className="block w-full rounded border border-slate-300 p-2 pr-10"
+            type={showConfirmation ? 'text' : 'password'}
+            autoComplete="new-password"
+            value={confirmation}
+            onChange={event => setConfirmation(event.target.value)}
+            required
+            disabled={busy}
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmation(prev => !prev)}
+            disabled={busy}
+            aria-label={showConfirmation ? 'Hide confirm password' : 'Show confirm password'}
+            className="absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500 hover:text-slate-700"
+          >
+            {showConfirmation ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
       </label>}
-      <button disabled={busy} className="bg-red-700 rounded text-white p-2 w-full" type="submit">{busy ? 'Working…' : step === 'login' ? 'Sign in' : 'Continue'}</button>
+      <button disabled={busy} className="bg-[#1565C0] hover:bg-[#0D47A1] disabled:bg-slate-300 rounded-lg text-white font-semibold p-2.5 w-full transition-colors" type="submit">{busy ? 'Working…' : step === 'login' ? 'Sign in' : 'Continue'}</button>
       {step === 'login' ? <div className="flex flex-col gap-2">
         <button type="button" disabled={busy} onClick={() => change('request')}>Forgot password?</button>
         <button type="button" disabled={busy} onClick={() => change('redeem')}>Use one-time account access</button>

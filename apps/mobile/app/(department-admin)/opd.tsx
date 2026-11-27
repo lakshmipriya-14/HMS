@@ -65,19 +65,19 @@ export default function OpdManagementScreen() {
       {/* Summary Chips */}
       <View style={styles.summaryBar}>
         <View style={styles.sumBox}>
-          <Text style={[styles.sumVal, { color: '#38845A' }]}>{data?.totalRegistrations ?? 0}</Text>
+          <Text style={[styles.sumVal, { color: '#1565C0' }]}>{data?.totalRegistrations ?? 0}</Text>
           <Text style={styles.sumLbl}>Today's OPD</Text>
         </View>
         <View style={styles.sumBox}>
-          <Text style={[styles.sumVal, { color: '#D97706' }]}>{data?.waitingCount ?? 0}</Text>
+          <Text style={[styles.sumVal, { color: '#F59E0B' }]}>{data?.waitingCount ?? 0}</Text>
           <Text style={styles.sumLbl}>Waiting</Text>
         </View>
         <View style={styles.sumBox}>
-          <Text style={[styles.sumVal, { color: '#0284C7' }]}>{data?.inConsultationCount ?? 0}</Text>
+          <Text style={[styles.sumVal, { color: '#1565C0' }]}>{data?.inConsultationCount ?? 0}</Text>
           <Text style={styles.sumLbl}>In Consult</Text>
         </View>
         <View style={styles.sumBox}>
-          <Text style={[styles.sumVal, { color: '#7C3AED' }]}>{data?.completedCount ?? 0}</Text>
+          <Text style={[styles.sumVal, { color: '#1565C0' }]}>{data?.completedCount ?? 0}</Text>
           <Text style={styles.sumLbl}>Completed</Text>
         </View>
       </View>
@@ -101,11 +101,11 @@ export default function OpdManagementScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadOpd} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadOpd} tintColor="#1565C0" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 40 }} />
         ) : filteredQueue.length === 0 ? (
           <View style={styles.emptyState}>
             <ClipboardList size={40} color="#CBD5E1" />
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tabBtnActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   tabText: {
     fontSize: 11,
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   tokenNumber: {
     fontSize: 13,
     fontWeight: '900',
-    color: '#38845A',
+    color: '#1565C0',
   },
   patCol: {
     flex: 1,
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   patName: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   patUhid: {
     fontSize: 11,
@@ -288,13 +288,13 @@ const styles = StyleSheet.create({
   },
   docName: {
     fontSize: 11,
-    color: '#334155',
+    color: '#475569',
     fontWeight: '600',
   },
   statusText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
     textTransform: 'uppercase',
   },
 });

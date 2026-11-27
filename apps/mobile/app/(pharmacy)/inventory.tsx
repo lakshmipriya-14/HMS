@@ -312,7 +312,7 @@ export default function PharmacyInventoryScreen() {
             <Text style={styles.sub}>FEFO Batch Surveillance Matrix · Central Store</Text>
           </View>
           <View style={styles.statsPill}>
-            <Package size={14} color="#38845A" />
+            <Package size={14} color="#1565C0" />
             <Text style={styles.statsPillText}>{medicines.length} Drugs</Text>
           </View>
         </View>
@@ -349,7 +349,7 @@ export default function PharmacyInventoryScreen() {
             style={[styles.filterPill, filterType === 'LOW_STOCK' && styles.filterPillActiveLow]}
             onPress={() => setFilterType('LOW_STOCK')}
           >
-            <AlertTriangle size={12} color={filterType === 'LOW_STOCK' ? '#DC2626' : '#EF4444'} />
+            <AlertTriangle size={12} color={filterType === 'LOW_STOCK' ? '#DC2626' : '#DC2626'} />
             <Text style={[styles.filterText, filterType === 'LOW_STOCK' && styles.filterTextActiveLow]}>
               Low Stock ({medicines.filter((m) => m.currentStock <= m.reorderLevel).length})
             </Text>
@@ -359,7 +359,7 @@ export default function PharmacyInventoryScreen() {
             style={[styles.filterPill, filterType === 'EXPIRING' && styles.filterPillActiveExp]}
             onPress={() => setFilterType('EXPIRING')}
           >
-            <Clock size={12} color={filterType === 'EXPIRING' ? '#D97706' : '#F59E0B'} />
+            <Clock size={12} color={filterType === 'EXPIRING' ? '#F59E0B' : '#F59E0B'} />
             <Text style={[styles.filterText, filterType === 'EXPIRING' && styles.filterTextActiveExp]}>
               Near Expiry ({medicines.filter((m) => m.batches.some((b) => b.isNearExpiry)).length})
             </Text>
@@ -370,11 +370,11 @@ export default function PharmacyInventoryScreen() {
       {/* Drug List */}
       <ScrollView
         style={styles.scroll}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1565C0']} />}
       >
         {loading && !refreshing ? (
           <View style={styles.centerLoading}>
-            <ActivityIndicator size="large" color="#38845A" />
+            <ActivityIndicator size="large" color="#1565C0" />
             <Text style={styles.loadingLabel}>Loading Formulary Ledgers...</Text>
           </View>
         ) : filteredMedicines.length === 0 ? (
@@ -448,7 +448,7 @@ export default function PharmacyInventoryScreen() {
                     style={styles.adjustBtn}
                     onPress={() => openAdjustModal(med)}
                   >
-                    <ArrowUpDown size={14} color="#38845A" />
+                    <ArrowUpDown size={14} color="#1565C0" />
                     <Text style={styles.adjustBtnText}>Adjust Stock</Text>
                   </TouchableOpacity>
                 </View>
@@ -510,7 +510,7 @@ export default function PharmacyInventoryScreen() {
                     ]}
                     onPress={() => setAdjustmentType('INCREASE')}
                   >
-                    <Plus size={16} color={adjustmentType === 'INCREASE' ? '#38845A' : '#64748B'} />
+                    <Plus size={16} color={adjustmentType === 'INCREASE' ? '#1565C0' : '#64748B'} />
                     <Text
                       style={[
                         styles.typeBtnText,
@@ -594,10 +594,10 @@ export default function PharmacyInventoryScreen() {
                   disabled={adjusting}
                 >
                   {adjusting ? (
-                    <ActivityIndicator color="#fff" size="small" />
+                    <ActivityIndicator color="#FFFFFF" size="small" />
                   ) : (
                     <>
-                      <Check size={16} color="#fff" />
+                      <Check size={16} color="#FFFFFF" />
                       <Text style={styles.saveActionText}>Post Adjustment</Text>
                     </>
                   )}
@@ -614,26 +614,26 @@ export default function PharmacyInventoryScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
   header: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
   },
   headerTitleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  title: { fontSize: 18, fontWeight: '800', color: '#0F172A' },
+  title: { fontSize: 18, fontWeight: '800', color: '#183153' },
   sub: { fontSize: 12, color: '#64748B', marginTop: 2 },
   statsPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5F3FF',
+    backgroundColor: '#E8F1FC',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
     gap: 5,
     borderWidth: 1,
-    borderColor: '#DDD6FE',
+    borderColor: '#BFDBFE',
   },
-  statsPillText: { fontSize: 11, fontWeight: '800', color: '#38845A' },
+  statsPillText: { fontSize: 11, fontWeight: '800', color: '#1565C0' },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -644,7 +644,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     gap: 8,
   },
-  searchInput: { flex: 1, fontSize: 13, color: '#0F172A', padding: 0 },
+  searchInput: { flex: 1, fontSize: 13, color: '#183153', padding: 0 },
   filterPillsRow: { flexDirection: 'row', marginTop: 12, gap: 8 },
   filterPill: {
     flexDirection: 'row',
@@ -655,13 +655,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 4,
   },
-  filterPillActive: { backgroundColor: '#38845A' },
-  filterPillActiveLow: { backgroundColor: '#EAF5ED', borderWidth: 1, borderColor: '#FCA5A5' },
+  filterPillActive: { backgroundColor: '#1565C0' },
+  filterPillActiveLow: { backgroundColor: '#E8F1FC', borderWidth: 1, borderColor: '#FECACA' },
   filterPillActiveExp: { backgroundColor: '#FEF3C7', borderWidth: 1, borderColor: '#FCD34D' },
   filterText: { fontSize: 11, fontWeight: '700', color: '#64748B' },
-  filterTextActive: { color: '#fff' },
+  filterTextActive: { color: '#FFFFFF' },
   filterTextActiveLow: { color: '#DC2626' },
-  filterTextActiveExp: { color: '#D97706' },
+  filterTextActiveExp: { color: '#F59E0B' },
   scroll: { flex: 1, padding: 14 },
   centerLoading: { alignItems: 'center', justifyContent: 'center', paddingVertical: 40 },
   loadingLabel: { marginTop: 10, fontSize: 13, color: '#64748B' },
@@ -669,29 +669,29 @@ const styles = StyleSheet.create({
   emptyHeading: { fontSize: 15, fontWeight: '700', color: '#475569', marginTop: 12 },
   emptyDetail: { fontSize: 12, color: '#94A3B8', marginTop: 4 },
   medCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 16,
     marginBottom: 14,
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    shadowColor: '#0F172A',
+    shadowColor: '#183153',
     shadowOpacity: 0.04,
     shadowRadius: 6,
     elevation: 1,
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   categoryCodeRow: { flexDirection: 'row', gap: 6, alignItems: 'center', marginBottom: 4 },
-  medCode: { fontSize: 10, fontWeight: '800', color: '#38845A', backgroundColor: '#F5F3FF', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
+  medCode: { fontSize: 10, fontWeight: '800', color: '#1565C0', backgroundColor: '#E8F1FC', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   categoryBadge: { fontSize: 10, fontWeight: '700', color: '#64748B', backgroundColor: '#F1F5F9', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  dosageBadge: { fontSize: 10, fontWeight: '700', color: '#38845A', backgroundColor: '#EAF5ED', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  brandTitle: { fontSize: 15, fontWeight: '800', color: '#0F172A' },
+  dosageBadge: { fontSize: 10, fontWeight: '700', color: '#1565C0', backgroundColor: '#E8F1FC', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
+  brandTitle: { fontSize: 15, fontWeight: '800', color: '#183153' },
   genericSub: { fontSize: 12, color: '#64748B', marginTop: 1 },
   stockSummaryBox: { alignItems: 'flex-end', marginLeft: 10 },
-  stockNumber: { fontSize: 20, fontWeight: '900', color: '#38845A' },
+  stockNumber: { fontSize: 20, fontWeight: '900', color: '#1565C0' },
   stockNumberLow: { color: '#DC2626' },
   stockUnitsLabel: { fontSize: 10, color: '#94A3B8' },
-  lowAlertTag: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EAF5ED', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginTop: 4, gap: 3 },
+  lowAlertTag: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E8F1FC', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginTop: 4, gap: 3 },
   lowAlertText: { fontSize: 9, fontWeight: '800', color: '#DC2626' },
   batchesSection: {
     backgroundColor: '#F8FAFC',
@@ -704,13 +704,13 @@ const styles = StyleSheet.create({
   batchSectionTitle: { fontSize: 10, fontWeight: '700', color: '#64748B', textTransform: 'uppercase', marginBottom: 6 },
   batchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 3 },
   batchLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  batchIdText: { fontSize: 12, fontWeight: '700', color: '#1E293B' },
-  earliestBadge: { backgroundColor: '#EAF5ED', paddingHorizontal: 6, paddingVertical: 1.5, borderRadius: 4 },
-  earliestText: { fontSize: 9, fontWeight: '800', color: '#6D28D9' },
+  batchIdText: { fontSize: 12, fontWeight: '700', color: '#183153' },
+  earliestBadge: { backgroundColor: '#E8F1FC', paddingHorizontal: 6, paddingVertical: 1.5, borderRadius: 4 },
+  earliestText: { fontSize: 9, fontWeight: '800', color: '#1565C0' },
   batchRight: { alignItems: 'flex-end' },
   expiryText: { fontSize: 11, color: '#64748B' },
   expiryAlertText: { color: '#DC2626', fontWeight: '700' },
-  batchQtyText: { fontSize: 11, fontWeight: '700', color: '#0F172A' },
+  batchQtyText: { fontSize: 11, fontWeight: '700', color: '#183153' },
   actionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -721,22 +721,22 @@ const styles = StyleSheet.create({
     borderTopColor: '#F1F5F9',
   },
   priceMeta: { fontSize: 12, color: '#64748B' },
-  priceBold: { fontWeight: '800', color: '#0F172A' },
+  priceBold: { fontWeight: '800', color: '#183153' },
   adjustBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#F5F3FF',
+    backgroundColor: '#E8F1FC',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#DDD6FE',
+    borderColor: '#BFDBFE',
   },
-  adjustBtnText: { fontSize: 12, fontWeight: '700', color: '#38845A' },
+  adjustBtnText: { fontSize: 12, fontWeight: '700', color: '#1565C0' },
   // Modal styles
   modalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.6)', justifyContent: 'center', padding: 18 },
-  modalCard: { backgroundColor: '#fff', borderRadius: 18, maxHeight: '85%', paddingBottom: 16 },
+  modalCard: { backgroundColor: '#FFFFFF', borderRadius: 18, maxHeight: '85%', paddingBottom: 16 },
   modalTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -745,16 +745,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
   },
-  modalHeading: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
-  modalDrugName: { fontSize: 12, color: '#38845A', fontWeight: '700', marginTop: 2 },
+  modalHeading: { fontSize: 16, fontWeight: '800', color: '#183153' },
+  modalDrugName: { fontSize: 12, color: '#1565C0', fontWeight: '700', marginTop: 2 },
   modalCloseBtn: { padding: 4 },
   modalScroll: { padding: 18 },
-  inputLabel: { fontSize: 12, fontWeight: '700', color: '#334155', marginTop: 10, marginBottom: 6 },
+  inputLabel: { fontSize: 12, fontWeight: '700', color: '#475569', marginTop: 10, marginBottom: 6 },
   batchPickerBox: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   pickerPill: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: '#CBD5E1', backgroundColor: '#F8FAFC' },
-  pickerPillActive: { borderColor: '#38845A', backgroundColor: '#FAF5FF' },
+  pickerPillActive: { borderColor: '#1565C0', backgroundColor: '#E8F1FC' },
   pickerPillText: { fontSize: 11, color: '#475569', fontWeight: '600' },
-  pickerPillTextActive: { color: '#38845A', fontWeight: '800' },
+  pickerPillTextActive: { color: '#1565C0', fontWeight: '800' },
   typeSelectorRow: { flexDirection: 'row', gap: 8 },
   typeBtn: {
     flex: 1,
@@ -768,10 +768,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
     gap: 6,
   },
-  typeBtnActiveInc: { borderColor: '#10B981', backgroundColor: '#ECFDF5' },
-  typeBtnActiveDec: { borderColor: '#EF4444', backgroundColor: '#FEF2F2' },
+  typeBtnActiveInc: { borderColor: '#16A34A', backgroundColor: '#E0F2F1' },
+  typeBtnActiveDec: { borderColor: '#DC2626', backgroundColor: '#FEE2E2' },
   typeBtnText: { fontSize: 11, fontWeight: '700', color: '#64748B' },
-  typeBtnTextInc: { color: '#38845A' },
+  typeBtnTextInc: { color: '#1565C0' },
   typeBtnTextDec: { color: '#DC2626' },
   textInputBox: {
     backgroundColor: '#F8FAFC',
@@ -781,7 +781,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     fontSize: 14,
-    color: '#0F172A',
+    color: '#183153',
     fontWeight: '700',
   },
   reasonOptionPill: {
@@ -793,9 +793,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
     marginVertical: 3,
   },
-  reasonOptionPillSelected: { borderColor: '#38845A', backgroundColor: '#FAF5FF' },
+  reasonOptionPillSelected: { borderColor: '#1565C0', backgroundColor: '#E8F1FC' },
   reasonOptionText: { fontSize: 11, color: '#475569', fontWeight: '600' },
-  reasonOptionTextSelected: { color: '#38845A', fontWeight: '800' },
+  reasonOptionTextSelected: { color: '#1565C0', fontWeight: '800' },
   modalActionRow: {
     flexDirection: 'row',
     paddingHorizontal: 18,
@@ -809,13 +809,13 @@ const styles = StyleSheet.create({
   saveActionBtn: {
     flex: 2,
     flexDirection: 'row',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
   },
-  saveActionText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  saveActionText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
 });
 

@@ -102,7 +102,7 @@ export default function NurseVitalsScreen() {
       {/* Top Header */}
       <View style={styles.patientBanner}>
         <View style={styles.patientRow}>
-          <User size={20} color="#38845A" />
+          <User size={20} color="#1565C0" />
           <View style={{ marginLeft: 8 }}>
             <Text style={styles.pName}>{patientName}</Text>
             <Text style={styles.pSub}>Bed: {bedNumber} • ICCU Floor 2 • UHID: ALM-2026-0042</Text>
@@ -241,7 +241,7 @@ export default function NurseVitalsScreen() {
 
         <TouchableOpacity style={styles.submitBtn} onPress={handleSave} disabled={isSaving}>
           {isSaving ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color="#FFFFFF" />
           ) : (
             <Text style={styles.submitBtnText}>Commit Vitals to Inpatient Record</Text>
           )}
@@ -256,34 +256,34 @@ export default function NurseVitalsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC', padding: 16 },
   patientBanner: {
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     borderRadius: 12,
     padding: 14,
     marginBottom: 12,
   },
   patientRow: { flexDirection: 'row', alignItems: 'center' },
-  pName: { fontSize: 16, fontWeight: '800', color: '#38845A' },
-  pSub: { fontSize: 11, color: '#115E59', marginTop: 2 },
+  pName: { fontSize: 16, fontWeight: '800', color: '#1565C0' },
+  pSub: { fontSize: 11, color: '#00897B', marginTop: 2 },
   alertBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEF2F2',
+    backgroundColor: '#FEE2E2',
     borderWidth: 1,
-    borderColor: '#CDE8D5',
+    borderColor: '#BFDBFE',
     borderRadius: 12,
     padding: 12,
     marginBottom: 14,
   },
   alertTitle: { fontSize: 13, fontWeight: '800', color: '#DC2626' },
-  alertDesc: { fontSize: 11, color: '#991B1B', marginTop: 2 },
+  alertDesc: { fontSize: 11, color: '#DC2626', marginTop: 2 },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     borderWidth: 1,
     borderColor: '#E2E8F0',
     padding: 16,
   },
-  cardTitle: { fontSize: 14, fontWeight: '800', color: '#0F172A', marginBottom: 10 },
+  cardTitle: { fontSize: 14, fontWeight: '800', color: '#183153', marginBottom: 10 },
   inputRow: { flexDirection: 'row', gap: 12, marginBottom: 10 },
   inputCol: { flex: 1 },
   label: { fontSize: 11, fontWeight: '700', color: '#475569', marginBottom: 4 },
@@ -294,17 +294,17 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 13,
     backgroundColor: '#F8FAFC',
-    color: '#0F172A',
+    color: '#183153',
   },
-  inputWarning: { borderColor: '#DC2626', backgroundColor: '#FEF2F2', color: '#DC2626' },
+  inputWarning: { borderColor: '#DC2626', backgroundColor: '#FEE2E2', color: '#DC2626' },
   unitHelp: { fontSize: 9, color: '#94A3B8', marginTop: 2 },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 18,
   },
-  submitBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  submitBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
 });
 

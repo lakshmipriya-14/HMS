@@ -112,6 +112,9 @@ export default function PatientProfileScreen() {
       setSaveSuccess(true);
       queryClient.invalidateQueries({ queryKey: ['patient-portal-profile'] });
       queryClient.invalidateQueries({ queryKey: ['patient-portal-home'] });
+      queryClient.invalidateQueries({ queryKey: ['patient-portal-header'] });
+      queryClient.invalidateQueries({ queryKey: ['patient-portal-records'] });
+      queryClient.invalidateQueries({ queryKey: ['patient-portal-billing'] });
       setTimeout(() => {
         setEditModalVisible(false);
         setSaveSuccess(false);
@@ -128,6 +131,7 @@ export default function PatientProfileScreen() {
       setPhotoError('');
       queryClient.invalidateQueries({ queryKey: ['patient-portal-profile'] });
       queryClient.invalidateQueries({ queryKey: ['patient-portal-home'] });
+      queryClient.invalidateQueries({ queryKey: ['patient-portal-header'] });
     },
     onError: (err) => {
       setPhotoError(err instanceof Error ? err.message : 'Could not upload photo.');
@@ -138,18 +142,40 @@ export default function PatientProfileScreen() {
     setPhotoError('');
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.5,
-        base64: true,
+        quality: 0.18,
+        base64: Platform.OS !== 'web',
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const asset = result.assets[0];
+        if (Platform.OS === 'web') {
+          if (asset.file && asset.file.size > 10 * 1024 * 1024) {
+            setPhotoError('Choose an image under 10 MB.');
+            return;
+          }
+          const image = new window.Image();
+          image.src = asset.uri;
+          await image.decode();
+          const canvas = document.createElement('canvas');
+          canvas.width = canvas.height = 240;
+          const context = canvas.getContext('2d');
+          if (!context) {
+            setPhotoError('Could not resize the selected photo.');
+            return;
+          }
+          const side = Math.min(image.width, image.height);
+          context.drawImage(image, (image.width - side) / 2, (image.height - side) / 2, side, side, 0, 0, 240, 240);
+          photoMutation.mutate(canvas.toDataURL('image/jpeg', 0.72));
+          return;
+        }
         if (asset.base64) {
           const dataUrl = `data:image/jpeg;base64,${asset.base64}`;
           photoMutation.mutate(dataUrl);
+        } else {
+          setPhotoError('Could not read the selected image.');
         }
       }
     } catch {
@@ -804,12 +830,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    backgroundColor: '#FDE8E8',
+    backgroundColor: '#FEE2E2',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: UyirinaiTheme.borderRadius.full,
     borderWidth: 1,
-    borderColor: '#F8B4B4',
+    borderColor: '#FECACA',
   },
   allergyChipText: {
     fontSize: 12,
@@ -919,7 +945,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#FDE8E8',
+    backgroundColor: '#FEE2E2',
     padding: 10,
     borderRadius: UyirinaiTheme.borderRadius.md,
     marginBottom: 10,

@@ -354,7 +354,7 @@ export const OpdManagement: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-2 bg-teal-50 text-teal-700 rounded-lg">
+            <span className="p-2 bg-[#E0F2F1] text-[#00897B] rounded-lg">
               <CalendarCheck className="w-6 h-6" />
             </span>
             <h1 className="text-2xl font-bold text-slate-900">OPD Operations & Clinic Management</h1>
@@ -374,7 +374,7 @@ export const OpdManagement: React.FC = () => {
           </button>
           <button
             onClick={() => setBookModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold rounded-lg shadow-sm transition"
+            className="flex items-center gap-2 px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-sm font-semibold rounded-lg shadow-sm transition"
           >
             <Plus className="w-4 h-4" />
             Book OPD Slot
@@ -384,20 +384,20 @@ export const OpdManagement: React.FC = () => {
 
       {/* Global Alerts */}
       {errorMessage && (
-        <div className="flex items-center gap-3 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-sm font-medium">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-600" />
+        <div className="flex items-center gap-3 p-4 bg-[#FEE2E2] border border-[#FECACA] rounded-xl text-rose-800 text-sm font-medium">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 text-[#DC2626]" />
           <div className="flex-1">{errorMessage}</div>
-          <button onClick={() => setErrorMessage('')} className="text-rose-600 hover:text-rose-800 font-bold">
+          <button onClick={() => setErrorMessage('')} className="text-[#DC2626] hover:text-rose-800 font-bold">
             Dismiss
           </button>
         </div>
       )}
 
       {successMessage && (
-        <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm font-medium">
-          <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-600" />
+        <div className="flex items-center gap-3 p-4 bg-[#DCFCE7] border border-[#BBF7D0] rounded-xl text-[#16A34A] text-sm font-medium">
+          <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-[#16A34A]" />
           <div className="flex-1">{successMessage}</div>
-          <button onClick={() => setSuccessMessage('')} className="text-emerald-600 hover:text-emerald-800 font-bold">
+          <button onClick={() => setSuccessMessage('')} className="text-[#16A34A] hover:text-[#16A34A] font-bold">
             Dismiss
           </button>
         </div>
@@ -424,11 +424,11 @@ export const OpdManagement: React.FC = () => {
               onClick={() => setActiveTab(tab.id as OpdTab)}
               className={`flex items-center gap-2 py-3.5 px-4 text-sm font-semibold whitespace-nowrap border-b-2 transition ${
                 isActive
-                  ? 'border-teal-600 text-teal-700 bg-teal-50/50 rounded-t-lg'
+                  ? 'border-teal-600 text-[#00897B] bg-[#E0F2F1]/50 rounded-t-lg'
                   : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
               }`}
             >
-              <Icon className={`w-4 h-4 ${isActive ? 'text-teal-600' : 'text-slate-400'}`} />
+              <Icon className={`w-4 h-4 ${isActive ? 'text-[#00897B]' : 'text-slate-400'}`} />
               {tab.label}
             </button>
           );
@@ -444,7 +444,7 @@ export const OpdManagement: React.FC = () => {
             placeholder="Search by UHID, patient name, phone, or token #..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-[#00897B]"
           />
         </div>
 
@@ -526,8 +526,8 @@ export const OpdManagement: React.FC = () => {
                 </div>
 
                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                  <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Checked In</span>
-                  <div className="text-2xl font-black text-blue-700 mt-1">{metrics.checkedIn}</div>
+                  <span className="text-xs font-bold text-[#1565C0] uppercase tracking-wider">Checked In</span>
+                  <div className="text-2xl font-black text-[#1565C0] mt-1">{metrics.checkedIn}</div>
                   <div className="text-xs text-blue-500 mt-1">Waiting in lobby</div>
                 </div>
 
@@ -538,14 +538,14 @@ export const OpdManagement: React.FC = () => {
                 </div>
 
                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                  <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Completed</span>
-                  <div className="text-2xl font-black text-emerald-700 mt-1">{metrics.completed}</div>
-                  <div className="text-xs text-emerald-500 mt-1">Consulted successfully</div>
+                  <span className="text-xs font-bold text-[#16A34A] uppercase tracking-wider">Completed</span>
+                  <div className="text-2xl font-black text-[#16A34A] mt-1">{metrics.completed}</div>
+                  <div className="text-xs text-[#16A34A] mt-1">Consulted successfully</div>
                 </div>
 
                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                  <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">Cancelled / No-Show</span>
-                  <div className="text-2xl font-black text-rose-700 mt-1">
+                  <span className="text-xs font-bold text-[#DC2626] uppercase tracking-wider">Cancelled / No-Show</span>
+                  <div className="text-2xl font-black text-[#DC2626] mt-1">
                     {metrics.cancelled + metrics.noShow}
                   </div>
                   <div className="text-xs text-rose-500 mt-1">
@@ -554,11 +554,11 @@ export const OpdManagement: React.FC = () => {
                 </div>
 
                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                  <span className="text-xs font-bold text-teal-700 uppercase tracking-wider">Daily Collections</span>
-                  <div className="text-2xl font-black text-teal-800 mt-1">
+                  <span className="text-xs font-bold text-[#00897B] uppercase tracking-wider">Daily Collections</span>
+                  <div className="text-2xl font-black text-[#183153] mt-1">
                     ₹ {metrics.totalRevenue.toLocaleString('en-IN')}
                   </div>
-                  <div className="text-xs text-teal-600 mt-1">Avg wait: {metrics.avgWaitTime} mins</div>
+                  <div className="text-xs text-[#00897B] mt-1">Avg wait: {metrics.avgWaitTime} mins</div>
                 </div>
               </div>
 
@@ -568,7 +568,7 @@ export const OpdManagement: React.FC = () => {
                 <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                   <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                     <h3 className="font-bold text-slate-800 flex items-center gap-2">
-                      <Building2 className="w-5 h-5 text-teal-600" />
+                      <Building2 className="w-5 h-5 text-[#00897B]" />
                       Department Clinic Activity
                     </h3>
                     <span className="text-xs font-semibold text-slate-500">{departments.length} Units</span>
@@ -603,7 +603,7 @@ export const OpdManagement: React.FC = () => {
                 <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                   <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                     <h3 className="font-bold text-slate-800 flex items-center gap-2">
-                      <Stethoscope className="w-5 h-5 text-teal-600" />
+                      <Stethoscope className="w-5 h-5 text-[#00897B]" />
                       Doctor Daily Consultations
                     </h3>
                     <span className="text-xs font-semibold text-slate-500">{doctors.length} Doctors</span>
@@ -624,7 +624,7 @@ export const OpdManagement: React.FC = () => {
                               {docName}
                               <span
                                 className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                                  isAvail ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
+                                  isAvail ? 'bg-[#DCFCE7] text-[#16A34A]' : 'bg-slate-100 text-slate-600'
                                 }`}
                               >
                                 {isAvail ? 'ON DUTY' : 'OFF'}
@@ -658,7 +658,7 @@ export const OpdManagement: React.FC = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setBookModalOpen(true)}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-lg"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-xs font-semibold rounded-lg"
                   >
                     <Plus className="w-3.5 h-3.5" /> Book Slot
                   </button>
@@ -695,8 +695,8 @@ export const OpdManagement: React.FC = () => {
 
                         return (
                           <tr key={a.id} className="hover:bg-slate-50/80 transition">
-                            <td className="px-4 py-3.5 font-black text-teal-700">
-                              <span className="px-2.5 py-1 bg-teal-50 border border-teal-200 rounded-lg">
+                            <td className="px-4 py-3.5 font-black text-[#00897B]">
+                              <span className="px-2.5 py-1 bg-[#E0F2F1] border border-[#B2DFDB] rounded-lg">
                                 #{a.tokenNumber || a.id.slice(0, 4)}
                               </span>
                             </td>
@@ -729,7 +729,7 @@ export const OpdManagement: React.FC = () => {
                               {a.status === 'SCHEDULED' && (
                                 <button
                                   onClick={() => handleCheckIn(a.id)}
-                                  className="px-2.5 py-1 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded transition"
+                                  className="px-2.5 py-1 text-xs font-bold bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded transition"
                                 >
                                   Check In
                                 </button>
@@ -757,7 +757,7 @@ export const OpdManagement: React.FC = () => {
                                       setCancelReason('');
                                       setCancelModalOpen(true);
                                     }}
-                                    className="px-2.5 py-1 text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 rounded transition"
+                                    className="px-2.5 py-1 text-xs font-semibold bg-[#FEE2E2] hover:bg-rose-100 text-[#DC2626] rounded transition"
                                   >
                                     Cancel
                                   </button>
@@ -780,14 +780,14 @@ export const OpdManagement: React.FC = () => {
               <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-teal-600" />
+                    <Clock className="w-5 h-5 text-[#00897B]" />
                     Doctor Clinic Queue Display
                   </h3>
                   <p className="text-xs text-slate-500">Live token flow for consultations today</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-bold text-slate-500">Active Queue:</span>
-                  <span className="px-3 py-1 bg-teal-50 border border-teal-200 text-teal-800 font-black rounded-lg text-sm">
+                  <span className="px-3 py-1 bg-[#E0F2F1] border border-[#B2DFDB] text-[#183153] font-black rounded-lg text-sm">
                     {queue.length} In Clinic Queue
                   </span>
                 </div>
@@ -868,7 +868,7 @@ export const OpdManagement: React.FC = () => {
                           </div>
                           <button
                             onClick={() => handleUpdateQueueStatus(q.id, 'COMPLETED')}
-                            className="w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded flex items-center justify-center gap-1"
+                            className="w-full py-1.5 bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-bold rounded flex items-center justify-center gap-1"
                           >
                             <Check className="w-3.5 h-3.5" /> Mark Consultation Done
                           </button>
@@ -881,7 +881,7 @@ export const OpdManagement: React.FC = () => {
                 <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
                   <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                     <h4 className="font-bold text-slate-800 flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#16A34A]"></span>
                       Completed Today ({queue.filter((q) => q.status === 'COMPLETED').length})
                     </h4>
                   </div>
@@ -897,7 +897,7 @@ export const OpdManagement: React.FC = () => {
                             </div>
                             <div className="text-[11px] text-slate-400">UHID: {q.patient?.uhid}</div>
                           </div>
-                          <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded">
+                          <span className="px-2 py-0.5 text-[10px] font-bold bg-[#DCFCE7] text-[#16A34A] rounded">
                             Done
                           </span>
                         </div>
@@ -918,7 +918,7 @@ export const OpdManagement: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setBookModalOpen(true)}
-                  className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5"
+                  className="px-3.5 py-1.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5"
                 >
                   <Plus className="w-3.5 h-3.5" /> Walk-In Patient
                 </button>
@@ -935,7 +935,7 @@ export const OpdManagement: React.FC = () => {
                     return (
                       <div key={a.id} className="py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="flex items-start gap-4">
-                          <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-sm">
+                          <div className="w-10 h-10 rounded-full bg-[#E0F2F1] text-[#183153] flex items-center justify-center font-bold text-sm">
                             {pName.charAt(0)}
                           </div>
                           <div>
@@ -944,7 +944,7 @@ export const OpdManagement: React.FC = () => {
                               UHID: {a.patient?.uhid} • Phone: {a.patient?.phone} • Type: {a.type}
                             </div>
                             <div className="text-xs text-slate-600 font-medium mt-1">
-                              Appointment with <span className="text-teal-700 font-bold">{docName}</span> ({a.department?.name}) at {a.appointmentTime}
+                              Appointment with <span className="text-[#00897B] font-bold">{docName}</span> ({a.department?.name}) at {a.appointmentTime}
                             </div>
                           </div>
                         </div>
@@ -952,7 +952,7 @@ export const OpdManagement: React.FC = () => {
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => handleCheckIn(a.id)}
-                            className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5"
+                            className="px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5"
                           >
                             <CheckCircle2 className="w-4 h-4" /> Issue Token & Check In
                           </button>
@@ -1084,7 +1084,7 @@ export const OpdManagement: React.FC = () => {
                   className={`p-3 rounded-lg text-xs font-medium border ${
                     dupResult.isDuplicate
                       ? 'bg-amber-50 border-amber-200 text-amber-800'
-                      : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                      : 'bg-[#DCFCE7] border-[#BBF7D0] text-[#16A34A]'
                   }`}
                 >
                   {dupResult.isDuplicate
@@ -1108,7 +1108,7 @@ export const OpdManagement: React.FC = () => {
                   <tbody className="divide-y divide-slate-100">
                     {filteredPatients.map((p) => (
                       <tr key={p.id} className="hover:bg-slate-50/80 transition">
-                        <td className="px-4 py-3 font-mono font-bold text-teal-700">{p.uhid}</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#00897B]">{p.uhid}</td>
                         <td className="px-4 py-3">
                           <div className="font-semibold text-slate-900">
                             {p.firstName} {p.lastName}
@@ -1184,7 +1184,7 @@ export const OpdManagement: React.FC = () => {
                         </div>
                         <span
                           className={`px-2 py-0.5 text-xs font-bold rounded ${
-                            isAvail ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                            isAvail ? 'bg-[#DCFCE7] text-[#16A34A]' : 'bg-rose-100 text-rose-800'
                           }`}
                         >
                           {isAvail ? 'ON DUTY' : 'OFF DUTY'}
@@ -1214,7 +1214,7 @@ export const OpdManagement: React.FC = () => {
                 </div>
                 <div className="text-right">
                   <span className="text-xs font-bold text-slate-500">Total Billed:</span>
-                  <div className="text-xl font-black text-teal-800">₹ {metrics.totalRevenue.toLocaleString('en-IN')}</div>
+                  <div className="text-xl font-black text-[#183153]">₹ {metrics.totalRevenue.toLocaleString('en-IN')}</div>
                 </div>
               </div>
 
@@ -1232,7 +1232,7 @@ export const OpdManagement: React.FC = () => {
                   <tbody className="divide-y divide-slate-100">
                     {filteredAppointments.map((a) => (
                       <tr key={a.id} className="hover:bg-slate-50/80 transition">
-                        <td className="px-4 py-3 font-bold text-teal-700">#{a.tokenNumber}</td>
+                        <td className="px-4 py-3 font-bold text-[#00897B]">#{a.tokenNumber}</td>
                         <td className="px-4 py-3">
                           <div className="font-semibold text-slate-900">
                             {a.patient?.firstName} {a.patient?.lastName}
@@ -1250,7 +1250,7 @@ export const OpdManagement: React.FC = () => {
                         <td className="px-4 py-3">
                           <span
                             className={`px-2 py-0.5 text-xs font-bold rounded ${
-                              a.isPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                              a.isPaid ? 'bg-[#DCFCE7] text-[#16A34A]' : 'bg-amber-100 text-amber-800'
                             }`}
                           >
                             {a.isPaid ? 'PAID' : 'SETTLED AT COUNTER'}
@@ -1289,7 +1289,7 @@ export const OpdManagement: React.FC = () => {
                     <div className="flex gap-2 mt-4 pt-3 border-t border-slate-200">
                       <button
                         onClick={() => handleExportCSV(rep.title)}
-                        className="flex-1 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded flex items-center justify-center gap-1"
+                        className="flex-1 py-1.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-xs font-semibold rounded flex items-center justify-center gap-1"
                       >
                         <Download className="w-3.5 h-3.5" /> CSV / Excel
                       </button>
@@ -1448,7 +1448,7 @@ export const OpdManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg shadow-sm"
+              className="px-5 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-sm font-bold rounded-lg shadow-sm"
             >
               {submitting ? 'Booking Slot...' : 'Confirm Appointment'}
             </button>
@@ -1497,7 +1497,7 @@ export const OpdManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg"
+              className="px-5 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-sm font-bold rounded-lg"
             >
               {submitting ? 'Rescheduling...' : 'Save New Slot'}
             </button>
@@ -1535,7 +1535,7 @@ export const OpdManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold rounded-lg"
+              className="px-5 py-2 bg-[#DC2626] hover:bg-[#B91C1C] text-white text-sm font-bold rounded-lg"
             >
               {submitting ? 'Cancelling...' : 'Confirm Cancellation'}
             </button>
@@ -1635,7 +1635,7 @@ export const OpdManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg shadow-sm"
+              className="px-5 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-sm font-bold rounded-lg shadow-sm"
             >
               {submitting ? 'Saving...' : 'Save Corrections'}
             </button>

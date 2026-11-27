@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
-import { HeartPulse, ChevronLeft } from 'lucide-react-native';
+import { HeartPulse, ChevronLeft, Eye, EyeOff } from 'lucide-react-native';
 import type { PasswordResetProof } from '@multispeciality-hms/contracts';
 import { useAuth } from '../../hooks/useAuth';
 import { roleHome } from '../../constants/role-home';
@@ -19,7 +20,7 @@ import { PrimaryButton } from '../../components/ui/PrimaryButton';
 
 type Screen = 'login' | 'request' | 'verify' | 'reset' | 'redeem';
 const titles = {
-  login: 'Hospital Staff Portal',
+  login: 'Login',
   request: 'Forgot Password',
   verify: 'Verify Recovery Code',
   reset: 'Set New Password',
@@ -27,7 +28,7 @@ const titles = {
 };
 
 const subtitles = {
-  login: 'Sign in to access your clinical & departmental workspace',
+  login: 'Sign in with your registered email and password',
   request: 'Enter your registered email to receive a recovery code',
   verify: 'Enter the 6-digit verification code sent to your email',
   reset: 'Create a new secure password for your account',
@@ -38,7 +39,9 @@ export default function MobileLogin() {
   const [screen, setScreen] = useState<Screen>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [confirm, setConfirm] = useState('');
+  const [showConfirm, setShowConfirm] = useState(false);
   const [code, setCode] = useState('');
   const [proof, setProof] = useState<PasswordResetProof>();
   const [feedback, setFeedback] = useState('');
@@ -50,7 +53,9 @@ export default function MobileLogin() {
   function change(next: Screen) {
     setScreen(next);
     setPassword('');
+    setShowPassword(false);
     setConfirm('');
+    setShowConfirm(false);
     setCode('');
     setError('');
     setFeedback('');
@@ -152,10 +157,10 @@ export default function MobileLogin() {
 
         {(screen === 'login' || screen === 'request') && (
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Staff Email Address</Text>
+            <Text style={styles.fieldLabel}>Email Address</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g. doctor@uyirinai.com"
+              placeholder="e.g. user@uyirinai.com"
               placeholderTextColor={UyirinaiTheme.colors.textMuted}
               accessibilityLabel="Registered email"
               value={email}
@@ -193,37 +198,69 @@ export default function MobileLogin() {
         {passwordStep && (
           <View style={styles.fieldGroup}>
             <Text style={styles.fieldLabel}>{newPassword ? 'New Password' : 'Password'}</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter password"
-              placeholderTextColor={UyirinaiTheme.colors.textMuted}
-              accessibilityLabel={newPassword ? 'New password' : 'Password'}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              editable={!busy}
-            />
+            <View style={styles.passwordWrap}>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder="Enter password"
+                placeholderTextColor={UyirinaiTheme.colors.textMuted}
+                accessibilityLabel={newPassword ? 'New password' : 'Password'}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                editable={!busy}
+              />
+              <Pressable
+                style={styles.eyeBtn}
+                onPress={() => setShowPassword((prev) => !prev)}
+                disabled={busy}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? (
+                  <EyeOff size={18} color={UyirinaiTheme.colors.textSecondary} />
+                ) : (
+                  <Eye size={18} color={UyirinaiTheme.colors.textSecondary} />
+                )}
+              </Pressable>
+            </View>
           </View>
         )}
 
         {newPassword && (
           <View style={styles.fieldGroup}>
             <Text style={styles.fieldLabel}>Confirm New Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Re-enter password"
-              placeholderTextColor={UyirinaiTheme.colors.textMuted}
-              accessibilityLabel="Confirm password"
-              value={confirm}
-              onChangeText={setConfirm}
-              secureTextEntry
-              editable={!busy}
-            />
+            <View style={styles.passwordWrap}>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder="Re-enter password"
+                placeholderTextColor={UyirinaiTheme.colors.textMuted}
+                accessibilityLabel="Confirm password"
+                value={confirm}
+                onChangeText={setConfirm}
+                secureTextEntry={!showConfirm}
+                editable={!busy}
+              />
+              <Pressable
+                style={styles.eyeBtn}
+                onPress={() => setShowConfirm((prev) => !prev)}
+                disabled={busy}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
+              >
+                {showConfirm ? (
+                  <EyeOff size={18} color={UyirinaiTheme.colors.textSecondary} />
+                ) : (
+                  <Eye size={18} color={UyirinaiTheme.colors.textSecondary} />
+                )}
+              </Pressable>
+            </View>
           </View>
         )}
 
         <PrimaryButton
-          title={screen === 'login' ? 'Sign In to Workspace' : 'Continue'}
+          title={screen === 'login' ? 'Login' : 'Continue'}
           onPress={submit}
           loading={busy}
           style={styles.submitBtn}
@@ -346,7 +383,7 @@ const styles = StyleSheet.create({
   feedbackBox: {
     backgroundColor: UyirinaiTheme.colors.infoBg,
     borderWidth: 1,
-    borderColor: '#C5DFED',
+    borderColor: UyirinaiTheme.colors.infoBorder,
     borderRadius: UyirinaiTheme.borderRadius.md,
     padding: UyirinaiTheme.spacing.md,
     marginBottom: UyirinaiTheme.spacing.md,
@@ -359,7 +396,7 @@ const styles = StyleSheet.create({
   errorBox: {
     backgroundColor: UyirinaiTheme.colors.errorBg,
     borderWidth: 1,
-    borderColor: '#F8C8C7',
+    borderColor: UyirinaiTheme.colors.errorBorder,
     borderRadius: UyirinaiTheme.borderRadius.md,
     padding: UyirinaiTheme.spacing.md,
     marginBottom: UyirinaiTheme.spacing.md,
@@ -388,6 +425,28 @@ const styles = StyleSheet.create({
     borderColor: UyirinaiTheme.colors.border,
     color: UyirinaiTheme.colors.textPrimary,
     fontSize: UyirinaiTheme.typography.fontSizes.base,
+  },
+  passwordWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: UyirinaiTheme.colors.white,
+    minHeight: 46,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.border,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingHorizontal: UyirinaiTheme.spacing.md,
+    paddingVertical: UyirinaiTheme.spacing.sm,
+    color: UyirinaiTheme.colors.textPrimary,
+    fontSize: UyirinaiTheme.typography.fontSizes.base,
+  },
+  eyeBtn: {
+    paddingHorizontal: UyirinaiTheme.spacing.md,
+    paddingVertical: UyirinaiTheme.spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   submitBtn: {
     marginTop: UyirinaiTheme.spacing.sm,

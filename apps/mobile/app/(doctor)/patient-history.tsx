@@ -106,12 +106,12 @@ export default function DoctorPatientHistory() {
 }
 
 const styles = StyleSheet.create({
-  page: { backgroundColor: '#fff', padding: 16, gap: 14, flexGrow: 1 },
+  page: { backgroundColor: '#FFFFFF', padding: 16, gap: 14, flexGrow: 1 },
   section: { gap: 8 },
   heading: { color: UyirinaiTheme.colors.primary, fontSize: 17, fontWeight: '800' },
-  label: { color: '#111827', fontWeight: '700' },
-  detail: { color: '#334155' },
-  card: { padding: 12, gap: 4, borderRadius: 10, backgroundColor: '#fff7f7', borderWidth: 1, borderColor: '#EAF5ED' },
+  label: { color: '#183153', fontWeight: '700' },
+  detail: { color: '#475569' },
+  card: { padding: 12, gap: 4, borderRadius: 10, backgroundColor: '#fff7f7', borderWidth: 1, borderColor: '#E8F1FC' },
   exportButton: { minHeight: 44, justifyContent: 'center', alignSelf: 'flex-start' },
   exportText: { color: UyirinaiTheme.colors.primary, fontWeight: '700' },
 });

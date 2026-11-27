@@ -71,7 +71,7 @@ export const NotificationsView: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <Bell className="w-6 h-6 text-teal-600" />
+            <Bell className="w-6 h-6 text-[#00897B]" />
             Department Notices & Operational Alerts
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -82,20 +82,20 @@ export const NotificationsView: React.FC = () => {
           onClick={handleMarkAllRead}
           className="px-4 py-2 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl text-xs font-bold transition flex items-center gap-1.5 self-start sm:self-auto shadow-sm"
         >
-          <CheckCheck className="w-4 h-4 text-teal-600" />
+          <CheckCheck className="w-4 h-4 text-[#00897B]" />
           Mark All as Read
         </button>
       </div>
 
       {successMessage && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-emerald-800 text-xs font-semibold animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="p-4 bg-[#DCFCE7] border border-[#BBF7D0] rounded-xl flex items-center gap-2 text-[#16A34A] text-xs font-semibold animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-[#16A34A]" />
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs font-semibold">
+        <div className="p-4 bg-[#FEE2E2] border border-[#FECACA] rounded-xl flex items-center gap-2 text-[#DC2626] text-xs font-semibold">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
@@ -109,7 +109,7 @@ export const NotificationsView: React.FC = () => {
           placeholder="Filter notifications by keyword..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+          className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
         />
       </div>
 
@@ -128,12 +128,12 @@ export const NotificationsView: React.FC = () => {
             <div
               key={item.id}
               className={`p-4 transition flex items-start gap-3.5 ${
-                item.isRead ? 'bg-white hover:bg-slate-50/50' : 'bg-teal-50/30 hover:bg-teal-50/50'
+                item.isRead ? 'bg-white hover:bg-slate-50/50' : 'bg-[#E0F2F1]/30 hover:bg-[#E0F2F1]/50'
               }`}
             >
               <div
                 className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
-                  item.isRead ? 'bg-slate-100 text-slate-400' : 'bg-teal-100 text-teal-700 font-bold'
+                  item.isRead ? 'bg-slate-100 text-slate-400' : 'bg-[#E0F2F1] text-[#00897B] font-bold'
                 }`}
               >
                 <Megaphone className="w-4 h-4" />
@@ -160,7 +160,7 @@ export const NotificationsView: React.FC = () => {
                 <button
                   onClick={() => handleMarkAsRead(item.id)}
                   title="Mark as read"
-                  className="px-2.5 py-1 text-[11px] font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 rounded-lg transition shrink-0"
+                  className="px-2.5 py-1 text-[11px] font-bold text-[#00897B] bg-[#E0F2F1] hover:bg-[#E0F2F1] rounded-lg transition shrink-0"
                 >
                   Mark read
                 </button>

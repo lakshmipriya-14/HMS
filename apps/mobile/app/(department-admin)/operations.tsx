@@ -97,42 +97,42 @@ export default function DepartmentOperationsScreen() {
       desc: 'Directory & Search',
       icon: HeartPulse,
       route: '/(department-admin)/patients',
-      color: '#38845A',
+      color: '#1565C0',
     },
     {
       title: 'Appointments',
       desc: `${appointments.length} Scheduled`,
       icon: CalendarCheck,
       route: '/(department-admin)/appointments',
-      color: '#0284C7',
+      color: '#1565C0',
     },
     {
       title: 'OPD Queue',
       desc: `${opdQueue?.waitingPatients?.length || 0} in Lounge`,
       icon: ClipboardList,
       route: '/(department-admin)/opd',
-      color: '#7C3AED',
+      color: '#1565C0',
     },
     {
       title: 'IPD Census',
       desc: `${inpatients.length} Inpatients`,
       icon: DoorOpen,
       route: '/(department-admin)/ipd',
-      color: '#D97706',
+      color: '#F59E0B',
     },
     {
       title: 'Wards & Beds',
       desc: `${occupiedBeds}/${totalBeds} Occupied`,
       icon: BedDouble,
       route: '/(department-admin)/wards-beds',
-      color: '#059669',
+      color: '#00897B',
     },
     {
       title: 'Admissions',
       desc: `${admissions.length} Requests`,
       icon: UserPlus,
       route: '/(department-admin)/admissions',
-      color: '#2563EB',
+      color: '#1565C0',
     },
     {
       title: 'Discharges',
@@ -217,11 +217,11 @@ export default function DepartmentOperationsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadOperations} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadOperations} tintColor="#1565C0" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 40 }} />
         ) : activeTab === 'OPD' ? (
           /* OPD & APPOINTMENTS TAB */
           <View>
@@ -277,7 +277,7 @@ export default function DepartmentOperationsScreen() {
               activeOpacity={0.8}
             >
               <View style={styles.loungeLeft}>
-                <ClipboardList size={22} color="#7C3AED" />
+                <ClipboardList size={22} color="#1565C0" />
                 <View>
                   <Text style={styles.loungeTitle}>OPD Waiting Lounge</Text>
                   <Text style={styles.loungeSub}>
@@ -285,7 +285,7 @@ export default function DepartmentOperationsScreen() {
                   </Text>
                 </View>
               </View>
-              <ChevronRight size={18} color="#7C3AED" />
+              <ChevronRight size={18} color="#1565C0" />
             </TouchableOpacity>
           </View>
         ) : activeTab === 'IPD' ? (
@@ -371,13 +371,13 @@ export default function DepartmentOperationsScreen() {
                           key={bed.id}
                           style={[
                             styles.bedPill,
-                            { backgroundColor: isOccupied ? '#EAF5ED' : '#EAF5ED' },
+                            { backgroundColor: isOccupied ? '#E8F1FC' : '#E8F1FC' },
                           ]}
                         >
                           <Text
                             style={[
                               styles.bedNumber,
-                              { color: isOccupied ? '#DC2626' : '#38845A' },
+                              { color: isOccupied ? '#DC2626' : '#1565C0' },
                             ]}
                           >
                             {bed.bedNumber}
@@ -422,7 +422,7 @@ export default function DepartmentOperationsScreen() {
                       <Text style={styles.patUhid}>UHID: {dis.patient?.uhid}</Text>
                     </View>
                     <View style={[styles.statusBadge, { backgroundColor: '#FEF3C7' }]}>
-                      <Text style={[styles.statusBadgeText, { color: '#D97706' }]}>
+                      <Text style={[styles.statusBadgeText, { color: '#F59E0B' }]}>
                         {dis.status || 'PENDING'}
                       </Text>
                     </View>
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
   shortcutTitle: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   shortcutDesc: {
     fontSize: 10,
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   tabItemActive: {
-    borderBottomColor: '#38845A',
+    borderBottomColor: '#1565C0',
   },
   tabLabel: {
     fontSize: 12,
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   tabLabelActive: {
-    color: '#38845A',
+    color: '#1565C0',
   },
   content: {
     flex: 1,
@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
   subTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   viewAllBtn: {
     paddingVertical: 4,
@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
   viewAllText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   emptyCard: {
     backgroundColor: '#FFFFFF',
@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
   patName: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   patUhid: {
     fontSize: 11,
@@ -592,7 +592,7 @@ const styles = StyleSheet.create({
   checkInBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 8,
@@ -614,7 +614,7 @@ const styles = StyleSheet.create({
   },
   docName: {
     fontSize: 12,
-    color: '#334155',
+    color: '#475569',
     fontWeight: '600',
   },
   timeText: {
@@ -631,7 +631,7 @@ const styles = StyleSheet.create({
   bedBadgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#D97706',
+    color: '#F59E0B',
   },
   statusBadge: {
     paddingHorizontal: 8,
@@ -646,12 +646,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#EDE9FE',
+    backgroundColor: '#E8F1FC',
     borderRadius: 14,
     padding: 14,
     marginTop: 12,
     borderWidth: 1,
-    borderColor: '#DDD6FE',
+    borderColor: '#BFDBFE',
   },
   loungeLeft: {
     flexDirection: 'row',
@@ -661,11 +661,11 @@ const styles = StyleSheet.create({
   loungeTitle: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#5B21B6',
+    color: '#1565C0',
   },
   loungeSub: {
     fontSize: 11,
-    color: '#6D28D9',
+    color: '#1565C0',
     marginTop: 2,
   },
   wardCard: {
@@ -685,7 +685,7 @@ const styles = StyleSheet.create({
   wardName: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   wardBadge: {
     fontSize: 11,

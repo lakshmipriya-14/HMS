@@ -98,7 +98,7 @@ export default function DepartmentInventoryScreen() {
           style={[styles.lowStockBtn, lowStockOnly && styles.lowStockBtnActive]}
           onPress={() => setLowStockOnly(!lowStockOnly)}
         >
-          <AlertTriangle size={13} color={lowStockOnly ? '#FFFFFF' : '#D97706'} />
+          <AlertTriangle size={13} color={lowStockOnly ? '#FFFFFF' : '#F59E0B'} />
           <Text style={[styles.lowStockText, lowStockOnly && styles.lowStockTextActive]}>
             Low Stock Only
           </Text>
@@ -109,18 +109,18 @@ export default function DepartmentInventoryScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadInventory} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadInventory} tintColor="#1565C0" />
         }
       >
         {success && (
           <View style={styles.successBanner}>
-            <CheckCircle2 size={16} color="#38845A" />
+            <CheckCircle2 size={16} color="#1565C0" />
             <Text style={styles.successText}>Restock requisition sent to central stores</Text>
           </View>
         )}
 
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <Package size={40} color="#CBD5E1" />
@@ -144,13 +144,13 @@ export default function DepartmentInventoryScreen() {
                   <View
                     style={[
                       styles.stockPill,
-                      { backgroundColor: isLow ? '#EAF5ED' : '#EAF5ED' },
+                      { backgroundColor: isLow ? '#E8F1FC' : '#E8F1FC' },
                     ]}
                   >
                     <Text
                       style={[
                         styles.stockPillText,
-                        { color: isLow ? '#DC2626' : '#38845A' },
+                        { color: isLow ? '#DC2626' : '#1565C0' },
                       ]}
                     >
                       {stock} {item.unit || 'units'}
@@ -168,7 +168,7 @@ export default function DepartmentInventoryScreen() {
                       setRequisitionModal(true);
                     }}
                   >
-                    <Plus size={12} color="#38845A" />
+                    <Plus size={12} color="#1565C0" />
                     <Text style={styles.reorderBtnText}>Reorder</Text>
                   </TouchableOpacity>
                 </View>
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 7,
     fontSize: 12,
-    color: '#0F172A',
+    color: '#183153',
     marginLeft: 6,
   },
   lowStockBtn: {
@@ -273,12 +273,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   lowStockBtnActive: {
-    backgroundColor: '#D97706',
+    backgroundColor: '#F59E0B',
   },
   lowStockText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#D97706',
+    color: '#F59E0B',
   },
   lowStockTextActive: {
     color: '#FFFFFF',
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     padding: 12,
     borderRadius: 12,
     marginBottom: 16,
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   emptyState: {
     alignItems: 'center',
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   itemSku: {
     fontSize: 11,
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
   reorderBtnText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   modalOverlay: {
     flex: 1,
@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   inputLabel: {
     fontSize: 11,
@@ -415,10 +415,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',

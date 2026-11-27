@@ -205,8 +205,8 @@ function Button({
     variant === 'outline'
       ? theme.colors.primary
       : variant === 'secondary'
-      ? '#374151'
-      : '#fff';
+      ? '#475569'
+      : '#FFFFFF';
 
   return (
     <Pressable
@@ -333,13 +333,13 @@ function Input({
           value={value}
           onChangeText={change}
           placeholder={placeholder}
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor="#64748B"
           autoCapitalize="none"
           style={styles.input}
         />
         {!!value && onClear && (
           <TouchableOpacity onPress={onClear} style={styles.inputClearBtn}>
-            <X size={16} color="#6B7280" />
+            <X size={16} color="#64748B" />
           </TouchableOpacity>
         )}
       </View>
@@ -1129,7 +1129,7 @@ function Directory({
             {selectedIds.length === rows.length ? (
               <CheckSquare size={16} color={theme.colors.primary} />
             ) : (
-              <Square size={16} color="#6B7280" />
+              <Square size={16} color="#64748B" />
             )}
             <Text style={styles.selectAllText}>
               Select All ({rows.length})
@@ -1235,7 +1235,7 @@ function Directory({
                   onPress={() => setAuditLogModal(null)}
                   style={styles.closeBtn}
                 >
-                  <X size={20} color="#374151" />
+                  <X size={20} color="#475569" />
                 </TouchableOpacity>
               </View>
 
@@ -1329,7 +1329,7 @@ function Directory({
         <Notice error={data.error} />
       ) : rows.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Info size={32} color="#9CA3AF" />
+          <Info size={32} color="#64748B" />
           <Text style={styles.emptyTitle}>No Records Found</Text>
           <Text style={styles.emptyDesc}>
             No entries match your search and filter criteria.
@@ -1376,7 +1376,7 @@ function Directory({
                     {isSelected ? (
                       <CheckSquare size={18} color={theme.colors.primary} />
                     ) : (
-                      <Square size={18} color="#9CA3AF" />
+                      <Square size={18} color="#64748B" />
                     )}
                   </TouchableOpacity>
                 )}
@@ -2511,7 +2511,7 @@ export function SuperAdminWorkspace({
               style={styles.backBtn}
               onPress={() => (router.canGoBack() ? router.back() : navigate('more'))}
             >
-              <ChevronLeft size={18} color="#374151" />
+              <ChevronLeft size={18} color="#475569" />
               <Text style={styles.backBtnText}>Back</Text>
             </TouchableOpacity>
           )}
@@ -2561,23 +2561,23 @@ const styles = StyleSheet.create({
     gap: 4,
     paddingVertical: 6,
     paddingHorizontal: 10,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: '#E2E8F0',
   },
-  backBtnText: { fontSize: 12, fontWeight: '700', color: '#374151' },
-  title: { fontSize: 24, fontWeight: '800', color: '#111827' },
-  heading: { fontSize: 15, fontWeight: '700', color: '#111827' },
+  backBtnText: { fontSize: 12, fontWeight: '700', color: '#475569' },
+  title: { fontSize: 24, fontWeight: '800', color: '#183153' },
+  heading: { fontSize: 15, fontWeight: '700', color: '#183153' },
   card: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: '#E2E8F0',
     gap: 12,
   },
-  cardHeaderTitle: { fontSize: 15, fontWeight: '800', color: '#111827' },
+  cardHeaderTitle: { fontSize: 15, fontWeight: '800', color: '#183153' },
   button: {
     borderRadius: 8,
     paddingHorizontal: 14,
@@ -2589,18 +2589,18 @@ const styles = StyleSheet.create({
   },
   btnPrimary: { backgroundColor: theme.colors.primary },
   btnSecondary: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: '#F1F5F9',
     borderWidth: 1,
     borderColor: '#D1D5DB',
   },
   btnDanger: { backgroundColor: theme.colors.accentRed },
   btnOutline: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: theme.colors.primary,
   },
-  btnText: { color: '#fff', fontWeight: '700', fontSize: 12.5 },
-  btnSecondaryText: { color: '#374151', fontWeight: '700', fontSize: 12.5 },
+  btnText: { color: '#FFFFFF', fontWeight: '700', fontSize: 12.5 },
+  btnSecondaryText: { color: '#475569', fontWeight: '700', fontSize: 12.5 },
   btnOutlineText: { color: theme.colors.primary, fontWeight: '700', fontSize: 12.5 },
   disabled: { opacity: 0.5 },
   actions: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8 },
@@ -2608,23 +2608,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: '#E2E8F0',
     borderRadius: 8,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
   },
   selected: {
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     borderColor: theme.colors.primary,
   },
-  choiceText: { fontSize: 12, color: '#4B5563', fontWeight: '600' },
+  choiceText: { fontSize: 12, color: '#475569', fontWeight: '600' },
   selectedChoiceText: { color: theme.colors.primary, fontWeight: '700' },
   value: { color: '#1F2937', fontSize: 13 },
-  muted: { color: '#6B7280', fontSize: 13 },
+  muted: { color: '#64748B', fontSize: 13 },
   error: { color: theme.colors.accentRed, fontSize: 13, fontWeight: '600' },
   successText: { color: theme.colors.accentGreen, fontSize: 13, fontWeight: '600' },
   errorText: { color: theme.colors.accentRed, fontSize: 13, fontWeight: '600' },
   inputContainer: { gap: 4 },
-  inputLabel: { fontSize: 11.5, fontWeight: '700', color: '#4B5563' },
+  inputLabel: { fontSize: 11.5, fontWeight: '700', color: '#475569' },
   inputWrapper: { position: 'relative', justifyContent: 'center' },
   input: {
     borderWidth: 1,
@@ -2632,9 +2632,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
-    color: '#111827',
+    color: '#183153',
     fontSize: 13,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
   },
   inputClearBtn: { position: 'absolute', right: 10, padding: 4 },
   searchRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
@@ -2642,19 +2642,19 @@ const styles = StyleSheet.create({
   directoryPageSize: { flexGrow: 1, minWidth: 115 },
   branchControls: { gap: 8 },
   branchAdd: { alignItems: 'flex-start' },
-  branchSearch: { flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 12, minHeight: 46, borderWidth: 1, borderColor: '#d8e0e8', borderRadius: 10, backgroundColor: '#ffffff' },
-  branchSearchInput: { flex: 1, minHeight: 44, fontSize: 14, color: '#111827' },
+  branchSearch: { flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 12, minHeight: 46, borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 10, backgroundColor: '#ffffff' },
+  branchSearchInput: { flex: 1, minHeight: 44, fontSize: 14, color: '#183153' },
   branchFilterRow: { flexDirection: 'row', gap: 8 },
-  branchFilterButton: { flex: 1, minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 6, paddingHorizontal: 11, borderWidth: 1, borderColor: '#d8e0e8', borderRadius: 9, backgroundColor: '#ffffff' },
-  branchFilterLabel: { color: '#111827', fontSize: 13, fontWeight: '600', flexShrink: 1 },
-  branchMenu: { maxHeight: 240, borderWidth: 1, borderColor: '#d8e0e8', borderRadius: 10, backgroundColor: '#ffffff' },
+  branchFilterButton: { flex: 1, minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 6, paddingHorizontal: 11, borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 9, backgroundColor: '#ffffff' },
+  branchFilterLabel: { color: '#183153', fontSize: 13, fontWeight: '600', flexShrink: 1 },
+  branchMenu: { maxHeight: 240, borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 10, backgroundColor: '#ffffff' },
   branchMenuOption: { flexDirection: 'row', alignItems: 'center', gap: 9, minHeight: 44, paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#e2e8f0' },
-  branchOptions: { padding: 12, gap: 8, borderWidth: 1, borderColor: '#d8e0e8', borderRadius: 10, backgroundColor: '#ffffff' },
+  branchOptions: { padding: 12, gap: 8, borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 10, backgroundColor: '#ffffff' },
   branchClear: { alignSelf: 'flex-start', paddingVertical: 6 },
   branchClearText: { color: theme.colors.primary, fontSize: 13, fontWeight: '700' },
   branchCard: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   branchCardContent: { flex: 1, gap: 5 },
-  branchName: { color: '#111827', fontSize: 16, fontWeight: '800' },
+  branchName: { color: '#183153', fontSize: 16, fontWeight: '800' },
   branchLocationRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 5 },
   branchLocation: { flexShrink: 1, color: '#475569', fontSize: 13, lineHeight: 17 },
   filterMetaRow: {
@@ -2663,7 +2663,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
+    borderTopColor: '#F1F5F9',
     flexWrap: 'wrap',
     gap: 8,
   },
@@ -2671,7 +2671,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#EFF6FF',
+    backgroundColor: '#E8F1FC',
     padding: 10,
     borderRadius: 10,
     borderWidth: 1,
@@ -2680,18 +2680,18 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   selectAllBtn: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  selectAllText: { fontSize: 12, fontWeight: '700', color: '#1E40AF' },
+  selectAllText: { fontSize: 12, fontWeight: '700', color: '#183153' },
   bulkRightActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  selectedCountText: { fontSize: 12, fontWeight: '700', color: '#1E40AF' },
+  selectedCountText: { fontSize: 12, fontWeight: '700', color: '#183153' },
   rowCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: '#E2E8F0',
     gap: 10,
   },
-  rowCardSelected: { borderColor: theme.colors.primary, backgroundColor: '#FFF5F5' },
+  rowCardSelected: { borderColor: theme.colors.primary, backgroundColor: '#FEE2E2' },
   rowCardTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   rowTitleRow: {
     flexDirection: 'row',
@@ -2699,8 +2699,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 8,
   },
-  rowTitle: { fontSize: 14, fontWeight: '800', color: '#111827' },
-  rowSubtitle: { fontSize: 12, color: '#6B7280' },
+  rowTitle: { fontSize: 14, fontWeight: '800', color: '#183153' },
+  rowSubtitle: { fontSize: 12, color: '#64748B' },
   rowCardBottom: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -2708,7 +2708,7 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
+    borderTopColor: '#F1F5F9',
   },
   badgeActive: {
     backgroundColor: theme.colors.accentGreenBg,
@@ -2733,7 +2733,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   actionBadge: {
-    backgroundColor: '#E5E7EB',
+    backgroundColor: '#E2E8F0',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -2743,15 +2743,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     padding: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: '#E2E8F0',
     flexWrap: 'wrap',
     gap: 8,
   },
-  paginationMeta: { fontSize: 12, color: '#6B7280', fontWeight: '600' },
+  paginationMeta: { fontSize: 12, color: '#64748B', fontWeight: '600' },
   paginationButtons: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   feedbackBox: {
     flexDirection: 'row',
@@ -2763,11 +2763,11 @@ const styles = StyleSheet.create({
   },
   feedbackSuccess: {
     backgroundColor: theme.colors.accentGreenBg,
-    borderColor: '#A7F3D0',
+    borderColor: '#B2DFDB',
   },
   feedbackError: {
     backgroundColor: theme.colors.accentRedBg,
-    borderColor: '#CDE8D5',
+    borderColor: '#BFDBFE',
   },
   confirmOverlay: {
     flex: 1,
@@ -2777,7 +2777,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   confirmCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 20,
     maxWidth: 440,
@@ -2785,8 +2785,8 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   confirmHeader: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  confirmTitle: { fontSize: 16, fontWeight: '800', color: '#111827' },
-  confirmBody: { fontSize: 13, color: '#4B5563', lineHeight: 18 },
+  confirmTitle: { fontSize: 16, fontWeight: '800', color: '#183153' },
+  confirmBody: { fontSize: 13, color: '#475569', lineHeight: 18 },
   confirmActions: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -2795,11 +2795,11 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   detailHeaderCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: '#E2E8F0',
     gap: 12,
   },
   detailHeaderTop: {
@@ -2808,104 +2808,104 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 10,
   },
-  detailTitle: { fontSize: 18, fontWeight: '800', color: '#111827' },
-  detailSubtitle: { fontSize: 13, color: '#6B7280' },
+  detailTitle: { fontSize: 18, fontWeight: '800', color: '#183153' },
+  detailSubtitle: { fontSize: 13, color: '#64748B' },
   kvRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
-  kKey: { fontSize: 12, fontWeight: '700', color: '#4B5563' },
-  kVal: { fontSize: 12.5, color: '#111827', fontWeight: '500' },
+  kKey: { fontSize: 12, fontWeight: '700', color: '#475569' },
+  kVal: { fontSize: 12.5, color: '#183153', fontWeight: '500' },
   grid2Col: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   subItemCard: {
     width: '48.5%',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#F8FAFC',
     padding: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: '#E2E8F0',
     gap: 4,
   },
-  subItemTitle: { fontSize: 13, fontWeight: '700', color: '#111827' },
+  subItemTitle: { fontSize: 13, fontWeight: '700', color: '#183153' },
   subItemBadge: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#6B7280',
-    backgroundColor: '#E5E7EB',
+    color: '#64748B',
+    backgroundColor: '#E2E8F0',
     paddingHorizontal: 5,
     paddingVertical: 1,
     borderRadius: 4,
   },
-  subItemDesc: { fontSize: 11.5, color: '#6B7280' },
-  subItemStatus: { fontSize: 11, color: '#4B5563', fontWeight: '600' },
+  subItemDesc: { fontSize: 11.5, color: '#64748B' },
+  subItemStatus: { fontSize: 11, color: '#475569', fontWeight: '600' },
   adminRowCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 10,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#F8FAFC',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: '#E2E8F0',
   },
   adminNameLink: { fontSize: 13.5, fontWeight: '800', color: theme.colors.primary },
   adminRoleBadge: {
     fontSize: 10.5,
     fontWeight: '700',
-    color: '#4F46E5',
+    color: '#1565C0',
     marginTop: 2,
   },
   auditRowItem: {
     padding: 10,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#F8FAFC',
     borderRadius: 8,
     borderLeftWidth: 3,
     borderLeftColor: theme.colors.primary,
     gap: 4,
   },
-  auditTimeText: { fontSize: 10.5, color: '#9CA3AF' },
+  auditTimeText: { fontSize: 10.5, color: '#64748B' },
   rolesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   permChip: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: '#E8F1FC',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1,
     borderColor: '#BFDBFE',
   },
-  permText: { fontSize: 10.5, fontWeight: '700', color: '#1D4ED8' },
+  permText: { fontSize: 10.5, fontWeight: '700', color: '#1565C0' },
   codeBox: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: '#F1F5F9',
     padding: 12,
     borderRadius: 8,
     fontFamily: 'monospace',
     fontSize: 14,
     fontWeight: '700',
-    color: '#111827',
+    color: '#183153',
   },
   reportStack: { gap: 12 },
   reportDateField: { flex: 1, gap: 4 },
   reportDateButton: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 8,
-    borderWidth: 1, borderColor: '#d8e0e8', borderRadius: 9, paddingHorizontal: 10, backgroundColor: '#fff' },
+    borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 9, paddingHorizontal: 10, backgroundColor: '#FFFFFF' },
   reportCalendarOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16, backgroundColor: '#0f172a80' },
   reportCalendar: { flexGrow: 0, maxHeight: '90%', width: '100%', maxWidth: 420, borderRadius: 14,
-    backgroundColor: '#fff', padding: 16 },
+    backgroundColor: '#FFFFFF', padding: 16 },
   reportCalendarNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginVertical: 12 },
   reportCalendarGrid: { flexDirection: 'row', flexWrap: 'wrap', marginVertical: 10 },
   reportCalendarCell: { width: '14.2857%', minHeight: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 6 },
-  reportTableRow: { flexDirection: 'row', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#d8e0e8' },
-  cell: { width: 145, padding: 8, backgroundColor: '#fff', color: '#202d40' },
+  reportTableRow: { flexDirection: 'row', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#E2E8F0' },
+  cell: { width: 145, padding: 8, backgroundColor: '#FFFFFF', color: '#202d40' },
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 40,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: '#E2E8F0',
     gap: 8,
   },
-  emptyTitle: { fontSize: 15, fontWeight: '700', color: '#374151' },
-  emptyDesc: { fontSize: 12.5, color: '#6B7280', textAlign: 'center' },
+  emptyTitle: { fontSize: 15, fontWeight: '700', color: '#475569' },
+  emptyDesc: { fontSize: 12.5, color: '#64748B', textAlign: 'center' },
   auditModalCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     width: '100%',
     maxWidth: 550,
@@ -2918,11 +2918,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: '#E2E8F0',
   },
-  auditModalTitle: { fontSize: 16, fontWeight: '800', color: '#111827' },
-  auditModalTime: { fontSize: 11.5, color: '#6B7280' },
-  closeBtn: { padding: 6, borderRadius: 8, backgroundColor: '#F3F4F6' },
+  auditModalTitle: { fontSize: 16, fontWeight: '800', color: '#183153' },
+  auditModalTime: { fontSize: 11.5, color: '#64748B' },
+  closeBtn: { padding: 6, borderRadius: 8, backgroundColor: '#F1F5F9' },
   auditModalBody: { padding: 16, gap: 10 },
   userLinkText: {
     fontSize: 12,
@@ -2931,7 +2931,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   jsonBox: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#183153',
     padding: 12,
     borderRadius: 8,
     marginTop: 4,
@@ -2945,7 +2945,7 @@ const styles = StyleSheet.create({
   auditModalFooter: {
     padding: 14,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: '#E2E8F0',
     alignItems: 'flex-end',
   },
 });

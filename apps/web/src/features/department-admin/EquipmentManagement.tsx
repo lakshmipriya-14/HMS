@@ -89,7 +89,7 @@ export const EquipmentManagement: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <Wrench className="w-6 h-6 text-teal-600" />
+            <Wrench className="w-6 h-6 text-[#00897B]" />
             Department Equipment & Biomedical Assets
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -99,14 +99,14 @@ export const EquipmentManagement: React.FC = () => {
       </div>
 
       {successMessage && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-emerald-800 text-xs font-semibold animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="p-4 bg-[#DCFCE7] border border-[#BBF7D0] rounded-xl flex items-center gap-2 text-[#16A34A] text-xs font-semibold animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-[#16A34A]" />
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs font-semibold">
+        <div className="p-4 bg-[#FEE2E2] border border-[#FECACA] rounded-xl flex items-center gap-2 text-[#DC2626] text-xs font-semibold">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
@@ -119,8 +119,8 @@ export const EquipmentManagement: React.FC = () => {
           <p className="text-2xl font-black text-slate-800 mt-1">{equipmentList.length}</p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Operational / Ready</p>
-          <p className="text-2xl font-black text-emerald-600 mt-1">
+          <p className="text-xs font-bold text-[#16A34A] uppercase tracking-wider">Operational / Ready</p>
+          <p className="text-2xl font-black text-[#16A34A] mt-1">
             {equipmentList.filter((e) => ['FUNCTIONAL', 'ACTIVE', 'OPERATIONAL'].includes(e.status)).length}
           </p>
         </div>
@@ -132,7 +132,7 @@ export const EquipmentManagement: React.FC = () => {
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
           <p className="text-xs font-bold text-rose-500 uppercase tracking-wider">Calibration Due</p>
-          <p className="text-2xl font-black text-rose-600 mt-1">
+          <p className="text-2xl font-black text-[#DC2626] mt-1">
             {equipmentList.filter((e) => e.status === 'CALIBRATION_DUE').length}
           </p>
         </div>
@@ -146,7 +146,7 @@ export const EquipmentManagement: React.FC = () => {
           placeholder="Search equipment by name, model, serial #, room..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+          className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
         />
       </div>
 

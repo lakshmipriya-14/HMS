@@ -91,7 +91,7 @@ export const PurchaseRequests: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <ShoppingCart className="w-6 h-6 text-teal-600" />
+            <ShoppingCart className="w-6 h-6 text-[#00897B]" />
             Department Purchase & Capital Requisitions
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -100,7 +100,7 @@ export const PurchaseRequests: React.FC = () => {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm self-start sm:self-auto"
+          className="px-4 py-2.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           New Purchase Indent
@@ -108,14 +108,14 @@ export const PurchaseRequests: React.FC = () => {
       </div>
 
       {successMessage && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-emerald-800 text-xs font-semibold animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="p-4 bg-[#DCFCE7] border border-[#BBF7D0] rounded-xl flex items-center gap-2 text-[#16A34A] text-xs font-semibold animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-[#16A34A]" />
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs font-semibold">
+        <div className="p-4 bg-[#FEE2E2] border border-[#FECACA] rounded-xl flex items-center gap-2 text-[#DC2626] text-xs font-semibold">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
@@ -134,14 +134,14 @@ export const PurchaseRequests: React.FC = () => {
           </p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Approved Orders</p>
-          <p className="text-2xl font-black text-emerald-600 mt-1">
+          <p className="text-xs font-bold text-[#16A34A] uppercase tracking-wider">Approved Orders</p>
+          <p className="text-2xl font-black text-[#16A34A] mt-1">
             {requests.filter((r) => r.status === 'APPROVED').length}
           </p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-          <p className="text-xs font-bold text-teal-600 uppercase tracking-wider">Completed / Received</p>
-          <p className="text-2xl font-black text-teal-700 mt-1">
+          <p className="text-xs font-bold text-[#00897B] uppercase tracking-wider">Completed / Received</p>
+          <p className="text-2xl font-black text-[#00897B] mt-1">
             {requests.filter((r) => ['COMPLETED', 'DELIVERED', 'FULFILLED'].includes(r.status)).length}
           </p>
         </div>
@@ -156,13 +156,13 @@ export const PurchaseRequests: React.FC = () => {
             placeholder="Search purchase requisitions by title or specification..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="w-full sm:w-48 px-3 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+          className="w-full sm:w-48 px-3 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
         >
           <option value="">All Statuses</option>
           <option value="PENDING">Pending</option>
@@ -202,7 +202,7 @@ export const PurchaseRequests: React.FC = () => {
                       <div className="text-[11px] text-slate-500 line-clamp-1">{item.description}</div>
                     </td>
                     <td className="py-3.5 px-4 font-mono font-bold text-slate-800">{item.quantity || 1}</td>
-                    <td className="py-3.5 px-4 font-mono font-semibold text-teal-700">
+                    <td className="py-3.5 px-4 font-mono font-semibold text-[#00897B]">
                       {item.estimatedCost ? `₹${item.estimatedCost.toLocaleString('en-IN')}` : '—'}
                     </td>
                     <td className="py-3.5 px-4">
@@ -242,7 +242,7 @@ export const PurchaseRequests: React.FC = () => {
                   placeholder="e.g. 5x Portable Diagnostic Otoscopes"
                   value={itemName}
                   onChange={(e) => setItemName(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
                 />
               </div>
 
@@ -254,7 +254,7 @@ export const PurchaseRequests: React.FC = () => {
                     min={1}
                     value={quantity}
                     onChange={(e) => setQuantity(Number(e.target.value))}
-                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
                   />
                 </div>
                 <div>
@@ -265,7 +265,7 @@ export const PurchaseRequests: React.FC = () => {
                     placeholder="e.g. 45000"
                     value={estimatedCost}
                     onChange={(e) => setEstimatedCost(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition font-mono"
+                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition font-mono"
                   />
                 </div>
               </div>
@@ -278,7 +278,7 @@ export const PurchaseRequests: React.FC = () => {
                   placeholder="Specify model numbers, brand preference, or vendor quote..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
                 />
               </div>
 
@@ -293,7 +293,7 @@ export const PurchaseRequests: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs transition shadow-sm"
+                  className="px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white font-bold rounded-xl text-xs transition shadow-sm"
                 >
                   {submitting ? 'Submitting...' : 'Submit Indent'}
                 </button>

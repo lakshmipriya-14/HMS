@@ -118,7 +118,7 @@ export const WardManagementDashboard: React.FC = () => {
         {/* Legend */}
         <div className="flex items-center space-x-3 text-xs bg-white p-2 rounded-xl border border-slate-200">
           <div className="flex items-center space-x-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#16A34A]"></span>
             <span className="text-slate-600">Available</span>
           </div>
           <div className="flex items-center space-x-1">
@@ -144,7 +144,7 @@ export const WardManagementDashboard: React.FC = () => {
             onClick={() => setSelectedWard(w)}
             className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
               selectedWard?.id === w.id
-                ? 'bg-teal-600 text-white shadow-md'
+                ? 'bg-[#1565C0] text-white shadow-md'
                 : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
             }`}
           >
@@ -160,7 +160,7 @@ export const WardManagementDashboard: React.FC = () => {
       <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-6">
         <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
           <div className="flex items-center space-x-2">
-            <BedDouble className="w-5 h-5 text-teal-600" />
+            <BedDouble className="w-5 h-5 text-[#00897B]" />
             <h3 className="font-bold text-slate-800 text-sm">
               Bed Layout Map — {selectedWard?.name}
             </h3>
@@ -182,9 +182,9 @@ export const WardManagementDashboard: React.FC = () => {
                 onClick={() => handleBedClick(bed)}
                 className={`p-4 rounded-xl border text-center transition-all cursor-pointer ${
                   isAvailable
-                    ? 'bg-emerald-50/60 border-emerald-200 hover:border-emerald-500 hover:shadow-md'
+                    ? 'bg-[#DCFCE7]/60 border-[#BBF7D0] hover:border-emerald-500 hover:shadow-md'
                     : isOccupied
-                    ? 'bg-rose-50/60 border-rose-200'
+                    ? 'bg-[#FEE2E2]/60 border-[#FECACA]'
                     : isCleaning
                     ? 'bg-amber-50/60 border-amber-200'
                     : 'bg-slate-100 border-slate-200 opacity-60'
@@ -194,9 +194,9 @@ export const WardManagementDashboard: React.FC = () => {
                   <BedDouble
                     className={`w-7 h-7 ${
                       isAvailable
-                        ? 'text-emerald-600'
+                        ? 'text-[#16A34A]'
                         : isOccupied
-                        ? 'text-rose-600'
+                        ? 'text-[#DC2626]'
                         : isCleaning
                         ? 'text-amber-600'
                         : 'text-slate-400'
@@ -210,7 +210,7 @@ export const WardManagementDashboard: React.FC = () => {
                   <span
                     className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded ${
                       isAvailable
-                        ? 'bg-emerald-100 text-emerald-800'
+                        ? 'bg-[#DCFCE7] text-[#16A34A]'
                         : isOccupied
                         ? 'bg-rose-100 text-rose-800'
                         : isCleaning
@@ -294,7 +294,7 @@ export const WardManagementDashboard: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm inline-flex items-center space-x-1"
+              className="px-6 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm inline-flex items-center space-x-1"
             >
               <CheckCircle className="w-4 h-4" />
               <span>{isSubmitting ? 'Allocating Bed...' : 'Confirm Admission & Occupy Bed'}</span>

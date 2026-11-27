@@ -150,7 +150,7 @@ export const DoctorManagement: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <UserCheck className="w-6 h-6 text-teal-600" />
+            <UserCheck className="w-6 h-6 text-[#00897B]" />
             Department Doctor Directory & Management
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -159,7 +159,7 @@ export const DoctorManagement: React.FC = () => {
         </div>
         <button
           onClick={() => setIsAddOpen(true)}
-          className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md shadow-teal-900/20"
+          className="px-4 py-2 bg-[#1565C0] hover:bg-[#00897B] text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md shadow-teal-900/20"
         >
           <Plus className="w-4 h-4" />
           Add Department Doctor
@@ -167,18 +167,18 @@ export const DoctorManagement: React.FC = () => {
       </div>
 
       {success && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-medium flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-medium flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             <span>{success}</span>
           </div>
-          <button onClick={() => setSuccess('')} className="text-emerald-600 hover:text-emerald-900 font-bold">×</button>
+          <button onClick={() => setSuccess('')} className="text-[#16A34A] hover:text-emerald-900 font-bold">×</button>
         </div>
       )}
 
       {error && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600" />
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-[#DC2626]" />
           <span>{error}</span>
         </div>
       )}
@@ -192,7 +192,7 @@ export const DoctorManagement: React.FC = () => {
             placeholder="Search by doctor name, specialization, license..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500"
+            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B]"
           />
         </div>
 
@@ -201,7 +201,7 @@ export const DoctorManagement: React.FC = () => {
           <select
             value={designation}
             onChange={(e) => setDesignation(e.target.value)}
-            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500 font-medium text-slate-700"
+            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B] font-medium text-slate-700"
           >
             <option value="">All Designations</option>
             <option value="GENERAL_PHYSICIAN">General Physician</option>
@@ -228,14 +228,14 @@ export const DoctorManagement: React.FC = () => {
                 <div>
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center font-bold text-base shadow-md shadow-teal-900/20">
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#1565C0] to-[#00897B] text-white flex items-center justify-center font-bold text-base shadow-md shadow-teal-900/20">
                         {user?.firstName?.[0] || 'D'}
                       </div>
                       <div>
                         <h3 className="font-bold text-slate-800 text-sm">
                           Dr. {user?.firstName} {user?.lastName}
                         </h3>
-                        <p className="text-[11px] text-teal-600 font-semibold">{doc.specialization}</p>
+                        <p className="text-[11px] text-[#00897B] font-semibold">{doc.specialization}</p>
                       </div>
                     </div>
                     <StatusBadge status={doc.isAvailableToday ? 'AVAILABLE' : 'OFF_DUTY'} />
@@ -271,16 +271,16 @@ export const DoctorManagement: React.FC = () => {
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
                       doc.isAvailableToday
                         ? 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
-                        : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                        : 'bg-[#DCFCE7] text-[#16A34A] hover:bg-[#DCFCE7] border border-[#BBF7D0]'
                     }`}
                   >
-                    {doc.isAvailableToday ? <ToggleRight className="w-4 h-4 text-emerald-600" /> : <ToggleLeft className="w-4 h-4 text-slate-400" />}
+                    {doc.isAvailableToday ? <ToggleRight className="w-4 h-4 text-[#16A34A]" /> : <ToggleLeft className="w-4 h-4 text-slate-400" />}
                     {doc.isAvailableToday ? 'Set Off Duty' : 'Set Available'}
                   </button>
 
                   <button
                     onClick={() => openEdit(doc)}
-                    className="p-1.5 text-slate-500 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors border border-slate-200"
+                    className="p-1.5 text-slate-500 hover:text-[#00897B] hover:bg-[#E0F2F1] rounded-lg transition-colors border border-slate-200"
                     title="Edit Doctor"
                   >
                     <Edit className="w-4 h-4" />
@@ -411,7 +411,7 @@ export const DoctorManagement: React.FC = () => {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-semibold shadow-md shadow-teal-900/20 disabled:opacity-50"
+              className="px-4 py-2 bg-[#1565C0] hover:bg-[#00897B] text-white rounded-xl font-semibold shadow-md shadow-teal-900/20 disabled:opacity-50"
             >
               {saving ? 'Adding...' : 'Add Doctor'}
             </button>
@@ -491,7 +491,7 @@ export const DoctorManagement: React.FC = () => {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-semibold shadow-md shadow-teal-900/20 disabled:opacity-50"
+              className="px-4 py-2 bg-[#1565C0] hover:bg-[#00897B] text-white rounded-xl font-semibold shadow-md shadow-teal-900/20 disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save Changes'}
             </button>

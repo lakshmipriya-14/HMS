@@ -95,11 +95,11 @@ export const DepartmentDashboard: React.FC = () => {
     <div className="space-y-6 pb-12">
       {/* Top Header Card */}
       <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-teal-950 text-white rounded-2xl p-6 sm:p-8 shadow-xl border border-slate-700/60 relative overflow-hidden">
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-radial-gradient from-teal-500/10 to-transparent pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-radial-gradient from-[#1565C0]/10 to-transparent pointer-events-none" />
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div>
             <div className="flex items-center gap-2.5 mb-2">
-              <span className="px-3 py-1 bg-teal-500/20 text-teal-300 text-xs font-bold rounded-full uppercase tracking-wider border border-teal-500/30">
+              <span className="px-3 py-1 bg-[#00897B]/20 text-[#B2DFDB] text-xs font-bold rounded-full uppercase tracking-wider border border-[#00897B]/30">
                 Department Operations Workspace
               </span>
               <span className="text-xs text-slate-400 font-mono">
@@ -107,7 +107,7 @@ export const DepartmentDashboard: React.FC = () => {
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              <Building2 className="w-8 h-8 text-teal-400" />
+              <Building2 className="w-8 h-8 text-[#B2DFDB]" />
               {dept?.name || 'Assigned Department'}
             </h1>
             <p className="text-slate-300 text-sm mt-1 max-w-2xl">
@@ -116,7 +116,7 @@ export const DepartmentDashboard: React.FC = () => {
             <div className="flex flex-wrap items-center gap-4 mt-4 text-xs text-slate-300">
               <div className="flex items-center gap-1.5">
                 <span className="text-slate-400">Head of Dept:</span>
-                <span className="font-semibold text-teal-300">{dept?.headOfDepartment?.name || 'Not Designated'}</span>
+                <span className="font-semibold text-[#B2DFDB]">{dept?.headOfDepartment?.name || 'Not Designated'}</span>
               </div>
               <span className="text-slate-600">•</span>
               <div className="flex items-center gap-1.5">
@@ -151,7 +151,7 @@ export const DepartmentDashboard: React.FC = () => {
             <button
               onClick={fetchDashboard}
               disabled={refreshing}
-              className="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-md shadow-teal-900/30 disabled:opacity-50"
+              className="px-3.5 py-2 bg-[#1565C0] hover:bg-[#00897B] text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-md shadow-teal-900/30 disabled:opacity-50"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
               Refresh
@@ -161,8 +161,8 @@ export const DepartmentDashboard: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+        <div className="p-4 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-[#DC2626] shrink-0" />
           <span>{error}</span>
         </div>
       )}
@@ -172,14 +172,14 @@ export const DepartmentDashboard: React.FC = () => {
         {/* Total Patients */}
         <div
           onClick={() => navigate('/department-admin/patients')}
-          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-teal-500 hover:shadow-md transition-all cursor-pointer group"
+          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-[#00897B] hover:shadow-md transition-all cursor-pointer group"
         >
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">Dept Patients</span>
-            <HeartPulse className="w-4 h-4 text-teal-600 group-hover:scale-110 transition-transform" />
+            <HeartPulse className="w-4 h-4 text-[#00897B] group-hover:scale-110 transition-transform" />
           </div>
           <div className="text-2xl font-black text-slate-800">{metrics.totalPatients}</div>
-          <div className="text-[11px] text-teal-600 mt-1 flex items-center gap-1 font-semibold">
+          <div className="text-[11px] text-[#00897B] mt-1 flex items-center gap-1 font-semibold">
             <span>View directory</span>
             <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
           </div>
@@ -188,11 +188,11 @@ export const DepartmentDashboard: React.FC = () => {
         {/* Today's OPD */}
         <div
           onClick={() => navigate('/department-admin/opd')}
-          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-teal-500 hover:shadow-md transition-all cursor-pointer group"
+          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-[#00897B] hover:shadow-md transition-all cursor-pointer group"
         >
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">Today OPD</span>
-            <Activity className="w-4 h-4 text-emerald-600 group-hover:scale-110 transition-transform" />
+            <Activity className="w-4 h-4 text-[#16A34A] group-hover:scale-110 transition-transform" />
           </div>
           <div className="text-2xl font-black text-slate-800">{metrics.todayOpdRegistrations}</div>
           <div className="text-[11px] text-slate-500 mt-1">Registrations today</div>
@@ -201,11 +201,11 @@ export const DepartmentDashboard: React.FC = () => {
         {/* Current IPD */}
         <div
           onClick={() => navigate('/department-admin/ipd')}
-          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-teal-500 hover:shadow-md transition-all cursor-pointer group"
+          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-[#00897B] hover:shadow-md transition-all cursor-pointer group"
         >
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">Current IPD</span>
-            <DoorOpen className="w-4 h-4 text-indigo-600 group-hover:scale-110 transition-transform" />
+            <DoorOpen className="w-4 h-4 text-[#1565C0] group-hover:scale-110 transition-transform" />
           </div>
           <div className="text-2xl font-black text-slate-800">{metrics.currentIpdPatients}</div>
           <div className="text-[11px] text-slate-500 mt-1">Admitted Inpatients</div>
@@ -214,11 +214,11 @@ export const DepartmentDashboard: React.FC = () => {
         {/* Appointments Today */}
         <div
           onClick={() => navigate('/department-admin/appointments')}
-          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-teal-500 hover:shadow-md transition-all cursor-pointer group"
+          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-[#00897B] hover:shadow-md transition-all cursor-pointer group"
         >
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">Appointments</span>
-            <CalendarCheck className="w-4 h-4 text-sky-600 group-hover:scale-110 transition-transform" />
+            <CalendarCheck className="w-4 h-4 text-[#1565C0] group-hover:scale-110 transition-transform" />
           </div>
           <div className="text-2xl font-black text-slate-800">{metrics.todayAppointments}</div>
           <div className="text-[11px] text-slate-500 mt-1">
@@ -229,16 +229,16 @@ export const DepartmentDashboard: React.FC = () => {
         {/* Available Doctors */}
         <div
           onClick={() => navigate('/department-admin/doctors')}
-          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-teal-500 hover:shadow-md transition-all cursor-pointer group"
+          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-[#00897B] hover:shadow-md transition-all cursor-pointer group"
         >
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">Doctors On Duty</span>
-            <UserCheck className="w-4 h-4 text-teal-600 group-hover:scale-110 transition-transform" />
+            <UserCheck className="w-4 h-4 text-[#00897B] group-hover:scale-110 transition-transform" />
           </div>
           <div className="text-2xl font-black text-slate-800">
             {metrics.availableDoctors} <span className="text-sm font-normal text-slate-400">/ {metrics.totalDoctors}</span>
           </div>
-          <div className="text-[11px] text-emerald-600 font-semibold mt-1">
+          <div className="text-[11px] text-[#16A34A] font-semibold mt-1">
             {metrics.totalDoctors > 0 ? `${Math.round((metrics.availableDoctors / metrics.totalDoctors) * 100)}% available` : 'No doctors'}
           </div>
         </div>
@@ -246,7 +246,7 @@ export const DepartmentDashboard: React.FC = () => {
         {/* Bed Occupancy */}
         <div
           onClick={() => navigate('/department-admin/wards-beds')}
-          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-teal-500 hover:shadow-md transition-all cursor-pointer group"
+          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-[#00897B] hover:shadow-md transition-all cursor-pointer group"
         >
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">Bed Occupancy</span>
@@ -273,7 +273,7 @@ export const DepartmentDashboard: React.FC = () => {
               <p className="text-[11px] font-bold text-slate-500 uppercase">Pending Admissions</p>
               <p className="text-xl font-extrabold text-slate-800 mt-0.5">{metrics.pendingAdmissions}</p>
             </div>
-            <span className="w-8 h-8 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center font-bold text-xs">
+            <span className="w-8 h-8 rounded-lg bg-[#E8F1FC] text-[#1565C0] flex items-center justify-center font-bold text-xs">
               IPD
             </span>
           </div>
@@ -291,13 +291,13 @@ export const DepartmentDashboard: React.FC = () => {
 
           <div
             onClick={() => navigate('/department-admin/radiology-requests')}
-            className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm hover:border-purple-400 cursor-pointer flex items-center justify-between transition-all"
+            className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm hover:border-[#1565C0] cursor-pointer flex items-center justify-between transition-all"
           >
             <div>
               <p className="text-[11px] font-bold text-slate-500 uppercase">Pending Radiology</p>
               <p className="text-xl font-extrabold text-slate-800 mt-0.5">{metrics.pendingRadiologyRequests}</p>
             </div>
-            <Scan className="w-5 h-5 text-purple-500" />
+            <Scan className="w-5 h-5 text-[#1565C0]" />
           </div>
 
           <div
@@ -330,7 +330,7 @@ export const DepartmentDashboard: React.FC = () => {
               <p className="text-[11px] font-bold text-slate-500 uppercase">Stock Requests</p>
               <p className="text-xl font-extrabold text-slate-800 mt-0.5">{metrics.pendingInventoryRequests}</p>
             </div>
-            <Pill className="w-5 h-5 text-teal-600" />
+            <Pill className="w-5 h-5 text-[#00897B]" />
           </div>
         </div>
       </div>
@@ -346,7 +346,7 @@ export const DepartmentDashboard: React.FC = () => {
             </div>
             <Link
               to="/department-admin/activity-history"
-              className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"
+              className="text-xs text-[#00897B] hover:text-[#00897B] font-semibold flex items-center gap-1"
             >
               <span>View full log</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -387,12 +387,12 @@ export const DepartmentDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Bell className="w-4 h-4 text-teal-600" />
+              <Bell className="w-4 h-4 text-[#00897B]" />
               <h3 className="text-base font-bold text-slate-800">Alerts & Broadcasts</h3>
             </div>
             <Link
               to="/department-admin/notifications"
-              className="text-xs text-teal-600 hover:text-teal-700 font-semibold"
+              className="text-xs text-[#00897B] hover:text-[#00897B] font-semibold"
             >
               All Alerts
             </Link>
@@ -406,7 +406,7 @@ export const DepartmentDashboard: React.FC = () => {
                   className={`p-3 rounded-xl border text-xs transition-all ${
                     notif.isRead
                       ? 'bg-slate-50 border-slate-200 text-slate-600'
-                      : 'bg-teal-50/60 border-teal-200 text-slate-800'
+                      : 'bg-[#E0F2F1]/60 border-[#B2DFDB] text-slate-800'
                   }`}
                 >
                   <div className="flex items-center justify-between font-semibold mb-1">

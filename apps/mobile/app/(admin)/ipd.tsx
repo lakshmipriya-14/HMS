@@ -328,7 +328,7 @@ export default function AdminIpdScreen() {
               style={[styles.tabItem, isActive && styles.tabItemActive]}
               onPress={() => setActiveTab(tab.id as IpdTab)}
             >
-              <Icon size={14} color={isActive ? '#38845A' : '#64748B'} />
+              <Icon size={14} color={isActive ? '#1565C0' : '#64748B'} />
               <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>{tab.label}</Text>
             </TouchableOpacity>
           );
@@ -337,14 +337,14 @@ export default function AdminIpdScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#38845A" />
+          <ActivityIndicator size="large" color="#1565C0" />
           <Text style={styles.loadingText}>Loading IPD inpatient census & ward matrix...</Text>
         </View>
       ) : (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#1565C0" />}
         >
           {/* Header Action Button */}
           <TouchableOpacity
@@ -363,7 +363,7 @@ export default function AdminIpdScreen() {
           {/* Extended Stay Warning */}
           {extendedStayPatients.length > 0 && (
             <View style={styles.alertBanner}>
-              <AlertTriangle size={16} color="#B45309" />
+              <AlertTriangle size={16} color="#F59E0B" />
               <View style={{ flex: 1, marginLeft: 8 }}>
                 <Text style={styles.alertTitle}>Extended Stay Alert ({extendedStayPatients.length} Inpatients)</Text>
                 <Text style={styles.alertSub}>Patients hospitalized &gt; 7 days require clinical review.</Text>
@@ -383,11 +383,11 @@ export default function AdminIpdScreen() {
                   <Text style={styles.kpiMiniLabel}>Inpatients</Text>
                 </View>
                 <View style={styles.kpiMiniCard}>
-                  <Text style={[styles.kpiMiniNum, { color: '#38845A' }]}>{availableBedsCount}</Text>
+                  <Text style={[styles.kpiMiniNum, { color: '#1565C0' }]}>{availableBedsCount}</Text>
                   <Text style={styles.kpiMiniLabel}>Avail Beds</Text>
                 </View>
                 <View style={styles.kpiMiniCard}>
-                  <Text style={[styles.kpiMiniNum, { color: '#E11D48' }]}>{icuOccupancyRate}%</Text>
+                  <Text style={[styles.kpiMiniNum, { color: '#DC2626' }]}>{icuOccupancyRate}%</Text>
                   <Text style={styles.kpiMiniLabel}>ICU Occ</Text>
                 </View>
                 <View style={styles.kpiMiniCard}>
@@ -433,11 +433,11 @@ export default function AdminIpdScreen() {
                             isLongStay && { backgroundColor: '#FEF3C7', borderColor: '#FDE68A' },
                           ]}
                         >
-                          <Clock size={11} color={isLongStay ? '#B45309' : '#38845A'} />
+                          <Clock size={11} color={isLongStay ? '#F59E0B' : '#1565C0'} />
                           <Text
                             style={[
                               styles.losBadgeText,
-                              isLongStay && { color: '#B45309' },
+                              isLongStay && { color: '#F59E0B' },
                             ]}
                           >
                             {los} {los === 1 ? 'day' : 'days'}
@@ -469,12 +469,12 @@ export default function AdminIpdScreen() {
                             setTargetBedId('');
                           }}
                         >
-                          <ArrowRightLeft size={13} color="#4F46E5" />
-                          <Text style={[styles.actionBtnText, { color: '#4F46E5' }]}>Transfer Bed</Text>
+                          <ArrowRightLeft size={13} color="#1565C0" />
+                          <Text style={[styles.actionBtnText, { color: '#1565C0' }]}>Transfer Bed</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                          style={[styles.actionBtn, { borderColor: '#FECDD3' }]}
+                          style={[styles.actionBtn, { borderColor: '#FEE2E2' }]}
                           onPress={() => {
                             setDischargeModal(adm);
                             setDischargeSummary('');
@@ -521,13 +521,13 @@ export default function AdminIpdScreen() {
                       <View
                         style={[
                           styles.statusBadge,
-                          { backgroundColor: isAdmitted ? '#EAF5ED' : '#F1F5F9' },
+                          { backgroundColor: isAdmitted ? '#E8F1FC' : '#F1F5F9' },
                         ]}
                       >
                         <Text
                           style={[
                             styles.statusBadgeText,
-                            { color: isAdmitted ? '#38845A' : '#64748B' },
+                            { color: isAdmitted ? '#1565C0' : '#64748B' },
                           ]}
                         >
                           {adm.status}
@@ -632,15 +632,15 @@ export default function AdminIpdScreen() {
                       </Text>
                     </View>
                     <TouchableOpacity
-                      style={[styles.actionBtn, { backgroundColor: '#EEF2FF', borderColor: '#C7D2FE', paddingVertical: 8, paddingHorizontal: 12 }]}
+                      style={[styles.actionBtn, { backgroundColor: '#E8F1FC', borderColor: '#C7D2FE', paddingVertical: 8, paddingHorizontal: 12 }]}
                       onPress={() => {
                         setTransferModal(adm);
                         setTargetWardId(wards[0]?.id || '');
                         setTargetBedId('');
                       }}
                     >
-                      <ArrowRightLeft size={13} color="#4F46E5" />
-                      <Text style={[styles.actionBtnText, { color: '#4F46E5' }]}>Transfer</Text>
+                      <ArrowRightLeft size={13} color="#1565C0" />
+                      <Text style={[styles.actionBtnText, { color: '#1565C0' }]}>Transfer</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -666,7 +666,7 @@ export default function AdminIpdScreen() {
                       </Text>
                     </View>
                     <TouchableOpacity
-                      style={[styles.actionBtn, { backgroundColor: '#FFF1F2', borderColor: '#FECDD3', paddingVertical: 8, paddingHorizontal: 12 }]}
+                      style={[styles.actionBtn, { backgroundColor: '#FFF1F2', borderColor: '#FEE2E2', paddingVertical: 8, paddingHorizontal: 12 }]}
                       onPress={() => {
                         setDischargeModal(adm);
                         setDischargeSummary('');
@@ -703,7 +703,7 @@ export default function AdminIpdScreen() {
                         <Text style={styles.uhidText}>Status: {bed.status} • Type: {bed.type}</Text>
                       </View>
                       <TouchableOpacity
-                        style={[styles.actionBtn, { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0', paddingVertical: 8, paddingHorizontal: 12 }]}
+                        style={[styles.actionBtn, { backgroundColor: '#DCFCE7', borderColor: '#BBF7D0', paddingVertical: 8, paddingHorizontal: 12 }]}
                         onPress={async () => {
                           try {
                             setSubmitting(true);
@@ -726,7 +726,7 @@ export default function AdminIpdScreen() {
 
               {cleaningBedsCount === 0 && (
                 <View style={styles.emptyCard}>
-                  <CheckCircle size={32} color="#10B981" />
+                  <CheckCircle size={32} color="#16A34A" />
                   <Text style={styles.emptyTitle}>All Beds Ready</Text>
                   <Text style={styles.emptySub}>No hospital beds currently pending housekeeping or maintenance.</Text>
                 </View>
@@ -835,7 +835,7 @@ export default function AdminIpdScreen() {
             />
 
             <TouchableOpacity style={styles.submitBtn} onPress={handleAdmitPatient} disabled={submitting}>
-              {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitBtnText}>Confirm Admission</Text>}
+              {submitting ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.submitBtnText}>Confirm Admission</Text>}
             </TouchableOpacity>
           </View>
         </View>
@@ -854,7 +854,7 @@ export default function AdminIpdScreen() {
               </TouchableOpacity>
             </View>
 
-            <Text style={{ fontSize: 12, color: '#38845A', fontWeight: '700', marginBottom: 10 }}>
+            <Text style={{ fontSize: 12, color: '#1565C0', fontWeight: '700', marginBottom: 10 }}>
               Patient: {transferModal?.patient?.firstName} {transferModal?.patient?.lastName}
             </Text>
 
@@ -904,11 +904,11 @@ export default function AdminIpdScreen() {
             />
 
             <TouchableOpacity
-              style={[styles.submitBtn, { backgroundColor: '#4F46E5' }]}
+              style={[styles.submitBtn, { backgroundColor: '#1565C0' }]}
               onPress={handleTransferBed}
               disabled={submitting}
             >
-              {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitBtnText}>Confirm Bed Transfer</Text>}
+              {submitting ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.submitBtnText}>Confirm Bed Transfer</Text>}
             </TouchableOpacity>
           </View>
         </View>
@@ -934,22 +934,22 @@ export default function AdminIpdScreen() {
             {/* Checklist */}
             <View style={{ gap: 6, backgroundColor: '#F8FAFC', padding: 10, borderRadius: 8, marginBottom: 10 }}>
               <TouchableOpacity style={styles.checkRow} onPress={() => setClearanceBilling(!clearanceBilling)}>
-                {clearanceBilling ? <CheckSquare size={16} color="#38845A" /> : <Square size={16} color="#94A3B8" />}
+                {clearanceBilling ? <CheckSquare size={16} color="#1565C0" /> : <Square size={16} color="#94A3B8" />}
                 <Text style={styles.checkText}>1. Billing Clearance: Room & care settled</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.checkRow} onPress={() => setClearancePharmacy(!clearancePharmacy)}>
-                {clearancePharmacy ? <CheckSquare size={16} color="#38845A" /> : <Square size={16} color="#94A3B8" />}
+                {clearancePharmacy ? <CheckSquare size={16} color="#1565C0" /> : <Square size={16} color="#94A3B8" />}
                 <Text style={styles.checkText}>2. Pharmacy Clearance: Meds dispensed/cleared</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.checkRow} onPress={() => setClearanceDiagnostics(!clearanceDiagnostics)}>
-                {clearanceDiagnostics ? <CheckSquare size={16} color="#38845A" /> : <Square size={16} color="#94A3B8" />}
+                {clearanceDiagnostics ? <CheckSquare size={16} color="#1565C0" /> : <Square size={16} color="#94A3B8" />}
                 <Text style={styles.checkText}>3. Diagnostics Clearance: Lab results reviewed</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.checkRow} onPress={() => setClearanceMedical(!clearanceMedical)}>
-                {clearanceMedical ? <CheckSquare size={16} color="#38845A" /> : <Square size={16} color="#94A3B8" />}
+                {clearanceMedical ? <CheckSquare size={16} color="#1565C0" /> : <Square size={16} color="#94A3B8" />}
                 <Text style={styles.checkText}>4. Medical Clearance: Doctor approved</Text>
               </TouchableOpacity>
             </View>
@@ -968,7 +968,7 @@ export default function AdminIpdScreen() {
               onPress={handleDischargePatient}
               disabled={submitting}
             >
-              {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitBtnText}>Sign Clearance & Discharge</Text>}
+              {submitting ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.submitBtnText}>Sign Clearance & Discharge</Text>}
             </TouchableOpacity>
           </View>
         </View>
@@ -990,24 +990,24 @@ export default function AdminIpdScreen() {
             </View>
 
             <Text style={{ fontSize: 12, color: '#64748B', marginBottom: 14 }}>
-              Current State: <Text style={{ fontWeight: '700', color: '#0F172A' }}>{bedStatusModal?.status}</Text>
+              Current State: <Text style={{ fontWeight: '700', color: '#183153' }}>{bedStatusModal?.status}</Text>
             </Text>
 
             <View style={{ gap: 10 }}>
               <TouchableOpacity
-                style={[styles.quickStatusBtn, { backgroundColor: '#ECFDF5', borderColor: '#A7F3D0' }]}
+                style={[styles.quickStatusBtn, { backgroundColor: '#E0F2F1', borderColor: '#B2DFDB' }]}
                 onPress={() => handleUpdateBedStatus('AVAILABLE')}
               >
-                <CheckCircle size={16} color="#059669" />
-                <Text style={[styles.quickStatusBtnText, { color: '#059669' }]}>Mark AVAILABLE (Cleaned)</Text>
+                <CheckCircle size={16} color="#00897B" />
+                <Text style={[styles.quickStatusBtnText, { color: '#00897B' }]}>Mark AVAILABLE (Cleaned)</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.quickStatusBtn, { backgroundColor: '#FFFBEB', borderColor: '#FDE68A' }]}
+                style={[styles.quickStatusBtn, { backgroundColor: '#FEF3C7', borderColor: '#FDE68A' }]}
                 onPress={() => handleUpdateBedStatus('HOUSEKEEPING')}
               >
-                <Sparkles size={16} color="#D97706" />
-                <Text style={[styles.quickStatusBtnText, { color: '#D97706' }]}>Mark HOUSEKEEPING (Cleaning)</Text>
+                <Sparkles size={16} color="#F59E0B" />
+                <Text style={[styles.quickStatusBtnText, { color: '#F59E0B' }]}>Mark HOUSEKEEPING (Cleaning)</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -1047,7 +1047,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   tabItemActive: {
-    borderBottomColor: '#38845A',
+    borderBottomColor: '#1565C0',
   },
   tabLabel: {
     fontSize: 10,
@@ -1055,7 +1055,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   tabLabelActive: {
-    color: '#38845A',
+    color: '#1565C0',
   },
   scroll: { flex: 1 },
   scrollContent: { padding: 14, paddingBottom: 30 },
@@ -1064,7 +1064,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 11,
     borderRadius: 12,
     marginBottom: 12,
@@ -1092,11 +1092,11 @@ const styles = StyleSheet.create({
   alertTitle: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#92400E',
+    color: '#F59E0B',
   },
   alertSub: {
     fontSize: 10,
-    color: '#B45309',
+    color: '#F59E0B',
     marginTop: 1,
   },
   kpiRow: {
@@ -1116,7 +1116,7 @@ const styles = StyleSheet.create({
   kpiMiniNum: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   kpiMiniLabel: {
     fontSize: 9,
@@ -1139,7 +1139,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 8,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   card: {
     backgroundColor: '#FFFFFF',
@@ -1157,7 +1157,7 @@ const styles = StyleSheet.create({
   patientName: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   uhidText: {
     fontSize: 11,
@@ -1168,9 +1168,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     borderWidth: 1,
-    borderColor: '#CDE8D5',
+    borderColor: '#BFDBFE',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -1178,7 +1178,7 @@ const styles = StyleSheet.create({
   losBadgeText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
   },
   statusBadge: {
     paddingHorizontal: 8,
@@ -1190,7 +1190,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   occBadge: {
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -1198,7 +1198,7 @@ const styles = StyleSheet.create({
   occBadgeText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
   },
   detailBox: {
     backgroundColor: '#F8FAFC',
@@ -1209,7 +1209,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 11,
-    color: '#334155',
+    color: '#475569',
   },
   actionRow: {
     flexDirection: 'row',
@@ -1229,12 +1229,12 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#EAF5ED',
+    borderColor: '#E8F1FC',
   },
   actionBtnText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   bedGrid: {
     flexDirection: 'row',
@@ -1243,31 +1243,31 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   bedChip: {
-    backgroundColor: '#D1FAE5',
+    backgroundColor: '#DCFCE7',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#A7F3D0',
+    borderColor: '#B2DFDB',
   },
   bedChipText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#059669',
+    color: '#00897B',
   },
   bedChipOcc: {
-    backgroundColor: '#FFE4E6',
-    borderColor: '#FECDD3',
+    backgroundColor: '#FEE2E2',
+    borderColor: '#FEE2E2',
   },
   bedChipTextOcc: {
-    color: '#E11D48',
+    color: '#DC2626',
   },
   bedChipClean: {
     backgroundColor: '#FEF3C7',
     borderColor: '#FDE68A',
   },
   bedChipTextClean: {
-    color: '#D97706',
+    color: '#F59E0B',
   },
   bedChipMaint: {
     backgroundColor: '#F1F5F9',
@@ -1279,7 +1279,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
     marginBottom: 10,
   },
   emptyCard: {
@@ -1293,7 +1293,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
     marginTop: 10,
   },
   emptySub: {
@@ -1318,8 +1318,8 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   chipSelectActive: {
-    backgroundColor: '#EAF5ED',
-    borderColor: '#38845A',
+    backgroundColor: '#E8F1FC',
+    borderColor: '#1565C0',
   },
   chipSelectText: {
     fontSize: 11,
@@ -1327,7 +1327,7 @@ const styles = StyleSheet.create({
     color: '#475569',
   },
   chipSelectTextActive: {
-    color: '#38845A',
+    color: '#1565C0',
     fontWeight: '700',
   },
   checkRow: {
@@ -1338,7 +1338,7 @@ const styles = StyleSheet.create({
   },
   checkText: {
     fontSize: 11,
-    color: '#334155',
+    color: '#475569',
     fontWeight: '500',
   },
   quickStatusBtn: {
@@ -1374,7 +1374,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   fieldLabel: {
     fontSize: 12,
@@ -1391,10 +1391,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: 'center',

@@ -494,14 +494,14 @@ export default function LabWorklistScreen() {
       <View style={styles.topHeader}>
         <View style={styles.headerTitleRow}>
           <View style={styles.headerIconBox}>
-            <FlaskConical size={22} color="#38845A" />
+            <FlaskConical size={22} color="#1565C0" />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.headerTitle}>Central LIMS & Pathology</Text>
             <Text style={styles.headerSub}>Phlebotomy, Specimen Accessioning & Diagnostic Release</Text>
           </View>
           <View style={styles.nablBadge}>
-            <Award size={12} color="#38845A" />
+            <Award size={12} color="#1565C0" />
             <Text style={styles.nablText}>NABL ISO-15189</Text>
           </View>
         </View>
@@ -565,13 +565,13 @@ export default function LabWorklistScreen() {
       {/* Orders Worklist */}
       <ScrollView
         style={styles.orderList}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1565C0']} />}
       >
         {worklistError ? (
           <Text accessibilityRole="button" onPress={loadWorklist} style={styles.loadingText}>Could not load the worklist. Tap to retry.</Text>
         ) : loading && !refreshing ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#38845A" />
+            <ActivityIndicator size="large" color="#1565C0" />
             <Text style={styles.loadingText}>Fetching Department Worklist...</Text>
           </View>
         ) : filteredOrders.length === 0 ? (
@@ -607,12 +607,12 @@ export default function LabWorklistScreen() {
                     </View>
                     {!order.doctorNotified ? (
                       <TouchableOpacity style={styles.panicCallBtn} onPress={() => handleNotifyDoctor(order)}>
-                        <PhoneCall size={12} color="#fff" />
+                        <PhoneCall size={12} color="#FFFFFF" />
                         <Text style={styles.panicCallBtnText}>Alert Doctor</Text>
                       </TouchableOpacity>
                     ) : (
                       <View style={styles.panicAcknowledgedBadge}>
-                        <Check size={12} color="#38845A" />
+                        <Check size={12} color="#1565C0" />
                         <Text style={styles.panicAcknowledgedText}>Doctor Alerted</Text>
                       </View>
                     )}
@@ -645,7 +645,7 @@ export default function LabWorklistScreen() {
                 {/* Patient Information */}
                 <View style={styles.patientRow}>
                   <View style={styles.avatarPill}>
-                    <User size={14} color="#38845A" />
+                    <User size={14} color="#1565C0" />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.patientName}>{order.patientName}</Text>
@@ -671,7 +671,7 @@ export default function LabWorklistScreen() {
                 {/* Specimen Barcode & Tube Detail */}
                 <View style={styles.barcodeRow}>
                   <View style={styles.barcodeBox}>
-                    <QrCode size={14} color="#38845A" />
+                    <QrCode size={14} color="#1565C0" />
                     <Text style={styles.barcodeText}>{order.barcode || 'Pending Barcode'}</Text>
                   </View>
                   <View style={styles.tubeTypePill}>
@@ -721,7 +721,7 @@ export default function LabWorklistScreen() {
                 {/* Released Verification Stamp */}
                 {isCompleted && (
                   <View style={styles.releaseStampBox}>
-                    <CheckCircle2 size={14} color="#38845A" />
+                    <CheckCircle2 size={14} color="#1565C0" />
                     <Text style={styles.releaseStampText}>
                       Authorized & Released by {order.releasedBy || 'Senior Pathologist'} ({order.reportReleasedAt || 'Verified'})
                     </Text>
@@ -733,7 +733,7 @@ export default function LabWorklistScreen() {
                   {!isCollected && !isRejected && (
                     <>
                       <TouchableOpacity style={styles.primaryActionBtn} onPress={() => handleOpenCollection(order)}>
-                        <Syringe size={14} color="#fff" />
+                        <Syringe size={14} color="#FFFFFF" />
                         <Text style={styles.primaryActionBtnText}>Collect Specimen</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={styles.secondaryActionBtn} onPress={() => handleOpenRejection(order)}>
@@ -746,7 +746,7 @@ export default function LabWorklistScreen() {
                   {isCollected && !isCompleted && !isRejected && (
                     <>
                       <TouchableOpacity style={styles.resultsActionBtn} onPress={() => handleOpenResults(order)}>
-                        <Activity size={14} color="#fff" />
+                        <Activity size={14} color="#FFFFFF" />
                         <Text style={styles.resultsActionBtnText}>2-Stage Result Entry & Verification</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={styles.rejectSmallBtn} onPress={() => handleOpenRejection(order)}>
@@ -757,7 +757,7 @@ export default function LabWorklistScreen() {
 
                   {isCompleted && (
                     <TouchableOpacity style={styles.viewReportBtn} onPress={() => handleOpenResults(order)}>
-                      <FileCheck size={14} color="#38845A" />
+                      <FileCheck size={14} color="#1565C0" />
                       <Text style={styles.viewReportBtnText}>View Released Certificate</Text>
                     </TouchableOpacity>
                   )}
@@ -774,7 +774,7 @@ export default function LabWorklistScreen() {
           <View style={styles.modalCard}>
             <View style={styles.modalHeader}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Syringe size={20} color="#38845A" />
+                <Syringe size={20} color="#1565C0" />
                 <Text style={styles.modalTitle}>Specimen Collection Sheet</Text>
               </View>
               <TouchableOpacity onPress={() => setCollectionModalVisible(false)}>
@@ -788,7 +788,7 @@ export default function LabWorklistScreen() {
                   {/* UHID Verification Card */}
                   <View style={styles.verificationBox}>
                     <View style={styles.verificationHeader}>
-                      <CheckCircle2 size={16} color="#38845A" />
+                      <CheckCircle2 size={16} color="#1565C0" />
                       <Text style={styles.verificationTitle}>Patient Identity Verification</Text>
                     </View>
                     <Text style={styles.modalFieldLabel}>Patient Name</Text>
@@ -796,7 +796,7 @@ export default function LabWorklistScreen() {
                     <View style={styles.modalSplitRow}>
                       <View style={{ flex: 1 }}>
                         <Text style={styles.modalFieldLabel}>UHID (Verified)</Text>
-                        <Text style={[styles.modalFieldValue, { color: '#38845A' }]}>{selectedOrder.uhid}</Text>
+                        <Text style={[styles.modalFieldValue, { color: '#1565C0' }]}>{selectedOrder.uhid}</Text>
                       </View>
                       <View style={{ flex: 1 }}>
                         <Text style={styles.modalFieldLabel}>Order No</Text>
@@ -823,7 +823,7 @@ export default function LabWorklistScreen() {
                       <Text style={[styles.tubeOptionText, collectionTube === tube && styles.tubeOptionTextSelected]}>
                         {tube}
                       </Text>
-                      {collectionTube === tube && <Check size={16} color="#38845A" />}
+                      {collectionTube === tube && <Check size={16} color="#1565C0" />}
                     </TouchableOpacity>
                   ))}
 
@@ -840,7 +840,7 @@ export default function LabWorklistScreen() {
                       style={styles.generateBarcodeBtn}
                       onPress={() => setCollectionBarcode(`BAR-${Math.floor(100000 + Math.random() * 900000)}`)}
                     >
-                      <QrCode size={14} color="#fff" />
+                      <QrCode size={14} color="#FFFFFF" />
                       <Text style={styles.generateBarcodeBtnText}>Auto Barcode</Text>
                     </TouchableOpacity>
                   </View>
@@ -868,10 +868,10 @@ export default function LabWorklistScreen() {
                 disabled={isSubmittingCollection}
               >
                 {isSubmittingCollection ? (
-                  <ActivityIndicator color="#fff" size="small" />
+                  <ActivityIndicator color="#FFFFFF" size="small" />
                 ) : (
                   <>
-                    <Check size={16} color="#fff" />
+                    <Check size={16} color="#FFFFFF" />
                     <Text style={styles.confirmBtnText}>Confirm Sample Collection</Text>
                   </>
                 )}
@@ -949,10 +949,10 @@ export default function LabWorklistScreen() {
                 disabled={isSubmittingRejection}
               >
                 {isSubmittingRejection ? (
-                  <ActivityIndicator color="#fff" size="small" />
+                  <ActivityIndicator color="#FFFFFF" size="small" />
                 ) : (
                   <>
-                    <Ban size={16} color="#fff" />
+                    <Ban size={16} color="#FFFFFF" />
                     <Text style={styles.confirmBtnText}>Confirm Specimen Rejection</Text>
                   </>
                 )}
@@ -968,7 +968,7 @@ export default function LabWorklistScreen() {
           <View style={[styles.modalCard, { maxHeight: '90%' }]}>
             <View style={styles.modalHeader}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <FlaskConical size={20} color="#38845A" />
+                <FlaskConical size={20} color="#1565C0" />
                 <View>
                   <Text style={styles.modalTitle}>Laboratory Diagnostic Verification</Text>
                   <Text style={styles.modalSubtitle}>Stage 1: Technician Entry • Stage 2: Pathologist Sign-off</Text>
@@ -990,8 +990,8 @@ export default function LabWorklistScreen() {
                         UHID: {resultsOrder.uhid} • Order: {resultsOrder.orderNumber} • Barcode: {resultsOrder.barcode}
                       </Text>
                     </View>
-                    <View style={[styles.priorityBadgeSmall, resultsOrder.priority === 'STAT_EMERGENCY' ? { backgroundColor: '#EAF5ED' } : { backgroundColor: '#EAF5ED' }]}>
-                      <Text style={[styles.priorityBadgeSmallText, resultsOrder.priority === 'STAT_EMERGENCY' ? { color: '#DC2626' } : { color: '#38845A' }]}>
+                    <View style={[styles.priorityBadgeSmall, resultsOrder.priority === 'STAT_EMERGENCY' ? { backgroundColor: '#E8F1FC' } : { backgroundColor: '#E8F1FC' }]}>
+                      <Text style={[styles.priorityBadgeSmallText, resultsOrder.priority === 'STAT_EMERGENCY' ? { color: '#DC2626' } : { color: '#1565C0' }]}>
                         {resultsOrder.priority}
                       </Text>
                     </View>
@@ -1075,10 +1075,10 @@ export default function LabWorklistScreen() {
                     disabled={isSubmittingResults}
                   >
                     {isSubmittingResults ? (
-                      <ActivityIndicator color="#38845A" size="small" />
+                      <ActivityIndicator color="#1565C0" size="small" />
                     ) : (
                       <>
-                        <Activity size={16} color="#38845A" />
+                        <Activity size={16} color="#1565C0" />
                         <Text style={styles.saveResultsBtnText}>Stage 1: Save & Validate Measured Values</Text>
                       </>
                     )}
@@ -1087,7 +1087,7 @@ export default function LabWorklistScreen() {
                   {/* Stage 2: Authorized Pathologist Verification */}
                   <View style={styles.pathologistBox}>
                     <View style={styles.pathologistHeader}>
-                      <Award size={18} color="#38845A" />
+                      <Award size={18} color="#1565C0" />
                       <Text style={styles.pathologistTitle}>Stage 2: Pathologist Sign-Off & Official Release</Text>
                     </View>
                     <Text style={styles.pathologistSub}>
@@ -1096,7 +1096,7 @@ export default function LabWorklistScreen() {
 
                     {resultsOrder.status === 'COMPLETED' ? (
                       <View style={styles.alreadyReleasedBox}>
-                        <CheckCircle2 size={18} color="#38845A" />
+                        <CheckCircle2 size={18} color="#1565C0" />
                         <Text style={styles.alreadyReleasedText}>Report Officially Released by {resultsOrder.releasedBy}</Text>
                       </View>
                     ) : (
@@ -1106,10 +1106,10 @@ export default function LabWorklistScreen() {
                         disabled={isReleasingReport}
                       >
                         {isReleasingReport ? (
-                          <ActivityIndicator color="#fff" size="small" />
+                          <ActivityIndicator color="#FFFFFF" size="small" />
                         ) : (
                           <>
-                            <Award size={16} color="#fff" />
+                            <Award size={16} color="#FFFFFF" />
                             <Text style={styles.releaseNowBtnText}>1-Tap Sign-Off & Release Report</Text>
                           </>
                         )}
@@ -1128,11 +1128,11 @@ export default function LabWorklistScreen() {
 
 // Helpers
 function getTubeDotStyle(tube: string) {
-  if (tube.includes('Purple') || tube.includes('EDTA')) return { backgroundColor: '#38845A' };
+  if (tube.includes('Purple') || tube.includes('EDTA')) return { backgroundColor: '#1565C0' };
   if (tube.includes('Yellow') || tube.includes('Serum')) return { backgroundColor: '#F59E0B' };
   if (tube.includes('Grey') || tube.includes('Fluoride')) return { backgroundColor: '#64748B' };
-  if (tube.includes('Blue') || tube.includes('Citrate')) return { backgroundColor: '#0284C7' };
-  return { backgroundColor: '#10B981' };
+  if (tube.includes('Blue') || tube.includes('Citrate')) return { backgroundColor: '#1565C0' };
+  return { backgroundColor: '#16A34A' };
 }
 
 function getStatusStyle(status: string) {
@@ -1140,13 +1140,13 @@ function getStatusStyle(status: string) {
     case 'ORDERED':
       return { backgroundColor: '#F1F5F9', borderColor: '#CBD5E1', borderWidth: 1 };
     case 'COLLECTED':
-      return { backgroundColor: '#E0F2FE', borderColor: '#BAE6FD', borderWidth: 1 };
+      return { backgroundColor: '#E8F1FC', borderColor: '#BFDBFE', borderWidth: 1 };
     case 'PROCESSING':
       return { backgroundColor: '#FEF3C7', borderColor: '#FDE68A', borderWidth: 1 };
     case 'COMPLETED':
-      return { backgroundColor: '#ECFDF5', borderColor: '#A7F3D0', borderWidth: 1 };
+      return { backgroundColor: '#E0F2F1', borderColor: '#B2DFDB', borderWidth: 1 };
     case 'REJECTED':
-      return { backgroundColor: '#FEF2F2', borderColor: '#CDE8D5', borderWidth: 1 };
+      return { backgroundColor: '#FEE2E2', borderColor: '#BFDBFE', borderWidth: 1 };
     default:
       return { backgroundColor: '#F8FAFC' };
   }
@@ -1157,13 +1157,13 @@ function getStatusTextStyle(status: string) {
     case 'ORDERED':
       return { color: '#475569' };
     case 'COLLECTED':
-      return { color: '#0369A1' };
+      return { color: '#0D47A1' };
     case 'PROCESSING':
-      return { color: '#B45309' };
+      return { color: '#F59E0B' };
     case 'COMPLETED':
-      return { color: '#047857' };
+      return { color: '#00897B' };
     case 'REJECTED':
-      return { color: '#B91C1C' };
+      return { color: '#DC2626' };
     default:
       return { color: '#475569' };
   }
@@ -1188,174 +1188,174 @@ function formatStatusLabel(status: string) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
-  topHeader: { backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8 },
+  topHeader: { backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8 },
   headerTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
-  headerIconBox: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#EAF5ED', alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: 17, fontWeight: '800', color: '#0F172A' },
+  headerIconBox: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#E8F1FC', alignItems: 'center', justifyContent: 'center' },
+  headerTitle: { fontSize: 17, fontWeight: '800', color: '#183153' },
   headerSub: { fontSize: 11, color: '#64748B' },
-  nablBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#ECFDF5', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, borderWidth: 1, borderColor: '#A7F3D0' },
-  nablText: { fontSize: 10, fontWeight: '700', color: '#065F46' },
+  nablBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E0F2F1', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, borderWidth: 1, borderColor: '#B2DFDB' },
+  nablText: { fontSize: 10, fontWeight: '700', color: '#183153' },
   searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', borderRadius: 10, paddingHorizontal: 12, height: 38, marginBottom: 10 },
-  searchInput: { flex: 1, marginLeft: 8, fontSize: 13, color: '#0F172A' },
+  searchInput: { flex: 1, marginLeft: 8, fontSize: 13, color: '#183153' },
   deptTabsRow: { flexDirection: 'row', marginBottom: 8 },
   deptTab: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 8, marginRight: 8, backgroundColor: '#F1F5F9' },
-  deptTabActive: { backgroundColor: '#38845A' },
+  deptTabActive: { backgroundColor: '#1565C0' },
   deptTabText: { fontSize: 12, fontWeight: '600', color: '#64748B' },
-  deptTabTextActive: { color: '#fff', fontWeight: '700' },
+  deptTabTextActive: { color: '#FFFFFF', fontWeight: '700' },
   chipsRow: { flexDirection: 'row', marginBottom: 4 },
   chip: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 16, marginRight: 6, backgroundColor: '#F8FAFC', borderWidth: 1, borderColor: '#E2E8F0' },
-  chipActive: { backgroundColor: '#EAF5ED', borderColor: '#FDBA74' },
+  chipActive: { backgroundColor: '#E8F1FC', borderColor: '#FDBA74' },
   chipText: { fontSize: 11, color: '#64748B', fontWeight: '500' },
-  chipTextActive: { color: '#38845A', fontWeight: '700' },
+  chipTextActive: { color: '#1565C0', fontWeight: '700' },
   orderList: { flex: 1, padding: 16 },
   loadingContainer: { alignItems: 'center', justifyContent: 'center', padding: 40 },
   loadingText: { marginTop: 10, fontSize: 13, color: '#64748B' },
   emptyContainer: { alignItems: 'center', justifyContent: 'center', padding: 40 },
-  emptyTitle: { fontSize: 16, fontWeight: '700', color: '#334155', marginTop: 12 },
+  emptyTitle: { fontSize: 16, fontWeight: '700', color: '#475569', marginTop: 12 },
   emptySub: { fontSize: 12, color: '#94A3B8', textAlign: 'center', marginTop: 4 },
-  orderCard: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 12 },
-  orderCardPanic: { borderColor: '#FCA5A5', borderWidth: 1.5, backgroundColor: '#FFFDFD' },
+  orderCard: { backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 12 },
+  orderCardPanic: { borderColor: '#FECACA', borderWidth: 1.5, backgroundColor: '#FFFFFF' },
   orderCardCompleted: { borderColor: '#BBF7D0' },
-  orderCardRejected: { borderColor: '#CDE8D5', backgroundColor: '#FEF2F2' },
-  panicBanner: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#EAF5ED', borderWidth: 1, borderColor: '#CDE8D5', borderRadius: 8, padding: 10, marginBottom: 10 },
+  orderCardRejected: { borderColor: '#BFDBFE', backgroundColor: '#FEE2E2' },
+  panicBanner: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#E8F1FC', borderWidth: 1, borderColor: '#BFDBFE', borderRadius: 8, padding: 10, marginBottom: 10 },
   panicBannerTitle: { fontSize: 12, fontWeight: '800', color: '#DC2626' },
-  panicBannerSub: { fontSize: 10, color: '#991B1B' },
+  panicBannerSub: { fontSize: 10, color: '#DC2626' },
   panicCallBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#DC2626', paddingHorizontal: 8, paddingVertical: 6, borderRadius: 6 },
-  panicCallBtnText: { color: '#fff', fontSize: 11, fontWeight: '700' },
-  panicAcknowledgedBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#ECFDF5', paddingHorizontal: 8, paddingVertical: 6, borderRadius: 6 },
-  panicAcknowledgedText: { color: '#065F46', fontSize: 11, fontWeight: '700' },
+  panicCallBtnText: { color: '#FFFFFF', fontSize: 11, fontWeight: '700' },
+  panicAcknowledgedBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E0F2F1', paddingHorizontal: 8, paddingVertical: 6, borderRadius: 6 },
+  panicAcknowledgedText: { color: '#183153', fontSize: 11, fontWeight: '700' },
   cardHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   orderNoPill: { backgroundColor: '#F1F5F9', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  orderNoText: { fontSize: 11, fontWeight: '800', color: '#334155', fontFamily: 'monospace' },
+  orderNoText: { fontSize: 11, fontWeight: '800', color: '#475569', fontFamily: 'monospace' },
   priorityBox: { flexDirection: 'row', alignItems: 'center' },
-  statBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EAF5ED', paddingHorizontal: 7, paddingVertical: 3, borderRadius: 6 },
+  statBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E8F1FC', paddingHorizontal: 7, paddingVertical: 3, borderRadius: 6 },
   statText: { fontSize: 10, fontWeight: '800', color: '#DC2626' },
   urgentBadge: { backgroundColor: '#FEF3C7', paddingHorizontal: 7, paddingVertical: 3, borderRadius: 6 },
-  urgentText: { fontSize: 10, fontWeight: '800', color: '#D97706' },
+  urgentText: { fontSize: 10, fontWeight: '800', color: '#F59E0B' },
   routineBadge: { backgroundColor: '#F1F5F9', paddingHorizontal: 7, paddingVertical: 3, borderRadius: 6 },
   routineText: { fontSize: 10, fontWeight: '700', color: '#64748B' },
   patientRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 10 },
-  avatarPill: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#EAF5ED', alignItems: 'center', justifyContent: 'center' },
-  patientName: { fontSize: 15, fontWeight: '700', color: '#0F172A' },
+  avatarPill: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#E8F1FC', alignItems: 'center', justifyContent: 'center' },
+  patientName: { fontSize: 15, fontWeight: '700', color: '#183153' },
   patientMeta: { fontSize: 11, color: '#64748B', marginTop: 1 },
-  boldText: { fontWeight: '700', color: '#334155' },
+  boldText: { fontWeight: '700', color: '#475569' },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   statusText: { fontSize: 10, fontWeight: '800' },
   clinicalBlock: { marginTop: 8, paddingVertical: 6, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
   doctorLabel: { fontSize: 11, color: '#64748B' },
-  doctorName: { fontWeight: '700', color: '#1E293B' },
+  doctorName: { fontWeight: '700', color: '#183153' },
   clinicalNotesText: { fontSize: 11, color: '#475569', marginTop: 2, fontStyle: 'italic' },
   barcodeRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 },
-  barcodeBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#FFF7ED', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  barcodeText: { fontSize: 11, fontWeight: '700', color: '#38845A', fontFamily: 'monospace' },
+  barcodeBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#FEF3C7', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  barcodeText: { fontSize: 11, fontWeight: '700', color: '#1565C0', fontFamily: 'monospace' },
   tubeTypePill: { backgroundColor: '#F1F5F9', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   tubeTypeText: { fontSize: 10, fontWeight: '600', color: '#475569' },
   testsSection: { marginTop: 10, backgroundColor: '#F8FAFC', borderRadius: 8, padding: 8 },
   testItemContainer: { marginBottom: 6 },
   testItemHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
-  testItemName: { fontSize: 12, fontWeight: '700', color: '#1E293B' },
+  testItemName: { fontSize: 12, fontWeight: '700', color: '#183153' },
   parameterRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 3, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
   paramNameText: { fontSize: 11, color: '#475569' },
   paramValGroup: { alignItems: 'flex-end' },
   paramValuePill: { backgroundColor: '#E2E8F0', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   paramValuePillAbnormal: { backgroundColor: '#FEF3C7' },
-  paramValuePillCritical: { backgroundColor: '#EAF5ED' },
-  paramValueText: { fontSize: 11, fontWeight: '700', color: '#1E293B' },
-  paramValueTextAbnormal: { color: '#B45309' },
+  paramValuePillCritical: { backgroundColor: '#E8F1FC' },
+  paramValueText: { fontSize: 11, fontWeight: '700', color: '#183153' },
+  paramValueTextAbnormal: { color: '#F59E0B' },
   paramValueTextCritical: { color: '#DC2626', fontWeight: '900' },
   paramPendingText: { fontSize: 10, color: '#94A3B8', fontStyle: 'italic' },
   paramRangeText: { fontSize: 9, color: '#94A3B8', marginTop: 1 },
-  rejectionNoticeBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#FEF2F2', padding: 8, borderRadius: 6, marginTop: 8 },
-  rejectionNoticeText: { fontSize: 11, color: '#991B1B', flex: 1 },
-  releaseStampBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#ECFDF5', padding: 8, borderRadius: 6, marginTop: 8 },
-  releaseStampText: { fontSize: 11, color: '#065F46', fontWeight: '600', flex: 1 },
+  rejectionNoticeBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#FEE2E2', padding: 8, borderRadius: 6, marginTop: 8 },
+  rejectionNoticeText: { fontSize: 11, color: '#DC2626', flex: 1 },
+  releaseStampBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#E0F2F1', padding: 8, borderRadius: 6, marginTop: 8 },
+  releaseStampText: { fontSize: 11, color: '#183153', fontWeight: '600', flex: 1 },
   cardActionsRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, paddingTop: 10, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
-  primaryActionBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#38845A', paddingVertical: 9, borderRadius: 8 },
-  primaryActionBtnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
-  secondaryActionBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EAF5ED', paddingHorizontal: 12, paddingVertical: 9, borderRadius: 8 },
+  primaryActionBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#1565C0', paddingVertical: 9, borderRadius: 8 },
+  primaryActionBtnText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
+  secondaryActionBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E8F1FC', paddingHorizontal: 12, paddingVertical: 9, borderRadius: 8 },
   secondaryActionBtnText: { color: '#DC2626', fontSize: 12, fontWeight: '700' },
-  resultsActionBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#38845A', paddingVertical: 9, borderRadius: 8 },
-  resultsActionBtnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
-  rejectSmallBtn: { backgroundColor: '#EAF5ED', padding: 9, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  viewReportBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#ECFDF5', paddingVertical: 9, borderRadius: 8, borderWidth: 1, borderColor: '#A7F3D0' },
-  viewReportBtnText: { color: '#065F46', fontSize: 12, fontWeight: '700' },
+  resultsActionBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#1565C0', paddingVertical: 9, borderRadius: 8 },
+  resultsActionBtnText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
+  rejectSmallBtn: { backgroundColor: '#E8F1FC', padding: 9, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  viewReportBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#E0F2F1', paddingVertical: 9, borderRadius: 8, borderWidth: 1, borderColor: '#B2DFDB' },
+  viewReportBtnText: { color: '#183153', fontSize: 12, fontWeight: '700' },
 
   // Modal Styles
   modalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.6)', justifyContent: 'flex-end' },
-  modalCard: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '85%', paddingBottom: 20 },
+  modalCard: { backgroundColor: '#FFFFFF', borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '85%', paddingBottom: 20 },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
-  modalTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
+  modalTitle: { fontSize: 16, fontWeight: '800', color: '#183153' },
   modalSubtitle: { fontSize: 11, color: '#64748B', marginTop: 2 },
   modalBody: { padding: 16 },
   verificationBox: { backgroundColor: '#F8FAFC', borderRadius: 10, borderWidth: 1, borderColor: '#E2E8F0', padding: 12, marginBottom: 14 },
   verificationHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
-  verificationTitle: { fontSize: 12, fontWeight: '700', color: '#38845A' },
+  verificationTitle: { fontSize: 12, fontWeight: '700', color: '#1565C0' },
   modalFieldLabel: { fontSize: 10, color: '#64748B', fontWeight: '600', textTransform: 'uppercase' },
-  modalFieldValue: { fontSize: 13, fontWeight: '700', color: '#0F172A', marginBottom: 6 },
+  modalFieldValue: { fontSize: 13, fontWeight: '700', color: '#183153', marginBottom: 6 },
   modalSplitRow: { flexDirection: 'row', gap: 12 },
-  sectionHeader: { fontSize: 13, fontWeight: '700', color: '#1E293B', marginBottom: 8 },
+  sectionHeader: { fontSize: 13, fontWeight: '700', color: '#183153', marginBottom: 8 },
   tubeOption: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#F8FAFC', padding: 12, borderRadius: 10, borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 8 },
-  tubeOptionSelected: { backgroundColor: '#FFF7ED', borderColor: '#FB923C' },
+  tubeOptionSelected: { backgroundColor: '#FEF3C7', borderColor: '#FB923C' },
   tubeDot: { width: 12, height: 12, borderRadius: 6 },
-  tubeOptionText: { flex: 1, fontSize: 13, color: '#334155', fontWeight: '500' },
+  tubeOptionText: { flex: 1, fontSize: 13, color: '#475569', fontWeight: '500' },
   tubeOptionTextSelected: { color: '#C2410C', fontWeight: '700' },
   barcodeInputGroup: { flexDirection: 'row', gap: 8, marginBottom: 12 },
-  barcodeTextInput: { flex: 1, backgroundColor: '#F1F5F9', borderRadius: 8, paddingHorizontal: 12, fontSize: 13, fontWeight: '700', fontFamily: 'monospace', color: '#0F172A' },
-  generateBarcodeBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#38845A', paddingHorizontal: 12, borderRadius: 8, justifyContent: 'center' },
-  generateBarcodeBtnText: { color: '#fff', fontSize: 11, fontWeight: '700' },
-  phlebotomyDisclaimer: { backgroundColor: '#F0FDF4', padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#DCFCE7', marginTop: 6 },
-  disclaimerText: { fontSize: 11, color: '#166534', lineHeight: 16 },
+  barcodeTextInput: { flex: 1, backgroundColor: '#F1F5F9', borderRadius: 8, paddingHorizontal: 12, fontSize: 13, fontWeight: '700', fontFamily: 'monospace', color: '#183153' },
+  generateBarcodeBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#1565C0', paddingHorizontal: 12, borderRadius: 8, justifyContent: 'center' },
+  generateBarcodeBtnText: { color: '#FFFFFF', fontSize: 11, fontWeight: '700' },
+  phlebotomyDisclaimer: { backgroundColor: '#DCFCE7', padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#DCFCE7', marginTop: 6 },
+  disclaimerText: { fontSize: 11, color: '#16A34A', lineHeight: 16 },
   modalFooter: { flexDirection: 'row', gap: 10, paddingHorizontal: 16, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#E2E8F0' },
   cancelBtn: { paddingVertical: 12, paddingHorizontal: 16, borderRadius: 8, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' },
   cancelBtnText: { color: '#475569', fontSize: 13, fontWeight: '600' },
-  confirmBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#38845A', paddingVertical: 12, borderRadius: 8 },
-  confirmBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
+  confirmBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#1565C0', paddingVertical: 12, borderRadius: 8 },
+  confirmBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
 
   // Rejection Modal
-  warningAlertBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FEF2F2', padding: 10, borderRadius: 8, marginBottom: 12 },
-  warningAlertText: { fontSize: 11, color: '#991B1B', flex: 1 },
+  warningAlertBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FEE2E2', padding: 10, borderRadius: 8, marginBottom: 12 },
+  warningAlertText: { fontSize: 11, color: '#DC2626', flex: 1 },
   rejectionOption: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#F8FAFC', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 6 },
-  rejectionOptionSelected: { backgroundColor: '#FEF2F2', borderColor: '#FCA5A5' },
-  rejectionOptionText: { fontSize: 13, color: '#334155' },
+  rejectionOptionSelected: { backgroundColor: '#FEE2E2', borderColor: '#FECACA' },
+  rejectionOptionText: { fontSize: 13, color: '#475569' },
   rejectionOptionTextSelected: { color: '#DC2626', fontWeight: '700' },
-  rejectionNotesInput: { backgroundColor: '#F1F5F9', borderRadius: 8, padding: 10, fontSize: 12, color: '#0F172A', textAlignVertical: 'top' },
+  rejectionNotesInput: { backgroundColor: '#F1F5F9', borderRadius: 8, padding: 10, fontSize: 12, color: '#183153', textAlignVertical: 'top' },
 
   // Result Verification Modal
   orderSummaryStrip: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#F8FAFC', padding: 10, borderRadius: 8, marginBottom: 10 },
-  orderSummaryPatient: { fontSize: 14, fontWeight: '700', color: '#0F172A' },
+  orderSummaryPatient: { fontSize: 14, fontWeight: '700', color: '#183153' },
   orderSummaryDetails: { fontSize: 11, color: '#64748B', marginTop: 2 },
   priorityBadgeSmall: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 },
   priorityBadgeSmallText: { fontSize: 10, fontWeight: '800' },
-  panicWarningModalBox: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#FEF2F2', borderWidth: 1.5, borderColor: '#F87171', padding: 12, borderRadius: 10, marginBottom: 12 },
+  panicWarningModalBox: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#FEE2E2', borderWidth: 1.5, borderColor: '#DC2626', padding: 12, borderRadius: 10, marginBottom: 12 },
   panicWarningModalTitle: { fontSize: 12, fontWeight: '900', color: '#DC2626' },
-  panicWarningModalSub: { fontSize: 10, color: '#B91C1C', marginTop: 2 },
+  panicWarningModalSub: { fontSize: 10, color: '#DC2626', marginTop: 2 },
   testSectionWrapper: { backgroundColor: '#F8FAFC', borderRadius: 10, padding: 10, marginBottom: 10, borderWidth: 1, borderColor: '#E2E8F0' },
-  testSectionTitle: { fontSize: 13, fontWeight: '800', color: '#1E293B', marginBottom: 8 },
-  paramEntryCard: { backgroundColor: '#fff', borderRadius: 8, padding: 10, marginBottom: 8, borderWidth: 1, borderColor: '#E2E8F0' },
-  paramEntryCardCritical: { borderColor: '#F87171', backgroundColor: '#FFF5F5' },
+  testSectionTitle: { fontSize: 13, fontWeight: '800', color: '#183153', marginBottom: 8 },
+  paramEntryCard: { backgroundColor: '#FFFFFF', borderRadius: 8, padding: 10, marginBottom: 8, borderWidth: 1, borderColor: '#E2E8F0' },
+  paramEntryCardCritical: { borderColor: '#DC2626', backgroundColor: '#FEE2E2' },
   paramEntryTop: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  paramEntryName: { fontSize: 12, fontWeight: '700', color: '#0F172A' },
+  paramEntryName: { fontSize: 12, fontWeight: '700', color: '#183153' },
   paramEntryRef: { fontSize: 11, color: '#64748B' },
   paramInputRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  paramInput: { flex: 1, backgroundColor: '#F1F5F9', borderRadius: 6, paddingHorizontal: 10, height: 36, fontSize: 13, fontWeight: '700', color: '#0F172A' },
-  paramInputAbnormal: { backgroundColor: '#FEF3C7', color: '#B45309' },
-  paramInputCritical: { backgroundColor: '#EAF5ED', color: '#DC2626' },
+  paramInput: { flex: 1, backgroundColor: '#F1F5F9', borderRadius: 6, paddingHorizontal: 10, height: 36, fontSize: 13, fontWeight: '700', color: '#183153' },
+  paramInputAbnormal: { backgroundColor: '#FEF3C7', color: '#F59E0B' },
+  paramInputCritical: { backgroundColor: '#E8F1FC', color: '#DC2626' },
   paramInputUnit: { fontSize: 12, color: '#64748B', minWidth: 44 },
-  panicValueBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EAF5ED', paddingHorizontal: 6, paddingVertical: 4, borderRadius: 4 },
+  panicValueBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E8F1FC', paddingHorizontal: 6, paddingVertical: 4, borderRadius: 4 },
   panicValueBadgeText: { fontSize: 9, fontWeight: '900', color: '#DC2626' },
   abnormalValueBadge: { backgroundColor: '#FEF3C7', paddingHorizontal: 6, paddingVertical: 4, borderRadius: 4 },
-  abnormalValueBadgeText: { fontSize: 9, fontWeight: '800', color: '#B45309' },
+  abnormalValueBadgeText: { fontSize: 9, fontWeight: '800', color: '#F59E0B' },
   panicWarningMessage: { fontSize: 10, color: '#DC2626', fontWeight: '700', marginTop: 4 },
-  techNotesInput: { backgroundColor: '#F1F5F9', borderRadius: 8, padding: 10, fontSize: 12, color: '#0F172A', textAlignVertical: 'top', marginBottom: 12 },
-  saveResultsBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#EAF5ED', borderWidth: 1, borderColor: '#FDBA74', paddingVertical: 12, borderRadius: 8, marginBottom: 14 },
+  techNotesInput: { backgroundColor: '#F1F5F9', borderRadius: 8, padding: 10, fontSize: 12, color: '#183153', textAlignVertical: 'top', marginBottom: 12 },
+  saveResultsBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#E8F1FC', borderWidth: 1, borderColor: '#FDBA74', paddingVertical: 12, borderRadius: 8, marginBottom: 14 },
   saveResultsBtnText: { color: '#C2410C', fontSize: 13, fontWeight: '700' },
-  pathologistBox: { backgroundColor: '#F0FDF4', borderRadius: 10, padding: 14, borderWidth: 1, borderColor: '#BBF7D0' },
+  pathologistBox: { backgroundColor: '#DCFCE7', borderRadius: 10, padding: 14, borderWidth: 1, borderColor: '#BBF7D0' },
   pathologistHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
-  pathologistTitle: { fontSize: 13, fontWeight: '800', color: '#166534' },
-  pathologistSub: { fontSize: 11, color: '#15803D', lineHeight: 16, marginBottom: 12 },
+  pathologistTitle: { fontSize: 13, fontWeight: '800', color: '#16A34A' },
+  pathologistSub: { fontSize: 11, color: '#16A34A', lineHeight: 16, marginBottom: 12 },
   alreadyReleasedBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#DCFCE7', padding: 10, borderRadius: 6 },
-  alreadyReleasedText: { fontSize: 12, color: '#166534', fontWeight: '700' },
-  releaseNowBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#38845A', paddingVertical: 12, borderRadius: 8 },
-  releaseNowBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  alreadyReleasedText: { fontSize: 12, color: '#16A34A', fontWeight: '700' },
+  releaseNowBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1565C0', paddingVertical: 12, borderRadius: 8 },
+  releaseNowBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
 });
 

@@ -53,7 +53,7 @@ export const PatientManagement: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <HeartPulse className="w-6 h-6 text-teal-600" />
+            <HeartPulse className="w-6 h-6 text-[#00897B]" />
             Department Patient Directory & Care History
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -63,8 +63,8 @@ export const PatientManagement: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600" />
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-[#DC2626]" />
           <span>{error}</span>
         </div>
       )}
@@ -78,7 +78,7 @@ export const PatientManagement: React.FC = () => {
             placeholder="Search by UHID, patient name, phone number..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500"
+            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B]"
           />
         </div>
       </div>
@@ -106,7 +106,7 @@ export const PatientManagement: React.FC = () => {
                   const lastApt = pat.appointments?.[0];
                   return (
                     <tr key={pat.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 px-4 font-mono font-bold text-teal-700">
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#00897B]">
                         {pat.uhid}
                       </td>
                       <td className="py-3.5 px-4 font-bold text-slate-800">
@@ -129,7 +129,7 @@ export const PatientManagement: React.FC = () => {
                       <td className="py-3.5 px-4 text-right">
                         <button
                           onClick={() => openDetails(pat)}
-                          className="px-3 py-1.5 bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-600 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 transition-all"
+                          className="px-3 py-1.5 bg-slate-100 hover:bg-[#E0F2F1] hover:text-[#00897B] text-slate-600 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 transition-all"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           View Record
@@ -160,7 +160,7 @@ export const PatientManagement: React.FC = () => {
           <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 rounded-xl">
             <div>
               <span className="text-slate-400 block font-medium">Unique Hospital ID (UHID)</span>
-              <span className="font-mono font-bold text-teal-800 text-sm mt-0.5 block">{selectedPatient?.uhid}</span>
+              <span className="font-mono font-bold text-[#183153] text-sm mt-0.5 block">{selectedPatient?.uhid}</span>
             </div>
             <div>
               <span className="text-slate-400 block font-medium">Contact Phone</span>

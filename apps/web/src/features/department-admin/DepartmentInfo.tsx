@@ -81,7 +81,7 @@ export const DepartmentInfo: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <Building2 className="w-6 h-6 text-teal-600" />
+            <Building2 className="w-6 h-6 text-[#00897B]" />
             Department Specification & Parameters
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -90,7 +90,7 @@ export const DepartmentInfo: React.FC = () => {
         </div>
         <button
           onClick={() => setIsEditOpen(true)}
-          className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md shadow-teal-900/20"
+          className="px-4 py-2 bg-[#1565C0] hover:bg-[#00897B] text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md shadow-teal-900/20"
         >
           <Edit className="w-3.5 h-3.5" />
           Edit Permitted Details
@@ -98,18 +98,18 @@ export const DepartmentInfo: React.FC = () => {
       </div>
 
       {success && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-medium flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-medium flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             <span>{success}</span>
           </div>
-          <button onClick={() => setSuccess('')} className="text-emerald-600 hover:text-emerald-900 font-bold">×</button>
+          <button onClick={() => setSuccess('')} className="text-[#16A34A] hover:text-emerald-900 font-bold">×</button>
         </div>
       )}
 
       {error && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600" />
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-[#DC2626]" />
           <span>{error}</span>
         </div>
       )}
@@ -129,7 +129,7 @@ export const DepartmentInfo: React.FC = () => {
               </div>
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 block font-medium">Department Code</span>
-                <span className="font-bold text-teal-700 font-mono text-sm mt-0.5 block">{department?.code}</span>
+                <span className="font-bold text-[#00897B] font-mono text-sm mt-0.5 block">{department?.code}</span>
               </div>
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 block font-medium">Branch Location</span>
@@ -156,21 +156,21 @@ export const DepartmentInfo: React.FC = () => {
               Department Resource Totals
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-3 bg-teal-50/60 border border-teal-100 rounded-xl text-center">
-                <span className="text-2xl font-black text-teal-700">{department?._count?.doctors || 0}</span>
-                <span className="block text-[11px] text-teal-600 font-semibold mt-0.5">Assigned Doctors</span>
+              <div className="p-3 bg-[#E0F2F1]/60 border border-[#B2DFDB] rounded-xl text-center">
+                <span className="text-2xl font-black text-[#00897B]">{department?._count?.doctors || 0}</span>
+                <span className="block text-[11px] text-[#00897B] font-semibold mt-0.5">Assigned Doctors</span>
               </div>
-              <div className="p-3 bg-indigo-50/60 border border-indigo-100 rounded-xl text-center">
-                <span className="text-2xl font-black text-indigo-700">{department?._count?.employees || 0}</span>
-                <span className="block text-[11px] text-indigo-600 font-semibold mt-0.5">Staff & Nurses</span>
+              <div className="p-3 bg-[#E8F1FC]/60 border border-[#BFDBFE] rounded-xl text-center">
+                <span className="text-2xl font-black text-[#1565C0]">{department?._count?.employees || 0}</span>
+                <span className="block text-[11px] text-[#1565C0] font-semibold mt-0.5">Staff & Nurses</span>
               </div>
               <div className="p-3 bg-amber-50/60 border border-amber-100 rounded-xl text-center">
                 <span className="text-2xl font-black text-amber-700">{department?._count?.wards || 0}</span>
                 <span className="block text-[11px] text-amber-600 font-semibold mt-0.5">Assigned Wards</span>
               </div>
-              <div className="p-3 bg-sky-50/60 border border-sky-100 rounded-xl text-center">
-                <span className="text-2xl font-black text-sky-700">{department?._count?.appointments || 0}</span>
-                <span className="block text-[11px] text-sky-600 font-semibold mt-0.5">Appointments</span>
+              <div className="p-3 bg-[#E8F1FC]/60 border border-[#BFDBFE] rounded-xl text-center">
+                <span className="text-2xl font-black text-[#1565C0]">{department?._count?.appointments || 0}</span>
+                <span className="block text-[11px] text-[#1565C0] font-semibold mt-0.5">Appointments</span>
               </div>
             </div>
           </div>
@@ -180,14 +180,14 @@ export const DepartmentInfo: React.FC = () => {
         <div className="space-y-6">
           {/* HOD Card */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-            <span className="text-[10px] font-bold text-teal-600 uppercase tracking-wider bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+            <span className="text-[10px] font-bold text-[#00897B] uppercase tracking-wider bg-[#E0F2F1] px-2 py-0.5 rounded border border-[#B2DFDB]">
               Clinical Leadership
             </span>
             <h3 className="text-sm font-bold text-slate-800 mt-2 mb-3">Head of Department (HOD)</h3>
             {hod ? (
               <div className="space-y-2 text-xs">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-[#E0F2F1] text-[#00897B] flex items-center justify-center font-bold text-sm">
                     {hod.employee?.user?.firstName?.[0]}
                   </div>
                   <div>
@@ -209,14 +209,14 @@ export const DepartmentInfo: React.FC = () => {
 
           {/* Department Admin Card */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+            <span className="text-[10px] font-bold text-[#1565C0] uppercase tracking-wider bg-[#E8F1FC] px-2 py-0.5 rounded border border-[#BFDBFE]">
               Operations Lead
             </span>
             <h3 className="text-sm font-bold text-slate-800 mt-2 mb-3">Assigned Department Admin</h3>
             {admin ? (
               <div className="space-y-2 text-xs">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-[#E8F1FC] text-[#1565C0] flex items-center justify-center font-bold text-sm">
                     {admin.firstName?.[0]}
                   </div>
                   <div>
@@ -226,7 +226,7 @@ export const DepartmentInfo: React.FC = () => {
                 </div>
                 <div className="p-3 bg-slate-50 rounded-xl space-y-1 text-[11px] mt-2">
                   <p><span className="text-slate-400">Phone:</span> <span className="text-slate-700">{admin.phone || 'N/A'}</span></p>
-                  <p><span className="text-slate-400">Role Status:</span> <span className="text-emerald-600 font-semibold">Active Scoped Admin</span></p>
+                  <p><span className="text-slate-400">Role Status:</span> <span className="text-[#16A34A] font-semibold">Active Scoped Admin</span></p>
                 </div>
               </div>
             ) : (
@@ -237,7 +237,7 @@ export const DepartmentInfo: React.FC = () => {
           {/* Security Notice */}
           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-500 space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-slate-700">
-              <Shield className="w-3.5 h-3.5 text-teal-600" />
+              <Shield className="w-3.5 h-3.5 text-[#00897B]" />
               <span>Permission Notice</span>
             </div>
             <p className="text-[11px] leading-relaxed">
@@ -263,7 +263,7 @@ export const DepartmentInfo: React.FC = () => {
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
               required
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-teal-500 text-xs"
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[#00897B] text-xs"
             />
           </div>
 
@@ -273,7 +273,7 @@ export const DepartmentInfo: React.FC = () => {
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
               rows={4}
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-teal-500 text-xs"
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[#00897B] text-xs"
             />
           </div>
 
@@ -292,7 +292,7 @@ export const DepartmentInfo: React.FC = () => {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-semibold shadow-md shadow-teal-900/20 disabled:opacity-50"
+              className="px-4 py-2 bg-[#1565C0] hover:bg-[#00897B] text-white rounded-xl font-semibold shadow-md shadow-teal-900/20 disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save Changes'}
             </button>

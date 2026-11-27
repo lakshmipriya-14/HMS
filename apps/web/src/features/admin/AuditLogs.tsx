@@ -72,16 +72,16 @@ export const AuditLogs: React.FC = () => {
         <div className="flex items-center space-x-2">
           <button
             onClick={handleExportCSV}
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-lg text-xs font-medium transition-colors"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#DCFCE7] text-[#16A34A] border border-[#BBF7D0] hover:bg-[#DCFCE7] rounded-lg text-xs font-medium transition-colors"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+            <FileSpreadsheet className="w-3.5 h-3.5 text-[#16A34A]" />
             <span>Export CSV</span>
           </button>
           <button
             onClick={handleExportPDF}
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 rounded-lg text-xs font-medium transition-colors"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#FEE2E2] text-[#DC2626] border border-[#FECACA] hover:bg-rose-100 rounded-lg text-xs font-medium transition-colors"
           >
-            <FileText className="w-3.5 h-3.5 text-rose-600" />
+            <FileText className="w-3.5 h-3.5 text-[#DC2626]" />
             <span>Print PDF</span>
           </button>
         </div>
@@ -152,7 +152,7 @@ export const AuditLogs: React.FC = () => {
                           {log.userRole}
                         </span>
                       </td>
-                      <td className="py-3 px-4 font-bold text-teal-700">{log.action}</td>
+                      <td className="py-3 px-4 font-bold text-[#00897B]">{log.action}</td>
                       <td className="py-3 px-4 text-slate-600">{log.resource}</td>
                       <td className="py-3 px-4 text-slate-500 font-mono font-semibold">
                         {log.ipAddress || '127.0.0.1'}

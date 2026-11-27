@@ -48,7 +48,7 @@ export default function SuperAdminMoreScreen() {
       desc: 'Organization-wide doctors, nurses, staff & patient accounts',
       icon: Users,
       route: '/(super-admin)/users',
-      color: '#7C3AED',
+      color: '#1565C0',
     },
     {
       id: 'doctors',
@@ -56,7 +56,7 @@ export default function SuperAdminMoreScreen() {
       desc: 'Specialists, consultants, OPD schedules & consultation fees',
       icon: Stethoscope,
       route: '/(super-admin)/doctors',
-      color: '#0D9488',
+      color: '#00897B',
     },
     {
       id: 'departments',
@@ -64,7 +64,7 @@ export default function SuperAdminMoreScreen() {
       desc: 'Specialties, inpatient wards, bed census & active HODs',
       icon: Building,
       route: '/(super-admin)/departments',
-      color: '#059669',
+      color: '#00897B',
     },
     {
       id: 'patients',
@@ -72,7 +72,7 @@ export default function SuperAdminMoreScreen() {
       desc: 'Organization-wide inpatient admissions, OPD census & UHID records',
       icon: HeartPulse,
       route: '/(super-admin)/patients',
-      color: '#E11D48',
+      color: '#DC2626',
     },
     {
       id: 'roles',
@@ -80,7 +80,7 @@ export default function SuperAdminMoreScreen() {
       desc: 'Granular view, create, edit, delete & export access matrix',
       icon: Shield,
       route: '/(super-admin)/roles-permissions',
-      color: '#2563EB',
+      color: '#1565C0',
     },
     {
       id: 'settings',
@@ -88,7 +88,7 @@ export default function SuperAdminMoreScreen() {
       desc: 'Department, specialization & clinical designation masters',
       icon: Sliders,
       route: '/(super-admin)/master-settings',
-      color: '#059669',
+      color: '#00897B',
     },
     {
       id: 'audit',
@@ -96,7 +96,7 @@ export default function SuperAdminMoreScreen() {
       desc: 'Immutable hospital audit trail & regulatory activity history',
       icon: FileSpreadsheet,
       route: '/(super-admin)/audit-logs',
-      color: '#D97706',
+      color: '#F59E0B',
     },
     {
       id: 'notifications',
@@ -112,7 +112,7 @@ export default function SuperAdminMoreScreen() {
       desc: 'Account details, password change and recent sessions',
       icon: User,
       route: '/(super-admin)/profile-security',
-      color: '#111827',
+      color: '#183153',
     },
   ];
 

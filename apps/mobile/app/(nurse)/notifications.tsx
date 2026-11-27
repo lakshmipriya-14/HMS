@@ -168,7 +168,7 @@ export default function NurseNotificationsScreen() {
         </View>
 
         <TouchableOpacity style={styles.markAllBtn} onPress={markAllRead}>
-          <CheckCheck size={14} color="#38845A" />
+          <CheckCheck size={14} color="#1565C0" />
           <Text style={styles.markAllText}>Mark Read</Text>
         </TouchableOpacity>
       </View>
@@ -177,10 +177,10 @@ export default function NurseNotificationsScreen() {
       <FlatList
         data={filteredItems}
         keyExtractor={(item) => item.id}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1565C0']} />}
         ListEmptyComponent={
           <View style={styles.emptyCard}>
-            <CheckCircle2 size={36} color="#059669" />
+            <CheckCircle2 size={36} color="#00897B" />
             <Text style={styles.emptyTitle}>All alerts acknowledged</Text>
             <Text style={styles.emptySub}>No unread notifications in this view</Text>
           </View>
@@ -196,10 +196,10 @@ export default function NurseNotificationsScreen() {
             >
               <View style={styles.iconContainer}>
                 {item.type === 'CRITICAL_VITALS' && <HeartPulse size={22} color="#DC2626" />}
-                {item.type === 'MED_DUE' && <Pill size={22} color="#D97706" />}
-                {item.type === 'DOCTOR_ORDER' && <ClipboardList size={22} color="#0284C7" />}
-                {item.type === 'PATIENT_ASSIGNED' && <BellRing size={22} color="#38845A" />}
-                {item.type === 'HANDOVER' && <Clock size={22} color="#7C3AED" />}
+                {item.type === 'MED_DUE' && <Pill size={22} color="#F59E0B" />}
+                {item.type === 'DOCTOR_ORDER' && <ClipboardList size={22} color="#1565C0" />}
+                {item.type === 'PATIENT_ASSIGNED' && <BellRing size={22} color="#1565C0" />}
+                {item.type === 'HANDOVER' && <Clock size={22} color="#1565C0" />}
               </View>
 
               <View style={styles.cardContent}>
@@ -214,7 +214,7 @@ export default function NurseNotificationsScreen() {
 
                 <View style={styles.cardActionRow}>
                   <Text style={styles.actionPrompt}>Tap to view related clinical record</Text>
-                  <ArrowRight size={14} color="#38845A" />
+                  <ArrowRight size={14} color="#1565C0" />
                 </View>
               </View>
             </TouchableOpacity>
@@ -228,19 +228,19 @@ export default function NurseNotificationsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC', padding: 14 },
   topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  tabRow: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 8, padding: 3, flex: 1, marginRight: 8 },
+  tabRow: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 8, padding: 3, flex: 1, marginRight: 8 },
   tab: { flex: 1, paddingVertical: 6, alignItems: 'center', borderRadius: 6 },
-  tabActive: { backgroundColor: '#38845A' },
+  tabActive: { backgroundColor: '#1565C0' },
   tabText: { fontSize: 11, fontWeight: '700', color: '#64748B' },
-  tabTextActive: { color: '#fff' },
-  markAllBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EAF5ED', paddingHorizontal: 10, paddingVertical: 8, borderRadius: 8 },
-  markAllText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
-  emptyCard: { alignItems: 'center', padding: 30, backgroundColor: '#fff', borderRadius: 12 },
-  emptyTitle: { fontSize: 14, fontWeight: '700', color: '#0F172A', marginTop: 8 },
+  tabTextActive: { color: '#FFFFFF' },
+  markAllBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E8F1FC', paddingHorizontal: 10, paddingVertical: 8, borderRadius: 8 },
+  markAllText: { fontSize: 11, fontWeight: '700', color: '#1565C0' },
+  emptyCard: { alignItems: 'center', padding: 30, backgroundColor: '#FFFFFF', borderRadius: 12 },
+  emptyTitle: { fontSize: 14, fontWeight: '700', color: '#183153', marginTop: 8 },
   emptySub: { fontSize: 11, color: '#64748B', marginTop: 2 },
   card: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     borderWidth: 1,
     borderColor: '#E2E8F0',
@@ -248,13 +248,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     alignItems: 'flex-start',
   },
-  cardUnread: { backgroundColor: '#EAF5ED', borderColor: '#CDE8D5' },
-  cardUrgent: { borderColor: '#CDE8D5', backgroundColor: '#FFFDFD' },
+  cardUnread: { backgroundColor: '#E8F1FC', borderColor: '#BFDBFE' },
+  cardUrgent: { borderColor: '#BFDBFE', backgroundColor: '#FFFFFF' },
   iconContainer: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -263,10 +263,10 @@ const styles = StyleSheet.create({
   },
   cardContent: { flex: 1 },
   cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
-  cardTitle: { fontSize: 13, fontWeight: '700', color: '#0F172A', flex: 1 },
-  cardTitleBold: { fontWeight: '900', color: '#38845A' },
+  cardTitle: { fontSize: 13, fontWeight: '700', color: '#183153', flex: 1 },
+  cardTitleBold: { fontWeight: '900', color: '#1565C0' },
   cardTime: { fontSize: 10, color: '#94A3B8' },
-  cardMsg: { fontSize: 12, color: '#334155', lineHeight: 17 },
+  cardMsg: { fontSize: 12, color: '#475569', lineHeight: 17 },
   cardActionRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8 },
-  actionPrompt: { fontSize: 10, fontWeight: '700', color: '#38845A' },
+  actionPrompt: { fontSize: 10, fontWeight: '700', color: '#1565C0' },
 });

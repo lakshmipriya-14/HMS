@@ -1,6 +1,6 @@
-import { Link } from 'expo-router';
+import { Link, useFocusEffect } from 'expo-router';
 import { UyirinaiTheme } from '../../constants/theme';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -38,7 +38,8 @@ export default function DoctorOPDQueueScreen() {
   const [loading, setLoading] = useState(false);
   const [queueError, setQueueError] = useState('');
   const [starting, setStarting] = useState(false);
-  const [filter, setFilter] = useState<'ALL' | 'WAITING' | 'IN_CONSULTATION' | 'COMPLETED'>('ALL');
+  const [filter, setFilter] = useState<'ALL' | 'WAITING' | 'UPCOMING' | 'COMPLETED'>('ALL');
+  const [upcomingAppointments, setUpcomingAppointments] = useState<any[]>([]);
 
   // Consultation Modal State
   const [consultModalOpen, setConsultModalOpen] = useState(false);
@@ -154,23 +155,36 @@ export default function DoctorOPDQueueScreen() {
   const [pastConsultations, setPastConsultations] = useState<any[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
-  // Fetch live queue from backend
-  const fetchQueue = async () => {
-    setLoading(true);
+  // Fetch live queue & upcoming appointments from backend
+  const fetchQueue = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setQueueError('');
     try {
-      const res = await apiRequest('/appointments/queue');
-      setQueue(Array.isArray(res?.data) ? res.data : []);
+      const todayDay = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Kolkata', dateStyle: 'short' }).format(new Date());
+      const [queueRes, allRes] = await Promise.all([
+        apiRequest('/appointments/queue'),
+        apiRequest('/appointments').catch(() => ({ data: [] })),
+      ]);
+      const todayRows = Array.isArray(queueRes?.data) ? queueRes.data : [];
+      const allRows = Array.isArray(allRes?.data) ? allRes.data : [];
+      setQueue(todayRows);
+      setUpcomingAppointments(
+        allRows.filter(
+          (row: any) =>
+            String(row.appointmentDate).slice(0, 10) > todayDay &&
+            !['COMPLETED', 'CANCELLED', 'NO_SHOW'].includes(row.status),
+        ),
+      );
     } catch (error) {
-      setQueue([]);
+      if (!silent) setQueue([]);
       setQueueError(error instanceof Error ? error.message : 'Could not load appointments.');
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  };
+  }, []);
 
   // Fetch catalogues
-  const fetchCatalogues = async () => {
+  const fetchCatalogues = useCallback(async () => {
     try {
       const labRes = await apiRequest('/laboratory/tests');
       if (labRes?.data && Array.isArray(labRes.data) && labRes.data.length > 0) {
@@ -184,12 +198,21 @@ export default function DoctorOPDQueueScreen() {
         setRadCatalogue(radRes.data);
       }
     } catch {}
-  };
+  }, []);
 
   useEffect(() => {
-    void fetchQueue();
     void fetchCatalogues();
-  }, []);
+  }, [fetchCatalogues]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void fetchQueue(false);
+      const interval = setInterval(() => {
+        void fetchQueue(true);
+      }, 15_000);
+      return () => clearInterval(interval);
+    }, [fetchQueue]),
+  );
 
   // Open consultation modal and prefill patient details
   const startConsultation = async (appointment: any) => {
@@ -386,13 +409,15 @@ export default function DoctorOPDQueueScreen() {
   };
 
   // Filtered queue items
-  const filteredQueue = queue.filter((item) => {
-    if (filter === 'ALL') return true;
-    if (filter === 'WAITING') return item.status === 'WAITING' || item.status === 'CHECKED_IN';
-    if (filter === 'IN_CONSULTATION') return item.status === 'IN_PROGRESS';
-    if (filter === 'COMPLETED') return item.status === 'COMPLETED';
-    return true;
-  });
+  const filteredQueue =
+    filter === 'UPCOMING'
+      ? upcomingAppointments
+      : queue.filter((item) => {
+          if (filter === 'ALL') return true;
+          if (filter === 'WAITING') return item.status === 'WAITING' || item.status === 'CHECKED_IN' || item.status === 'SCHEDULED';
+          if (filter === 'COMPLETED') return item.status === 'COMPLETED';
+          return true;
+        });
 
   const waitingCount = queue.filter((q) => q.status !== 'COMPLETED').length;
   const completedCount = queue.filter((q) => q.status === 'COMPLETED').length;
@@ -403,13 +428,13 @@ export default function DoctorOPDQueueScreen() {
       <View style={styles.banner}>
         <View style={styles.bannerHeader}>
           <Text style={styles.bannerTitle}>OPD Consultation Clinic</Text>
-          <TouchableOpacity onPress={fetchQueue} style={styles.refreshBtn}>
-            <RefreshCw size={14} color="#fff" />
+          <TouchableOpacity onPress={() => void fetchQueue(false)} style={styles.refreshBtn}>
+            <RefreshCw size={14} color="#FFFFFF" />
             <Text style={styles.refreshText}>Refresh</Text>
           </TouchableOpacity>
         </View>
         <Text style={styles.bannerSub}>
-          {user ? `Dr. ${user.firstName} ${user.lastName}` : 'Dr. K. Senthil Nathan, MD, DM'} • Room 204
+          {user ? `Dr. ${user.firstName} ${user.lastName}` : 'Consultant Doctor'} · {user?.branchName || 'OPD Clinic'}
         </Text>
 
         <View style={styles.statsRow}>
@@ -430,14 +455,20 @@ export default function DoctorOPDQueueScreen() {
 
       {/* Queue Filter Bar */}
       <View style={styles.filterBar}>
-        {(['ALL', 'WAITING', 'COMPLETED'] as const).map((tab) => (
+        {(['ALL', 'WAITING', 'UPCOMING', 'COMPLETED'] as const).map((tab) => (
           <TouchableOpacity
             key={tab}
             style={[styles.filterChip, filter === tab && styles.filterChipActive]}
             onPress={() => setFilter(tab)}
           >
             <Text style={[styles.filterChipText, filter === tab && styles.filterChipTextActive]}>
-              {tab === 'ALL' ? 'All Patients' : tab === 'WAITING' ? 'Waiting / Checked In' : 'Completed'}
+              {tab === 'ALL'
+                ? 'All Today'
+                : tab === 'WAITING'
+                  ? 'Pending / Checked In'
+                  : tab === 'UPCOMING'
+                    ? `Upcoming (${upcomingAppointments.length})`
+                    : 'Completed'}
             </Text>
           </TouchableOpacity>
         ))}
@@ -445,7 +476,9 @@ export default function DoctorOPDQueueScreen() {
 
       {/* Patient Queue Cards */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Today's OPD Queue ({filteredQueue.length})</Text>
+        <Text style={styles.sectionTitle}>
+          {filter === 'UPCOMING' ? `Upcoming Appointments (${filteredQueue.length})` : `Today's OPD Queue (${filteredQueue.length})`}
+        </Text>
 
         {loading && <ActivityIndicator accessibilityLabel="Loading appointments" />}
         {!!queueError && <Text accessibilityRole="alert">{queueError}</Text>}
@@ -454,6 +487,10 @@ export default function DoctorOPDQueueScreen() {
           const patient = item.patient || {};
           const isDone = item.status === 'COMPLETED';
           const token = item.tokenNumber ? `T-${item.tokenNumber}` : 'T-Queue';
+          const isWalkIn = item.source === 'RECEPTION_WALK_IN';
+          const deptName = item.department?.name || item.doctor?.department?.name || 'OPD';
+          const hospitalBranch = [item.branch?.hospital?.name, item.branch?.name].filter(Boolean).join(' — ');
+          const dateLabel = item.appointmentDate ? String(item.appointmentDate).slice(0, 10) : '';
 
           return (
             <View key={item.id} style={styles.card}>
@@ -462,23 +499,33 @@ export default function DoctorOPDQueueScreen() {
                   <Text style={[styles.tokenText, isDone && styles.tokenTextDone]}>{token}</Text>
                 </View>
                 <View style={styles.nameBlock}>
-                  <Text style={styles.patientName}>
-                    {patient.firstName} {patient.lastName}
+                  <View style={styles.titleSourceRow}>
+                    <Text style={styles.patientName}>
+                      {patient.firstName} {patient.lastName}
+                    </Text>
+                    <View style={[styles.sourcePill, isWalkIn ? styles.sourceWalkIn : styles.sourceOnline]}>
+                      <Text style={[styles.sourcePillText, isWalkIn ? styles.sourceWalkInText : styles.sourceOnlineText]}>
+                        {isWalkIn ? 'Receptionist / Walk-in Booking' : 'Online Patient Booking'}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={styles.patientMeta}>
+                    Patient ID (UHID): {patient.uhid || '-'} · Apt ID: {item.appointmentNumber || item.id}
                   </Text>
                   <Text style={styles.patientMeta}>
-                    UHID: {patient.uhid || 'KZN-2026-XXXX'} • {patient.gender || 'M'} • {item.appointmentTime}
+                    {deptName}{hospitalBranch ? ` · ${hospitalBranch}` : ''} · {dateLabel} {item.appointmentTime} IST
                   </Text>
                 </View>
               </View>
 
               <Text style={styles.reasonText}>
-                <Text style={styles.boldLabel}>Chief Complaint: </Text>
+                <Text style={styles.boldLabel}>Reason / Chief Complaint: </Text>
                 {item.reasonForVisit || 'Regular consultation'}
               </Text>
 
               {patient.allergies && patient.allergies.length > 0 && (
                 <View style={styles.allergyWarning}>
-                  <AlertCircle size={13} color="#B91C1C" />
+                  <AlertCircle size={13} color="#DC2626" />
                   <Text style={styles.allergyText}>
                     Allergies: {patient.allergies.join(', ')}
                   </Text>
@@ -505,13 +552,13 @@ export default function DoctorOPDQueueScreen() {
                     disabled={starting}
                     onPress={() => void startConsultation(item)}
                   >
-                    <Stethoscope size={15} color="#fff" />
+                    <Stethoscope size={15} color="#FFFFFF" />
                     <Text style={styles.actionBtnText}>Open Consult</Text>
-                    <ChevronRight size={15} color="#fff" />
+                    <ChevronRight size={15} color="#FFFFFF" />
                   </TouchableOpacity>
                 ) : isDone ? (
                   <TouchableOpacity style={styles.doneIndicator} accessibilityRole="button" onPress={() => void loadSummary(item.id)}>
-                    <CheckCircle2 size={16} color="#059669" />
+                    <CheckCircle2 size={16} color="#00897B" />
                     <Text style={styles.doneText}>View consultation</Text>
                   </TouchableOpacity>
                 ) : null}
@@ -574,7 +621,7 @@ export default function DoctorOPDQueueScreen() {
               </Text>
             </View>
             <TouchableOpacity onPress={() => setConsultModalOpen(false)} style={styles.closeBtn}>
-              <X size={22} color="#fff" />
+              <X size={22} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
 
@@ -682,7 +729,7 @@ export default function DoctorOPDQueueScreen() {
                     onPress={() => setAdmissionRecommended(!admissionRecommended)}
                   >
                     <View style={[styles.checkbox, admissionRecommended && styles.checkboxActive]}>
-                      {admissionRecommended && <Check size={14} color="#fff" />}
+                      {admissionRecommended && <Check size={14} color="#FFFFFF" />}
                     </View>
                     <Text style={styles.admissionToggleText}>Recommend Inpatient (IPD) Admission</Text>
                   </TouchableOpacity>
@@ -744,7 +791,7 @@ export default function DoctorOPDQueueScreen() {
                         onPress={() => toggleLabTest(test.id)}
                       >
                         <View style={[styles.checkbox, isSelected && styles.checkboxActive]}>
-                          {isSelected && <Check size={14} color="#fff" />}
+                          {isSelected && <Check size={14} color="#FFFFFF" />}
                         </View>
                         <View style={{ flex: 1, marginLeft: 10 }}>
                           <Text style={styles.testName}>{test.name ?? test.testName}</Text>
@@ -782,7 +829,7 @@ export default function DoctorOPDQueueScreen() {
                         onPress={() => setSelectedRadId(isSelected ? '' : scan.id)}
                       >
                         <View style={[styles.checkbox, isSelected && styles.checkboxActive]}>
-                          {isSelected && <Check size={14} color="#fff" />}
+                          {isSelected && <Check size={14} color="#FFFFFF" />}
                         </View>
                         <View style={{ flex: 1, marginLeft: 10 }}>
                           <Text style={styles.testName}>{scan.name ?? scan.testName}</Text>
@@ -894,7 +941,7 @@ export default function DoctorOPDQueueScreen() {
                   </View>
 
                   <TouchableOpacity style={styles.addMedBtn} onPress={addRxItem}>
-                    <Plus size={16} color="#38845A" />
+                    <Plus size={16} color="#1565C0" />
                     <Text style={styles.addMedBtnText}>Add Item to Prescription</Text>
                   </TouchableOpacity>
                 </View>
@@ -912,7 +959,7 @@ export default function DoctorOPDQueueScreen() {
                 </View>
 
                 {historyLoading ? (
-                  <ActivityIndicator size="small" color="#38845A" style={{ marginVertical: 20 }} />
+                  <ActivityIndicator size="small" color="#1565C0" style={{ marginVertical: 20 }} />
                 ) : pastConsultations.length > 0 ? (
                   pastConsultations.map((c) => (
                     <View key={c.id} style={styles.historyCard}>
@@ -968,10 +1015,10 @@ export default function DoctorOPDQueueScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator size="small" color="#fff" />
+                <ActivityIndicator size="small" color="#FFFFFF" />
               ) : (
                 <>
-                  <CheckCircle2 size={18} color="#fff" />
+                  <CheckCircle2 size={18} color="#FFFFFF" />
                   <Text style={styles.completeBtnText}>
                     Sign & Dispatch Consultation (Rx + Lab + Scans)
                   </Text>
@@ -986,118 +1033,125 @@ export default function DoctorOPDQueueScreen() {
 }
 
 const styles = StyleSheet.create({
-  summaryPage: { backgroundColor: '#fff', padding: 20, gap: 12, flexGrow: 1 },
+  summaryPage: { backgroundColor: '#FFFFFF', padding: 20, gap: 12, flexGrow: 1 },
   summaryNote: { backgroundColor: '#f8fafc', padding: 10, borderRadius: 8 },
   draftButton: { minHeight: 44, paddingHorizontal: 12, justifyContent: 'center', marginBottom: 8 },
 
   container: { flex: 1, backgroundColor: '#F8FAFC' },
   banner: { backgroundColor: UyirinaiTheme.colors.primary, padding: 20, borderBottomLeftRadius: 20, borderBottomRightRadius: 20 },
   bannerHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  bannerTitle: { color: '#fff', fontSize: 18, fontWeight: '700' },
-  refreshBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#134E4A', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12, gap: 4 },
-  refreshText: { color: '#fff', fontSize: 11, fontWeight: '600' },
-  bannerSub: { color: '#CDE8D5', fontSize: 13, marginTop: 4 },
+  bannerTitle: { color: '#FFFFFF', fontSize: 18, fontWeight: '700' },
+  refreshBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#183153', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12, gap: 4 },
+  refreshText: { color: '#FFFFFF', fontSize: 11, fontWeight: '600' },
+  bannerSub: { color: '#BFDBFE', fontSize: 13, marginTop: 4 },
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
   statBox: { backgroundColor: 'rgba(255,255,255,0.12)', flex: 1, marginHorizontal: 4, padding: 10, borderRadius: 10, alignItems: 'center' },
-  statNum: { color: '#fff', fontSize: 20, fontWeight: '800' },
-  statLabel: { color: '#EAF5ED', fontSize: 11, marginTop: 2 },
-  filterBar: { flexDirection: 'row', paddingHorizontal: 16, paddingTop: 14, gap: 8 },
-  filterChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, backgroundColor: '#E2E8F0' },
+  statNum: { color: '#FFFFFF', fontSize: 20, fontWeight: '800' },
+  statLabel: { color: '#E8F1FC', fontSize: 11, marginTop: 2 },
+  filterBar: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 16, paddingTop: 14, gap: 6 },
+  filterChip: { paddingHorizontal: 11, paddingVertical: 6, borderRadius: 20, backgroundColor: '#E2E8F0' },
   filterChipActive: { backgroundColor: UyirinaiTheme.colors.primary },
-  filterChipText: { fontSize: 12, fontWeight: '600', color: '#475569' },
-  filterChipTextActive: { color: '#fff' },
+  filterChipText: { fontSize: 11.5, fontWeight: '600', color: '#475569' },
+  filterChipTextActive: { color: '#FFFFFF' },
   section: { padding: 16 },
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#1E293B', marginBottom: 12 },
-  card: { backgroundColor: '#fff', padding: 16, borderRadius: 12, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 2 },
-  cardHeader: { flexDirection: 'row', alignItems: 'center' },
-  tokenBadge: { backgroundColor: '#EAF5ED', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, marginRight: 12 },
+  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#183153', marginBottom: 12 },
+  card: { backgroundColor: '#FFFFFF', padding: 16, borderRadius: 12, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 2 },
+  cardHeader: { flexDirection: 'row', alignItems: 'flex-start' },
+  tokenBadge: { backgroundColor: '#E8F1FC', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, marginRight: 12 },
   tokenBadgeDone: { backgroundColor: '#E2E8F0' },
   tokenText: { color: UyirinaiTheme.colors.primary, fontWeight: '800', fontSize: 15 },
   tokenTextDone: { color: '#64748B' },
   nameBlock: { flex: 1 },
-  patientName: { fontSize: 16, fontWeight: '700', color: '#0F172A' },
+  titleSourceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
+  patientName: { fontSize: 16, fontWeight: '700', color: '#183153' },
+  sourcePill: { paddingHorizontal: 7, paddingVertical: 2, borderRadius: 6 },
+  sourceWalkIn: { backgroundColor: '#FEF3C7' },
+  sourceOnline: { backgroundColor: '#E8F1FC' },
+  sourcePillText: { fontSize: 9.5, fontWeight: '800' },
+  sourceWalkInText: { color: '#F59E0B' },
+  sourceOnlineText: { color: '#1565C0' },
   patientMeta: { fontSize: 12, color: '#64748B', marginTop: 2 },
-  reasonText: { fontSize: 13, color: '#334155', marginTop: 10 },
-  boldLabel: { fontWeight: '700', color: '#0F172A' },
-  allergyWarning: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EAF5ED', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6, marginTop: 8, gap: 6 },
-  allergyText: { fontSize: 12, color: '#B91C1C', fontWeight: '600' },
+  reasonText: { fontSize: 13, color: '#475569', marginTop: 10 },
+  boldLabel: { fontWeight: '700', color: '#183153' },
+  allergyWarning: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E8F1FC', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6, marginTop: 8, gap: 6 },
+  allergyText: { fontSize: 12, color: '#DC2626', fontWeight: '600' },
   cardActions: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
   statusTag: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 },
   statusWaiting: { backgroundColor: '#FEF3C7' },
-  statusCompleted: { backgroundColor: '#D1FAE5' },
+  statusCompleted: { backgroundColor: '#DCFCE7' },
   statusTagText: { fontSize: 11, fontWeight: '600' },
-  textWaiting: { color: '#92400E' },
-  textCompleted: { color: '#065F46' },
+  textWaiting: { color: '#F59E0B' },
+  textCompleted: { color: '#183153' },
   actionBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: UyirinaiTheme.colors.primary, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, gap: 6 },
-  actionBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
+  actionBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
   doneIndicator: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  doneText: { fontSize: 12, color: '#059669', fontWeight: '600' },
+  doneText: { fontSize: 12, color: '#00897B', fontWeight: '600' },
 
   // Modal Styles
   modalContainer: { flex: 1, backgroundColor: '#F8FAFC' },
   modalHeader: { backgroundColor: UyirinaiTheme.colors.primary, paddingHorizontal: 16, paddingVertical: 14, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  modalHeaderTitle: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  modalHeaderSub: { color: '#CDE8D5', fontSize: 12, marginTop: 2 },
+  modalHeaderTitle: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+  modalHeaderSub: { color: '#BFDBFE', fontSize: 12, marginTop: 2 },
   closeBtn: { padding: 4 },
-  modalTabBar: { flexDirection: 'row', backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
+  modalTabBar: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
   modalTab: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, gap: 6, borderBottomWidth: 2, borderBottomColor: 'transparent' },
   modalTabActive: { borderBottomColor: UyirinaiTheme.colors.primary },
   modalTabText: { fontSize: 12, fontWeight: '600', color: '#64748B' },
   modalTabTextActive: { color: UyirinaiTheme.colors.primary, fontWeight: '700' },
   modalScroll: { flex: 1 },
   tabContent: { padding: 16 },
-  inputLabel: { fontSize: 13, fontWeight: '700', color: '#1E293B', marginTop: 10, marginBottom: 4 },
+  inputLabel: { fontSize: 13, fontWeight: '700', color: '#183153', marginTop: 10, marginBottom: 4 },
   subLabel: { fontSize: 12, fontWeight: '600', color: '#475569', marginBottom: 4 },
-  modalInput: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: '#0F172A' },
+  modalInput: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: '#183153' },
   textArea: { minHeight: 64, textAlignVertical: 'top' },
-  admissionCard: { backgroundColor: '#EAF5ED', borderWidth: 1, borderColor: '#CDE8D5', borderRadius: 10, padding: 12, marginTop: 16 },
+  admissionCard: { backgroundColor: '#E8F1FC', borderWidth: 1, borderColor: '#BFDBFE', borderRadius: 10, padding: 12, marginTop: 16 },
   admissionToggleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   admissionToggleText: { fontSize: 13, fontWeight: '700', color: UyirinaiTheme.colors.primary },
-  checkbox: { width: 20, height: 20, borderRadius: 4, borderWidth: 2, borderColor: '#94A3B8', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' },
+  checkbox: { width: 20, height: 20, borderRadius: 4, borderWidth: 2, borderColor: '#94A3B8', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF' },
   checkboxActive: { backgroundColor: UyirinaiTheme.colors.primary, borderColor: UyirinaiTheme.colors.primary },
 
   // Orders styles
   sectionHeaderBox: { marginBottom: 12 },
-  sectionHeaderTitle: { fontSize: 15, fontWeight: '700', color: '#0F172A' },
+  sectionHeaderTitle: { fontSize: 15, fontWeight: '700', color: '#183153' },
   sectionHeaderSub: { fontSize: 12, color: '#64748B', marginTop: 2 },
   priorityRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
   priorityPill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6, backgroundColor: '#E2E8F0' },
   priorityPillActive: { backgroundColor: UyirinaiTheme.colors.primary },
   priorityPillStat: { backgroundColor: '#DC2626' },
   priorityPillText: { fontSize: 11, fontWeight: '700', color: '#475569' },
-  priorityPillTextActive: { color: '#fff' },
-  priorityPillTextStat: { color: '#fff' },
+  priorityPillTextActive: { color: '#FFFFFF' },
+  priorityPillTextStat: { color: '#FFFFFF' },
   testList: { gap: 8 },
-  testItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderWidth: 1, borderColor: '#E2E8F0', padding: 12, borderRadius: 8 },
-  testItemActive: { borderColor: UyirinaiTheme.colors.primary, backgroundColor: '#EAF5ED' },
-  testName: { fontSize: 14, fontWeight: '600', color: '#0F172A' },
+  testItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', padding: 12, borderRadius: 8 },
+  testItemActive: { borderColor: UyirinaiTheme.colors.primary, backgroundColor: '#E8F1FC' },
+  testName: { fontSize: 14, fontWeight: '600', color: '#183153' },
   testMeta: { fontSize: 12, color: '#64748B', marginTop: 2 },
 
   // Rx styles
-  rxCard: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 10, padding: 12, marginBottom: 10 },
+  rxCard: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 10, padding: 12, marginBottom: 10 },
   rxCardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   rxDrugName: { fontSize: 15, fontWeight: '700', color: UyirinaiTheme.colors.primary },
-  rxDetails: { fontSize: 12, color: '#334155', marginTop: 4, fontWeight: '500' },
+  rxDetails: { fontSize: 12, color: '#475569', marginTop: 4, fontWeight: '500' },
   rxInstructions: { fontSize: 12, color: '#64748B', marginTop: 2, fontStyle: 'italic' },
   deleteRxBtn: { padding: 4 },
   addMedBox: { backgroundColor: '#F8FAFC', borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 10, padding: 12, marginTop: 10 },
   grid2: { flexDirection: 'row', gap: 10, marginTop: 6 },
-  addMedBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#EAF5ED', paddingVertical: 10, borderRadius: 8, marginTop: 12, gap: 6 },
+  addMedBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#E8F1FC', paddingVertical: 10, borderRadius: 8, marginTop: 12, gap: 6 },
   addMedBtnText: { color: UyirinaiTheme.colors.primary, fontSize: 13, fontWeight: '700' },
 
   // History styles
-  historyCard: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 10, padding: 12, marginBottom: 10 },
+  historyCard: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 10, padding: 12, marginBottom: 10 },
   historyCardTop: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
   historyDate: { fontSize: 12, fontWeight: '700', color: UyirinaiTheme.colors.primary },
   historyDoc: { fontSize: 12, color: '#64748B' },
-  historyComplaint: { fontSize: 13, color: '#334155' },
-  historyDiagnosis: { fontSize: 13, color: '#0F172A', marginTop: 4 },
+  historyComplaint: { fontSize: 13, color: '#475569' },
+  historyDiagnosis: { fontSize: 13, color: '#183153', marginTop: 4 },
   historyPlan: { fontSize: 12, color: '#64748B', marginTop: 4 },
   emptyHistoryBox: { alignItems: 'center', justifyContent: 'center', paddingVertical: 36, gap: 8 },
   emptyHistoryText: { fontSize: 13, color: '#94A3B8', textAlign: 'center' },
 
   // Footer Action
-  modalFooter: { backgroundColor: '#fff', padding: 16, borderTopWidth: 1, borderTopColor: '#E2E8F0' },
+  modalFooter: { backgroundColor: '#FFFFFF', padding: 16, borderTopWidth: 1, borderTopColor: '#E2E8F0' },
   completeBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: UyirinaiTheme.colors.primary, paddingVertical: 14, borderRadius: 10, gap: 8 },
-  completeBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
+  completeBtnText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
 });

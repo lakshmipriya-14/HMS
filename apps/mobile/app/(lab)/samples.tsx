@@ -205,7 +205,7 @@ export default function LabSamplesScreen() {
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View style={styles.iconBox}>
-            <QrCode size={22} color="#38845A" />
+            <QrCode size={22} color="#1565C0" />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.title}>Specimen Barcode Accessioning</Text>
@@ -239,7 +239,7 @@ export default function LabSamplesScreen() {
             ) : null}
           </View>
           <TouchableOpacity style={styles.scanBtn} onPress={handleScanLookup}>
-            <QrCode size={16} color="#fff" />
+            <QrCode size={16} color="#FFFFFF" />
             <Text style={styles.scanBtnText}>Verify</Text>
           </TouchableOpacity>
         </View>
@@ -267,7 +267,7 @@ export default function LabSamplesScreen() {
           <View key={s.id} style={styles.card}>
             <View style={styles.cardHeader}>
               <View style={styles.barcodeWrap}>
-                <QrCode size={18} color="#38845A" />
+                <QrCode size={18} color="#1565C0" />
                 <Text style={styles.barcodeText}>{s.barcode}</Text>
               </View>
               <View style={[styles.statusTag, getSampleStatusStyle(s.status)]}>
@@ -284,7 +284,7 @@ export default function LabSamplesScreen() {
 
             <View style={styles.metaRow}>
               <View style={styles.tubeBadge}>
-                <TestTube size={12} color="#38845A" />
+                <TestTube size={12} color="#1565C0" />
                 <Text style={styles.tubeBadgeText}>{s.tubeType}</Text>
               </View>
               {s.collectedAt ? (
@@ -306,7 +306,7 @@ export default function LabSamplesScreen() {
             <View style={styles.cardFooter}>
               {s.status === 'Collected at Bedside' && (
                 <TouchableOpacity style={styles.receiveBtn} onPress={() => markReceived(s.id)}>
-                  <CheckCircle2 size={14} color="#fff" />
+                  <CheckCircle2 size={14} color="#FFFFFF" />
                   <Text style={styles.receiveBtnText}>Receive in Lab Analyzer</Text>
                 </TouchableOpacity>
               )}
@@ -334,7 +334,7 @@ export default function LabSamplesScreen() {
             {selectedSample && (
               <View style={styles.modalContent}>
                 <View style={styles.qrVisualBox}>
-                  <QrCode size={56} color="#0F172A" />
+                  <QrCode size={56} color="#183153" />
                   <Text style={styles.modalBarcode}>{selectedSample.barcode}</Text>
                 </View>
                 <View style={styles.detailRow}>
@@ -351,7 +351,7 @@ export default function LabSamplesScreen() {
                 </View>
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Status</Text>
-                  <Text style={[styles.detailVal, { color: '#38845A' }]}>{selectedSample.status}</Text>
+                  <Text style={[styles.detailVal, { color: '#1565C0' }]}>{selectedSample.status}</Text>
                 </View>
 
                 {selectedSample.status !== 'Received in Lab' && selectedSample.status !== 'Rejected' && (
@@ -362,7 +362,7 @@ export default function LabSamplesScreen() {
                       setScanModalVisible(false);
                     }}
                   >
-                    <Check size={16} color="#fff" />
+                    <Check size={16} color="#FFFFFF" />
                     <Text style={styles.modalReceiveBtnText}>Accept Sample in Analyzer</Text>
                   </TouchableOpacity>
                 )}
@@ -378,13 +378,13 @@ export default function LabSamplesScreen() {
 function getSampleStatusStyle(status: string) {
   switch (status) {
     case 'Received in Lab':
-      return { backgroundColor: '#ECFDF5', borderColor: '#A7F3D0', borderWidth: 1 };
+      return { backgroundColor: '#E0F2F1', borderColor: '#B2DFDB', borderWidth: 1 };
     case 'Collected at Bedside':
-      return { backgroundColor: '#E0F2FE', borderColor: '#BAE6FD', borderWidth: 1 };
+      return { backgroundColor: '#E8F1FC', borderColor: '#BFDBFE', borderWidth: 1 };
     case 'Pending Collection':
       return { backgroundColor: '#FEF3C7', borderColor: '#FDE68A', borderWidth: 1 };
     case 'Rejected':
-      return { backgroundColor: '#FEF2F2', borderColor: '#CDE8D5', borderWidth: 1 };
+      return { backgroundColor: '#FEE2E2', borderColor: '#BFDBFE', borderWidth: 1 };
     default:
       return { backgroundColor: '#F1F5F9' };
   }
@@ -393,13 +393,13 @@ function getSampleStatusStyle(status: string) {
 function getSampleStatusTextStyle(status: string) {
   switch (status) {
     case 'Received in Lab':
-      return { color: '#047857' };
+      return { color: '#00897B' };
     case 'Collected at Bedside':
-      return { color: '#0369A1' };
+      return { color: '#0D47A1' };
     case 'Pending Collection':
-      return { color: '#B45309' };
+      return { color: '#F59E0B' };
     case 'Rejected':
-      return { color: '#B91C1C' };
+      return { color: '#DC2626' };
     default:
       return { color: '#475569' };
   }
@@ -407,57 +407,57 @@ function getSampleStatusTextStyle(status: string) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
-  header: { backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', padding: 16 },
+  header: { backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', padding: 16 },
   headerTop: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
-  iconBox: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#EAF5ED', alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 17, fontWeight: '800', color: '#0F172A' },
+  iconBox: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#E8F1FC', alignItems: 'center', justifyContent: 'center' },
+  title: { fontSize: 17, fontWeight: '800', color: '#183153' },
   subtitle: { fontSize: 11, color: '#64748B' },
   scanBarRow: { flexDirection: 'row', gap: 8, marginBottom: 10 },
   scanInputBox: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', borderRadius: 8, paddingHorizontal: 10, height: 38 },
-  scanInput: { flex: 1, marginLeft: 6, fontSize: 12, color: '#0F172A' },
-  scanBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#38845A', paddingHorizontal: 14, borderRadius: 8, justifyContent: 'center' },
-  scanBtnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
+  scanInput: { flex: 1, marginLeft: 6, fontSize: 12, color: '#183153' },
+  scanBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#1565C0', paddingHorizontal: 14, borderRadius: 8, justifyContent: 'center' },
+  scanBtnText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
   filterRow: { flexDirection: 'row' },
   tubePill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: '#F1F5F9', marginRight: 6 },
-  tubePillActive: { backgroundColor: '#EAF5ED' },
+  tubePillActive: { backgroundColor: '#E8F1FC' },
   tubePillText: { fontSize: 11, color: '#64748B', fontWeight: '600' },
-  tubePillTextActive: { color: '#38845A', fontWeight: '800' },
+  tubePillTextActive: { color: '#1565C0', fontWeight: '800' },
   list: { padding: 16 },
-  card: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 12 },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 12 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   barcodeWrap: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  barcodeText: { fontSize: 13, fontWeight: '800', color: '#0F172A', fontFamily: 'monospace' },
+  barcodeText: { fontSize: 13, fontWeight: '800', color: '#183153', fontFamily: 'monospace' },
   statusTag: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   statusTagText: { fontSize: 10, fontWeight: '800' },
   patientRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
-  patientName: { fontSize: 15, fontWeight: '700', color: '#0F172A' },
-  uhidText: { fontSize: 11, color: '#38845A', fontWeight: '700' },
+  patientName: { fontSize: 15, fontWeight: '700', color: '#183153' },
+  uhidText: { fontSize: 11, color: '#1565C0', fontWeight: '700' },
   testName: { fontSize: 13, color: '#475569', marginTop: 2 },
   metaRow: { flexDirection: 'row', gap: 8, marginTop: 8 },
-  tubeBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#FFF7ED', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  tubeBadgeText: { fontSize: 11, color: '#38845A', fontWeight: '600' },
+  tubeBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#FEF3C7', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  tubeBadgeText: { fontSize: 11, color: '#1565C0', fontWeight: '600' },
   timeBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#F1F5F9', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   timeBadgeText: { fontSize: 11, color: '#64748B' },
-  rejectionNotice: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#FEF2F2', padding: 8, borderRadius: 6, marginTop: 8 },
+  rejectionNotice: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#FEE2E2', padding: 8, borderRadius: 6, marginTop: 8 },
   rejectionNoticeText: { fontSize: 11, color: '#DC2626', fontWeight: '600' },
   cardFooter: { flexDirection: 'row', gap: 8, marginTop: 12, paddingTop: 10, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
-  receiveBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#38845A', paddingVertical: 8, borderRadius: 6 },
-  receiveBtnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
-  rejectBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EAF5ED', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 },
+  receiveBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#1565C0', paddingVertical: 8, borderRadius: 6 },
+  receiveBtnText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
+  rejectBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E8F1FC', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 },
   rejectBtnText: { color: '#DC2626', fontSize: 11, fontWeight: '700' },
 
   // Modal
   modalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.6)', alignItems: 'center', justifyContent: 'center', padding: 20 },
-  detailCard: { width: '100%', maxWidth: 400, backgroundColor: '#fff', borderRadius: 16, padding: 16 },
+  detailCard: { width: '100%', maxWidth: 400, backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16 },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', paddingBottom: 10 },
-  modalTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
+  modalTitle: { fontSize: 16, fontWeight: '800', color: '#183153' },
   modalContent: { marginTop: 14 },
   qrVisualBox: { alignItems: 'center', padding: 16, backgroundColor: '#F8FAFC', borderRadius: 10, marginBottom: 14 },
-  modalBarcode: { marginTop: 8, fontSize: 14, fontWeight: '800', fontFamily: 'monospace', color: '#38845A' },
+  modalBarcode: { marginTop: 8, fontSize: 14, fontWeight: '800', fontFamily: 'monospace', color: '#1565C0' },
   detailRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
   detailLabel: { fontSize: 12, color: '#64748B' },
-  detailVal: { fontSize: 12, fontWeight: '700', color: '#0F172A' },
-  modalReceiveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#38845A', paddingVertical: 12, borderRadius: 8, marginTop: 16 },
-  modalReceiveBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
+  detailVal: { fontSize: 12, fontWeight: '700', color: '#183153' },
+  modalReceiveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#1565C0', paddingVertical: 12, borderRadius: 8, marginTop: 16 },
+  modalReceiveBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
 });
 

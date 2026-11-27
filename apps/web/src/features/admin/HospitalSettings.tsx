@@ -83,9 +83,9 @@ export const HospitalSettings: React.FC = () => {
   return (
     <div className="space-y-6 pb-12">
       {saved && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             Hospital operational settings saved successfully.
           </div>
         </div>
@@ -94,7 +94,7 @@ export const HospitalSettings: React.FC = () => {
       {/* Header */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="p-2.5 bg-teal-50 text-teal-700 rounded-xl border border-teal-100">
+          <span className="p-2.5 bg-[#E0F2F1] text-[#00897B] rounded-xl border border-[#B2DFDB]">
             <Settings className="w-6 h-6" />
           </span>
           <div>
@@ -110,7 +110,7 @@ export const HospitalSettings: React.FC = () => {
         {/* Basic Info */}
         <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-4">
           <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 pb-2 border-b border-slate-100">
-            <Building2 className="w-4 h-4 text-teal-600" />
+            <Building2 className="w-4 h-4 text-[#00897B]" />
             Institutional Identity & Registration
           </h3>
 
@@ -160,7 +160,7 @@ export const HospitalSettings: React.FC = () => {
         {/* Location & Contact */}
         <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-4">
           <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 pb-2 border-b border-slate-100">
-            <MapPin className="w-4 h-4 text-teal-600" />
+            <MapPin className="w-4 h-4 text-[#00897B]" />
             Campus Location & Contact Directory
           </h3>
 
@@ -201,7 +201,7 @@ export const HospitalSettings: React.FC = () => {
                 type="text"
                 value={formData.emergencyPhone}
                 onChange={(e) => setFormData({ ...formData, emergencyPhone: e.target.value })}
-                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-rose-700 font-bold"
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-[#DC2626] font-bold"
               />
             </div>
             <div>
@@ -219,7 +219,7 @@ export const HospitalSettings: React.FC = () => {
         {/* Timings */}
         <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-4">
           <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 pb-2 border-b border-slate-100">
-            <Clock className="w-4 h-4 text-teal-600" />
+            <Clock className="w-4 h-4 text-[#00897B]" />
             Operating Schedules
           </h3>
 
@@ -248,7 +248,7 @@ export const HospitalSettings: React.FC = () => {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="flex items-center gap-2 px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
           >
             <Save className="w-4 h-4" />
             Save Hospital Configuration

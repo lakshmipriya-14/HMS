@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   unread: {
     borderLeftWidth: 4,
     borderLeftColor: UyirinaiTheme.colors.primary,
-    backgroundColor: '#FAFDFB',
+    backgroundColor: '#F8FAFC',
   },
   noticeTitle: { fontSize: 14, fontWeight: '700', color: UyirinaiTheme.colors.textPrimary },
 });

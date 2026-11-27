@@ -22,6 +22,38 @@ export class AppointmentsController {
     };
   }
 
+  @Get('booking-options')
+  @Scoped()
+  @RequirePermissions('APPOINTMENTS:CREATE')
+  @ApiOperation({ summary: 'Get scoped branches, departments, and doctors for appointment booking' })
+  async getBookingOptions(
+    @CurrentUser() actor: AuthUserDto,
+    @Query('branchId') branchId?: string,
+  ) {
+    const data = await this.service.getBookingOptions(actor, branchId);
+    return {
+      message: 'Booking options retrieved successfully',
+      data,
+    };
+  }
+
+  @Get('slots')
+  @Scoped()
+  @RequirePermissions('APPOINTMENTS:VIEW')
+  @ApiOperation({ summary: 'Get doctor slot availability for a date' })
+  async getSlots(
+    @CurrentUser() actor: AuthUserDto,
+    @Query('doctorId') doctorId: string,
+    @Query('date') date: string,
+    @Query('branchId') branchId?: string,
+  ) {
+    const data = await this.service.getAvailableSlots(actor, doctorId, date, branchId);
+    return {
+      message: 'Available time slots retrieved successfully',
+      data,
+    };
+  }
+
   @Get()
   @Scoped()
   @RequirePermissions('APPOINTMENTS:VIEW')

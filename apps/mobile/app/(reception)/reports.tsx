@@ -32,11 +32,11 @@ export default function ReceptionReportsScreen() {
   return (
     <ScrollView
       style={styles.container}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#0284C7']} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1565C0']} />}
     >
       {/* Header */}
       <View style={styles.banner}>
-        <FileBarChart size={20} color="#0284C7" />
+        <FileBarChart size={20} color="#1565C0" />
         <View style={{ flex: 1, marginLeft: 10 }}>
           <Text style={styles.bannerTitle}>Daily Front Office & OPD Statistics</Text>
           <Text style={styles.bannerSub}>Daily patient flow, check-in conversion, and department workload</Text>
@@ -67,19 +67,19 @@ export default function ReceptionReportsScreen() {
         </View>
 
         <View style={styles.metricCard}>
-          <Text style={[styles.mNum, { color: '#0284C7' }]}>58</Text>
+          <Text style={[styles.mNum, { color: '#1565C0' }]}>58</Text>
           <Text style={styles.mLabel}>OPD Appointments</Text>
           <Text style={styles.mSub}>42 Pre-booked • 16 Walk-in</Text>
         </View>
 
         <View style={styles.metricCard}>
-          <Text style={[styles.mNum, { color: '#38845A' }]}>91%</Text>
+          <Text style={[styles.mNum, { color: '#1565C0' }]}>91%</Text>
           <Text style={styles.mLabel}>Check-In Rate</Text>
           <Text style={styles.mSub}>48 Checked In • 4 Waiting</Text>
         </View>
 
         <View style={styles.metricCard}>
-          <Text style={[styles.mNum, { color: '#D97706' }]}>14 min</Text>
+          <Text style={[styles.mNum, { color: '#F59E0B' }]}>14 min</Text>
           <Text style={styles.mLabel}>Avg. Waiting Time</Text>
           <Text style={styles.mSub}>Queue arrival to consult</Text>
         </View>
@@ -90,10 +90,10 @@ export default function ReceptionReportsScreen() {
       <View style={styles.card}>
         {[
           { dept: 'Cardiology & Cardiothoracic', count: 18, pct: '31%', color: '#DC2626' },
-          { dept: 'Orthopedics & Joint Surgery', count: 15, pct: '26%', color: '#0284C7' },
-          { dept: 'General & Internal Medicine', count: 14, pct: '24%', color: '#38845A' },
-          { dept: 'Pediatrics & Neonatal Care', count: 7, pct: '12%', color: '#38845A' },
-          { dept: 'Emergency & Trauma Triage', count: 4, pct: '7%', color: '#D97706' },
+          { dept: 'Orthopedics & Joint Surgery', count: 15, pct: '26%', color: '#1565C0' },
+          { dept: 'General & Internal Medicine', count: 14, pct: '24%', color: '#1565C0' },
+          { dept: 'Pediatrics & Neonatal Care', count: 7, pct: '12%', color: '#1565C0' },
+          { dept: 'Emergency & Trauma Triage', count: 4, pct: '7%', color: '#F59E0B' },
         ].map((item, idx) => (
           <View key={idx} style={styles.deptItem}>
             <View style={styles.deptLeft}>
@@ -113,13 +113,13 @@ export default function ReceptionReportsScreen() {
       <View style={styles.card}>
         <View style={styles.dispRow}>
           <View style={styles.dispItem}>
-            <CheckCircle2 size={16} color="#38845A" />
+            <CheckCircle2 size={16} color="#1565C0" />
             <Text style={styles.dispNum}>46</Text>
             <Text style={styles.dispLabel}>Completed</Text>
           </View>
 
           <View style={styles.dispItem}>
-            <Clock size={16} color="#D97706" />
+            <Clock size={16} color="#F59E0B" />
             <Text style={styles.dispNum}>8</Text>
             <Text style={styles.dispLabel}>In Progress</Text>
           </View>
@@ -148,42 +148,42 @@ const styles = StyleSheet.create({
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#E0F2FE',
+    backgroundColor: '#E8F1FC',
     padding: 14,
     borderRadius: 12,
     marginBottom: 12,
   },
-  bannerTitle: { fontSize: 14, fontWeight: '800', color: '#0284C7' },
-  bannerSub: { fontSize: 11, color: '#0369A1', marginTop: 2 },
-  tabRow: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 10, padding: 4, marginBottom: 14 },
+  bannerTitle: { fontSize: 14, fontWeight: '800', color: '#1565C0' },
+  bannerSub: { fontSize: 11, color: '#0D47A1', marginTop: 2 },
+  tabRow: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 10, padding: 4, marginBottom: 14 },
   tab: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 8 },
-  tabActive: { backgroundColor: '#0284C7' },
+  tabActive: { backgroundColor: '#1565C0' },
   tabText: { fontSize: 11, fontWeight: '700', color: '#64748B' },
-  tabTextActive: { color: '#fff' },
+  tabTextActive: { color: '#FFFFFF' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 14 },
   metricCard: {
     width: '48.5%',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     borderWidth: 1,
     borderColor: '#E2E8F0',
     padding: 14,
   },
-  mNum: { fontSize: 22, fontWeight: '900', color: '#0F172A' },
-  mLabel: { fontSize: 12, fontWeight: '700', color: '#334155', marginTop: 3 },
+  mNum: { fontSize: 22, fontWeight: '900', color: '#183153' },
+  mLabel: { fontSize: 12, fontWeight: '700', color: '#475569', marginTop: 3 },
   mSub: { fontSize: 10, color: '#94A3B8', marginTop: 2 },
-  secTitle: { fontSize: 14, fontWeight: '800', color: '#0F172A', marginBottom: 8, marginTop: 4 },
-  card: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 14 },
+  secTitle: { fontSize: 14, fontWeight: '800', color: '#183153', marginBottom: 8, marginTop: 4 },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 14 },
   deptItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F8FAFC' },
   deptLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   bullet: { width: 8, height: 8, borderRadius: 4, marginRight: 8 },
-  deptName: { fontSize: 12, fontWeight: '700', color: '#1E293B' },
+  deptName: { fontSize: 12, fontWeight: '700', color: '#183153' },
   deptRight: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  deptCount: { fontSize: 12, fontWeight: '800', color: '#0F172A' },
+  deptCount: { fontSize: 12, fontWeight: '800', color: '#183153' },
   deptPct: { fontSize: 10, color: '#64748B' },
   dispRow: { flexDirection: 'row', justifyContent: 'space-between' },
   dispItem: { alignItems: 'center', flex: 1 },
-  dispNum: { fontSize: 18, fontWeight: '900', color: '#0F172A', marginTop: 4 },
+  dispNum: { fontSize: 18, fontWeight: '900', color: '#183153', marginTop: 4 },
   dispLabel: { fontSize: 10, fontWeight: '700', color: '#64748B', marginTop: 2 },
 });
 

@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
     marginBottom: UyirinaiTheme.spacing.sm,
   },
   unreadContainer: {
-    backgroundColor: '#FAFCFA',
-    borderColor: UyirinaiTheme.colors.lightGreen,
+    backgroundColor: UyirinaiTheme.colors.primaryLight,
+    borderColor: UyirinaiTheme.colors.primaryBorder,
   },
   iconBox: {
     width: 36,

@@ -161,25 +161,25 @@ export default function NotificationsScreen() {
     const type = (typeStr || '').toUpperCase();
     switch (type) {
       case 'APPOINTMENT':
-        return { icon: CalendarCheck, color: '#0284C7', bg: '#E0F2FE', label: 'Appointment' };
+        return { icon: CalendarCheck, color: '#1565C0', bg: '#E8F1FC', label: 'Appointment' };
       case 'LAB':
       case 'LAB_RESULT':
       case 'DIAGNOSTIC':
-        return { icon: FlaskConical, color: '#7C3AED', bg: '#EDE9FE', label: 'Laboratory' };
+        return { icon: FlaskConical, color: '#1565C0', bg: '#E8F1FC', label: 'Laboratory' };
       case 'EMERGENCY':
         return { icon: AlertTriangle, color: '#DC2626', bg: '#FEE2E2', label: 'Emergency' };
       case 'ADMISSION':
-        return { icon: BedDouble, color: '#D97706', bg: '#FEF3C7', label: 'Admission' };
+        return { icon: BedDouble, color: '#F59E0B', bg: '#FEF3C7', label: 'Admission' };
       case 'PRESCRIPTION':
-        return { icon: Pill, color: '#059669', bg: '#D1FAE5', label: 'Prescription' };
+        return { icon: Pill, color: '#00897B', bg: '#DCFCE7', label: 'Prescription' };
       case 'EQUIPMENT':
       case 'MAINTENANCE':
         return { icon: Wrench, color: '#EA580C', bg: '#FFEDD5', label: 'Engineering' };
       case 'SYSTEM':
       case 'BROADCAST':
-        return { icon: Megaphone, color: '#38845A', bg: '#EAF5ED', label: 'Broadcast' };
+        return { icon: Megaphone, color: '#1565C0', bg: '#E8F1FC', label: 'Broadcast' };
       default:
-        return { icon: Bell, color: '#38845A', bg: '#EAF5ED', label: 'Alert' };
+        return { icon: Bell, color: '#1565C0', bg: '#E8F1FC', label: 'Alert' };
     }
   };
 
@@ -245,10 +245,10 @@ export default function NotificationsScreen() {
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             {markingAll ? (
-              <ActivityIndicator size="small" color="#38845A" />
+              <ActivityIndicator size="small" color="#1565C0" />
             ) : (
               <>
-                <CheckCheck size={14} color="#38845A" />
+                <CheckCheck size={14} color="#1565C0" />
                 <Text style={styles.markAllText}>Mark all read</Text>
               </>
             )}
@@ -275,20 +275,20 @@ export default function NotificationsScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={loadNotifications}
-            tintColor="#38845A"
-            colors={['#38845A']}
+            tintColor="#1565C0"
+            colors={['#1565C0']}
           />
         }
       >
         {loading && !refreshing ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#38845A" />
+            <ActivityIndicator size="large" color="#1565C0" />
             <Text style={styles.loadingText}>Loading notifications...</Text>
           </View>
         ) : displayedNotifications.length === 0 ? (
           <View style={styles.emptyState}>
             <View style={styles.emptyIconCircle}>
-              <Bell size={36} color="#38845A" />
+              <Bell size={36} color="#1565C0" />
             </View>
             <Text style={styles.emptyTitle}>
               {activeTab === 'UNREAD' ? 'No unread notifications' : 'All caught up!'}
@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   tabBtnActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   tabBtnText: {
     fontSize: 11,
@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 8,
@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
   markAllText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   errorBanner: {
     flexDirection: 'row',
@@ -502,12 +502,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     gap: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#FCA5A5',
+    borderBottomColor: '#FECACA',
   },
   errorText: {
     flex: 1,
     fontSize: 12,
-    color: '#B91C1C',
+    color: '#DC2626',
     fontWeight: '600',
   },
   retryBtn: {
@@ -552,7 +552,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
@@ -560,7 +560,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
     marginBottom: 6,
   },
   emptySub: {
@@ -579,8 +579,8 @@ const styles = StyleSheet.create({
   notifCardUnread: {
     backgroundColor: '#FFFFFF',
     borderLeftWidth: 4,
-    borderLeftColor: '#38845A',
-    shadowColor: '#38845A',
+    borderLeftColor: '#1565C0',
+    shadowColor: '#1565C0',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 4,
@@ -636,11 +636,11 @@ const styles = StyleSheet.create({
   notifTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#334155',
+    color: '#475569',
   },
   notifTitleUnread: {
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   notifMsg: {
     fontSize: 12,
@@ -655,14 +655,14 @@ const styles = StyleSheet.create({
   readBtn: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     borderRadius: 6,
     marginBottom: 4,
   },
   readBtnText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
     textTransform: 'uppercase',
   },
   modalOverlay: {
@@ -703,7 +703,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
     marginBottom: 10,
   },
   modalScroll: {
@@ -728,7 +728,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingHorizontal: 14,
     paddingVertical: 9,
     borderRadius: 10,

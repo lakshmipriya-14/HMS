@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   },
   inputFocused: {
     borderColor: UyirinaiTheme.colors.primary,
-    backgroundColor: '#FAFDFB',
+    backgroundColor: UyirinaiTheme.colors.primaryLight,
   },
   inputError: {
     borderColor: UyirinaiTheme.colors.error,

@@ -1,8 +1,10 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
+import * as bcrypt from 'bcryptjs';
 import { Injectable, BadRequestException, ConflictException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterPatientDto, AuthUserDto, Role, parseAppointmentPreferredDate } from '@multispeciality-hms/contracts';
+import { randomToken, tokenDigest } from '../auth/auth.service';
 
 @Injectable()
 export class PatientsService {
@@ -38,11 +40,12 @@ export class PatientsService {
       data: { avatarUrl: value }, select: { avatarUrl: true } });
   }
 
-  async changeAppointment(actor: AuthUserDto, id: string, body: { action?: string; date?: string; time?: string }) {
+  async changeAppointment(actor: AuthUserDto, id: string, body: { action?: string; date?: string; time?: string; reason?: string }) {
     const patient = actor.role === Role.PATIENT ? await this.ownPatient(actor) : null;
     if (!patient && (actor.role !== Role.RECEPTIONIST || !actor.branchId)) throw new ForbiddenException('Reception branch required.');
     const scope = patient ? { patientId: patient.id } : { branchId: actor.branchId };
     const cancel = body?.action === 'cancel';
+    const cleanReason = typeof body?.reason === 'string' ? body.reason.trim().slice(0, 300) : '';
     if (!cancel && (body?.action !== 'reschedule' || typeof body.date !== 'string' || typeof body.time !== 'string'
       || !/^([01]\d|2[0-3]):[0-5]\d$/.test(body.time))) throw new BadRequestException('Choose a valid date and time.');
     const minutes = (time: string) => {
@@ -53,12 +56,21 @@ export class PatientsService {
       return await this.prisma.$transaction(async (tx) => {
         const row = await tx.appointment.findFirst({
           where: { id, ...scope, hospitalId: actor.hospitalId },
-          include: { doctor: { include: { employee: { select: { userId: true } } } } },
+          include: {
+            patient: { select: { id: true, userId: true, firstName: true, lastName: true, uhid: true } },
+            department: { select: { id: true, name: true } },
+            branch: { select: { id: true, name: true } },
+            doctor: { include: { employee: { select: { userId: true, user: { select: { firstName: true, lastName: true } } } } } },
+          },
         });
         if (!row) throw new NotFoundException('Appointment not found.');
         if (row.status === 'CANCELLED' && cancel) return { id, status: row.status };
         const startsAt = Date.parse(row.appointmentDate.toISOString().slice(0, 10) + 'T' + row.appointmentTime + ':00+05:30');
-        if (row.status !== 'SCHEDULED' || !Number.isFinite(startsAt) || startsAt <= Date.now() || (cancel && row.isPaid && !!patient)) {
+        if (cancel) {
+          if (['COMPLETED', 'IN_PROGRESS', 'NO_SHOW'].includes(row.status)) {
+            throw new ConflictException('Consultation is already in progress or completed. Contact Reception.');
+          }
+        } else if (row.status !== 'SCHEDULED' || !Number.isFinite(startsAt) || startsAt <= Date.now()) {
           throw new ConflictException('Contact Reception to change this appointment.');
         }
         const update: Prisma.AppointmentUpdateInput = cancel ? { status: 'CANCELLED' } : {};
@@ -90,20 +102,63 @@ export class PatientsService {
           }
         }
         const changed = await tx.appointment.update({ where: { id }, data: update, select: { id: true, status: true } });
-        const reception = await tx.user.findMany({
-          where: { hospitalId: row.hospitalId, deletedAt: null, isActive: true,
-            userRoles: { some: { hospitalId: row.hospitalId, branchId: row.branchId, role: { name: Role.RECEPTIONIST } } } },
-          select: { id: true },
+        const [reception, deptAdmins] = await Promise.all([
+          tx.user.findMany({
+            where: { hospitalId: row.hospitalId, deletedAt: null, isActive: true,
+              userRoles: { some: { hospitalId: row.hospitalId, branchId: row.branchId, role: { name: Role.RECEPTIONIST } } } },
+            select: { id: true },
+          }),
+          tx.user.findMany({
+            where: { hospitalId: row.hospitalId, deletedAt: null, isActive: true,
+              userRoles: { some: { hospitalId: row.hospitalId, branchId: row.branchId, departmentId: row.departmentId, role: { name: Role.DEPARTMENT_ADMIN } } } },
+            select: { id: true },
+          }),
+        ]);
+        const recipients = new Set<string>();
+        if (row.doctor?.employee?.userId) recipients.add(row.doctor.employee.userId);
+        for (const u of reception) recipients.add(u.id);
+        for (const u of deptAdmins) recipients.add(u.id);
+        if (row.patient?.userId) recipients.add(row.patient.userId);
+
+        const patientFullName = row.patient ? `${row.patient.firstName} ${row.patient.lastName}`.trim() : 'Patient';
+        const docUser = row.doctor?.employee?.user;
+        const docName = docUser ? `Dr. ${docUser.firstName} ${docUser.lastName}` : 'Consultant Doctor';
+        const dateStr = (update.appointmentDate instanceof Date ? update.appointmentDate : row.appointmentDate).toISOString().slice(0, 10);
+        const timeStr = (typeof update.appointmentTime === 'string' ? update.appointmentTime : row.appointmentTime) || '';
+        const deptName = row.department?.name || 'OPD';
+        const branchName = row.branch?.name ? ` (${row.branch.name})` : '';
+        const actorLabel = patient ? 'Patient' : 'Reception';
+        const reasonSuffix = cleanReason ? ` Reason: ${cleanReason}.` : '';
+
+        if (recipients.size > 0) {
+          await tx.notification.createMany({
+            data: Array.from(recipients, (userId) => ({
+              userId,
+              hospitalId: row.hospitalId,
+              branchId: row.branchId,
+              type: 'APPOINTMENT',
+              title: cancel ? 'Appointment Cancelled' : 'Appointment Rescheduled',
+              message: `Appointment ${row.appointmentNumber} for ${patientFullName}${row.patient?.uhid ? ` (${row.patient.uhid})` : ''} with ${docName} (${deptName}${branchName}) on ${dateStr} at ${timeStr} IST was ${cancel ? 'cancelled' : 'rescheduled'} by ${actorLabel}.${reasonSuffix}`,
+            })),
+          });
+        }
+        await tx.auditLog.create({
+          data: {
+            hospitalId: row.hospitalId,
+            branchId: row.branchId,
+            userId: actor.id,
+            userEmail: actor.email,
+            userRole: actor.role,
+            action: cancel ? 'CANCEL' : 'RESCHEDULE',
+            resource: 'APPOINTMENT',
+            resourceId: id,
+            details: {
+              appointmentNumber: row.appointmentNumber,
+              cancelledByRole: actor.role,
+              ...(cleanReason ? { reason: cleanReason } : {}),
+            },
+          },
         });
-        const recipients = new Set([row.doctor.employee.userId, ...reception.map((user) => user.id)]);
-        await tx.notification.createMany({ data: Array.from(recipients, (userId) => ({
-          userId, hospitalId: row.hospitalId, branchId: row.branchId, type: 'APPOINTMENT',
-          title: cancel ? 'Appointment cancelled' : 'Appointment rescheduled',
-          message: `Appointment ${row.appointmentNumber} was updated. Open the appointment list for details.`,
-        })) });
-        await tx.auditLog.create({ data: { hospitalId: row.hospitalId, branchId: row.branchId, userId: actor.id,
-          userEmail: actor.email, userRole: actor.role, action: cancel ? 'CANCEL' : 'RESCHEDULE',
-          resource: 'APPOINTMENT', resourceId: id } });
         return changed;
       }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
     } catch (error) {
@@ -121,37 +176,54 @@ export class PatientsService {
     const where = { patientId: patient.id, hospitalId: actor.hospitalId };
     const recent = { take: 20, skip: (pageNumber - 1) * 20, orderBy: [{ createdAt: 'desc' as const }, { id: 'asc' as const }] };
     const doctor = { select: { employee: { select: { user: { select: { firstName: true, lastName: true } } } } } } as const;
+    const branch = {
+      select: {
+        id: true,
+        name: true,
+        address: true,
+        city: true,
+        state: true,
+        phone: true,
+        hospital: { select: { id: true, name: true } },
+      },
+    } as const;
     const [appointments, consultations, prescriptions, labOrders, radiology, invoices, admissions, vitals] = await Promise.all([
       this.prisma.appointment.findMany({ where, ...recent, select: {
         id: true, appointmentNumber: true, appointmentDate: true, appointmentTime: true, status: true, type: true,
-        tokenNumber: true, isPaid: true, doctor, branch: { select: { name: true } }, department: { select: { name: true } },
+        source: true, reasonForVisit: true, tokenNumber: true, isPaid: true, doctor, branch, department: { select: { name: true } },
       } }),
       this.prisma.consultation.findMany({ where: { ...where, status: 'COMPLETED' }, ...recent,
-        select: { id: true, createdAt: true, diagnosisNotes: true, treatmentPlan: true, followUpDate: true, doctor } }),
+        select: { id: true, appointmentId: true, createdAt: true, diagnosisNotes: true, treatmentPlan: true, followUpDate: true, doctor, branch } }),
       this.prisma.prescription.findMany({ where, ...recent, select: {
-        id: true, prescriptionNumber: true, dispensingStatus: true, createdAt: true, doctor,
+        id: true, prescriptionNumber: true, dispensingStatus: true, createdAt: true, doctor, branch,
+        consultation: { select: { appointmentId: true } },
         items: { select: { id: true, dosage: true, frequency: true, durationDays: true, instructions: true, route: true,
           dispensedQuantity: true, medicine: { select: { brandName: true, strength: true } } } },
       } }),
       this.prisma.labOrder.findMany({ where, ...recent, select: {
-        id: true, orderNumber: true, status: true, reportReleasedAt: true, createdAt: true, doctor,
+        id: true, orderNumber: true, status: true, reportReleasedAt: true, createdAt: true, doctor, branch,
         orderItems: { select: { labTest: { select: { name: true } } } },
       } }),
       this.prisma.radiologyOrder.findMany({ where, ...recent, select: {
         id: true, orderNumber: true, status: true, reportReleasedAt: true, createdAt: true,
-        findings: true, impression: true, test: { select: { name: true, modality: true } }, doctor,
+        findings: true, impression: true, test: { select: { name: true, modality: true } }, doctor, branch,
       } }),
       this.prisma.invoice.findMany({ where, ...recent, select: {
-        id: true, invoiceNumber: true, totalAmount: true, paidAmount: true, status: true, createdAt: true,
+        id: true, invoiceNumber: true, appointmentId: true, admissionId: true, totalAmount: true, paidAmount: true, status: true, createdAt: true, branch,
+        appointment: { select: { id: true, appointmentNumber: true } },
+        admission: { select: { id: true, admissionNumber: true } },
         items: { select: { id: true, description: true, quantity: true, totalPrice: true } },
-        payments: { select: { id: true, amount: true, paymentMethod: true, paymentStatus: true, createdAt: true } },
+        payments: {
+          orderBy: [{ createdAt: 'desc' as const }, { id: 'asc' as const }],
+          select: { id: true, amount: true, paymentMethod: true, transactionReference: true, paymentStatus: true, createdAt: true, branch },
+        },
       } }),
       this.prisma.admission.findMany({ where, ...recent, select: {
         id: true, admissionNumber: true, status: true, admittedAt: true, dischargedAt: true, dischargeSummary: true,
-        admittingDoctor: doctor, ward: { select: { name: true } }, bed: { select: { bedNumber: true } },
+        admittingDoctor: doctor, branch, ward: { select: { name: true } }, bed: { select: { bedNumber: true } },
       } }),
       this.prisma.vitalsRecord.findMany({ where, ...recent, select: {
-        id: true, createdAt: true, systolicBp: true, diastolicBp: true, pulseRate: true, oxygenSaturation: true, temperature: true,
+        id: true, createdAt: true, systolicBp: true, diastolicBp: true, pulseRate: true, oxygenSaturation: true, temperature: true, branch,
       } }),
     ]);
     const released = await this.prisma.labResult.findMany({
@@ -247,7 +319,7 @@ export class PatientsService {
       orderBy: { id: 'asc' }, take: 50, select: {
         id: true, designation: true, specialization: true, consultationFee: true, experienceYears: true,
         gender: true, bio: true, consultationDurationMin: true,
-        department: { select: { id: true, name: true, code: true } }, branch: { select: { id: true, name: true } },
+        department: { select: { id: true, name: true, code: true } }, branch: { select: { id: true, name: true, city: true, address: true, hospital: { select: { name: true } } } },
         employee: { select: { user: { select: { firstName: true, lastName: true, avatarUrl: true, email: true } } } },
         qualifications: { select: { degree: true, institution: true, yearPassed: true } },
         schedules: { select: { dayOfWeek: true, startTime: true, endTime: true, maxPatients: true } },
@@ -355,51 +427,112 @@ export class PatientsService {
       }
     }
 
-    const uhid = await this.generateUhid();
+    const normalizedEmail = dto.email?.trim().toLowerCase() || null;
 
-    const patient = await this.prisma.patient.create({
-      data: {
-        uhid,
-        hospitalId,
-        registrationBranchId,
-        firstName: dto.firstName,
-        lastName: dto.lastName,
-        dateOfBirth: new Date(dto.dateOfBirth),
-        gender: dto.gender,
-        bloodGroup: dto.bloodGroup,
-        phone: dto.phone,
-        email: dto.email || null,
-        nationalId: dto.nationalId,
-        addressLine1: dto.addressLine1,
-        addressLine2: dto.addressLine2,
-        city: dto.city,
-        state: dto.state,
-        postalCode: dto.postalCode,
-        country: dto.country || 'India',
-        emergencyContactName: dto.emergencyContactName,
-        emergencyContactPhone: dto.emergencyContactPhone,
-        emergencyContactRelation: dto.emergencyContactRelation,
-        allergies: dto.allergies || [],
-        medicalHistoryNotes: dto.medicalHistoryNotes,
-      },
+    return this.prisma.$transaction(async (tx) => {
+      let userId: string | undefined;
+      let portalAccess: { email: string; accessCode: string; expiresAt: string } | undefined;
+
+      if (normalizedEmail) {
+        const existingUser = await tx.user.findUnique({
+          where: { email: normalizedEmail },
+          select: { id: true },
+        });
+        if (existingUser) {
+          throw new ConflictException(`A login account with email "${normalizedEmail}" already exists.`);
+        }
+
+        const patientRole = await tx.role.findFirst({ where: { name: Role.PATIENT } });
+        if (patientRole) {
+          const placeholderPassword = randomBytes(24).toString('base64url');
+          const passwordHash = await bcrypt.hash(placeholderPassword, 12);
+          const createdUser = await tx.user.create({
+            data: {
+              hospitalId,
+              email: normalizedEmail,
+              passwordHash,
+              firstName: dto.firstName.trim(),
+              lastName: dto.lastName.trim(),
+              phone: dto.phone.trim(),
+              isActive: true,
+            },
+          });
+          await tx.userRole.create({
+            data: {
+              hospitalId,
+              userId: createdUser.id,
+              roleId: patientRole.id,
+              branchId: null,
+              departmentId: null,
+              scopeKey: `patient:${createdUser.id}`,
+            },
+          });
+          const code = randomToken();
+          const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60_000);
+          await tx.accountAccessToken.create({
+            data: {
+              hospitalId,
+              userId: createdUser.id,
+              issuedById: actor?.id || createdUser.id,
+              purpose: 'INVITATION',
+              digest: tokenDigest(code),
+              expiresAt,
+            },
+          });
+          userId = createdUser.id;
+          portalAccess = {
+            email: normalizedEmail,
+            accessCode: code,
+            expiresAt: expiresAt.toISOString(),
+          };
+        }
+      }
+
+      const uhid = await this.generateUhid();
+      const patient = await tx.patient.create({
+        data: {
+          uhid,
+          userId,
+          hospitalId,
+          registrationBranchId,
+          firstName: dto.firstName.trim(),
+          lastName: dto.lastName.trim(),
+          dateOfBirth: new Date(dto.dateOfBirth),
+          gender: dto.gender,
+          bloodGroup: dto.bloodGroup,
+          phone: dto.phone.trim(),
+          email: normalizedEmail,
+          nationalId: dto.nationalId,
+          addressLine1: dto.addressLine1,
+          addressLine2: dto.addressLine2,
+          city: dto.city,
+          state: dto.state,
+          postalCode: dto.postalCode,
+          country: dto.country || 'India',
+          emergencyContactName: dto.emergencyContactName,
+          emergencyContactPhone: dto.emergencyContactPhone,
+          emergencyContactRelation: dto.emergencyContactRelation,
+          allergies: dto.allergies || [],
+          medicalHistoryNotes: dto.medicalHistoryNotes,
+        },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          hospitalId,
+          branchId: registrationBranchId,
+          userId: actor?.id,
+          userEmail: actor?.email || 'system@aalayamhospital.com',
+          userRole: actor?.role || 'RECEPTIONIST',
+          action: 'CREATE',
+          resource: 'PATIENT',
+          resourceId: patient.id,
+          details: { uhid: patient.uhid, name: `${patient.firstName} ${patient.lastName}`, accountProvisioned: !!userId },
+        },
+      });
+
+      return { ...patient, ...(portalAccess ? { portalAccess } : {}) };
     });
-
-    // Audit log
-    await this.prisma.auditLog.create({
-      data: {
-        hospitalId,
-        branchId: registrationBranchId,
-        userId: actor?.id,
-        userEmail: actor?.email || 'system@aalayamhospital.com',
-        userRole: actor?.role || 'RECEPTIONIST',
-        action: 'CREATE',
-        resource: 'PATIENT',
-        resourceId: patient.id,
-        details: { uhid: patient.uhid, name: `${patient.firstName} ${patient.lastName}` },
-      },
-    });
-
-    return patient;
   }
 
   async search(query?: string, phone?: string, uhid?: string, actor?: AuthUserDto) {

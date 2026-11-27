@@ -224,28 +224,28 @@ export const StaffManagement: React.FC = () => {
     <div className="space-y-6 pb-12">
       {/* Messages */}
       {successMessage && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             {successMessage}
           </div>
-          <button onClick={() => setSuccessMessage('')} className="text-emerald-600 hover:text-emerald-900">×</button>
+          <button onClick={() => setSuccessMessage('')} className="text-[#16A34A] hover:text-emerald-900">×</button>
         </div>
       )}
       {errorMessage && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600" />
+            <AlertCircle className="w-4 h-4 text-[#DC2626]" />
             {errorMessage}
           </div>
-          <button onClick={() => setErrorMessage('')} className="text-rose-600 hover:text-rose-900">×</button>
+          <button onClick={() => setErrorMessage('')} className="text-[#DC2626] hover:text-rose-900">×</button>
         </div>
       )}
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="p-2.5 bg-indigo-50 text-indigo-700 rounded-xl border border-indigo-100">
+          <span className="p-2.5 bg-[#E8F1FC] text-[#1565C0] rounded-xl border border-[#BFDBFE]">
             <Users className="w-6 h-6" />
           </span>
           <div>
@@ -280,7 +280,7 @@ export const StaffManagement: React.FC = () => {
               setErrorMessage('');
               setAddModalOpen(true);
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
           >
             <UserPlus className="w-4 h-4" />
             Add Employee
@@ -330,12 +330,12 @@ export const StaffManagement: React.FC = () => {
 
       {/* Bulk Actions Banner */}
       {selectedUserIds.length > 0 && (
-        <div className="bg-teal-50 border border-teal-200 rounded-xl px-4 py-2.5 flex items-center justify-between text-xs animate-in fade-in">
+        <div className="bg-[#E0F2F1] border border-[#B2DFDB] rounded-xl px-4 py-2.5 flex items-center justify-between text-xs animate-in fade-in">
           <div className="flex items-center gap-2">
             <span className="font-bold text-teal-900">{selectedUserIds.length} staff selected</span>
             <button
               onClick={() => setSelectedUserIds([])}
-              className="text-teal-700 underline hover:text-teal-900"
+              className="text-[#00897B] underline hover:text-teal-900"
             >
               Clear selection
             </button>
@@ -343,13 +343,13 @@ export const StaffManagement: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleBulkStatus(true)}
-              className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm"
+              className="px-3 py-1 bg-[#16A34A] hover:bg-[#15803D] text-white font-semibold rounded-lg shadow-sm"
             >
               Bulk Activate
             </button>
             <button
               onClick={() => handleBulkStatus(false)}
-              className="px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-lg shadow-sm"
+              className="px-3 py-1 bg-[#DC2626] hover:bg-[#B91C1C] text-white font-semibold rounded-lg shadow-sm"
             >
               Bulk Deactivate
             </button>
@@ -368,7 +368,7 @@ export const StaffManagement: React.FC = () => {
                     type="checkbox"
                     checked={visibleStaff.length > 0 && selectedUserIds.length === visibleStaff.length}
                     onChange={handleToggleSelectAll}
-                    className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                    className="rounded border-slate-300 text-[#00897B] focus:ring-teal-500"
                   />
                 </th>
                 <th className="py-3 px-4">Employee</th>
@@ -394,7 +394,7 @@ export const StaffManagement: React.FC = () => {
                         type="checkbox"
                         checked={selectedUserIds.includes(u.id)}
                         onChange={() => handleToggleSelectUser(u.id)}
-                        className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                        className="rounded border-slate-300 text-[#00897B] focus:ring-teal-500"
                       />
                     </td>
                     <td className="py-3.5 px-4">
@@ -409,7 +409,7 @@ export const StaffManagement: React.FC = () => {
                       <span className="font-semibold text-slate-700 block">
                         {u.employee?.designation || u.role?.replace(/_/g, ' ')}
                       </span>
-                      <span className="text-[10px] text-teal-700 font-bold uppercase">{u.role}</span>
+                      <span className="text-[10px] text-[#00897B] font-bold uppercase">{u.role}</span>
                     </td>
                     <td className="py-3.5 px-4 text-slate-600 font-medium">
                       {u.department?.name || u.employee?.department?.name || 'Hospital General'}
@@ -460,8 +460,8 @@ export const StaffManagement: React.FC = () => {
                           onClick={() => handleToggleStatus(u)}
                           className={`p-1.5 rounded-lg transition-all ${
                             u.isActive
-                              ? 'text-rose-600 hover:text-rose-800 hover:bg-rose-50'
-                              : 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50'
+                              ? 'text-[#DC2626] hover:text-rose-800 hover:bg-[#FEE2E2]'
+                              : 'text-[#16A34A] hover:text-[#16A34A] hover:bg-[#DCFCE7]'
                           }`}
                           title={u.isActive ? 'Deactivate account' : 'Activate account'}
                         >
@@ -597,7 +597,7 @@ export const StaffManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-lg shadow-sm"
             >
               {submitting ? 'Creating...' : 'Register Employee'}
             </button>
@@ -679,7 +679,7 @@ export const StaffManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-lg shadow-sm"
             >
               {submitting ? 'Saving...' : 'Save Profile'}
             </button>

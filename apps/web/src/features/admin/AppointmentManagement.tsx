@@ -111,28 +111,28 @@ export const AppointmentManagement: React.FC = () => {
     <div className="space-y-6 pb-12">
       {/* Messages */}
       {successMessage && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             {successMessage}
           </div>
-          <button onClick={() => setSuccessMessage('')} className="text-emerald-600 hover:text-emerald-900">×</button>
+          <button onClick={() => setSuccessMessage('')} className="text-[#16A34A] hover:text-emerald-900">×</button>
         </div>
       )}
       {errorMessage && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600" />
+            <AlertCircle className="w-4 h-4 text-[#DC2626]" />
             {errorMessage}
           </div>
-          <button onClick={() => setErrorMessage('')} className="text-rose-600 hover:text-rose-900">×</button>
+          <button onClick={() => setErrorMessage('')} className="text-[#DC2626] hover:text-rose-900">×</button>
         </div>
       )}
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="p-2.5 bg-blue-50 text-blue-700 rounded-xl border border-blue-100">
+          <span className="p-2.5 bg-[#E8F1FC] text-[#1565C0] rounded-xl border border-[#BFDBFE]">
             <CalendarCheck className="w-6 h-6" />
           </span>
           <div>
@@ -169,7 +169,7 @@ export const AppointmentManagement: React.FC = () => {
           <button
             onClick={() => setDateFilter('today')}
             className={`flex-1 py-1 rounded text-center transition-all ${
-              dateFilter === 'today' ? 'bg-white text-teal-700 font-bold shadow-xs' : 'text-slate-600'
+              dateFilter === 'today' ? 'bg-white text-[#00897B] font-bold shadow-xs' : 'text-slate-600'
             }`}
           >
             Today's OPD
@@ -177,7 +177,7 @@ export const AppointmentManagement: React.FC = () => {
           <button
             onClick={() => setDateFilter('all')}
             className={`flex-1 py-1 rounded text-center transition-all ${
-              dateFilter === 'all' ? 'bg-white text-teal-700 font-bold shadow-xs' : 'text-slate-600'
+              dateFilter === 'all' ? 'bg-white text-[#00897B] font-bold shadow-xs' : 'text-slate-600'
             }`}
           >
             All Dates
@@ -235,7 +235,7 @@ export const AppointmentManagement: React.FC = () => {
               ) : (
                 filteredAppointments.map((a) => (
                   <tr key={a.id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-teal-700">
+                    <td className="py-3.5 px-4 font-mono font-bold text-[#00897B]">
                       #{a.tokenNumber || a.id.slice(0, 6)}
                     </td>
                     <td className="py-3.5 px-4 font-medium text-slate-800">
@@ -275,7 +275,7 @@ export const AppointmentManagement: React.FC = () => {
                             setCancelReason('');
                             setCancelModalOpen(true);
                           }}
-                          className="px-2.5 py-1 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg text-xs font-semibold transition-all"
+                          className="px-2.5 py-1 text-[#DC2626] hover:text-rose-800 hover:bg-[#FEE2E2] rounded-lg text-xs font-semibold transition-all"
                         >
                           Cancel
                         </button>
@@ -325,7 +325,7 @@ export const AppointmentManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#DC2626] hover:bg-[#B91C1C] rounded-lg shadow-sm"
             >
               {submitting ? 'Cancelling...' : 'Confirm Cancellation'}
             </button>

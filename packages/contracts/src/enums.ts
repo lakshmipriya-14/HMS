@@ -113,6 +113,11 @@ export enum AppointmentType {
   ROUTINE = 'ROUTINE',
 }
 
+export enum AppointmentSource {
+  ONLINE_PATIENT = 'ONLINE_PATIENT',
+  RECEPTION_WALK_IN = 'RECEPTION_WALK_IN',
+}
+
 export enum ConsultationStatus {
   IN_QUEUE = 'IN_QUEUE',
   IN_PROGRESS = 'IN_PROGRESS',

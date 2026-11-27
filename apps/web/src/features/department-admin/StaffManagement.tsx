@@ -150,7 +150,7 @@ export const StaffManagement: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <Users className="w-6 h-6 text-teal-600" />
+            <Users className="w-6 h-6 text-[#00897B]" />
             Department Staff & Nursing Personnel
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -159,7 +159,7 @@ export const StaffManagement: React.FC = () => {
         </div>
         <button
           onClick={() => setIsAddOpen(true)}
-          className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md shadow-teal-900/20"
+          className="px-4 py-2 bg-[#1565C0] hover:bg-[#00897B] text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md shadow-teal-900/20"
         >
           <Plus className="w-4 h-4" />
           Add Department Staff
@@ -167,18 +167,18 @@ export const StaffManagement: React.FC = () => {
       </div>
 
       {success && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-medium flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-medium flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             <span>{success}</span>
           </div>
-          <button onClick={() => setSuccess('')} className="text-emerald-600 hover:text-emerald-900 font-bold">×</button>
+          <button onClick={() => setSuccess('')} className="text-[#16A34A] hover:text-emerald-900 font-bold">×</button>
         </div>
       )}
 
       {error && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600" />
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-[#DC2626]" />
           <span>{error}</span>
         </div>
       )}
@@ -192,7 +192,7 @@ export const StaffManagement: React.FC = () => {
             placeholder="Search staff by name, code, designation..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500"
+            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B]"
           />
         </div>
 
@@ -201,7 +201,7 @@ export const StaffManagement: React.FC = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500 font-medium text-slate-700"
+            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B] font-medium text-slate-700"
           >
             <option value="">All Statuses</option>
             <option value="ACTIVE">Active Staff</option>
@@ -235,7 +235,7 @@ export const StaffManagement: React.FC = () => {
                     <tr key={emp.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-xs">
+                          <div className="w-8 h-8 rounded-full bg-[#E0F2F1] text-[#183153] font-bold flex items-center justify-center text-xs">
                             {user?.firstName?.[0] || 'S'}
                           </div>
                           <div>
@@ -265,14 +265,14 @@ export const StaffManagement: React.FC = () => {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleToggleStatus(emp)}
-                            className="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-[#00897B] hover:bg-[#E0F2F1] rounded-lg transition-colors"
                             title={emp.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
                           >
-                            {emp.status === 'ACTIVE' ? <ToggleRight className="w-4 h-4 text-emerald-600" /> : <ToggleLeft className="w-4 h-4 text-slate-400" />}
+                            {emp.status === 'ACTIVE' ? <ToggleRight className="w-4 h-4 text-[#16A34A]" /> : <ToggleLeft className="w-4 h-4 text-slate-400" />}
                           </button>
                           <button
                             onClick={() => openEdit(emp)}
-                            className="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-[#00897B] hover:bg-[#E0F2F1] rounded-lg transition-colors"
                             title="Edit Employee"
                           >
                             <Edit className="w-4 h-4" />
@@ -408,7 +408,7 @@ export const StaffManagement: React.FC = () => {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-semibold shadow-md shadow-teal-900/20 disabled:opacity-50"
+              className="px-4 py-2 bg-[#1565C0] hover:bg-[#00897B] text-white rounded-xl font-semibold shadow-md shadow-teal-900/20 disabled:opacity-50"
             >
               {saving ? 'Adding...' : 'Add Staff Member'}
             </button>
@@ -494,7 +494,7 @@ export const StaffManagement: React.FC = () => {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-semibold shadow-md shadow-teal-900/20 disabled:opacity-50"
+              className="px-4 py-2 bg-[#1565C0] hover:bg-[#00897B] text-white rounded-xl font-semibold shadow-md shadow-teal-900/20 disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save Changes'}
             </button>

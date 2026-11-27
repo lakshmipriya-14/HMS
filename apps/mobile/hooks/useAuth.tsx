@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { AuthUserDto, LoginRequestDto } from '@multispeciality-hms/contracts';
 import { mobileApiClient, setMobileUnauthorizedHandler } from '../services/api';
 import { clearPendingLogout, isLogoutPending, markPendingLogout } from '@multispeciality-hms/api-client';
@@ -13,33 +14,42 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<AuthUserDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
-    setMobileUnauthorizedHandler(() => setUser(null));
+    setMobileUnauthorizedHandler(() => {
+      queryClient.clear();
+      setUser(null);
+    });
     const restore = async () => {
       try {
         if (isLogoutPending()) {
           await mobileApiClient.auth.logout();
           clearPendingLogout();
+          queryClient.clear();
           return;
         }
         const session = await mobileApiClient.auth.restore();
         if (mounted) setUser(session.user);
       } catch {
-        if (mounted) setUser(null);
+        if (mounted) {
+          queryClient.clear();
+          setUser(null);
+        }
       } finally {
         if (mounted) setIsLoading(false);
       }
     };
     void restore();
     return () => { mounted = false; setMobileUnauthorizedHandler(undefined); };
-  }, []);
+  }, [queryClient]);
 
   const login = async (dto: LoginRequestDto) => {
     if (isLogoutPending()) await mobileApiClient.auth.logout();
+    queryClient.clear();
     const response = await mobileApiClient.auth.login(dto);
     if (!response.data) throw new Error('No session returned.');
     clearPendingLogout();
@@ -51,6 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await mobileApiClient.auth.logout();
       clearPendingLogout();
     } finally {
+      queryClient.clear();
       setUser(null);
     }
   };

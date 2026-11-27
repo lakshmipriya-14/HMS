@@ -1,4 +1,10 @@
-import type { DoctorRoundNoteDto, DoctorWorkspaceDto, RequestDoctorLeaveDto } from '@multispeciality-hms/contracts';
+import type {
+  BookingOptionsDto,
+  DoctorRoundNoteDto,
+  DoctorSlotAvailabilityDto,
+  DoctorWorkspaceDto,
+  RequestDoctorLeaveDto,
+} from '@multispeciality-hms/contracts';
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import {
   API_ENDPOINTS,
@@ -249,6 +255,18 @@ export class AalayamApiClient {
     },
     bookAppointment: async (dto: CreateAppointmentDto) => {
       const res = await this.instance.post<ApiResponse<any>>(API_ENDPOINTS.APPOINTMENTS.BASE, dto);
+      return res.data;
+    },
+    getBookingOptions: async (branchId?: string) => {
+      const res = await this.instance.get<ApiResponse<BookingOptionsDto>>('/appointments/booking-options', {
+        params: branchId ? { branchId } : undefined,
+      });
+      return res.data;
+    },
+    getDoctorSlots: async (params: { doctorId: string; date: string; branchId?: string }) => {
+      const res = await this.instance.get<ApiResponse<DoctorSlotAvailabilityDto>>(API_ENDPOINTS.APPOINTMENTS.SLOTS, {
+        params,
+      });
       return res.data;
     },
     checkInAppointment: async (appointmentId: string) => {
@@ -547,7 +565,7 @@ export class AalayamApiClient {
 
   // --- MEMBER 9: Patient Portal & Ambulance Module ---
   public patientPortal = {
-    changeAppointment: async (id: string, data: { action: 'cancel' | 'reschedule'; date?: string; time?: string }) =>
+    changeAppointment: async (id: string, data: { action: 'cancel' | 'reschedule'; date?: string; time?: string; reason?: string }) =>
       (await this.instance.patch<ApiResponse<{ id: string; status: string }>>('/patients/me/appointments/' + id, data)).data,
     updatePhoto: async (photo: string) =>
       (await this.instance.patch<ApiResponse<{ avatarUrl: string }>>('/patients/me/photo', { photo })).data,

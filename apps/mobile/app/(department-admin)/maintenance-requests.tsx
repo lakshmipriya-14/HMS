@@ -88,18 +88,18 @@ export default function MaintenanceRequestsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadRequests} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadRequests} tintColor="#1565C0" />
         }
       >
         {success && (
           <View style={styles.successBanner}>
-            <CheckCircle2 size={16} color="#38845A" />
+            <CheckCircle2 size={16} color="#1565C0" />
             <Text style={styles.successText}>Maintenance ticket dispatched to engineering</Text>
           </View>
         )}
 
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 40 }} />
         ) : requests.length === 0 ? (
           <View style={styles.emptyState}>
             <Hammer size={40} color="#CBD5E1" />
@@ -119,13 +119,13 @@ export default function MaintenanceRequestsScreen() {
                   <View
                     style={[
                       styles.statusPill,
-                      { backgroundColor: isResolved ? '#EAF5ED' : '#FEF3C7' },
+                      { backgroundColor: isResolved ? '#E8F1FC' : '#FEF3C7' },
                     ]}
                   >
                     <Text
                       style={[
                         styles.statusPillText,
-                        { color: isResolved ? '#38845A' : '#D97706' },
+                        { color: isResolved ? '#1565C0' : '#F59E0B' },
                       ]}
                     >
                       {item.status || 'PENDING'}
@@ -235,13 +235,13 @@ const styles = StyleSheet.create({
   topTitle: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#334155',
+    color: '#475569',
     textTransform: 'uppercase',
   },
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     padding: 12,
     borderRadius: 12,
     marginBottom: 16,
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   emptyState: {
     alignItems: 'center',
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   itemSub: {
     fontSize: 11,
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
   },
   descText: {
     fontSize: 12,
-    color: '#334155',
+    color: '#475569',
     marginTop: 8,
     lineHeight: 16,
   },
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   inputLabel: {
     fontSize: 11,
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   priorityBtnActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   priorityBtnText: {
     fontSize: 11,
@@ -401,10 +401,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',

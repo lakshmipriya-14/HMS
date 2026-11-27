@@ -90,11 +90,11 @@ export default function DepartmentPatientsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadPatients} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadPatients} tintColor="#1565C0" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 40 }} />
         ) : patients.length === 0 ? (
           <View style={styles.emptyState}>
             <HeartPulse size={40} color="#CBD5E1" />
@@ -179,17 +179,17 @@ export default function DepartmentPatientsScreen() {
                 <View style={styles.detailSection}>
                   <Text style={styles.detailSectionTitle}>DEMOGRAPHICS & CONTACT</Text>
                   <View style={styles.detailRow}>
-                    <User size={15} color="#38845A" />
+                    <User size={15} color="#1565C0" />
                     <Text style={styles.detailValue}>
                       Gender: {selectedPatient.gender || 'Not specified'} • Age: {selectedPatient.age || 35} yrs
                     </Text>
                   </View>
                   <View style={styles.detailRow}>
-                    <Phone size={15} color="#38845A" />
+                    <Phone size={15} color="#1565C0" />
                     <Text style={styles.detailValue}>{selectedPatient.phone || 'No contact phone'}</Text>
                   </View>
                   <View style={styles.detailRow}>
-                    <Droplet size={15} color="#38845A" />
+                    <Droplet size={15} color="#1565C0" />
                     <Text style={styles.detailValue}>
                       Blood Group: {selectedPatient.bloodGroup || 'O+'}
                     </Text>
@@ -199,13 +199,13 @@ export default function DepartmentPatientsScreen() {
                 <View style={styles.detailSection}>
                   <Text style={styles.detailSectionTitle}>CLINICAL & VISIT STATUS</Text>
                   <View style={styles.detailRow}>
-                    <Clock size={15} color="#38845A" />
+                    <Clock size={15} color="#1565C0" />
                     <Text style={styles.detailValue}>
                       Status: {selectedPatient.admissions?.length ? 'Currently Admitted (IPD)' : 'Outpatient (OPD)'}
                     </Text>
                   </View>
                   <View style={styles.detailRow}>
-                    <FileText size={15} color="#38845A" />
+                    <FileText size={15} color="#1565C0" />
                     <Text style={styles.detailValue}>
                       Department: General Medicine Registry
                     </Text>
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   content: {
     flex: 1,
@@ -298,13 +298,13 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: '#E0F2FE',
+    backgroundColor: '#E8F1FC',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   avatarText: {
-    color: '#0284C7',
+    color: '#1565C0',
     fontWeight: '800',
     fontSize: 14,
   },
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
   patientName: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   uhidText: {
     fontSize: 11,
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   viewBadgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   modalOverlay: {
     flex: 1,
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   modalBody: {
     padding: 16,
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   profileUhid: {
     fontSize: 12,
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
   },
   detailValue: {
     fontSize: 13,
-    color: '#1E293B',
+    color: '#183153',
     fontWeight: '600',
   },
   profileActions: {
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 12,
     borderRadius: 10,
     gap: 8,

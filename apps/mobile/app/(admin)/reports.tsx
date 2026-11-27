@@ -69,7 +69,7 @@ export default function AdminReportsScreen() {
           style={styles.backBtn}
           onPress={() => router.replace('/(admin)/more')}
         >
-          <ChevronLeft size={20} color="#38845A" />
+          <ChevronLeft size={20} color="#1565C0" />
         </TouchableOpacity>
         <Text style={styles.actionTitle}>Hospital Reports Generator</Text>
       </View>
@@ -96,14 +96,14 @@ export default function AdminReportsScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#38845A" />
+          <ActivityIndicator size="large" color="#1565C0" />
         </View>
       ) : (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={fetchReport} tintColor="#38845A" />
+            <RefreshControl refreshing={refreshing} onRefresh={fetchReport} tintColor="#1565C0" />
           }
         >
           {/* Summary Box */}
@@ -119,7 +119,7 @@ export default function AdminReportsScreen() {
               {summary.totalRevenue !== undefined && (
                 <View style={styles.statCol}>
                   <Text style={styles.statLabel}>Total Revenue</Text>
-                  <Text style={[styles.statVal, { color: '#38845A' }]}>
+                  <Text style={[styles.statVal, { color: '#1565C0' }]}>
                     ₹ {(summary.totalRevenue || 0).toLocaleString('en-IN')}
                   </Text>
                 </View>
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   actionTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   catScroll: {
     backgroundColor: '#FFFFFF',
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   catChipActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   catChipText: {
     fontSize: 11,
@@ -223,13 +223,13 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#EAF5ED',
+    borderColor: '#E8F1FC',
     marginBottom: 16,
   },
   summaryTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
     marginBottom: 12,
   },
   summaryStatsRow: {
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   statVal: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
     marginTop: 2,
   },
   sectionHeader: {
@@ -274,12 +274,12 @@ const styles = StyleSheet.create({
   recordMain: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   recordAmount: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
   },
   recordSub: {
     fontSize: 11,

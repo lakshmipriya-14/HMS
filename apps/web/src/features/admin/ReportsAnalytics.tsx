@@ -122,7 +122,7 @@ export const ReportsAnalytics: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="p-2.5 bg-teal-50 text-teal-700 rounded-xl border border-teal-100">
+          <span className="p-2.5 bg-[#E0F2F1] text-[#00897B] rounded-xl border border-[#B2DFDB]">
             <BarChart3 className="w-6 h-6" />
           </span>
           <div>
@@ -211,7 +211,7 @@ export const ReportsAnalytics: React.FC = () => {
           <button
             onClick={generateReport}
             disabled={loading}
-            className="flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             Run Query
@@ -249,7 +249,7 @@ export const ReportsAnalytics: React.FC = () => {
                 <tbody className="divide-y divide-slate-100">
                   {reportData.map((row) => (
                     <tr key={row.id} className="hover:bg-slate-50/80">
-                      <td className="py-3.5 px-4 font-mono font-bold text-teal-700">#{row.tokenNumber || 'N/A'}</td>
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#00897B]">#{row.tokenNumber || 'N/A'}</td>
                       <td className="py-3.5 px-4 text-slate-600 font-medium">
                         {new Date(row.appointmentDate).toLocaleString('en-IN')}
                       </td>
@@ -285,7 +285,7 @@ export const ReportsAnalytics: React.FC = () => {
                 <tbody className="divide-y divide-slate-100">
                   {reportData.map((row) => (
                     <tr key={row.id} className="hover:bg-slate-50/80">
-                      <td className="py-3.5 px-4 font-mono font-bold text-teal-700">{row.admissionNumber}</td>
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#00897B]">{row.admissionNumber}</td>
                       <td className="py-3.5 px-4 font-bold text-slate-800">
                         {row.patient?.firstName} {row.patient?.lastName} ({row.patient?.uhid})
                       </td>
@@ -320,11 +320,11 @@ export const ReportsAnalytics: React.FC = () => {
                   {reportData.map((row) => (
                     <tr key={row.id} className="hover:bg-slate-50/80">
                       <td className="py-3.5 px-4 font-mono font-bold text-slate-700">{row.id.slice(0, 8)}</td>
-                      <td className="py-3.5 px-4 font-mono font-semibold text-teal-700">{row.invoice?.invoiceNumber}</td>
+                      <td className="py-3.5 px-4 font-mono font-semibold text-[#00897B]">{row.invoice?.invoiceNumber}</td>
                       <td className="py-3.5 px-4 font-bold text-slate-800">
                         {row.invoice?.patient ? `${row.invoice.patient.firstName} ${row.invoice.patient.lastName}` : 'N/A'}
                       </td>
-                      <td className="py-3.5 px-4 text-right font-bold text-emerald-700">
+                      <td className="py-3.5 px-4 text-right font-bold text-[#16A34A]">
                         ₹{Number(row.amount || 0).toLocaleString('en-IN')}
                       </td>
                       <td className="py-3.5 px-4">
@@ -356,7 +356,7 @@ export const ReportsAnalytics: React.FC = () => {
                     <tr key={row.id} className="hover:bg-slate-50/80">
                       <td className="py-3.5 px-4 font-bold text-slate-800">{row.name}</td>
                       <td className="py-3.5 px-4 text-slate-600">{row.composition || row.dosageForm}</td>
-                      <td className="py-3.5 px-4 text-center font-bold text-teal-700">{row.currentStock} units</td>
+                      <td className="py-3.5 px-4 text-center font-bold text-[#00897B]">{row.currentStock} units</td>
                       <td className="py-3.5 px-4 text-right font-bold text-slate-900">₹{Number(row.unitPrice || 0)}</td>
                     </tr>
                   ))}
@@ -383,7 +383,7 @@ export const ReportsAnalytics: React.FC = () => {
                       </td>
                       <td className="py-3.5 px-4 font-semibold text-slate-800">{row.userEmail}</td>
                       <td className="py-3.5 px-4">
-                        <span className="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-teal-50 text-teal-800">
+                        <span className="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-[#E0F2F1] text-[#183153]">
                           {row.userRole}
                         </span>
                       </td>

@@ -82,11 +82,11 @@ export default function DischargeMonitoringScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadDischarges} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadDischarges} tintColor="#1565C0" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <LogOut size={40} color="#CBD5E1" />
@@ -108,10 +108,10 @@ export default function DischargeMonitoringScreen() {
                     {
                       backgroundColor:
                         item.status === 'DISCHARGED'
-                          ? '#EAF5ED'
+                          ? '#E8F1FC'
                           : item.status === 'PLANNED'
                           ? '#FEF3C7'
-                          : '#EAF5ED',
+                          : '#E8F1FC',
                     },
                   ]}
                 >
@@ -121,9 +121,9 @@ export default function DischargeMonitoringScreen() {
                       {
                         color:
                           item.status === 'DISCHARGED'
-                            ? '#38845A'
+                            ? '#1565C0'
                             : item.status === 'PLANNED'
-                            ? '#D97706'
+                            ? '#F59E0B'
                             : '#DC2626',
                       },
                     ]}
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 8,
     fontSize: 12,
-    color: '#0F172A',
+    color: '#183153',
     marginLeft: 6,
   },
   statusChips: {
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   chipActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   chipText: {
     fontSize: 11,
@@ -250,11 +250,11 @@ const styles = StyleSheet.create({
   patName: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   patUhid: {
     fontSize: 11,
-    color: '#38845A',
+    color: '#1565C0',
     fontFamily: 'monospace',
     marginTop: 1,
   },
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   detailVal: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#334155',
+    color: '#475569',
     marginTop: 2,
   },
   cardFooter: {

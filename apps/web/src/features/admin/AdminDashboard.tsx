@@ -65,8 +65,8 @@ export const AdminDashboard: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
         <div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-600 animate-pulse"></span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#E0F2F1] text-[#00897B] border border-[#B2DFDB]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1565C0] animate-pulse"></span>
               Live PostgreSQL Feed
             </span>
             <span className="text-xs text-slate-400">•</span>
@@ -85,7 +85,7 @@ export const AdminDashboard: React.FC = () => {
             <button
               onClick={() => setDateFilter('today')}
               className={`px-3 py-1.5 rounded-lg transition-all ${
-                dateFilter === 'today' ? 'bg-white text-teal-700 font-semibold shadow-sm' : 'hover:text-slate-900'
+                dateFilter === 'today' ? 'bg-white text-[#00897B] font-semibold shadow-sm' : 'hover:text-slate-900'
               }`}
             >
               Today
@@ -93,7 +93,7 @@ export const AdminDashboard: React.FC = () => {
             <button
               onClick={() => setDateFilter('week')}
               className={`px-3 py-1.5 rounded-lg transition-all ${
-                dateFilter === 'week' ? 'bg-white text-teal-700 font-semibold shadow-sm' : 'hover:text-slate-900'
+                dateFilter === 'week' ? 'bg-white text-[#00897B] font-semibold shadow-sm' : 'hover:text-slate-900'
               }`}
             >
               Past 7 Days
@@ -101,7 +101,7 @@ export const AdminDashboard: React.FC = () => {
             <button
               onClick={() => setDateFilter('month')}
               className={`px-3 py-1.5 rounded-lg transition-all ${
-                dateFilter === 'month' ? 'bg-white text-teal-700 font-semibold shadow-sm' : 'hover:text-slate-900'
+                dateFilter === 'month' ? 'bg-white text-[#00897B] font-semibold shadow-sm' : 'hover:text-slate-900'
               }`}
             >
               Past 30 Days
@@ -113,7 +113,7 @@ export const AdminDashboard: React.FC = () => {
             disabled={refreshing}
             className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-all shadow-sm"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-teal-600 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-[#00897B] ${refreshing ? 'animate-spin' : ''}`} />
             Refresh
           </button>
         </div>
@@ -211,39 +211,39 @@ export const AdminDashboard: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <Link
           to="/admin/departments"
-          className="p-3.5 bg-white border border-slate-200/80 rounded-xl hover:border-teal-500 hover:shadow-md transition-all text-left group"
+          className="p-3.5 bg-white border border-slate-200/80 rounded-xl hover:border-[#00897B] hover:shadow-md transition-all text-left group"
         >
-          <Building2 className="w-5 h-5 text-teal-600 mb-2 group-hover:scale-110 transition-transform" />
+          <Building2 className="w-5 h-5 text-[#00897B] mb-2 group-hover:scale-110 transition-transform" />
           <h4 className="text-xs font-bold text-slate-800">Departments</h4>
           <p className="text-[11px] text-slate-500 mt-0.5">Manage & assign HODs</p>
         </Link>
         <Link
           to="/admin/doctors"
-          className="p-3.5 bg-white border border-slate-200/80 rounded-xl hover:border-teal-500 hover:shadow-md transition-all text-left group"
+          className="p-3.5 bg-white border border-slate-200/80 rounded-xl hover:border-[#00897B] hover:shadow-md transition-all text-left group"
         >
-          <UserCheck className="w-5 h-5 text-sky-600 mb-2 group-hover:scale-110 transition-transform" />
+          <UserCheck className="w-5 h-5 text-[#1565C0] mb-2 group-hover:scale-110 transition-transform" />
           <h4 className="text-xs font-bold text-slate-800">Doctors</h4>
           <p className="text-[11px] text-slate-500 mt-0.5">Rosters & duty timings</p>
         </Link>
         <Link
           to="/admin/wards"
-          className="p-3.5 bg-white border border-slate-200/80 rounded-xl hover:border-teal-500 hover:shadow-md transition-all text-left group"
+          className="p-3.5 bg-white border border-slate-200/80 rounded-xl hover:border-[#00897B] hover:shadow-md transition-all text-left group"
         >
-          <BedDouble className="w-5 h-5 text-emerald-600 mb-2 group-hover:scale-110 transition-transform" />
+          <BedDouble className="w-5 h-5 text-[#16A34A] mb-2 group-hover:scale-110 transition-transform" />
           <h4 className="text-xs font-bold text-slate-800">Wards & Beds</h4>
           <p className="text-[11px] text-slate-500 mt-0.5">Floor layout & census</p>
         </Link>
         <Link
           to="/admin/staff"
-          className="p-3.5 bg-white border border-slate-200/80 rounded-xl hover:border-teal-500 hover:shadow-md transition-all text-left group"
+          className="p-3.5 bg-white border border-slate-200/80 rounded-xl hover:border-[#00897B] hover:shadow-md transition-all text-left group"
         >
-          <Users className="w-5 h-5 text-indigo-600 mb-2 group-hover:scale-110 transition-transform" />
+          <Users className="w-5 h-5 text-[#1565C0] mb-2 group-hover:scale-110 transition-transform" />
           <h4 className="text-xs font-bold text-slate-800">Hospital Staff</h4>
           <p className="text-[11px] text-slate-500 mt-0.5">Nurses, lab & admin</p>
         </Link>
         <Link
           to="/admin/billing"
-          className="p-3.5 bg-white border border-slate-200/80 rounded-xl hover:border-teal-500 hover:shadow-md transition-all text-left group"
+          className="p-3.5 bg-white border border-slate-200/80 rounded-xl hover:border-[#00897B] hover:shadow-md transition-all text-left group"
         >
           <DollarSign className="w-5 h-5 text-amber-600 mb-2 group-hover:scale-110 transition-transform" />
           <h4 className="text-xs font-bold text-slate-800">Finance & Invoices</h4>
@@ -251,9 +251,9 @@ export const AdminDashboard: React.FC = () => {
         </Link>
         <Link
           to="/admin/reports"
-          className="p-3.5 bg-white border border-slate-200/80 rounded-xl hover:border-teal-500 hover:shadow-md transition-all text-left group"
+          className="p-3.5 bg-white border border-slate-200/80 rounded-xl hover:border-[#00897B] hover:shadow-md transition-all text-left group"
         >
-          <ArrowUpRight className="w-5 h-5 text-purple-600 mb-2 group-hover:scale-110 transition-transform" />
+          <ArrowUpRight className="w-5 h-5 text-[#1565C0] mb-2 group-hover:scale-110 transition-transform" />
           <h4 className="text-xs font-bold text-slate-800">Generate Report</h4>
           <p className="text-[11px] text-slate-500 mt-0.5">Export CSV & printable</p>
         </Link>
@@ -272,7 +272,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
             <Link
               to="/admin/departments"
-              className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"
+              className="text-xs font-semibold text-[#00897B] hover:text-[#00897B] flex items-center gap-1"
             >
               View All ({departmentStats.length})
               <ChevronRight className="w-3.5 h-3.5" />
@@ -301,13 +301,13 @@ export const AdminDashboard: React.FC = () => {
                     <td className="py-3 px-3 text-slate-600">
                       {dept.departmentAdmin ? (
                         <div className="flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#16A34A] shrink-0" />
                           <span className="font-medium text-slate-800">
                             {dept.departmentAdmin.firstName} {dept.departmentAdmin.lastName}
                           </span>
                         </div>
                       ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FEE2E2] text-[#DC2626] border border-[#FECACA]">
                           Needs Admin
                         </span>
                       )}
@@ -329,7 +329,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
             <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <CheckSquare className="w-4 h-4 text-teal-600" />
+              <CheckSquare className="w-4 h-4 text-[#00897B]" />
               Pending Approvals & Actions
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">Tasks requiring executive sign-off</p>
@@ -377,7 +377,7 @@ export const AdminDashboard: React.FC = () => {
 
           {/* Quick Facility Overview */}
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-5 shadow-sm">
-            <div className="flex items-center gap-2 text-teal-400 text-xs font-bold uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-[#B2DFDB] text-xs font-bold uppercase tracking-wider">
               <Building2 className="w-4 h-4" />
               Campus Command
             </div>
@@ -402,7 +402,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="flex items-center justify-between pb-4 border-b border-slate-100">
           <div>
             <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
-              <Activity className="w-4 h-4 text-teal-600" />
+              <Activity className="w-4 h-4 text-[#00897B]" />
               Live Hospital Operational Stream (Audit Trail)
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -411,7 +411,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
           <Link
             to="/admin/audit"
-            className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"
+            className="text-xs font-semibold text-[#00897B] hover:text-[#00897B] flex items-center gap-1"
           >
             Full Audit Logs
             <ChevronRight className="w-3.5 h-3.5" />

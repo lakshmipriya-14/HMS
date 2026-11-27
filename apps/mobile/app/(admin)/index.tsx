@@ -67,7 +67,7 @@ export default function AdminMobileDashboard() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#38845A" />
+          <ActivityIndicator size="large" color="#1565C0" />
           <Text style={styles.loadingText}>Fetching live hospital telemetry...</Text>
         </View>
       ) : (
@@ -75,7 +75,7 @@ export default function AdminMobileDashboard() {
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={fetchTelemetry} tintColor="#38845A" />
+            <RefreshControl refreshing={refreshing} onRefresh={fetchTelemetry} tintColor="#1565C0" />
           }
         >
           {/* Quick Critical Banner if alerts exist */}
@@ -84,12 +84,12 @@ export default function AdminMobileDashboard() {
               style={styles.alertBanner}
               onPress={() => router.push('/(admin)/approvals')}
             >
-              <ShieldAlert size={18} color="#E11D48" />
+              <ShieldAlert size={18} color="#DC2626" />
               <View style={styles.alertTextWrapper}>
                 <Text style={styles.alertTitle}>{alerts[0].title}</Text>
                 <Text style={styles.alertSub}>{alerts[0].message}</Text>
               </View>
-              <ChevronRight size={16} color="#E11D48" />
+              <ChevronRight size={16} color="#DC2626" />
             </TouchableOpacity>
           )}
 
@@ -98,9 +98,9 @@ export default function AdminMobileDashboard() {
             <TouchableOpacity
               style={{
                 flex: 1,
-                backgroundColor: '#EAF5ED',
+                backgroundColor: '#E8F1FC',
                 borderWidth: 1,
-                borderColor: '#CDE8D5',
+                borderColor: '#BFDBFE',
                 padding: 12,
                 borderRadius: 12,
                 flexDirection: 'row',
@@ -109,19 +109,19 @@ export default function AdminMobileDashboard() {
               }}
               onPress={() => router.push('/(admin)/opd')}
             >
-              <CalendarCheck size={20} color="#38845A" />
+              <CalendarCheck size={20} color="#1565C0" />
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 12, fontWeight: '800', color: '#38845A' }}>OPD Operations</Text>
-                <Text style={{ fontSize: 10, color: '#115E59' }}>Tokens & Booking</Text>
+                <Text style={{ fontSize: 12, fontWeight: '800', color: '#1565C0' }}>OPD Operations</Text>
+                <Text style={{ fontSize: 10, color: '#00897B' }}>Tokens & Booking</Text>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={{
                 flex: 1,
-                backgroundColor: '#FFE4E6',
+                backgroundColor: '#FEE2E2',
                 borderWidth: 1,
-                borderColor: '#FECDD3',
+                borderColor: '#FEE2E2',
                 padding: 12,
                 borderRadius: 12,
                 flexDirection: 'row',
@@ -130,10 +130,10 @@ export default function AdminMobileDashboard() {
               }}
               onPress={() => router.push('/(admin)/ipd')}
             >
-              <DoorOpen size={20} color="#E11D48" />
+              <DoorOpen size={20} color="#DC2626" />
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 12, fontWeight: '800', color: '#E11D48' }}>IPD Management</Text>
-                <Text style={{ fontSize: 10, color: '#9F1239' }}>Census & Admissions</Text>
+                <Text style={{ fontSize: 12, fontWeight: '800', color: '#DC2626' }}>IPD Management</Text>
+                <Text style={{ fontSize: 10, color: '#DC2626' }}>Census & Admissions</Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -143,9 +143,9 @@ export default function AdminMobileDashboard() {
             {/* Bed Occupancy */}
             <TouchableOpacity style={styles.kpiCard} onPress={() => router.push('/(admin)/ipd')}>
               <View style={styles.kpiHeader}>
-                <BedDouble size={18} color="#38845A" />
-                <View style={[styles.kpiBadge, { backgroundColor: '#EAF5ED' }]}>
-                  <Text style={[styles.kpiBadgeText, { color: '#38845A' }]}>
+                <BedDouble size={18} color="#1565C0" />
+                <View style={[styles.kpiBadge, { backgroundColor: '#E8F1FC' }]}>
+                  <Text style={[styles.kpiBadgeText, { color: '#1565C0' }]}>
                     {overview.bedOccupancyRate || 0}%
                   </Text>
                 </View>
@@ -162,9 +162,9 @@ export default function AdminMobileDashboard() {
             {/* OPD & Registered Patients */}
             <TouchableOpacity style={styles.kpiCard} onPress={() => router.push('/(admin)/opd')}>
               <View style={styles.kpiHeader}>
-                <CalendarCheck size={18} color="#2563EB" />
+                <CalendarCheck size={18} color="#1565C0" />
                 <View style={[styles.kpiBadge, { backgroundColor: '#DBEAFE' }]}>
-                  <Text style={[styles.kpiBadgeText, { color: '#2563EB' }]}>Today</Text>
+                  <Text style={[styles.kpiBadgeText, { color: '#1565C0' }]}>Today</Text>
                 </View>
               </View>
               <Text style={styles.kpiValue}>{overview.todayOpdPatients || 0}</Text>
@@ -177,9 +177,9 @@ export default function AdminMobileDashboard() {
             {/* Inpatients & Emergency */}
             <TouchableOpacity style={styles.kpiCard} onPress={() => router.push('/(admin)/ipd')}>
               <View style={styles.kpiHeader}>
-                <Activity size={18} color="#E11D48" />
-                <View style={[styles.kpiBadge, { backgroundColor: '#FFE4E6' }]}>
-                  <Text style={[styles.kpiBadgeText, { color: '#E11D48' }]}>IPD</Text>
+                <Activity size={18} color="#DC2626" />
+                <View style={[styles.kpiBadge, { backgroundColor: '#FEE2E2' }]}>
+                  <Text style={[styles.kpiBadgeText, { color: '#DC2626' }]}>IPD</Text>
                 </View>
               </View>
               <Text style={styles.kpiValue}>{overview.currentIpdPatients || 0}</Text>
@@ -192,9 +192,9 @@ export default function AdminMobileDashboard() {
             {/* Doctors Available */}
             <View style={styles.kpiCard}>
               <View style={styles.kpiHeader}>
-                <Users size={18} color="#10B981" />
-                <View style={[styles.kpiBadge, { backgroundColor: '#D1FAE5' }]}>
-                  <Text style={[styles.kpiBadgeText, { color: '#10B981' }]}>On Duty</Text>
+                <Users size={18} color="#16A34A" />
+                <View style={[styles.kpiBadge, { backgroundColor: '#DCFCE7' }]}>
+                  <Text style={[styles.kpiBadgeText, { color: '#16A34A' }]}>On Duty</Text>
                 </View>
               </View>
               <Text style={styles.kpiValue}>
@@ -211,7 +211,7 @@ export default function AdminMobileDashboard() {
           <View style={styles.financeCard}>
             <View style={styles.financeHeader}>
               <View style={styles.financeIconWrapper}>
-                <TrendingUp size={20} color="#38845A" />
+                <TrendingUp size={20} color="#1565C0" />
               </View>
               <View>
                 <Text style={styles.financeSub}>Collected Hospital Revenue</Text>
@@ -253,7 +253,7 @@ export default function AdminMobileDashboard() {
             >
               <View style={styles.deptHeader}>
                 <View style={styles.deptIcon}>
-                  <Building2 size={16} color="#38845A" />
+                  <Building2 size={16} color="#1565C0" />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.deptName}>{d.name}</Text>
@@ -282,7 +282,7 @@ export default function AdminMobileDashboard() {
               style={styles.quickBtn}
               onPress={() => router.push('/(admin)/doctors')}
             >
-              <Users size={20} color="#38845A" />
+              <Users size={20} color="#1565C0" />
               <Text style={styles.quickBtnText}>Doctors</Text>
             </TouchableOpacity>
 
@@ -290,7 +290,7 @@ export default function AdminMobileDashboard() {
               style={styles.quickBtn}
               onPress={() => router.push('/(admin)/staff')}
             >
-              <Users size={20} color="#2563EB" />
+              <Users size={20} color="#1565C0" />
               <Text style={styles.quickBtnText}>Staff & HR</Text>
             </TouchableOpacity>
 
@@ -298,7 +298,7 @@ export default function AdminMobileDashboard() {
               style={styles.quickBtn}
               onPress={() => router.push('/(admin)/wards')}
             >
-              <BedDouble size={20} color="#E11D48" />
+              <BedDouble size={20} color="#DC2626" />
               <Text style={styles.quickBtnText}>Beds & Wards</Text>
             </TouchableOpacity>
 
@@ -306,7 +306,7 @@ export default function AdminMobileDashboard() {
               style={styles.quickBtn}
               onPress={() => router.push('/(admin)/fleet')}
             >
-              <Activity size={20} color="#D97706" />
+              <Activity size={20} color="#F59E0B" />
               <Text style={styles.quickBtnText}>108 Fleet</Text>
             </TouchableOpacity>
           </View>
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
   alertBanner: {
     backgroundColor: '#FFF1F2',
     borderWidth: 1,
-    borderColor: '#FECDD3',
+    borderColor: '#FEE2E2',
     borderRadius: 14,
     padding: 12,
     flexDirection: 'row',
@@ -360,8 +360,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   alertTextWrapper: { flex: 1 },
-  alertTitle: { fontSize: 13, fontWeight: '700', color: '#9F1239' },
-  alertSub: { fontSize: 11, color: '#BE123C', marginTop: 2 },
+  alertTitle: { fontSize: 13, fontWeight: '700', color: '#DC2626' },
+  alertSub: { fontSize: 11, color: '#DC2626', marginTop: 2 },
   matrixGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
   kpiValue: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   kpiLabel: {
     fontSize: 12,
@@ -416,9 +416,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#EAF5ED',
+    borderColor: '#E8F1FC',
     marginBottom: 20,
-    shadowColor: '#38845A',
+    shadowColor: '#1565C0',
     shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 12,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
   financeMain: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
     marginTop: 2,
   },
   financeDivider: {
@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
   financeMetaVal: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#1E293B',
+    color: '#183153',
     marginTop: 2,
   },
   sectionHeader: {
@@ -478,12 +478,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   sectionLink: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   deptCard: {
     backgroundColor: '#FFFFFF',
@@ -509,7 +509,7 @@ const styles = StyleSheet.create({
   deptName: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   deptSub: {
     fontSize: 11,
@@ -527,7 +527,7 @@ const styles = StyleSheet.create({
   deptStatText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   deptFooter: {
     marginTop: 8,
@@ -559,7 +559,7 @@ const styles = StyleSheet.create({
   quickBtnText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#334155',
+    color: '#475569',
   },
   activityBox: {
     backgroundColor: '#FFFFFF',
@@ -580,12 +580,12 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   activityAction: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#1E293B',
+    color: '#183153',
   },
   activityMeta: {
     fontSize: 10,

@@ -100,7 +100,7 @@ export const AmbulanceDispatchDashboard: React.FC = () => {
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-md shadow-rose-900/20 transition-all flex items-center space-x-2 animate-pulse"
+          className="px-4 py-2.5 bg-[#DC2626] hover:bg-[#B91C1C] text-white rounded-xl text-xs font-bold shadow-md shadow-rose-900/20 transition-all flex items-center space-x-2 animate-pulse"
         >
           <PhoneCall className="w-4 h-4" />
           <span>+ Log 108 Emergency Call</span>
@@ -115,7 +115,7 @@ export const AmbulanceDispatchDashboard: React.FC = () => {
             <h3 className="text-2xl font-bold text-slate-800 mt-1">{vehicles.length || 4} Ambulances</h3>
             <p className="text-xs text-slate-500 mt-0.5">ICU Mobile Telemetry Units</p>
           </div>
-          <div className="p-3 bg-teal-50 rounded-xl text-teal-600 border border-teal-100">
+          <div className="p-3 bg-[#E0F2F1] rounded-xl text-[#00897B] border border-[#B2DFDB]">
             <Ambulance className="w-6 h-6" />
           </div>
         </div>
@@ -123,10 +123,10 @@ export const AmbulanceDispatchDashboard: React.FC = () => {
         <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Dispatches</p>
-            <h3 className="text-2xl font-bold text-rose-600 mt-1">{activeTrips.length} On Road</h3>
+            <h3 className="text-2xl font-bold text-[#DC2626] mt-1">{activeTrips.length} On Road</h3>
             <p className="text-xs text-slate-500 mt-0.5">En route to scene / hospital</p>
           </div>
-          <div className="p-3 bg-rose-50 rounded-xl text-rose-600 border border-rose-100">
+          <div className="p-3 bg-[#FEE2E2] rounded-xl text-[#DC2626] border border-[#FECACA]">
             <Navigation className="w-6 h-6" />
           </div>
         </div>
@@ -134,10 +134,10 @@ export const AmbulanceDispatchDashboard: React.FC = () => {
         <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Trauma ER Status</p>
-            <h3 className="text-2xl font-bold text-emerald-600 mt-1">Ready for Triage</h3>
+            <h3 className="text-2xl font-bold text-[#16A34A] mt-1">Ready for Triage</h3>
             <p className="text-xs text-slate-500 mt-0.5">Resuscitation bays pre-alerted</p>
           </div>
-          <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600 border border-emerald-100">
+          <div className="p-3 bg-[#DCFCE7] rounded-xl text-[#16A34A] border border-[#BBF7D0]">
             <Radio className="w-6 h-6" />
           </div>
         </div>
@@ -147,7 +147,7 @@ export const AmbulanceDispatchDashboard: React.FC = () => {
       <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <h3 className="font-bold text-sm text-slate-800">Live Ambulance Missions in Progress</h3>
-          <span className="text-xs text-rose-600 font-semibold">{activeTrips.length} active dispatches</span>
+          <span className="text-xs text-[#DC2626] font-semibold">{activeTrips.length} active dispatches</span>
         </div>
 
         <div className="overflow-x-auto">
@@ -168,7 +168,7 @@ export const AmbulanceDispatchDashboard: React.FC = () => {
                 <tr key={trip.id} className="hover:bg-slate-50/60">
                   <td className="py-3.5 px-4 font-mono font-bold text-slate-800">{trip.tripCode}</td>
                   <td className="py-3.5 px-4">
-                    <span className="font-mono font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                    <span className="font-mono font-bold text-[#00897B] bg-[#E0F2F1] px-2 py-0.5 rounded border border-[#B2DFDB]">
                       {trip.ambulance?.vehicleNumber}
                     </span>
                   </td>
@@ -182,7 +182,7 @@ export const AmbulanceDispatchDashboard: React.FC = () => {
                   </td>
                   <td className="py-3.5 px-4">
                     <div className="font-medium text-slate-700">{trip.patientConditionSummary}</div>
-                    <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-[#DC2626] uppercase tracking-wider">
                       {trip.severity}
                     </span>
                   </td>
@@ -193,7 +193,7 @@ export const AmbulanceDispatchDashboard: React.FC = () => {
                     {trip.status === 'DISPATCHED' && (
                       <button
                         onClick={() => handleUpdateStatus(trip.id, 'EN_ROUTE_PICKUP')}
-                        className="px-2.5 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 rounded text-[11px] font-semibold"
+                        className="px-2.5 py-1 bg-[#E8F1FC] text-[#1565C0] hover:bg-sky-100 border border-[#BFDBFE] rounded text-[11px] font-semibold"
                       >
                         En Route
                       </button>
@@ -209,7 +209,7 @@ export const AmbulanceDispatchDashboard: React.FC = () => {
                     {trip.status === 'ARRIVED_AT_SCENE' && (
                       <button
                         onClick={() => handleUpdateStatus(trip.id, 'EN_ROUTE_HOSPITAL')}
-                        className="px-2.5 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 rounded text-[11px] font-semibold"
+                        className="px-2.5 py-1 bg-[#E8F1FC] text-[#1565C0] hover:bg-[#E8F1FC] border border-[#BFDBFE] rounded text-[11px] font-semibold"
                       >
                         Transporting
                       </button>
@@ -217,7 +217,7 @@ export const AmbulanceDispatchDashboard: React.FC = () => {
                     {trip.status === 'EN_ROUTE_HOSPITAL' && (
                       <button
                         onClick={() => handleUpdateStatus(trip.id, 'HANDOVER_COMPLETE')}
-                        className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-semibold shadow-sm"
+                        className="px-2.5 py-1 bg-[#16A34A] hover:bg-[#15803D] text-white rounded text-[11px] font-semibold shadow-sm"
                       >
                         Handover to ER
                       </button>
@@ -288,7 +288,7 @@ export const AmbulanceDispatchDashboard: React.FC = () => {
             <select
               value={severity}
               onChange={(e) => setSeverity(e.target.value)}
-              className="w-full text-xs p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none bg-white font-bold text-rose-700"
+              className="w-full text-xs p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none bg-white font-bold text-[#DC2626]"
             >
               <option value="CRITICAL">Critical (Cardiac Arrest / Massive Trauma)</option>
               <option value="HIGH">High (Severe Respiratory Distress / Acute Stroke)</option>
@@ -321,7 +321,7 @@ export const AmbulanceDispatchDashboard: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold shadow-md shadow-rose-900/20"
+              className="px-6 py-2 bg-[#DC2626] hover:bg-[#B91C1C] text-white rounded-lg text-xs font-bold shadow-md shadow-rose-900/20"
             >
               {isSubmitting ? 'Dispatching...' : 'Dispatch Nearest Ambulance'}
             </button>

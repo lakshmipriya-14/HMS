@@ -94,7 +94,7 @@ export const DepartmentInventory: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <Pill className="w-6 h-6 text-teal-600" />
+            <Pill className="w-6 h-6 text-[#00897B]" />
             Department Supplies & Pharmacy Sub-Stock
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -103,7 +103,7 @@ export const DepartmentInventory: React.FC = () => {
         </div>
         <button
           onClick={() => handleOpenRequisition()}
-          className="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm self-start sm:self-auto"
+          className="px-4 py-2.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           Request Stock Replenishment
@@ -111,14 +111,14 @@ export const DepartmentInventory: React.FC = () => {
       </div>
 
       {successMessage && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-emerald-800 text-xs font-semibold animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="p-4 bg-[#DCFCE7] border border-[#BBF7D0] rounded-xl flex items-center gap-2 text-[#16A34A] text-xs font-semibold animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-[#16A34A]" />
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs font-semibold">
+        <div className="p-4 bg-[#FEE2E2] border border-[#FECACA] rounded-xl flex items-center gap-2 text-[#DC2626] text-xs font-semibold">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
@@ -131,8 +131,8 @@ export const DepartmentInventory: React.FC = () => {
           <p className="text-2xl font-black text-slate-800 mt-1">{items.length}</p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Sufficient Stock</p>
-          <p className="text-2xl font-black text-emerald-600 mt-1">
+          <p className="text-xs font-bold text-[#16A34A] uppercase tracking-wider">Sufficient Stock</p>
+          <p className="text-2xl font-black text-[#16A34A] mt-1">
             {items.filter((i) => (i.currentStock || 0) > (i.minimumStock || 5)).length}
           </p>
         </div>
@@ -144,7 +144,7 @@ export const DepartmentInventory: React.FC = () => {
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
           <p className="text-xs font-bold text-rose-500 uppercase tracking-wider">Stockouts (Zero)</p>
-          <p className="text-2xl font-black text-rose-600 mt-1">
+          <p className="text-2xl font-black text-[#DC2626] mt-1">
             {items.filter((i) => (i.currentStock || 0) === 0).length}
           </p>
         </div>
@@ -159,7 +159,7 @@ export const DepartmentInventory: React.FC = () => {
             placeholder="Search supplies, medications, consumables..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
           />
         </div>
         <button
@@ -224,7 +224,7 @@ export const DepartmentInventory: React.FC = () => {
                       </td>
                       <td className="py-3.5 px-4">
                         {isOut ? (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-rose-100 text-rose-700">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-rose-100 text-[#DC2626]">
                             Out of Stock
                           </span>
                         ) : isLow ? (
@@ -232,7 +232,7 @@ export const DepartmentInventory: React.FC = () => {
                             Low Stock
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-700">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-[#DCFCE7] text-[#16A34A]">
                             Adequate
                           </span>
                         )}
@@ -240,7 +240,7 @@ export const DepartmentInventory: React.FC = () => {
                       <td className="py-3.5 px-4 text-right">
                         <button
                           onClick={() => handleOpenRequisition(item)}
-                          className="px-2.5 py-1 text-[11px] font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 rounded-lg transition"
+                          className="px-2.5 py-1 text-[11px] font-bold text-[#00897B] bg-[#E0F2F1] hover:bg-[#E0F2F1] rounded-lg transition"
                         >
                           Reorder
                         </button>
@@ -260,7 +260,7 @@ export const DepartmentInventory: React.FC = () => {
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <Package className="w-5 h-5 text-teal-600" />
+                <Package className="w-5 h-5 text-[#00897B]" />
                 <h3 className="text-base font-black text-slate-800">Department Stock Requisition</h3>
               </div>
               <button
@@ -291,7 +291,7 @@ export const DepartmentInventory: React.FC = () => {
                   min={1}
                   value={requestQuantity}
                   onChange={(e) => setRequestQuantity(Number(e.target.value))}
-                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
                 />
               </div>
 
@@ -302,7 +302,7 @@ export const DepartmentInventory: React.FC = () => {
                   placeholder="e.g. Depleted emergency tray, planned surgical procedures..."
                   value={requestReason}
                   onChange={(e) => setRequestReason(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
                 />
               </div>
 
@@ -317,7 +317,7 @@ export const DepartmentInventory: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs transition shadow-sm"
+                  className="px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white font-bold rounded-xl text-xs transition shadow-sm"
                 >
                   {submitting ? 'Submitting...' : 'Send Requisition'}
                 </button>

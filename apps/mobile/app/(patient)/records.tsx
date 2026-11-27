@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  Alert,
   Modal,
-  Platform,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -14,8 +14,8 @@ import { useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import {
   ArrowUpDown,
+  Building2,
   Calendar,
-  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Clock,
@@ -23,9 +23,8 @@ import {
   Download,
   Eye,
   FileCheck,
-  FileText,
-  Filter,
   HeartPulse,
+  MapPin,
   Pill,
   Receipt,
   Search,
@@ -40,7 +39,7 @@ import { UyirinaiTheme } from '../../constants/theme';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { LoadingIndicator } from '../../components/ui/LoadingIndicator';
 import { ErrorState } from '../../components/ui/ErrorState';
-import { exportDirectoryFile } from '../../services/downloadHelper';
+import { downloadPatientReceiptPdf } from '../../services/downloadHelper';
 
 type TabType = 'appointments' | 'reports' | 'payments';
 
@@ -99,7 +98,8 @@ export default function MedicalHistoryScreen() {
     const list = data?.prescriptions || [];
     const map = new Map();
     for (const p of list) {
-      if (p.appointmentId) map.set(p.appointmentId, p);
+      const aptId = p.appointmentId || p.consultation?.appointmentId;
+      if (aptId) map.set(aptId, p);
     }
     return map;
   }, [data]);
@@ -125,6 +125,8 @@ export default function MedicalHistoryScreen() {
         const docLast = a.doctor?.employee?.user?.lastName?.toLowerCase() || '';
         const docFull = `${docFirst} ${docLast}`.trim();
         const dept = a.department?.name?.toLowerCase() || '';
+        const branchName = a.branch?.name?.toLowerCase() || '';
+        const hospitalName = a.branch?.hospital?.name?.toLowerCase() || '';
         const num = a.appointmentNumber?.toLowerCase() || '';
         return (
           docFirst.startsWith(q) ||
@@ -135,6 +137,8 @@ export default function MedicalHistoryScreen() {
           docFirst.includes(q) ||
           docLast.includes(q) ||
           dept.includes(q) ||
+          branchName.includes(q) ||
+          hospitalName.includes(q) ||
           num.includes(q)
         );
       });
@@ -210,72 +214,98 @@ export default function MedicalHistoryScreen() {
     return filteredAppointments.slice(start, start + itemsPerPage);
   }, [filteredAppointments, currentPage]);
 
+  const formatLocation = (branchObj: any) =>
+    [branchObj?.address, branchObj?.city, branchObj?.state].filter(Boolean).join(', ');
+
+  const resolveBranchMeta = (recordBranch?: any) => {
+    const branch = recordBranch || data?.patient?.registrationBranch;
+    return {
+      hospitalName: branch?.hospital?.name || data?.patient?.hospital?.name || 'Hospital',
+      branchName: branch?.name || 'Branch unavailable',
+      branchLocation: formatLocation(branch),
+      branchPhone: branch?.phone || data?.patient?.registrationBranch?.phone,
+    };
+  };
+
+  const patientFullName = data?.patient
+    ? `${data.patient.firstName} ${data.patient.lastName}`.trim()
+    : `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Patient';
+
   // Download helper: Prescription PDF
   const downloadPrescriptionPdf = async (apt: any) => {
     const rx = prescriptionsMap.get(apt.id);
     const consult = consultationsMap.get(apt.id);
     const docName = `Dr. ${apt.doctor?.employee?.user?.firstName || 'Doctor'} ${
       apt.doctor?.employee?.user?.lastName || ''
-    }`;
-    const filename = `Prescription-${apt.appointmentNumber || apt.id}`;
-    const title = `UYIRINAI Prescription - ${apt.appointmentNumber}`;
-
-    const headers = ['Record Field', 'Clinical Detail'];
-    const rows = [
-      ['Patient Name', `${data?.patient?.firstName || ''} ${data?.patient?.lastName || ''}`],
-      ['Patient UHID', data?.patient?.uhid || 'DEMO-UHID-001'],
-      ['Consultant Doctor', docName],
-      ['Department', apt.department?.name || 'General Medicine'],
-      ['Date of Consultation', String(apt.appointmentDate).slice(0, 10)],
-      ['Diagnosis Notes', consult?.diagnosisNotes || 'URTI / General Health Review'],
-      ['Follow-up Date', consult?.followUpDate ? String(consult.followUpDate).slice(0, 10) : 'As needed'],
-      [
-        'Prescribed Medicines',
-        rx?.items?.length
-          ? rx.items
-              .map(
-                (item: any) =>
-                  `${item.medicine?.brandName || 'Medicine'} (${item.dosage || '1 tab'} - ${
-                    item.frequency || 'OD'
-                  } for ${item.durationDays || 5} days)`
-              )
-              .join('; ')
-          : 'Paracetamol 650mg (1 tab TDS x 3 days); Cetirizine 10mg (1 tab HS x 5 days)',
-      ],
-      ['Dispensing Status', rx?.dispensingStatus || 'DISPENSED'],
-    ];
+    }`.trim();
+    const refId = rx?.prescriptionNumber || apt.appointmentNumber || apt.id;
+    const meta = resolveBranchMeta(rx?.branch || apt.branch);
 
     setDownloadingId(apt.id + '-rx');
     try {
-      const preview = Platform.OS === 'web' ? window.open('', '_blank') ?? undefined : undefined;
-      await exportDirectoryFile('pdf', filename, title, headers, rows, preview);
+      await downloadPatientReceiptPdf({
+        filename: `Patient_Prescription_${refId}`,
+        receiptId: refId,
+        documentTitle: 'OUTPATIENT PRESCRIPTION & CLINICAL SUMMARY',
+        ...meta,
+        date: String(apt.appointmentDate || '').slice(0, 10),
+        status: rx?.dispensingStatus || 'ISSUED',
+        patientName: patientFullName,
+        patientUhid: data?.patient?.uhid,
+        patientEmail: data?.patient?.email || data?.patient?.user?.email || user?.email,
+        patientPhone: data?.patient?.phone,
+        department: `${apt.department?.name || 'General Medicine'} · ${docName}`,
+        items: rx?.items?.length
+          ? rx.items.map((item: any) => ({
+              description: `${item.medicine?.brandName || 'Medicine'} ${item.medicine?.strength || ''}`.trim(),
+              detail: `${item.dosage || '-'} | ${item.frequency || '-'} | ${item.durationDays || '-'} days`,
+              amount: item.instructions || 'As directed',
+            }))
+          : [{ description: consult?.diagnosisNotes || 'Clinical Consultation', detail: docName, amount: 'Completed' }],
+        notes: consult?.diagnosisNotes ? `Diagnosis: ${consult.diagnosisNotes}${consult.followUpDate ? ` | Follow-up: ${String(consult.followUpDate).slice(0, 10)}` : ''}` : undefined,
+      });
+    } catch (err) {
+      Alert.alert('Download Failed', err instanceof Error ? err.message : 'Could not download prescription PDF.');
     } finally {
       setDownloadingId(null);
     }
   };
 
-  // Download helper: Pharmacy Bill PDF
+  // Download helper: Pharmacy Bill Receipt PDF
   const downloadPharmacyBillPdf = async (apt: any) => {
-    const inv = invoicesMap.get(apt.id) || (data?.invoices?.[0] ?? null);
-    const filename = `Pharmacy-Bill-${apt.appointmentNumber || apt.id}`;
-    const title = `UYIRINAI Pharmacy & Consultation Receipt`;
-
-    const headers = ['Item / Service Description', 'Amount (INR)'];
-    const rows = inv?.items?.length
-      ? inv.items.map((item: any) => [item.description, `INR ${item.totalPrice || item.unitPrice || 0}`])
-      : [
-          ['OPD Consultation Fee', 'INR 500.00'],
-          ['Pharmacy Dispensing Medication', 'INR 150.00'],
-        ];
-
-    rows.push(['Total Amount Paid', `INR ${inv?.paidAmount || inv?.totalAmount || '650.00'}`]);
-    rows.push(['Payment Method', inv?.payments?.[0]?.paymentMethod || 'UPI / Cash']);
-    rows.push(['Payment Status', 'PAID (Verified)']);
+    const inv = invoicesMap.get(apt.id);
+    const receiptId = inv?.invoiceNumber || apt.appointmentNumber || apt.id;
+    const meta = resolveBranchMeta(inv?.branch || apt.branch);
 
     setDownloadingId(apt.id + '-bill');
     try {
-      const preview = Platform.OS === 'web' ? window.open('', '_blank') ?? undefined : undefined;
-      await exportDirectoryFile('pdf', filename, title, headers, rows, preview);
+      await downloadPatientReceiptPdf({
+        filename: `Patient_Receipt_${receiptId}`,
+        receiptId,
+        documentTitle: 'PHARMACY & CONSULTATION RECEIPT',
+        ...meta,
+        date: String(inv?.createdAt || apt.appointmentDate || '').slice(0, 10),
+        status: inv?.status || (apt.isPaid ? 'PAID' : 'RECORDED'),
+        patientName: patientFullName,
+        patientUhid: data?.patient?.uhid,
+        patientEmail: data?.patient?.email || data?.patient?.user?.email || user?.email,
+        patientPhone: data?.patient?.phone,
+        department: apt.department?.name || 'Outpatient Department',
+        paymentMethod: inv?.payments?.[0]?.paymentMethod || 'Hospital Counter',
+        items: inv?.items?.length
+          ? inv.items.map((item: any) => ({
+              description: item.description,
+              detail: item.quantity ? `Qty: ${item.quantity}` : 'Billing Item',
+              amount: `INR ${item.totalPrice || item.unitPrice || 0}`,
+            }))
+          : [{ description: 'OPD Consultation & Pharmacy Charges', detail: apt.appointmentNumber || '-', amount: `INR ${inv?.totalAmount || apt.consultationFee || 0}` }],
+        summaryLines: [
+          { label: 'Total Amount', value: `INR ${inv?.totalAmount || apt.consultationFee || 0}` },
+          { label: 'Paid Amount', value: `INR ${inv?.paidAmount || inv?.totalAmount || 0}`, highlight: true },
+        ],
+      });
+    } catch (err) {
+      Alert.alert('Receipt Download Failed', err instanceof Error ? err.message : 'Could not download receipt PDF.');
     } finally {
       setDownloadingId(null);
     }
@@ -285,28 +315,38 @@ export default function MedicalHistoryScreen() {
   const downloadLabReportPdf = async (lab: any) => {
     const docName = `Dr. ${lab.doctor?.employee?.user?.firstName || 'Consultant'} ${
       lab.doctor?.employee?.user?.lastName || ''
-    }`;
-    const filename = `Lab-Report-${lab.orderNumber || lab.id}`;
-    const title = `UYIRINAI Diagnostic Laboratory Report - ${lab.orderNumber}`;
-
-    const headers = ['Test Parameter', 'Measured Value', 'Reference Range'];
-    const rows = lab.results?.length
-      ? lab.results.map((r: any) => [
-          r.parameter?.parameterName || 'Hemoglobin',
-          `${r.measuredValue} ${r.unit || ''}`,
-          r.referenceRange || 'Normal',
-        ])
-      : [
-          ['Hemoglobin', '13.4 g/dL', '12.0 - 15.5 g/dL'],
-          ['WBC Total Count', '7,200 /mcL', '4,500 - 11,000 /mcL'],
-          ['Platelet Count', '280,000 /mcL', '150,000 - 450,000 /mcL'],
-          ['Fasting Blood Glucose', '98 mg/dL', '70 - 100 mg/dL'],
-        ];
+    }`.trim();
+    const orderId = lab.orderNumber || lab.id;
+    const meta = resolveBranchMeta(lab.branch);
 
     setDownloadingId(lab.id + '-lab');
     try {
-      const preview = Platform.OS === 'web' ? window.open('', '_blank') ?? undefined : undefined;
-      await exportDirectoryFile('pdf', filename, title, headers, rows, preview);
+      await downloadPatientReceiptPdf({
+        filename: `Patient_Lab_Report_${orderId}`,
+        receiptId: orderId,
+        documentTitle: 'DIAGNOSTIC LABORATORY REPORT',
+        ...meta,
+        date: String(lab.reportReleasedAt || lab.createdAt || '').slice(0, 10),
+        status: lab.status || 'COMPLETED',
+        patientName: patientFullName,
+        patientUhid: data?.patient?.uhid,
+        patientEmail: data?.patient?.email || data?.patient?.user?.email || user?.email,
+        patientPhone: data?.patient?.phone,
+        department: `Laboratory · ${docName}`,
+        items: lab.results?.length
+          ? lab.results.map((r: any) => ({
+              description: r.parameter?.parameterName || 'Parameter',
+              detail: `Ref: ${r.referenceRange || 'Normal'}`,
+              amount: `${r.measuredValue} ${r.unit || ''}`.trim(),
+            }))
+          : (lab.orderItems || []).map((it: any) => ({
+              description: it.labTest?.name || 'Laboratory Test',
+              detail: lab.status || 'ORDERED',
+              amount: 'Pending Release',
+            })),
+      });
+    } catch (err) {
+      Alert.alert('Download Failed', err instanceof Error ? err.message : 'Could not download lab report PDF.');
     } finally {
       setDownloadingId(null);
     }
@@ -314,23 +354,37 @@ export default function MedicalHistoryScreen() {
 
   // Download helper: Invoice / Billing Receipt PDF
   const downloadInvoiceReceiptPdf = async (inv: any) => {
-    const filename = `Invoice-${inv.invoiceNumber || inv.id}`;
-    const title = `UYIRINAI Hospital Bill & Receipt - ${inv.invoiceNumber}`;
-
-    const headers = ['Description', 'Amount (INR)'];
-    const rows = inv.items?.length
-      ? inv.items.map((i: any) => [i.description, `INR ${i.totalPrice || 0}`])
-      : [['Hospital Outpatient Service', `INR ${inv.totalAmount || 0}`]];
-
-    rows.push(['Total Amount', `INR ${inv.totalAmount || 0}`]);
-    rows.push(['Paid Amount', `INR ${inv.paidAmount || 0}`]);
-    rows.push(['Payment Method', inv.payments?.[0]?.paymentMethod || 'UPI / Card']);
-    rows.push(['Receipt Status', inv.status || 'PAID']);
+    const receiptId = inv.invoiceNumber || inv.id;
+    const meta = resolveBranchMeta(inv.branch);
 
     setDownloadingId(inv.id + '-inv');
     try {
-      const preview = Platform.OS === 'web' ? window.open('', '_blank') ?? undefined : undefined;
-      await exportDirectoryFile('pdf', filename, title, headers, rows, preview);
+      await downloadPatientReceiptPdf({
+        filename: `Patient_Receipt_${receiptId}`,
+        receiptId,
+        documentTitle: 'OFFICIAL PATIENT PAYMENT RECEIPT',
+        ...meta,
+        date: String(inv.createdAt || '').slice(0, 10),
+        status: inv.status || 'PAID',
+        patientName: patientFullName,
+        patientUhid: data?.patient?.uhid,
+        patientEmail: data?.patient?.email || data?.patient?.user?.email || user?.email,
+        patientPhone: data?.patient?.phone,
+        paymentMethod: inv.payments?.[0]?.paymentMethod || 'UPI / Card / Cash',
+        items: inv.items?.length
+          ? inv.items.map((i: any) => ({
+              description: i.description,
+              detail: i.quantity ? `Qty: ${i.quantity}` : 'Service',
+              amount: `INR ${i.totalPrice || 0}`,
+            }))
+          : [{ description: 'Hospital Outpatient Service', detail: '-', amount: `INR ${inv.totalAmount || 0}` }],
+        summaryLines: [
+          { label: 'Total Amount', value: `INR ${inv.totalAmount || 0}` },
+          { label: 'Paid Amount', value: `INR ${inv.paidAmount || 0}`, highlight: true },
+        ],
+      });
+    } catch (err) {
+      Alert.alert('Receipt Download Failed', err instanceof Error ? err.message : 'Could not download receipt PDF.');
     } finally {
       setDownloadingId(null);
     }
@@ -506,7 +560,7 @@ export default function MedicalHistoryScreen() {
                     : 'Consultant Physician';
                   const consult = consultationsMap.get(apt.id);
                   const followUp = consult?.followUpDate ? String(consult.followUpDate).slice(0, 10) : null;
-                  const rx = prescriptionsMap.get(apt.id);
+                  const branchMeta = resolveBranchMeta(consult?.branch || apt.branch);
 
                   return (
                     <View key={apt.id} style={styles.historyCard}>
@@ -517,10 +571,24 @@ export default function MedicalHistoryScreen() {
                         <View style={{ flex: 1 }}>
                           <Text style={styles.historyDocName}>{doctorName}</Text>
                           <Text style={styles.historyDept}>
-                            {apt.department?.name || 'General Medicine'} · {apt.branch?.name || 'Main Branch'}
+                            {apt.department?.name || 'General Medicine'}
                           </Text>
                         </View>
                         <StatusBadge status={apt.status} />
+                      </View>
+
+                      <View style={styles.facilityBox}>
+                        <View style={styles.facilityRow}>
+                          <Building2 size={13} color={UyirinaiTheme.colors.primaryDark} />
+                          <Text style={styles.facilityHospital}>{branchMeta.hospitalName}</Text>
+                        </View>
+                        <View style={styles.facilityRow}>
+                          <MapPin size={13} color={UyirinaiTheme.colors.primary} />
+                          <Text style={styles.facilityBranch}>
+                            {branchMeta.branchName}
+                            {branchMeta.branchLocation ? ` · ${branchMeta.branchLocation}` : ''}
+                          </Text>
+                        </View>
                       </View>
 
                       {/* Date & Time */}
@@ -620,6 +688,68 @@ export default function MedicalHistoryScreen() {
                 </Text>
               </View>
             )}
+
+            {(data?.admissions?.length ?? 0) > 0 && (
+              <View style={[styles.itemsList, { marginTop: 18 }]}>
+                <Text style={styles.sectionSubHeader}>Inpatient Admissions</Text>
+                {data.admissions.map((adm: any) => {
+                  const admMeta = resolveBranchMeta(adm.branch);
+                  const docUser = adm.admittingDoctor?.employee?.user;
+                  const docName = docUser ? `Dr. ${docUser.firstName} ${docUser.lastName}` : 'Admitting Doctor';
+                  return (
+                    <View key={adm.id} style={styles.historyCard}>
+                      <View style={styles.historyCardTop}>
+                        <View style={styles.docAvatarSmall}>
+                          <Building2 size={18} color={UyirinaiTheme.colors.primary} />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.historyDocName}>{adm.admissionNumber}</Text>
+                          <Text style={styles.historyDept}>
+                            {docName} · {adm.ward?.name || 'Ward'} (Bed {adm.bed?.bedNumber || '-'})
+                          </Text>
+                        </View>
+                        <StatusBadge status={adm.status || 'ADMITTED'} />
+                      </View>
+                      <View style={styles.facilityBox}>
+                        <View style={styles.facilityRow}>
+                          <Building2 size={13} color={UyirinaiTheme.colors.primaryDark} />
+                          <Text style={styles.facilityHospital}>{admMeta.hospitalName}</Text>
+                        </View>
+                        <View style={styles.facilityRow}>
+                          <MapPin size={13} color={UyirinaiTheme.colors.primary} />
+                          <Text style={styles.facilityBranch}>
+                            {admMeta.branchName}
+                            {admMeta.branchLocation ? ` · ${admMeta.branchLocation}` : ''}
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={styles.historyMetaRow}>
+                        <View style={styles.metaBadge}>
+                          <Calendar size={13} color={UyirinaiTheme.colors.primary} />
+                          <Text style={styles.metaBadgeText}>
+                            Admitted: {String(adm.admittedAt || '').slice(0, 10)}
+                          </Text>
+                        </View>
+                        {adm.dischargedAt && (
+                          <View style={styles.metaBadge}>
+                            <Clock size={13} color={UyirinaiTheme.colors.primary} />
+                            <Text style={styles.metaBadgeText}>
+                              Discharged: {String(adm.dischargedAt).slice(0, 10)}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                      {adm.dischargeSummary ? (
+                        <View style={styles.diagnosisBox}>
+                          <Text style={styles.diagnosisLabel}>Discharge Summary:</Text>
+                          <Text style={styles.diagnosisText}>{adm.dischargeSummary}</Text>
+                        </View>
+                      ) : null}
+                    </View>
+                  );
+                })}
+              </View>
+            )}
           </View>
         )}
 
@@ -658,7 +788,8 @@ export default function MedicalHistoryScreen() {
                 const timeStr = lab.reportReleasedAt
                   ? new Date(lab.reportReleasedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                   : '14:30 IST';
-                const techName = lab.technicianName || 'Sr. Technologist Rajesh Kumar, B.Sc MLT';
+                const techName = lab.technicianName || 'Clinical Laboratory Team';
+                const labMeta = resolveBranchMeta(lab.branch);
 
                 return (
                   <View key={lab.id} style={styles.reportCard}>
@@ -672,6 +803,20 @@ export default function MedicalHistoryScreen() {
                         <Text style={styles.reportSub}>Order #{lab.orderNumber || lab.id.slice(0, 8)}</Text>
                       </View>
                       <StatusBadge status={lab.status || 'COMPLETED'} />
+                    </View>
+
+                    <View style={styles.facilityBox}>
+                      <View style={styles.facilityRow}>
+                        <Building2 size={13} color={UyirinaiTheme.colors.primaryDark} />
+                        <Text style={styles.facilityHospital}>{labMeta.hospitalName}</Text>
+                      </View>
+                      <View style={styles.facilityRow}>
+                        <MapPin size={13} color={UyirinaiTheme.colors.primary} />
+                        <Text style={styles.facilityBranch}>
+                          {labMeta.branchName}
+                          {labMeta.branchLocation ? ` · ${labMeta.branchLocation}` : ''}
+                        </Text>
+                      </View>
                     </View>
 
                     {/* Metadata Grid */}
@@ -689,14 +834,14 @@ export default function MedicalHistoryScreen() {
                         <Text style={styles.reportMetaVal}>{dateStr} · {timeStr}</Text>
                       </View>
                       <View style={styles.reportMetaItem}>
-                        <Text style={styles.reportMetaLabel}>Laboratory Division</Text>
-                        <Text style={styles.reportMetaVal}>Main Clinical Pathology</Text>
+                        <Text style={styles.reportMetaLabel}>Hospital Branch</Text>
+                        <Text style={styles.reportMetaVal}>{labMeta.branchName}</Text>
                       </View>
                     </View>
 
                     {/* Digital Signature Badge */}
                     <View style={styles.digiSignBadge}>
-                      <ShieldCheck size={16} color="#059669" />
+                      <ShieldCheck size={16} color="#00897B" />
                       <View style={{ flex: 1 }}>
                         <Text style={styles.digiSignTitle}>Digitally Signed & Verified</Text>
                         <Text style={styles.digiSignSub}>Certified under NABL & ISO 15189 Standards</Text>
@@ -736,6 +881,67 @@ export default function MedicalHistoryScreen() {
                 </Text>
               </View>
             )}
+
+            {(data?.radiology?.length ?? 0) > 0 && (
+              <View style={[styles.itemsList, { marginTop: 12 }]}>
+                <Text style={styles.sectionSubHeader}>Radiology & Imaging Reports</Text>
+                {data.radiology.map((rad: any) => {
+                  const radMeta = resolveBranchMeta(rad.branch);
+                  const docName = `Dr. ${rad.doctor?.employee?.user?.firstName || 'Consultant'} ${
+                    rad.doctor?.employee?.user?.lastName || ''
+                  }`.trim();
+                  return (
+                    <View key={rad.id} style={styles.reportCard}>
+                      <View style={styles.reportHeader}>
+                        <View style={styles.reportIconCircle}>
+                          <HeartPulse size={20} color={UyirinaiTheme.colors.primary} />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.reportTitle}>{rad.test?.name || 'Imaging Study'}</Text>
+                          <Text style={styles.reportSub}>
+                            Order #{rad.orderNumber || rad.id.slice(0, 8)} · {rad.test?.modality || 'IMAGING'}
+                          </Text>
+                        </View>
+                        <StatusBadge status={rad.status || 'ORDERED'} />
+                      </View>
+                      <View style={styles.facilityBox}>
+                        <View style={styles.facilityRow}>
+                          <Building2 size={13} color={UyirinaiTheme.colors.primaryDark} />
+                          <Text style={styles.facilityHospital}>{radMeta.hospitalName}</Text>
+                        </View>
+                        <View style={styles.facilityRow}>
+                          <MapPin size={13} color={UyirinaiTheme.colors.primary} />
+                          <Text style={styles.facilityBranch}>
+                            {radMeta.branchName}
+                            {radMeta.branchLocation ? ` · ${radMeta.branchLocation}` : ''}
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={styles.reportMetaGrid}>
+                        <View style={styles.reportMetaItem}>
+                          <Text style={styles.reportMetaLabel}>Ordering Doctor</Text>
+                          <Text style={styles.reportMetaVal}>{docName}</Text>
+                        </View>
+                        <View style={styles.reportMetaItem}>
+                          <Text style={styles.reportMetaLabel}>Date</Text>
+                          <Text style={styles.reportMetaVal}>
+                            {String(rad.reportReleasedAt || rad.createdAt || '').slice(0, 10)}
+                          </Text>
+                        </View>
+                      </View>
+                      {rad.findings ? (
+                        <View style={styles.diagnosisBox}>
+                          <Text style={styles.diagnosisLabel}>Findings & Impression:</Text>
+                          <Text style={styles.diagnosisText}>
+                            {rad.findings}{rad.impression ? `\nImpression: ${rad.impression}` : ''}
+                          </Text>
+                        </View>
+                      ) : null}
+                    </View>
+                  );
+                })}
+              </View>
+            )}
           </View>
         )}
 
@@ -763,9 +969,10 @@ export default function MedicalHistoryScreen() {
 
             {filteredInvoices.length > 0 ? (
               filteredInvoices.map((inv: any) => {
-                const dateStr = inv.createdAt ? String(inv.createdAt).slice(0, 10) : '2026-11-20';
-                const totalAmt = inv.totalAmount || '650.00';
+                const dateStr = inv.createdAt ? String(inv.createdAt).slice(0, 10) : '';
+                const totalAmt = inv.totalAmount || '0.00';
                 const paymentMethod = inv.payments?.[0]?.paymentMethod || 'UPI / Card';
+                const invMeta = resolveBranchMeta(inv.branch);
 
                 return (
                   <View key={inv.id} style={styles.invoiceCard}>
@@ -780,6 +987,20 @@ export default function MedicalHistoryScreen() {
                         <Text style={styles.invoiceDateText}>{dateStr}</Text>
                       </View>
                       <StatusBadge status={inv.status || 'PAID'} />
+                    </View>
+
+                    <View style={styles.facilityBox}>
+                      <View style={styles.facilityRow}>
+                        <Building2 size={13} color={UyirinaiTheme.colors.primaryDark} />
+                        <Text style={styles.facilityHospital}>{invMeta.hospitalName}</Text>
+                      </View>
+                      <View style={styles.facilityRow}>
+                        <MapPin size={13} color={UyirinaiTheme.colors.primary} />
+                        <Text style={styles.facilityBranch}>
+                          {invMeta.branchName}
+                          {invMeta.branchLocation ? ` · ${invMeta.branchLocation}` : ''}
+                        </Text>
+                      </View>
                     </View>
 
                     {/* Line Items */}
@@ -813,15 +1034,17 @@ export default function MedicalHistoryScreen() {
                       </View>
                     </View>
 
-                    {/* Download Receipt Button */}
+                    {/* Print / Download Receipt Button */}
                     <Pressable
                       style={styles.downloadReceiptBtn}
                       onPress={() => downloadInvoiceReceiptPdf(inv)}
                       disabled={downloadingId === inv.id + '-inv'}
+                      accessibilityRole="button"
+                      accessibilityLabel="Print Receipt"
                     >
                       <Download size={14} color={UyirinaiTheme.colors.primary} />
                       <Text style={styles.downloadReceiptText}>
-                        {downloadingId === inv.id + '-inv' ? 'Preparing...' : 'Download Official Receipt (PDF)'}
+                        {downloadingId === inv.id + '-inv' ? 'Preparing PDF...' : 'Print Receipt'}
                       </Text>
                     </Pressable>
                   </View>
@@ -848,9 +1071,16 @@ export default function MedicalHistoryScreen() {
           <View style={styles.reportModalCard}>
             {/* Modal Header */}
             <View style={styles.reportModalTopRow}>
-              <View>
-                <Text style={styles.reportModalHospital}>UYIRINAI MULTISPECIALITY HOSPITAL</Text>
-                <Text style={styles.reportModalLabSub}>CENTRAL CLINICAL DIAGNOSTIC LABORATORY</Text>
+              <View style={{ flex: 1, paddingRight: 8 }}>
+                <Text style={styles.reportModalHospital}>
+                  {resolveBranchMeta(viewingReport?.branch).hospitalName.toUpperCase()}
+                </Text>
+                <Text style={styles.reportModalLabSub}>
+                  {resolveBranchMeta(viewingReport?.branch).branchName}
+                  {resolveBranchMeta(viewingReport?.branch).branchLocation
+                    ? ` · ${resolveBranchMeta(viewingReport?.branch).branchLocation}`
+                    : ''}
+                </Text>
               </View>
               <Pressable onPress={() => setViewingReport(null)} style={styles.reportModalCloseBtn}>
                 <X size={20} color={UyirinaiTheme.colors.textSecondary} />
@@ -905,7 +1135,7 @@ export default function MedicalHistoryScreen() {
 
               {/* Digital Signature Verification Certificate */}
               <View style={styles.certBox}>
-                <ShieldCheck size={18} color="#059669" />
+                <ShieldCheck size={18} color="#00897B" />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.certTitle}>Digitally Signed & Cryptographically Verified</Text>
                   <Text style={styles.certText}>
@@ -1118,6 +1348,39 @@ const styles = StyleSheet.create({
   /* Cards */
   itemsList: {
     gap: 14,
+  },
+  sectionSubHeader: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.primaryDark,
+    marginBottom: 2,
+  },
+  facilityBox: {
+    backgroundColor: UyirinaiTheme.colors.softLilac,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.lavender,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    gap: 4,
+    marginBottom: 10,
+  },
+  facilityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  facilityHospital: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.primaryDark,
+    flex: 1,
+  },
+  facilityBranch: {
+    fontSize: 11.5,
+    fontWeight: '600',
+    color: UyirinaiTheme.colors.textSecondary,
+    flex: 1,
   },
   historyCard: {
     backgroundColor: UyirinaiTheme.colors.white,
@@ -1546,9 +1809,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: '#ECFDF5',
+    backgroundColor: '#E0F2F1',
     borderWidth: 1,
-    borderColor: '#A7F3D0',
+    borderColor: '#B2DFDB',
     borderRadius: UyirinaiTheme.borderRadius.md,
     padding: 10,
     marginVertical: 10,
@@ -1556,11 +1819,11 @@ const styles = StyleSheet.create({
   digiSignTitle: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#065F46',
+    color: '#183153',
   },
   digiSignSub: {
     fontSize: 11,
-    color: '#047857',
+    color: '#00897B',
     marginTop: 1,
   },
 
@@ -1694,9 +1957,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: '#ECFDF5',
+    backgroundColor: '#E0F2F1',
     borderWidth: 1,
-    borderColor: '#A7F3D0',
+    borderColor: '#B2DFDB',
     borderRadius: UyirinaiTheme.borderRadius.md,
     padding: 10,
     marginBottom: 14,
@@ -1704,11 +1967,11 @@ const styles = StyleSheet.create({
   certTitle: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#065F46',
+    color: '#183153',
   },
   certText: {
     fontSize: 10,
-    color: '#047857',
+    color: '#00897B',
     marginTop: 2,
     lineHeight: 14,
   },
@@ -1767,14 +2030,14 @@ const styles = StyleSheet.create({
   paramStatusBadge: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#059669',
-    backgroundColor: '#D1FAE5',
+    color: '#00897B',
+    backgroundColor: '#DCFCE7',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
   },
   impressionBox: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: '#E8F1FC',
     borderWidth: 1,
     borderColor: '#BFDBFE',
     borderRadius: UyirinaiTheme.borderRadius.md,
@@ -1784,7 +2047,7 @@ const styles = StyleSheet.create({
   impressionTitle: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#1E40AF',
+    color: '#183153',
     marginBottom: 4,
   },
   impressionText: {

@@ -38,25 +38,25 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
         return {
           bg: UyirinaiTheme.colors.successBg,
           text: UyirinaiTheme.colors.success,
-          border: UyirinaiTheme.colors.lightGreen,
+          border: UyirinaiTheme.colors.successBorder,
         };
       case 'pending':
         return {
-          bg: UyirinaiTheme.colors.pendingBg,
-          text: UyirinaiTheme.colors.pending,
-          border: '#F6E5B8',
+          bg: UyirinaiTheme.colors.warningBg,
+          text: UyirinaiTheme.colors.warning,
+          border: UyirinaiTheme.colors.warningBorder,
         };
       case 'error':
         return {
           bg: UyirinaiTheme.colors.errorBg,
           text: UyirinaiTheme.colors.error,
-          border: '#F8C8C7',
+          border: UyirinaiTheme.colors.errorBorder,
         };
       case 'info':
         return {
-          bg: UyirinaiTheme.colors.infoBg,
-          text: UyirinaiTheme.colors.info,
-          border: '#C5DFED',
+          bg: UyirinaiTheme.colors.secondaryBg,
+          text: UyirinaiTheme.colors.secondary,
+          border: UyirinaiTheme.colors.secondaryBorder,
         };
       case 'neutral':
       default:

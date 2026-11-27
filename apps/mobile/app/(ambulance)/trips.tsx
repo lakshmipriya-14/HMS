@@ -129,7 +129,7 @@ export default function AmbulanceTripsScreen() {
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 }}>
           <View style={styles.iconBox}>
-            <Ambulance size={22} color="#38845A" />
+            <Ambulance size={22} color="#1565C0" />
           </View>
           <View>
             <Text style={styles.title}>Emergency Dispatch Log</Text>
@@ -170,7 +170,7 @@ export default function AmbulanceTripsScreen() {
                   <Text style={styles.vehiclePill}>{item.vehicle}</Text>
                 </View>
                 <View style={[styles.statusTag, isActive ? styles.statusActive : styles.statusDone]}>
-                  <Text style={[styles.statusTagText, isActive ? { color: '#B45309' } : { color: '#047857' }]}>
+                  <Text style={[styles.statusTagText, isActive ? { color: '#F59E0B' } : { color: '#00897B' }]}>
                     {item.status}
                   </Text>
                 </View>
@@ -178,15 +178,15 @@ export default function AmbulanceTripsScreen() {
 
               <View style={styles.patientRow}>
                 <Text style={styles.patientText}>{item.patient}</Text>
-                <View style={[styles.sevBadge, item.severity === 'CRITICAL' ? { backgroundColor: '#EAF5ED' } : { backgroundColor: '#FEF3C7' }]}>
-                  <Text style={[styles.sevText, item.severity === 'CRITICAL' ? { color: '#DC2626' } : { color: '#D97706' }]}>
+                <View style={[styles.sevBadge, item.severity === 'CRITICAL' ? { backgroundColor: '#E8F1FC' } : { backgroundColor: '#FEF3C7' }]}>
+                  <Text style={[styles.sevText, item.severity === 'CRITICAL' ? { color: '#DC2626' } : { color: '#F59E0B' }]}>
                     {item.severity}
                   </Text>
                 </View>
               </View>
 
               <View style={styles.locRow}>
-                <MapPin size={13} color="#38845A" />
+                <MapPin size={13} color="#1565C0" />
                 <Text style={styles.loc}>{item.location}</Text>
               </View>
 
@@ -197,7 +197,7 @@ export default function AmbulanceTripsScreen() {
 
               {item.handoverTo && (
                 <View style={styles.handoverRow}>
-                  <CheckCircle2 size={13} color="#38845A" />
+                  <CheckCircle2 size={13} color="#1565C0" />
                   <Text style={styles.handoverText}>Handed to {item.handoverTo} ({item.durationMins} min run)</Text>
                 </View>
               )}
@@ -222,37 +222,37 @@ export default function AmbulanceTripsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
-  header: { backgroundColor: '#fff', padding: 16, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
-  iconBox: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#EAF5ED', alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 17, fontWeight: '800', color: '#0F172A' },
+  header: { backgroundColor: '#FFFFFF', padding: 16, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
+  iconBox: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#E8F1FC', alignItems: 'center', justifyContent: 'center' },
+  title: { fontSize: 17, fontWeight: '800', color: '#183153' },
   subtitle: { fontSize: 11, color: '#64748B' },
   chipRow: { flexDirection: 'row', marginTop: 4 },
   chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: '#F1F5F9', marginRight: 8 },
-  chipActive: { backgroundColor: '#EAF5ED' },
+  chipActive: { backgroundColor: '#E8F1FC' },
   chipText: { fontSize: 11, fontWeight: '600', color: '#64748B' },
-  chipTextActive: { color: '#38845A', fontWeight: '800' },
+  chipTextActive: { color: '#1565C0', fontWeight: '800' },
   list: { padding: 16 },
-  card: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 12 },
-  cardActive: { borderColor: '#CDE8D5', backgroundColor: '#EAF5ED' },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 12 },
+  cardActive: { borderColor: '#BFDBFE', backgroundColor: '#E8F1FC' },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   codeWrap: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  code: { fontSize: 13, fontWeight: '800', fontFamily: 'monospace', color: '#38845A' },
+  code: { fontSize: 13, fontWeight: '800', fontFamily: 'monospace', color: '#1565C0' },
   vehiclePill: { backgroundColor: '#F1F5F9', fontSize: 10, color: '#475569', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   statusTag: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   statusActive: { backgroundColor: '#FEF3C7' },
-  statusDone: { backgroundColor: '#ECFDF5' },
+  statusDone: { backgroundColor: '#E0F2F1' },
   statusTagText: { fontSize: 10, fontWeight: '800' },
   patientRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 },
-  patientText: { fontSize: 14, fontWeight: '700', color: '#0F172A' },
+  patientText: { fontSize: 14, fontWeight: '700', color: '#183153' },
   sevBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   sevText: { fontSize: 9, fontWeight: '900' },
   locRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 },
-  loc: { fontSize: 12, color: '#334155', flex: 1 },
+  loc: { fontSize: 12, color: '#475569', flex: 1 },
   destRow: { flexDirection: 'row', gap: 4, marginTop: 4 },
   destLabel: { fontSize: 11, color: '#64748B' },
-  destVal: { fontSize: 11, fontWeight: '700', color: '#1E293B' },
-  handoverRow: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#ECFDF5', padding: 8, borderRadius: 6, marginTop: 8 },
-  handoverText: { fontSize: 11, color: '#065F46', fontWeight: '600' },
+  destVal: { fontSize: 11, fontWeight: '700', color: '#183153' },
+  handoverRow: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#E0F2F1', padding: 8, borderRadius: 6, marginTop: 8 },
+  handoverText: { fontSize: 11, color: '#183153', fontWeight: '600' },
   footerRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, paddingTop: 8, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
   driverText: { fontSize: 11, color: '#475569' },
   time: { fontSize: 11, color: '#94A3B8' },

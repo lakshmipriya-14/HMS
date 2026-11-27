@@ -68,7 +68,7 @@ export const DiagnosticsOverview: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="p-2.5 bg-purple-50 text-purple-700 rounded-xl border border-purple-100">
+          <span className="p-2.5 bg-[#E8F1FC] text-[#1565C0] rounded-xl border border-[#BFDBFE]">
             <FlaskConical className="w-6 h-6" />
           </span>
           <div>
@@ -84,7 +84,7 @@ export const DiagnosticsOverview: React.FC = () => {
           <button
             onClick={() => setActiveTab('LAB')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-lg transition-all ${
-              activeTab === 'LAB' ? 'bg-white text-teal-700 shadow-sm' : 'hover:text-slate-900'
+              activeTab === 'LAB' ? 'bg-white text-[#00897B] shadow-sm' : 'hover:text-slate-900'
             }`}
           >
             <FlaskConical className="w-4 h-4" />
@@ -93,7 +93,7 @@ export const DiagnosticsOverview: React.FC = () => {
           <button
             onClick={() => setActiveTab('RADIOLOGY')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-lg transition-all ${
-              activeTab === 'RADIOLOGY' ? 'bg-white text-purple-700 shadow-sm' : 'hover:text-slate-900'
+              activeTab === 'RADIOLOGY' ? 'bg-white text-[#1565C0] shadow-sm' : 'hover:text-slate-900'
             }`}
           >
             <Scan className="w-4 h-4" />
@@ -149,7 +149,7 @@ export const DiagnosticsOverview: React.FC = () => {
                   ) : (
                     filteredLabOrders.map((o) => (
                       <tr key={o.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="py-3.5 px-4 font-mono font-bold text-teal-700">{o.orderNumber}</td>
+                        <td className="py-3.5 px-4 font-mono font-bold text-[#00897B]">{o.orderNumber}</td>
                         <td className="py-3.5 px-4">
                           <div className="font-bold text-slate-800">
                             {o.patient?.firstName} {o.patient?.lastName}
@@ -193,7 +193,7 @@ export const DiagnosticsOverview: React.FC = () => {
                     <h5 className="font-bold text-xs text-slate-800">{t.name}</h5>
                     <span className="text-[10px] text-slate-500 font-mono uppercase">{t.code}</span>
                   </div>
-                  <span className="font-bold text-xs text-teal-700">₹{Number(t.price || 250)}</span>
+                  <span className="font-bold text-xs text-[#00897B]">₹{Number(t.price || 250)}</span>
                 </div>
               ))}
             </div>
@@ -232,7 +232,7 @@ export const DiagnosticsOverview: React.FC = () => {
                   ) : (
                     filteredRadioOrders.map((o) => (
                       <tr key={o.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="py-3.5 px-4 font-mono font-bold text-purple-700">{o.orderNumber}</td>
+                        <td className="py-3.5 px-4 font-mono font-bold text-[#1565C0]">{o.orderNumber}</td>
                         <td className="py-3.5 px-4">
                           <div className="font-bold text-slate-800">
                             {o.patient?.firstName} {o.patient?.lastName}
@@ -241,7 +241,7 @@ export const DiagnosticsOverview: React.FC = () => {
                         </td>
                         <td className="py-3.5 px-4 font-medium text-slate-800">{o.test?.name || 'Imaging Scan'}</td>
                         <td className="py-3.5 px-4">
-                          <span className="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-purple-50 text-purple-700 border border-purple-200">
+                          <span className="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-[#E8F1FC] text-[#1565C0] border border-[#BFDBFE]">
                             {o.test?.modality || 'X-RAY'}
                           </span>
                         </td>
@@ -270,9 +270,9 @@ export const DiagnosticsOverview: React.FC = () => {
                 <div key={t.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200/60 flex justify-between">
                   <div>
                     <h5 className="font-bold text-xs text-slate-800">{t.name}</h5>
-                    <span className="text-[10px] text-purple-700 font-mono uppercase font-bold">{t.modality}</span>
+                    <span className="text-[10px] text-[#1565C0] font-mono uppercase font-bold">{t.modality}</span>
                   </div>
-                  <span className="font-bold text-xs text-teal-700">₹{Number(t.price || 1200)}</span>
+                  <span className="font-bold text-xs text-[#00897B]">₹{Number(t.price || 1200)}</span>
                 </div>
               ))}
             </div>

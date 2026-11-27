@@ -141,7 +141,7 @@ export default function AdminProfileScreen() {
         {/* Profile Card */}
         <View style={styles.card}>
           <View style={styles.iconCircle}>
-            <ShieldCheck size={36} color="#38845A" />
+            <ShieldCheck size={36} color="#1565C0" />
           </View>
           <Text style={styles.title}>{displayName}</Text>
           <Text style={styles.sub}>{user?.email || 'hospital_admin@demo.uyirinai.test'}</Text>
@@ -172,7 +172,7 @@ export default function AdminProfileScreen() {
           onPress={() => setBroadcastModal(true)}
         >
           <View style={[styles.actionIconBox, { backgroundColor: '#FEF3C7' }]}>
-            <Bell size={18} color="#D97706" />
+            <Bell size={18} color="#F59E0B" />
           </View>
           <View style={{ flex: 1, marginLeft: 12 }}>
             <Text style={styles.actionBtnTitle}>Staff Broadcast Alert</Text>
@@ -185,7 +185,7 @@ export default function AdminProfileScreen() {
           style={styles.actionBtn}
           onPress={() => setSettingsModal(true)}
         >
-          <View style={[styles.actionIconBox, { backgroundColor: '#EAF5ED' }]}>
+          <View style={[styles.actionIconBox, { backgroundColor: '#E8F1FC' }]}>
             <PhoneCall size={18} color="#DC2626" />
           </View>
           <View style={{ flex: 1, marginLeft: 12 }}>
@@ -199,8 +199,8 @@ export default function AdminProfileScreen() {
           style={styles.actionBtn}
           onPress={() => setPwdModal(true)}
         >
-          <View style={[styles.actionIconBox, { backgroundColor: '#EAF5ED' }]}>
-            <KeyRound size={18} color="#38845A" />
+          <View style={[styles.actionIconBox, { backgroundColor: '#E8F1FC' }]}>
+            <KeyRound size={18} color="#1565C0" />
           </View>
           <View style={{ flex: 1, marginLeft: 12 }}>
             <Text style={styles.actionBtnTitle}>Update Account Password</Text>
@@ -272,7 +272,7 @@ export default function AdminProfileScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Send Live Broadcast</Text>
               )}
@@ -323,7 +323,7 @@ export default function AdminProfileScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Save Emergency Settings</Text>
               )}
@@ -374,7 +374,7 @@ export default function AdminProfileScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Update Password & Sign Out</Text>
               )}
@@ -403,21 +403,21 @@ const styles = StyleSheet.create({
     width: 68,
     height: 68,
     borderRadius: 34,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
   },
-  title: { fontSize: 18, fontWeight: '800', color: '#0F172A' },
+  title: { fontSize: 18, fontWeight: '800', color: '#183153' },
   sub: { fontSize: 13, color: '#64748B', marginTop: 3 },
   roleTag: {
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
     marginTop: 8,
   },
-  roleTagText: { fontSize: 11, fontWeight: '800', color: '#38845A' },
+  roleTagText: { fontSize: 11, fontWeight: '800', color: '#1565C0' },
   divider: { height: 1, backgroundColor: '#F1F5F9', width: '100%', marginVertical: 14 },
   metaRow: {
     flexDirection: 'row',
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   metaLabel: { fontSize: 12, color: '#64748B', fontWeight: '500' },
-  metaVal: { fontSize: 12, color: '#0F172A', fontWeight: '700', marginLeft: 'auto' },
+  metaVal: { fontSize: 12, color: '#183153', fontWeight: '700', marginLeft: 'auto' },
   sectionHeader: {
     fontSize: 13,
     fontWeight: '700',
@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
   actionBtnTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   actionBtnSub: {
     fontSize: 11,
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     paddingVertical: 14,
     borderRadius: 14,
     marginTop: 16,
@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  modalTitle: { fontSize: 17, fontWeight: '700', color: '#0F172A' },
+  modalTitle: { fontSize: 17, fontWeight: '700', color: '#183153' },
   fieldLabel: {
     fontSize: 12,
     fontWeight: '600',
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#0F172A',
+    color: '#183153',
   },
   chip: {
     paddingHorizontal: 12,
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   chipActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   chipText: {
     fontSize: 11,
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: 'center',

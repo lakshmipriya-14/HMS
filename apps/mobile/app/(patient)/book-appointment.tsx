@@ -451,7 +451,10 @@ export default function BookAppointmentScreen() {
                         </View>
 
                         <Text style={styles.docSpecialty}>{doc.specialization || deptName}</Text>
-                        <Text style={styles.docHospital}>{deptName} · Madurai Main Campus</Text>
+                        <Text style={styles.docHospital}>
+                          {deptName} · {doc.branch?.hospital?.name ? `${doc.branch.hospital.name} - ` : ''}
+                          {doc.branch?.name || 'Hospital Branch'}{doc.branch?.city ? `, ${doc.branch.city}` : ''}
+                        </Text>
 
                         {/* Experience and Fee Pill Row */}
                         <View style={styles.metricsPillsRow}>
@@ -661,7 +664,8 @@ export default function BookAppointmentScreen() {
                     {profileDoctor.designation?.replace('_', ' ')} · {profileDoctor.specialization}
                   </Text>
                   <Text style={styles.heroDoctorDept}>
-                    {profileDoctor.department?.name} · Madurai Main Campus
+                    {profileDoctor.department?.name} · {profileDoctor.branch?.hospital?.name ? `${profileDoctor.branch.hospital.name} - ` : ''}
+                    {profileDoctor.branch?.name || 'Hospital Branch'}{profileDoctor.branch?.city ? `, ${profileDoctor.branch.city}` : ''}
                   </Text>
                 </View>
 

@@ -214,7 +214,7 @@ export default function NurseMedicationsScreen() {
     <View style={styles.container}>
       {/* Top Protocol Strip */}
       <View style={styles.protocolBanner}>
-        <ShieldCheck size={18} color="#38845A" />
+        <ShieldCheck size={18} color="#1565C0" />
         <View style={{ flex: 1, marginLeft: 8 }}>
           <Text style={styles.protocolTitle}>Medication Administration Record (e-MAR)</Text>
           <Text style={styles.protocolSub}>Ensure 5-Rights check (Right Patient, Drug, Dose, Route, Time)</Text>
@@ -266,7 +266,7 @@ export default function NurseMedicationsScreen() {
         keyExtractor={(item) => item.id}
         ListEmptyComponent={
           <View style={styles.emptyBox}>
-            <CheckCircle2 size={36} color="#059669" />
+            <CheckCircle2 size={36} color="#00897B" />
             <Text style={styles.emptyTitle}>All medications up to date</Text>
             <Text style={styles.emptySub}>No pending administrations in this status</Text>
           </View>
@@ -317,7 +317,7 @@ export default function NurseMedicationsScreen() {
 
             {item.administeredAt && (
               <View style={styles.adminInfoBox}>
-                <CheckCircle2 size={13} color="#059669" />
+                <CheckCircle2 size={13} color="#00897B" />
                 <Text style={styles.adminInfoText}>
                   Given at {item.administeredAt} by {item.administeredBy}
                 </Text>
@@ -334,7 +334,7 @@ export default function NurseMedicationsScreen() {
                   style={styles.giveBtn}
                   onPress={() => openAdministerModal(item)}
                 >
-                  <Pill size={14} color="#fff" />
+                  <Pill size={14} color="#FFFFFF" />
                   <Text style={styles.giveBtnText}>Administer Dose</Text>
                 </TouchableOpacity>
 
@@ -373,7 +373,7 @@ export default function NurseMedicationsScreen() {
                   style={[styles.checkCard, patientConfirmed && styles.checkCardActive]}
                   onPress={() => setPatientConfirmed(!patientConfirmed)}
                 >
-                  <CheckCircle2 size={18} color={patientConfirmed ? '#38845A' : '#94A3B8'} />
+                  <CheckCircle2 size={18} color={patientConfirmed ? '#1565C0' : '#94A3B8'} />
                   <View style={{ flex: 1, marginLeft: 10 }}>
                     <Text style={styles.checkTitle}>1. Right Patient Verified</Text>
                     <Text style={styles.checkSub}>
@@ -387,7 +387,7 @@ export default function NurseMedicationsScreen() {
                   style={[styles.checkCard, doseConfirmed && styles.checkCardActive]}
                   onPress={() => setDoseConfirmed(!doseConfirmed)}
                 >
-                  <CheckCircle2 size={18} color={doseConfirmed ? '#38845A' : '#94A3B8'} />
+                  <CheckCircle2 size={18} color={doseConfirmed ? '#1565C0' : '#94A3B8'} />
                   <View style={{ flex: 1, marginLeft: 10 }}>
                     <Text style={styles.checkTitle}>2. Right Drug & Dosage Verified</Text>
                     <Text style={styles.checkSub}>
@@ -401,7 +401,7 @@ export default function NurseMedicationsScreen() {
                   style={[styles.checkCard, routeConfirmed && styles.checkCardActive]}
                   onPress={() => setRouteConfirmed(!routeConfirmed)}
                 >
-                  <CheckCircle2 size={18} color={routeConfirmed ? '#38845A' : '#94A3B8'} />
+                  <CheckCircle2 size={18} color={routeConfirmed ? '#1565C0' : '#94A3B8'} />
                   <View style={{ flex: 1, marginLeft: 10 }}>
                     <Text style={styles.checkTitle}>3. Right Route & Timing</Text>
                     <Text style={styles.checkSub}>
@@ -428,7 +428,7 @@ export default function NurseMedicationsScreen() {
                 disabled={!(patientConfirmed && doseConfirmed && routeConfirmed) || isSubmitting}
               >
                 {isSubmitting ? (
-                  <ActivityIndicator color="#fff" />
+                  <ActivityIndicator color="#FFFFFF" />
                 ) : (
                   <Text style={styles.confirmAdminText}>Sign & Commit to e-MAR</Text>
                 )}
@@ -494,71 +494,71 @@ const styles = StyleSheet.create({
   protocolBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     padding: 12,
     borderRadius: 12,
     marginBottom: 12,
   },
-  protocolTitle: { fontSize: 13, fontWeight: '800', color: '#38845A' },
-  protocolSub: { fontSize: 11, color: '#115E59', marginTop: 1 },
-  tabBar: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 10, padding: 4, marginBottom: 12 },
+  protocolTitle: { fontSize: 13, fontWeight: '800', color: '#1565C0' },
+  protocolSub: { fontSize: 11, color: '#00897B', marginTop: 1 },
+  tabBar: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 10, padding: 4, marginBottom: 12 },
   tab: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 8 },
-  tabActive: { backgroundColor: '#38845A' },
+  tabActive: { backgroundColor: '#1565C0' },
   tabText: { fontSize: 11, fontWeight: '700', color: '#64748B' },
-  tabTextActive: { color: '#fff' },
-  emptyBox: { alignItems: 'center', padding: 30, backgroundColor: '#fff', borderRadius: 12 },
-  emptyTitle: { fontSize: 15, fontWeight: '700', color: '#0F172A', marginTop: 8 },
+  tabTextActive: { color: '#FFFFFF' },
+  emptyBox: { alignItems: 'center', padding: 30, backgroundColor: '#FFFFFF', borderRadius: 12 },
+  emptyTitle: { fontSize: 15, fontWeight: '700', color: '#183153', marginTop: 8 },
   emptySub: { fontSize: 11, color: '#64748B', marginTop: 2 },
-  card: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 12 },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 12 },
   cardTop: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
-  bedPill: { backgroundColor: '#E0F2FE', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, marginRight: 8 },
-  bedPillText: { fontSize: 11, fontWeight: '800', color: '#0284C7' },
+  bedPill: { backgroundColor: '#E8F1FC', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, marginRight: 8 },
+  bedPillText: { fontSize: 11, fontWeight: '800', color: '#1565C0' },
   uhidPill: { fontSize: 10, color: '#64748B', flex: 1, fontFamily: 'monospace' },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   statusBadgeDue: { backgroundColor: '#FEF3C7' },
-  statusBadgeGiven: { backgroundColor: '#D1FAE5' },
-  statusBadgeRefused: { backgroundColor: '#EAF5ED' },
+  statusBadgeGiven: { backgroundColor: '#DCFCE7' },
+  statusBadgeRefused: { backgroundColor: '#E8F1FC' },
   statusBadgeText: { fontSize: 10, fontWeight: '800' },
-  textDue: { color: '#B45309' },
-  textGiven: { color: '#059669' },
+  textDue: { color: '#F59E0B' },
+  textGiven: { color: '#00897B' },
   textRefused: { color: '#DC2626' },
   patientName: { fontSize: 13, fontWeight: '700', color: '#64748B', marginTop: 2 },
-  medName: { fontSize: 16, fontWeight: '800', color: '#0F172A', marginTop: 2 },
+  medName: { fontSize: 16, fontWeight: '800', color: '#183153', marginTop: 2 },
   detailGrid: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#F8FAFC', padding: 10, borderRadius: 8, marginTop: 8 },
   detailCol: { flex: 1 },
   detailLabel: { fontSize: 10, color: '#94A3B8', fontWeight: '700' },
-  detailVal: { fontSize: 12, fontWeight: '700', color: '#1E293B', marginTop: 1 },
+  detailVal: { fontSize: 12, fontWeight: '700', color: '#183153', marginTop: 1 },
   docText: { fontSize: 11, color: '#64748B', marginTop: 8 },
-  adminInfoBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#F0FDF4', padding: 8, borderRadius: 8, marginTop: 8 },
-  adminInfoText: { fontSize: 11, fontWeight: '700', color: '#166534' },
+  adminInfoBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#DCFCE7', padding: 8, borderRadius: 8, marginTop: 8 },
+  adminInfoText: { fontSize: 11, fontWeight: '700', color: '#16A34A' },
   notesText: { fontSize: 11, color: '#475569', fontStyle: 'italic', marginTop: 6 },
   btnRow: { flexDirection: 'row', gap: 8, marginTop: 12 },
-  giveBtn: { flex: 2, flexDirection: 'row', backgroundColor: '#38845A', paddingVertical: 10, borderRadius: 8, alignItems: 'center', justifyContent: 'center', gap: 6 },
-  giveBtnText: { color: '#fff', fontSize: 12, fontWeight: '800' },
+  giveBtn: { flex: 2, flexDirection: 'row', backgroundColor: '#1565C0', paddingVertical: 10, borderRadius: 8, alignItems: 'center', justifyContent: 'center', gap: 6 },
+  giveBtnText: { color: '#FFFFFF', fontSize: 12, fontWeight: '800' },
   refuseBtn: { flex: 1, borderWidth: 1, borderColor: '#CBD5E1', paddingVertical: 10, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   refuseBtnText: { color: '#64748B', fontSize: 11, fontWeight: '700' },
 
   // Modal styles
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
-  modalBox: { backgroundColor: '#fff', borderRadius: 16, padding: 18 },
+  modalBox: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 18 },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
-  modalTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
+  modalTitle: { fontSize: 16, fontWeight: '800', color: '#183153' },
   checkCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F8FAFC', borderWidth: 1, borderColor: '#E2E8F0', padding: 12, borderRadius: 10, marginBottom: 10 },
-  checkCardActive: { borderColor: '#38845A', backgroundColor: '#EAF5ED' },
-  checkTitle: { fontSize: 12, fontWeight: '800', color: '#0F172A' },
+  checkCardActive: { borderColor: '#1565C0', backgroundColor: '#E8F1FC' },
+  checkTitle: { fontSize: 12, fontWeight: '800', color: '#183153' },
   checkSub: { fontSize: 11, color: '#475569', marginTop: 1 },
   noteInputLabel: { fontSize: 11, fontWeight: '700', color: '#475569', marginTop: 10, marginBottom: 4 },
   modalInput: { borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, padding: 10, fontSize: 12, backgroundColor: '#F8FAFC' },
-  confirmAdminBtn: { backgroundColor: '#38845A', paddingVertical: 12, borderRadius: 10, alignItems: 'center', marginTop: 14 },
+  confirmAdminBtn: { backgroundColor: '#1565C0', paddingVertical: 12, borderRadius: 10, alignItems: 'center', marginTop: 14 },
   btnDisabled: { opacity: 0.5 },
-  confirmAdminText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  confirmAdminText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
   exMedLabel: { fontSize: 13, color: '#64748B', fontWeight: '600', marginBottom: 12 },
   exTypeRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
   exTypeBtn: { flex: 1, paddingVertical: 8, borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, alignItems: 'center' },
   exTypeBtnActive: { backgroundColor: '#DC2626', borderColor: '#DC2626' },
   exTypeText: { fontSize: 11, fontWeight: '700', color: '#475569' },
-  exTypeTextActive: { color: '#fff' },
+  exTypeTextActive: { color: '#FFFFFF' },
   submitExceptionBtn: { backgroundColor: '#DC2626', paddingVertical: 12, borderRadius: 10, alignItems: 'center', marginTop: 14 },
-  submitExceptionText: { color: '#fff', fontSize: 12, fontWeight: '800' },
+  submitExceptionText: { color: '#FFFFFF', fontSize: 12, fontWeight: '800' },
 });
 

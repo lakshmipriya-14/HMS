@@ -108,7 +108,7 @@ export const DepartmentAdminProfile: React.FC = () => {
       {/* Header */}
       <div>
         <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-          <User className="w-6 h-6 text-teal-600" />
+          <User className="w-6 h-6 text-[#00897B]" />
           Department Administrator Profile
         </h1>
         <p className="text-xs text-slate-500 mt-1">
@@ -117,14 +117,14 @@ export const DepartmentAdminProfile: React.FC = () => {
       </div>
 
       {successMessage && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-emerald-800 text-xs font-semibold animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="p-4 bg-[#DCFCE7] border border-[#BBF7D0] rounded-xl flex items-center gap-2 text-[#16A34A] text-xs font-semibold animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-[#16A34A]" />
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs font-semibold">
+        <div className="p-4 bg-[#FEE2E2] border border-[#FECACA] rounded-xl flex items-center gap-2 text-[#DC2626] text-xs font-semibold">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
@@ -132,7 +132,7 @@ export const DepartmentAdminProfile: React.FC = () => {
 
       {/* Profile Overview Card */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col sm:flex-row items-center gap-6">
-        <div className="w-20 h-20 rounded-2xl bg-teal-50 border-2 border-teal-200/50 flex items-center justify-center text-teal-700 text-2xl font-black shrink-0">
+        <div className="w-20 h-20 rounded-2xl bg-[#E0F2F1] border-2 border-[#B2DFDB]/50 flex items-center justify-center text-[#00897B] text-2xl font-black shrink-0">
           {profile?.firstName?.[0] || 'D'}{profile?.lastName?.[0] || 'A'}
         </div>
         <div className="flex-1 text-center sm:text-left">
@@ -140,14 +140,14 @@ export const DepartmentAdminProfile: React.FC = () => {
             <h2 className="text-lg font-black text-slate-800">
               {profile?.firstName} {profile?.lastName}
             </h2>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200/50 self-center sm:self-auto">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#E0F2F1] text-[#00897B] border border-[#B2DFDB]/50 self-center sm:self-auto">
               <ShieldCheck className="w-3 h-3" /> DEPARTMENT ADMIN
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">{profile?.email}</p>
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 mt-3 text-xs text-slate-600">
             <div className="flex items-center gap-1.5 font-semibold">
-              <Building2 className="w-4 h-4 text-teal-600" />
+              <Building2 className="w-4 h-4 text-[#00897B]" />
               <span>Dept: {profile?.department?.name || 'Assigned Department'}</span>
             </div>
             <div className="flex items-center gap-1.5 font-semibold">
@@ -161,7 +161,7 @@ export const DepartmentAdminProfile: React.FC = () => {
         {/* Update Contact Info */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
           <h3 className="text-sm font-black text-slate-800 mb-4 flex items-center gap-2">
-            <User className="w-4 h-4 text-teal-600" /> Personal Information
+            <User className="w-4 h-4 text-[#00897B]" /> Personal Information
           </h3>
 
           <form onSubmit={handleUpdateProfile} className="space-y-4">
@@ -172,7 +172,7 @@ export const DepartmentAdminProfile: React.FC = () => {
                 required
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
               />
             </div>
             <div>
@@ -182,7 +182,7 @@ export const DepartmentAdminProfile: React.FC = () => {
                 required
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
               />
             </div>
             <div>
@@ -201,14 +201,14 @@ export const DepartmentAdminProfile: React.FC = () => {
                 placeholder="+91 9876543210"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition font-mono"
+                className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition font-mono"
               />
             </div>
             <div className="pt-2 flex justify-end">
               <button
                 type="submit"
                 disabled={savingProfile}
-                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs transition shadow-sm"
+                className="px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white font-bold rounded-xl text-xs transition shadow-sm"
               >
                 {savingProfile ? 'Saving...' : 'Update Details'}
               </button>
@@ -219,18 +219,18 @@ export const DepartmentAdminProfile: React.FC = () => {
         {/* Change Password */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
           <h3 className="text-sm font-black text-slate-800 mb-4 flex items-center gap-2">
-            <Lock className="w-4 h-4 text-teal-600" /> Security & Password
+            <Lock className="w-4 h-4 text-[#00897B]" /> Security & Password
           </h3>
 
           {passwordSuccess && (
-            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-emerald-800 text-xs font-semibold mb-4">
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+            <div className="p-3 bg-[#DCFCE7] border border-[#BBF7D0] rounded-xl flex items-center gap-2 text-[#16A34A] text-xs font-semibold mb-4">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-[#16A34A]" />
               {passwordSuccess}
             </div>
           )}
 
           {passwordError && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs font-semibold mb-4">
+            <div className="p-3 bg-[#FEE2E2] border border-[#FECACA] rounded-xl flex items-center gap-2 text-[#DC2626] text-xs font-semibold mb-4">
               <AlertCircle className="w-4 h-4 shrink-0" />
               {passwordError}
             </div>
@@ -244,7 +244,7 @@ export const DepartmentAdminProfile: React.FC = () => {
                 required
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
               />
             </div>
             <div>
@@ -255,7 +255,7 @@ export const DepartmentAdminProfile: React.FC = () => {
                 placeholder="At least 8 characters"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
               />
             </div>
             <div>
@@ -265,7 +265,7 @@ export const DepartmentAdminProfile: React.FC = () => {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
               />
             </div>
             <div className="pt-2 flex justify-end">

@@ -130,7 +130,7 @@ export function SuperAdminHeader({
                 activeOpacity={0.8}
               >
                 <View style={styles.logoBadge}>
-                  <HeartPulse size={18} color="#fff" />
+                  <HeartPulse size={18} color="#FFFFFF" />
                 </View>
                 <View>
                   <Text style={styles.brandTitle}>UYIRINAI</Text>
@@ -376,9 +376,9 @@ export function SuperAdminHeader({
 
 const styles = StyleSheet.create({
   headerContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: theme.colors.border,
     width: '100%',
   },
   headerInner: {
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
   },
   breadcrumbDivider: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: '#64748B',
   },
   breadcrumbCurrent: {
     fontSize: 11,
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     padding: 8,
     borderRadius: 8,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: theme.colors.secondaryBackground,
   },
   badge: {
     position: 'absolute',
@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 3,
   },
   badgeText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 9,
     fontWeight: '800',
   },
@@ -488,25 +488,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   profileInitial: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '700',
   },
   logoutOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#0007' },
-  logoutCard: { width: '100%', maxWidth: 360, backgroundColor: '#fff', borderRadius: 14, padding: 18, gap: 12 },
+  logoutCard: { width: '100%', maxWidth: 360, backgroundColor: '#FFFFFF', borderRadius: 14, padding: 18, gap: 12 },
   logoutActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 8, marginTop: 4 },
   logoutButton: { minHeight: 44, paddingHorizontal: 14, justifyContent: 'center', borderRadius: 8 },
-  cancelLogout: { backgroundColor: '#F3F4F6' },
+  cancelLogout: { backgroundColor: '#F1F5F9' },
   confirmLogout: { backgroundColor: theme.colors.primary },
-  cancelLogoutText: { color: '#374151', fontWeight: '700' },
-  confirmLogoutText: { color: '#fff', fontWeight: '700' },
+  cancelLogoutText: { color: '#475569', fontWeight: '700' },
+  confirmLogoutText: { color: '#FFFFFF', fontWeight: '700' },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.45)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     maxHeight: '85%',
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: '#E2E8F0',
   },
   modalTitleRow: {
     flexDirection: 'row',
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#111827',
+    color: '#183153',
   },
   unreadCountPill: {
     backgroundColor: theme.colors.accentRedBg,
@@ -545,7 +545,7 @@ const styles = StyleSheet.create({
   closeBtn: {
     padding: 6,
     borderRadius: 8,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: '#F1F5F9',
   },
   modalActionBar: {
     flexDirection: 'row',
@@ -554,7 +554,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: '#F1F5F9',
     flexWrap: 'wrap',
     gap: 8,
   },
@@ -566,7 +566,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: '#F1F5F9',
   },
   filterChipActive: {
     backgroundColor: theme.colors.primary,
@@ -574,10 +574,10 @@ const styles = StyleSheet.create({
   filterChipText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#4B5563',
+    color: '#475569',
   },
   filterChipTextActive: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontWeight: '700',
   },
   markAllBtn: {
@@ -602,14 +602,14 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    backgroundColor: '#fff',
+    borderColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
     marginBottom: 10,
     gap: 4,
   },
   notifItemUnread: {
-    borderColor: '#FCA5A5',
-    backgroundColor: '#FFF5F5',
+    borderColor: '#FECACA',
+    backgroundColor: '#FEE2E2',
     borderLeftWidth: 4,
     borderLeftColor: theme.colors.primary,
   },
@@ -619,7 +619,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   notifTypeBadge: {
-    backgroundColor: '#E5E7EB',
+    backgroundColor: '#E2E8F0',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -627,20 +627,20 @@ const styles = StyleSheet.create({
   notifTypeText: {
     fontSize: 9.5,
     fontWeight: '700',
-    color: '#374151',
+    color: '#475569',
   },
   notifTime: {
     fontSize: 11,
-    color: '#6B7280',
+    color: '#64748B',
   },
   notifTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#111827',
+    color: '#183153',
   },
   notifMessage: {
     fontSize: 12.5,
-    color: '#4B5563',
+    color: '#475569',
     lineHeight: 18,
   },
   notifFooter: {
@@ -683,11 +683,11 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#374151',
+    color: '#475569',
   },
   emptyText: {
     fontSize: 12.5,
-    color: '#6B7280',
+    color: '#64748B',
     textAlign: 'center',
   },
 });

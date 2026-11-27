@@ -52,7 +52,7 @@ export default function ReceptionSearchScreen() {
     <View style={styles.container}>
       {/* Search Input Bar */}
       <View style={styles.searchBar}>
-        <Search size={18} color="#0284C7" />
+        <Search size={18} color="#1565C0" />
         <TextInput
           style={styles.input}
           placeholder="Search by UHID, name, or phone"
@@ -70,7 +70,7 @@ export default function ReceptionSearchScreen() {
       </View>
 
       <TouchableOpacity style={styles.searchBtn} onPress={handleSearch} disabled={loading}>
-        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.searchBtnText}>Search Patient Directory</Text>}
+        {loading ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.searchBtnText}>Search Patient Directory</Text>}
       </TouchableOpacity>
 
       {/* Results Header */}
@@ -126,7 +126,7 @@ export default function ReceptionSearchScreen() {
                 style={styles.bookBtn}
                 onPress={() => router.push('/(reception)/appointments' as any)}
               >
-                <Calendar size={13} color="#fff" />
+                <Calendar size={13} color="#FFFFFF" />
                 <Text style={styles.bookBtnText}>Book Appointment</Text>
               </TouchableOpacity>
 
@@ -134,7 +134,7 @@ export default function ReceptionSearchScreen() {
                 style={styles.tokenBtn}
                 onPress={() => router.push('/(reception)/checkin' as any)}
               >
-                <Ticket size={13} color="#0284C7" />
+                <Ticket size={13} color="#1565C0" />
                 <Text style={styles.tokenBtnText}>Check In</Text>
               </TouchableOpacity>
             </View>
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#CBD5E1',
     borderRadius: 12,
@@ -159,23 +159,23 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     gap: 8,
   },
-  input: { flex: 1, fontSize: 13, color: '#0F172A' },
+  input: { flex: 1, fontSize: 13, color: '#183153' },
   searchBtn: {
-    backgroundColor: '#0284C7',
+    backgroundColor: '#1565C0',
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',
     marginBottom: 14,
   },
-  searchBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  searchBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
   resultsCount: { fontSize: 12, fontWeight: '700', color: '#64748B', marginBottom: 10 },
-  emptyCard: { alignItems: 'center', padding: 30, backgroundColor: '#fff', borderRadius: 14 },
-  emptyTitle: { fontSize: 14, fontWeight: '700', color: '#0F172A', marginTop: 8 },
+  emptyCard: { alignItems: 'center', padding: 30, backgroundColor: '#FFFFFF', borderRadius: 14 },
+  emptyTitle: { fontSize: 14, fontWeight: '700', color: '#183153', marginTop: 8 },
   emptySub: { fontSize: 11, color: '#64748B', marginTop: 2 },
-  newRegLink: { marginTop: 14, backgroundColor: '#E0F2FE', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8 },
-  newRegLinkText: { fontSize: 12, fontWeight: '800', color: '#0284C7' },
+  newRegLink: { marginTop: 14, backgroundColor: '#E8F1FC', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8 },
+  newRegLinkText: { fontSize: 12, fontWeight: '800', color: '#1565C0' },
   patientCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     borderWidth: 1,
     borderColor: '#E2E8F0',
@@ -183,10 +183,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   pHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-  uhidBadge: { backgroundColor: '#E0F2FE', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  uhidBadgeText: { fontSize: 11, fontWeight: '800', color: '#0284C7', fontFamily: 'monospace' },
+  uhidBadge: { backgroundColor: '#E8F1FC', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  uhidBadgeText: { fontSize: 11, fontWeight: '800', color: '#1565C0', fontFamily: 'monospace' },
   genderTag: { fontSize: 11, color: '#64748B', fontWeight: '600' },
-  name: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
+  name: { fontSize: 16, fontWeight: '800', color: '#183153' },
   infoRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
   infoText: { fontSize: 12, color: '#64748B' },
   infoDot: { color: '#CBD5E1' },
@@ -196,22 +196,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0284C7',
+    backgroundColor: '#1565C0',
     paddingVertical: 9,
     borderRadius: 8,
     gap: 6,
   },
-  bookBtnText: { color: '#fff', fontSize: 11, fontWeight: '700' },
+  bookBtnText: { color: '#FFFFFF', fontSize: 11, fontWeight: '700' },
   tokenBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#E0F2FE',
+    backgroundColor: '#E8F1FC',
     paddingVertical: 9,
     borderRadius: 8,
     gap: 6,
   },
-  tokenBtnText: { color: '#0284C7', fontSize: 11, fontWeight: '700' },
+  tokenBtnText: { color: '#1565C0', fontSize: 11, fontWeight: '700' },
 });
 

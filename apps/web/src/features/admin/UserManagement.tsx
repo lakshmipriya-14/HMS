@@ -79,16 +79,16 @@ export const UserManagement: React.FC = () => {
         <div className="flex items-center space-x-2">
           <button
             onClick={handleExportCSV}
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-lg text-xs font-medium transition-colors"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#DCFCE7] text-[#16A34A] border border-[#BBF7D0] hover:bg-[#DCFCE7] rounded-lg text-xs font-medium transition-colors"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+            <FileSpreadsheet className="w-3.5 h-3.5 text-[#16A34A]" />
             <span>Export CSV</span>
           </button>
           <button
             onClick={handleExportPDF}
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 rounded-lg text-xs font-medium transition-colors"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#FEE2E2] text-[#DC2626] border border-[#FECACA] hover:bg-rose-100 rounded-lg text-xs font-medium transition-colors"
           >
-            <FileText className="w-3.5 h-3.5 text-rose-600" />
+            <FileText className="w-3.5 h-3.5 text-[#DC2626]" />
             <span>Print PDF</span>
           </button>
         </div>
@@ -136,7 +136,7 @@ export const UserManagement: React.FC = () => {
               type="checkbox"
               checked={includeSuperAdmin}
               onChange={(e) => setIncludeSuperAdmin(e.target.checked)}
-              className="rounded text-teal-600 focus:ring-teal-500 w-3.5 h-3.5"
+              className="rounded text-[#00897B] focus:ring-teal-500 w-3.5 h-3.5"
             />
             <span>Include Super Admin</span>
           </label>
@@ -177,7 +177,7 @@ export const UserManagement: React.FC = () => {
                         <div className="text-[11px] text-slate-400 font-mono">{u.email}</div>
                       </td>
                       <td className="py-3.5 px-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#E0F2F1] text-[#00897B] border border-[#B2DFDB]">
                           {u.role}
                         </span>
                       </td>
@@ -189,7 +189,7 @@ export const UserManagement: React.FC = () => {
                         {u.phone || 'N/A'}
                       </td>
                       <td className="py-3.5 px-4">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#DCFCE7] text-[#16A34A] border border-[#BBF7D0]">
                           Active
                         </span>
                       </td>

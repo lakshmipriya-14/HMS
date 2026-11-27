@@ -94,7 +94,7 @@ export default function WardBedOverviewScreen() {
       {/* Summary KPI Strip */}
       <View style={styles.kpiStrip}>
         <View style={styles.kpiBox}>
-          <Text style={[styles.kpiVal, { color: '#38845A' }]}>{totalBeds}</Text>
+          <Text style={[styles.kpiVal, { color: '#1565C0' }]}>{totalBeds}</Text>
           <Text style={styles.kpiLbl}>Total Beds</Text>
         </View>
         <View style={styles.kpiBox}>
@@ -102,7 +102,7 @@ export default function WardBedOverviewScreen() {
           <Text style={styles.kpiLbl}>Occupied</Text>
         </View>
         <View style={styles.kpiBox}>
-          <Text style={[styles.kpiVal, { color: '#059669' }]}>{freeBeds}</Text>
+          <Text style={[styles.kpiVal, { color: '#00897B' }]}>{freeBeds}</Text>
           <Text style={styles.kpiLbl}>Available</Text>
         </View>
       </View>
@@ -111,18 +111,18 @@ export default function WardBedOverviewScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadBeds} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadBeds} tintColor="#1565C0" />
         }
       >
         {success && (
           <View style={styles.successBanner}>
-            <CheckCircle2 size={16} color="#059669" />
+            <CheckCircle2 size={16} color="#00897B" />
             <Text style={styles.successText}>Bed maintenance ticket dispatched to Engineering</Text>
           </View>
         )}
 
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 40 }} />
         ) : wards.length === 0 ? (
           <View style={styles.emptyState}>
             <BedDouble size={40} color="#CBD5E1" />
@@ -160,10 +160,10 @@ export default function WardBedOverviewScreen() {
                           styles.bedTile,
                           {
                             backgroundColor: isOcc
-                              ? '#EAF5ED'
+                              ? '#E8F1FC'
                               : isMaint
                               ? '#F1F5F9'
-                              : '#EAF5ED',
+                              : '#E8F1FC',
                           },
                         ]}
                         onPress={() => handleOpenBedDetail(bed, ward)}
@@ -177,7 +177,7 @@ export default function WardBedOverviewScreen() {
                                 ? '#DC2626'
                                 : isMaint
                                 ? '#64748B'
-                                : '#38845A',
+                                : '#1565C0',
                             },
                           ]}
                         >
@@ -187,7 +187,7 @@ export default function WardBedOverviewScreen() {
                         <Text
                           style={[
                             styles.bedStatusLabel,
-                            { color: isOcc ? '#DC2626' : '#38845A' },
+                            { color: isOcc ? '#DC2626' : '#1565C0' },
                           ]}
                         >
                           {isOcc ? 'Occupied' : isMaint ? 'Maintenance' : 'Available'}
@@ -232,7 +232,7 @@ export default function WardBedOverviewScreen() {
                             ? '#DC2626'
                             : selectedBed.status === 'MAINTENANCE'
                             ? '#64748B'
-                            : '#059669',
+                            : '#00897B',
                       }}
                     >
                       {selectedBed.status || 'AVAILABLE'}
@@ -381,17 +381,17 @@ const styles = StyleSheet.create({
   successBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#D1FAE5',
+    backgroundColor: '#DCFCE7',
     padding: 12,
     borderRadius: 10,
     marginBottom: 14,
     gap: 8,
     borderWidth: 1,
-    borderColor: '#A7F3D0',
+    borderColor: '#B2DFDB',
   },
   successText: {
     fontSize: 12,
-    color: '#065F46',
+    color: '#183153',
     fontWeight: '700',
   },
   emptyState: {
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
   wardTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   wardMeta: {
     fontSize: 11,
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
   occupancyRatio: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
   },
   bedGrid: {
     flexDirection: 'row',
@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   modalBody: {
     padding: 16,
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 13,
-    color: '#1E293B',
+    color: '#183153',
     marginBottom: 4,
     fontWeight: '500',
   },
@@ -516,7 +516,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 12,
     borderRadius: 10,
     gap: 8,
@@ -531,7 +531,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#334155',
+    color: '#475569',
     marginBottom: 6,
     marginTop: 10,
   },
@@ -542,7 +542,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   priorityRow: {
     flexDirection: 'row',
@@ -559,8 +559,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
   prChipActive: {
-    backgroundColor: '#EAF5ED',
-    borderColor: '#EF4444',
+    backgroundColor: '#E8F1FC',
+    borderColor: '#DC2626',
   },
   prChipText: {
     fontSize: 11,
@@ -571,7 +571,7 @@ const styles = StyleSheet.create({
     color: '#DC2626',
   },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',

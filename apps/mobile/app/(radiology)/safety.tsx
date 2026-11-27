@@ -112,7 +112,7 @@ export default function RadiologySafetyScreen() {
             <Text style={styles.sub}>Creatinine · Pregnancy · Ferromagnetic Protocols</Text>
           </View>
           <View style={styles.badge}>
-            <ShieldCheck size={14} color="#38845A" />
+            <ShieldCheck size={14} color="#1565C0" />
             <Text style={styles.badgeText}>ALARA Compliant</Text>
           </View>
         </View>
@@ -147,7 +147,7 @@ export default function RadiologySafetyScreen() {
               {item.requiresCreatinine && (
                 <View style={styles.checkItem}>
                   <View style={styles.checkIcon}>
-                    <Check size={12} color="#38845A" />
+                    <Check size={12} color="#1565C0" />
                   </View>
                   <Text style={styles.checkLabel}>
                     Creatinine Clearance: <Text style={styles.checkVal}>{item.creatinineValue || 'Pending Lab Sync'}</Text>
@@ -158,7 +158,7 @@ export default function RadiologySafetyScreen() {
               {item.requiresPregnancy && (
                 <View style={styles.checkItem}>
                   <View style={styles.checkIcon}>
-                    <Check size={12} color="#38845A" />
+                    <Check size={12} color="#1565C0" />
                   </View>
                   <Text style={styles.checkLabel}>
                     Pregnancy Check: <Text style={styles.checkVal}>{item.pregnancyStatus || 'LMP Screening Complete'}</Text>
@@ -169,7 +169,7 @@ export default function RadiologySafetyScreen() {
               {item.requiresMriMetal && (
                 <View style={styles.checkItem}>
                   <View style={styles.checkIcon}>
-                    <Check size={12} color="#38845A" />
+                    <Check size={12} color="#1565C0" />
                   </View>
                   <Text style={styles.checkLabel}>
                     MRI Pacemaker & Metal Questionnaire: <Text style={styles.checkVal}>{item.metalClearance ? 'Passed' : 'Pending'}</Text>
@@ -181,12 +181,12 @@ export default function RadiologySafetyScreen() {
             <View style={styles.actionRow}>
               {item.cleared ? (
                 <View style={styles.clearedPill}>
-                  <ShieldCheck size={14} color="#38845A" />
+                  <ShieldCheck size={14} color="#1565C0" />
                   <Text style={styles.clearedText}>Safety Certified & Cleared</Text>
                 </View>
               ) : (
                 <TouchableOpacity style={styles.signBtn} onPress={() => certifyCase(item.id)}>
-                  <Check size={14} color="#fff" />
+                  <Check size={14} color="#FFFFFF" />
                   <Text style={styles.signBtnText}>Certify Safety Clearance</Text>
                 </TouchableOpacity>
               )}
@@ -200,30 +200,30 @@ export default function RadiologySafetyScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
-  header: { backgroundColor: '#fff', padding: 16, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
+  header: { backgroundColor: '#FFFFFF', padding: 16, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  title: { fontSize: 18, fontWeight: '800', color: '#0F172A' },
+  title: { fontSize: 18, fontWeight: '800', color: '#183153' },
   sub: { fontSize: 12, color: '#64748B', marginTop: 2 },
-  badge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, gap: 4 },
-  badgeText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
+  badge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E8F1FC', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, gap: 4 },
+  badgeText: { fontSize: 11, fontWeight: '700', color: '#1565C0' },
   searchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, marginTop: 12, gap: 8 },
-  input: { flex: 1, fontSize: 13, color: '#0F172A', padding: 0 },
+  input: { flex: 1, fontSize: 13, color: '#183153', padding: 0 },
   scroll: { flex: 1, padding: 14 },
-  card: { backgroundColor: '#fff', borderRadius: 14, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#E2E8F0' },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#E2E8F0' },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  modalityTag: { backgroundColor: '#334155', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  modalityText: { fontSize: 10, fontWeight: '800', color: '#fff' },
-  patientName: { fontSize: 14, fontWeight: '700', color: '#0F172A' },
+  modalityTag: { backgroundColor: '#475569', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
+  modalityText: { fontSize: 10, fontWeight: '800', color: '#FFFFFF' },
+  patientName: { fontSize: 14, fontWeight: '700', color: '#183153' },
   uhidText: { fontSize: 12, color: '#64748B' },
-  scanTitle: { fontSize: 14, fontWeight: '800', color: '#1E293B', marginTop: 8 },
+  scanTitle: { fontSize: 14, fontWeight: '800', color: '#183153', marginTop: 8 },
   checklist: { backgroundColor: '#F8FAFC', borderRadius: 8, padding: 10, marginTop: 10, gap: 6 },
   checkItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  checkIcon: { width: 16, height: 16, borderRadius: 8, backgroundColor: '#D1FAE5', alignItems: 'center', justifyContent: 'center' },
+  checkIcon: { width: 16, height: 16, borderRadius: 8, backgroundColor: '#DCFCE7', alignItems: 'center', justifyContent: 'center' },
   checkLabel: { fontSize: 11, color: '#475569' },
-  checkVal: { fontWeight: '700', color: '#0F172A' },
+  checkVal: { fontWeight: '700', color: '#183153' },
   actionRow: { marginTop: 12, paddingTop: 10, borderTopWidth: 1, borderTopColor: '#F1F5F9', alignItems: 'flex-end' },
-  signBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#38845A', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, gap: 6 },
-  signBtnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
-  clearedPill: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#ECFDF5', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
-  clearedText: { color: '#38845A', fontSize: 12, fontWeight: '700' },
+  signBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1565C0', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, gap: 6 },
+  signBtnText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
+  clearedPill: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#E0F2F1', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
+  clearedText: { color: '#1565C0', fontSize: 12, fontWeight: '700' },
 });

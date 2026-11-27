@@ -64,12 +64,12 @@ export default function SuperAdminHome() {
   const selectedBranch = branches.find((branch) => branch.id === branchId);
   const visibleBranches = selectedBranch ? [selectedBranch] : branches;
   const metrics = totals ? [
-    { label: 'Branches', value: totals.branches, detail: `${totals.activeBranches} active · ${totals.inactiveBranches} inactive`, icon: Building2, route: 'branches', tint: '#EAF5ED', color: theme.colors.primary },
-    { label: 'Administrators', value: totals.admins, detail: `${totals.activeAdmins ?? totals.admins} active · ${totals.inactiveAdmins ?? 0} inactive`, icon: UserCheck, route: 'admins', tint: '#EDE9FE', color: '#6D28D9' },
+    { label: 'Branches', value: totals.branches, detail: `${totals.activeBranches} active · ${totals.inactiveBranches} inactive`, icon: Building2, route: 'branches', tint: '#E8F1FC', color: theme.colors.primary },
+    { label: 'Administrators', value: totals.admins, detail: `${totals.activeAdmins ?? totals.admins} active · ${totals.inactiveAdmins ?? 0} inactive`, icon: UserCheck, route: 'admins', tint: '#E8F1FC', color: '#1565C0' },
     { label: 'Accounts', value: totals.totalUsers ?? totals.employees, icon: Users, route: 'users', tint: '#E0E7FF', color: '#4338CA' },
-    { label: 'Doctors', value: totals.doctors, icon: Stethoscope, route: 'doctors', tint: '#EAF5ED', color: '#38845A' },
-    { label: 'Departments', value: totals.departments, icon: Layers, route: 'departments', tint: '#D1FAE5', color: '#047857' },
-    { label: 'Registered patients', value: totals.patients, icon: HeartPulse, route: 'patients', tint: '#FFE4E6', color: '#BE123C' },
+    { label: 'Doctors', value: totals.doctors, icon: Stethoscope, route: 'doctors', tint: '#E8F1FC', color: '#1565C0' },
+    { label: 'Departments', value: totals.departments, icon: Layers, route: 'departments', tint: '#DCFCE7', color: '#00897B' },
+    { label: 'Registered patients', value: totals.patients, icon: HeartPulse, route: 'patients', tint: '#FEE2E2', color: '#DC2626' },
   ] : [];
 
   return (
@@ -354,26 +354,26 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
   },
-  pageTitle: { color: '#111827', fontSize: 25, fontWeight: '800' },
-  sectionHeading: { fontSize: 15, fontWeight: '800', color: '#334155' },
+  pageTitle: { color: '#183153', fontSize: 25, fontWeight: '800' },
+  sectionHeading: { fontSize: 15, fontWeight: '800', color: '#475569' },
   cardGrid: { gap: 10 },
   cardRow: { flexDirection: 'row', gap: 10 },
   kpiCard: {
     flex: 1, minWidth: 0,
-    backgroundColor: '#fff', borderRadius: 12, padding: 12, minHeight: 125,
+    backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, minHeight: 125,
     borderWidth: 1, borderColor: '#E2E8F0', gap: 4,
   },
   kpiTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   kpiIconBox: { width: 32, height: 32, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
-  kpiNumber: { fontSize: 25, fontWeight: '800', color: '#111827', fontVariant: ['tabular-nums'] },
-  kpiLabel: { fontSize: 13, fontWeight: '700', color: '#334155' },
+  kpiNumber: { fontSize: 25, fontWeight: '800', color: '#183153', fontVariant: ['tabular-nums'] },
+  kpiLabel: { fontSize: 13, fontWeight: '700', color: '#475569' },
   kpiSub: { fontSize: 11, color: '#475569' },
   sectionCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: '#E2E8F0',
     gap: 12,
   },
   cardHeader: {
@@ -391,7 +391,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#111827',
+    color: '#183153',
   },
   viewAllLink: {
     fontSize: 12,
@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
   roleName: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#374151',
+    color: '#475569',
   },
   branchPicker: {
     minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
@@ -435,11 +435,11 @@ const styles = StyleSheet.create({
   branchIdentity: { flex: 1, gap: 3 },
   branchMetrics: { flexDirection: 'row', paddingTop: 8, borderTopWidth: 1, borderTopColor: '#E2E8F0' },
   branchMetric: { flex: 1, gap: 3, alignItems: 'center' },
-  branchMetricCount: { fontSize: 17, fontWeight: '800', color: '#111827', fontVariant: ['tabular-nums'] },
+  branchMetricCount: { fontSize: 17, fontWeight: '800', color: '#183153', fontVariant: ['tabular-nums'] },
   branchNameText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#111827',
+    color: '#183153',
   },
   branchCodeText: { fontSize: 10.5, color: '#475569' },
   badgeActive: {
@@ -474,10 +474,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 10,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#F8FAFC',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: '#E2E8F0',
     gap: 8,
   },
   pendingLeft: {
@@ -488,11 +488,11 @@ const styles = StyleSheet.create({
   },
   pendingText: {
     fontSize: 12,
-    color: '#374151',
+    color: '#475569',
     flex: 1,
   },
   pendingActionBtn: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#D1D5DB',
     paddingHorizontal: 10,
@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
   },
   activityItem: {
     padding: 12,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#F8FAFC',
     borderRadius: 10,
     borderLeftWidth: 3,
     borderLeftColor: theme.colors.primary,
@@ -539,7 +539,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   actionBadge: {
-    backgroundColor: '#E5E7EB',
+    backgroundColor: '#E2E8F0',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -552,20 +552,20 @@ const styles = StyleSheet.create({
   activityResource: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#111827',
+    color: '#183153',
   },
   activityTime: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: '#64748B',
     marginLeft: 'auto',
   },
   activityUser: {
     fontSize: 11.5,
-    color: '#6B7280',
+    color: '#64748B',
   },
   noDataText: {
     fontSize: 12.5,
-    color: '#6B7280',
+    color: '#64748B',
     fontStyle: 'italic',
   },
   loadingBox: {
@@ -576,7 +576,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 13,
-    color: '#6B7280',
+    color: '#64748B',
   },
   errorBox: {
     padding: 20,

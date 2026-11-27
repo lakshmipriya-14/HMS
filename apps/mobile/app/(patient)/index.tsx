@@ -214,7 +214,8 @@ export default function PatientHomeScreen() {
             </Text>
             <Text style={styles.departmentName}>
               {nextAppointment.department?.name || 'General Medicine'} ·{' '}
-              {nextAppointment.branch?.name || 'Main Branch'}
+              {nextAppointment.branch?.hospital?.name ? `${nextAppointment.branch.hospital.name} - ` : ''}
+              {nextAppointment.branch?.name || patient?.registrationBranch?.name || 'Hospital Branch'}
             </Text>
 
             <View style={styles.appointmentTimingRow}>

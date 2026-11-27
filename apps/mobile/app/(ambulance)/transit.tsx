@@ -179,7 +179,7 @@ export default function ParamedicTransitVitalsScreen() {
       <View style={styles.handshakeHeroCard}>
         <View style={styles.handshakeHeroTop}>
           <View style={styles.zapIconBox}>
-            <Zap size={22} color="#fff" />
+            <Zap size={22} color="#FFFFFF" />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.handshakeHeroTitle}>Casualty / ER Red-Flag Handshake</Text>
@@ -195,7 +195,7 @@ export default function ParamedicTransitVitalsScreen() {
 
         {handshakeSent ? (
           <View style={styles.handshakeSuccessBanner}>
-            <CheckCircle2 size={18} color="#38845A" />
+            <CheckCircle2 size={18} color="#1565C0" />
             <View style={{ flex: 1 }}>
               <Text style={styles.handshakeSuccessTitle}>ER RED-FLAG HANDSHAKE TRANSMITTED</Text>
               <Text style={styles.handshakeSuccessSub}>Trauma Bay 1 Reserved • Attending ER Physician Notified</Text>
@@ -210,7 +210,7 @@ export default function ParamedicTransitVitalsScreen() {
             onPress={handleTransmitHandshake}
             disabled={isTransmitting}
           >
-            <Zap size={18} color="#fff" />
+            <Zap size={18} color="#FFFFFF" />
             <Text style={styles.redFlagAlertBtnText}>
               {isTransmitting ? 'Transmitting to Trauma Team...' : '1-TAP EMERGENCY ER RED-FLAG HANDSHAKE'}
             </Text>
@@ -221,7 +221,7 @@ export default function ParamedicTransitVitalsScreen() {
       {/* IN-TRANSIT VITALS FORM */}
       <View style={styles.formCard}>
         <View style={styles.formHeader}>
-          <Activity size={18} color="#38845A" />
+          <Activity size={18} color="#1565C0" />
           <Text style={styles.formTitle}>Pre-Hospital Paramedic Vitals Logger</Text>
         </View>
 
@@ -298,7 +298,7 @@ export default function ParamedicTransitVitalsScreen() {
           <View style={styles.gcsHeaderRow}>
             <Text style={styles.gcsTitle}>Glasgow Coma Scale (GCS)</Text>
             <View style={[styles.gcsScoreBadge, gcsTotal <= 8 ? styles.gcsScoreBadgeSevere : styles.gcsScoreBadgeModerate]}>
-              <Text style={[styles.gcsScoreText, gcsTotal <= 8 ? { color: '#DC2626' } : { color: '#D97706' }]}>
+              <Text style={[styles.gcsScoreText, gcsTotal <= 8 ? { color: '#DC2626' } : { color: '#F59E0B' }]}>
                 TOTAL GCS: {gcsTotal} / 15
               </Text>
             </View>
@@ -386,7 +386,7 @@ export default function ParamedicTransitVitalsScreen() {
         />
 
         <TouchableOpacity style={styles.logVitalsSubmitBtn} onPress={handleLogVitals}>
-          <Activity size={16} color="#fff" />
+          <Activity size={16} color="#FFFFFF" />
           <Text style={styles.logVitalsSubmitBtnText}>Log Current In-Transit Vitals</Text>
         </TouchableOpacity>
       </View>
@@ -398,7 +398,7 @@ export default function ParamedicTransitVitalsScreen() {
           <View key={item.id} style={styles.historyItem}>
             <View style={styles.historyHeader}>
               <View style={styles.historyTimeBadge}>
-                <Clock size={12} color="#38845A" />
+                <Clock size={12} color="#1565C0" />
                 <Text style={styles.historyTimeText}>{item.time}</Text>
               </View>
               <Text style={styles.historyGcs}>GCS: {item.gcsTotal}/15</Text>
@@ -434,7 +434,7 @@ export default function ParamedicTransitVitalsScreen() {
 
             <View style={styles.modalBody}>
               <View style={styles.alertSuccessBadge}>
-                <CheckCircle2 size={24} color="#38845A" />
+                <CheckCircle2 size={24} color="#1565C0" />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.alertSuccessTitle}>Resuscitation Team Dispatched to Bay</Text>
                   <Text style={styles.alertSuccessSub}>
@@ -460,7 +460,7 @@ export default function ParamedicTransitVitalsScreen() {
                 </View>
                 <View style={styles.handshakeDetailItem}>
                   <Text style={styles.detailKey}>Bay Allocation</Text>
-                  <Text style={[styles.detailValue, { color: '#38845A' }]}>Emergency Trauma Bay #01 (RESERVED)</Text>
+                  <Text style={[styles.detailValue, { color: '#1565C0' }]}>Emergency Trauma Bay #01 (RESERVED)</Text>
                 </View>
                 <View style={styles.handshakeDetailItem}>
                   <Text style={styles.detailKey}>Blood Bank Standing Order</Text>
@@ -490,78 +490,78 @@ export default function ParamedicTransitVitalsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC', padding: 16 },
-  tripCard: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 14 },
+  tripCard: { backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 14 },
   tripCardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  tripPatientName: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
+  tripPatientName: { fontSize: 16, fontWeight: '800', color: '#183153' },
   tripMeta: { fontSize: 11, color: '#64748B', marginTop: 2 },
-  criticalPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  criticalPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E8F1FC', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   criticalPillText: { fontSize: 10, fontWeight: '900', color: '#DC2626' },
-  tripCondition: { fontSize: 12, color: '#991B1B', marginTop: 8, backgroundColor: '#FEF2F2', padding: 8, borderRadius: 6 },
+  tripCondition: { fontSize: 12, color: '#DC2626', marginTop: 8, backgroundColor: '#FEE2E2', padding: 8, borderRadius: 6 },
   handshakeHeroCard: { backgroundColor: '#7F1D1D', borderRadius: 16, padding: 16, marginBottom: 14 },
   handshakeHeroTop: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 14 },
   zapIconBox: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#DC2626', alignItems: 'center', justifyContent: 'center' },
-  handshakeHeroTitle: { fontSize: 15, fontWeight: '900', color: '#fff' },
-  handshakeHeroSub: { fontSize: 11, color: '#CDE8D5', marginTop: 2 },
-  etaBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#fff', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  handshakeHeroTitle: { fontSize: 15, fontWeight: '900', color: '#FFFFFF' },
+  handshakeHeroSub: { fontSize: 11, color: '#BFDBFE', marginTop: 2 },
+  etaBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#FFFFFF', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   etaBadgeText: { fontSize: 10, fontWeight: '900', color: '#DC2626' },
   redFlagAlertBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#DC2626', paddingVertical: 14, borderRadius: 12 },
-  redFlagAlertBtnText: { color: '#fff', fontSize: 13, fontWeight: '900', letterSpacing: 0.5 },
-  handshakeSuccessBanner: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#ECFDF5', padding: 12, borderRadius: 10 },
-  handshakeSuccessTitle: { fontSize: 11, fontWeight: '900', color: '#065F46' },
-  handshakeSuccessSub: { fontSize: 10, color: '#047857', marginTop: 1 },
-  viewHandshakeDetails: { fontSize: 11, fontWeight: '800', color: '#38845A', textDecorationLine: 'underline' },
-  formCard: { backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, marginBottom: 14 },
+  redFlagAlertBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '900', letterSpacing: 0.5 },
+  handshakeSuccessBanner: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#E0F2F1', padding: 12, borderRadius: 10 },
+  handshakeSuccessTitle: { fontSize: 11, fontWeight: '900', color: '#183153' },
+  handshakeSuccessSub: { fontSize: 10, color: '#00897B', marginTop: 1 },
+  viewHandshakeDetails: { fontSize: 11, fontWeight: '800', color: '#1565C0', textDecorationLine: 'underline' },
+  formCard: { backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, marginBottom: 14 },
   formHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12, borderBottomWidth: 1, borderBottomColor: '#F1F5F9', paddingBottom: 8 },
-  formTitle: { fontSize: 15, fontWeight: '800', color: '#0F172A' },
+  formTitle: { fontSize: 15, fontWeight: '800', color: '#183153' },
   vitalsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 12 },
   vitalInputBox: { width: '48%', backgroundColor: '#F8FAFC', borderRadius: 10, padding: 10, borderWidth: 1, borderColor: '#E2E8F0' },
   vitalInputLabel: { fontSize: 11, fontWeight: '700', color: '#64748B', marginBottom: 4 },
-  vitalTextInput: { backgroundColor: '#fff', borderRadius: 8, borderWidth: 1, borderColor: '#CBD5E1', paddingHorizontal: 10, height: 40, fontSize: 16, fontWeight: '800', color: '#0F172A' },
-  vitalTextInputWarning: { borderColor: '#F87171', color: '#DC2626' },
+  vitalTextInput: { backgroundColor: '#FFFFFF', borderRadius: 8, borderWidth: 1, borderColor: '#CBD5E1', paddingHorizontal: 10, height: 40, fontSize: 16, fontWeight: '800', color: '#183153' },
+  vitalTextInputWarning: { borderColor: '#DC2626', color: '#DC2626' },
   warningHint: { fontSize: 10, color: '#DC2626', fontWeight: '700', marginTop: 2 },
   normalHint: { fontSize: 10, color: '#94A3B8', marginTop: 2 },
   unitSuffix: { fontSize: 13, color: '#64748B', fontWeight: '600' },
   gcsMatrixCard: { backgroundColor: '#F8FAFC', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#E2E8F0', marginVertical: 8 },
   gcsHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  gcsTitle: { fontSize: 13, fontWeight: '800', color: '#0F172A' },
+  gcsTitle: { fontSize: 13, fontWeight: '800', color: '#183153' },
   gcsScoreBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  gcsScoreBadgeSevere: { backgroundColor: '#EAF5ED' },
+  gcsScoreBadgeSevere: { backgroundColor: '#E8F1FC' },
   gcsScoreBadgeModerate: { backgroundColor: '#FEF3C7' },
   gcsScoreText: { fontSize: 11, fontWeight: '900' },
-  gcsSevereAlert: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#FEF2F2', padding: 8, borderRadius: 6, marginBottom: 8 },
-  gcsSevereText: { fontSize: 10, color: '#991B1B', fontWeight: '700', flex: 1 },
+  gcsSevereAlert: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#FEE2E2', padding: 8, borderRadius: 6, marginBottom: 8 },
+  gcsSevereText: { fontSize: 10, color: '#DC2626', fontWeight: '700', flex: 1 },
   gcsSubLabel: { fontSize: 11, color: '#475569', fontWeight: '700', marginTop: 6, marginBottom: 4 },
   gcsButtonsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 6 },
-  gcsBtn: { paddingHorizontal: 8, paddingVertical: 5, borderRadius: 6, backgroundColor: '#fff', borderWidth: 1, borderColor: '#E2E8F0' },
-  gcsBtnSelected: { backgroundColor: '#38845A', borderColor: '#38845A' },
+  gcsBtn: { paddingHorizontal: 8, paddingVertical: 5, borderRadius: 6, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0' },
+  gcsBtnSelected: { backgroundColor: '#1565C0', borderColor: '#1565C0' },
   gcsBtnText: { fontSize: 10, color: '#64748B', fontWeight: '600' },
-  gcsBtnTextSelected: { color: '#fff', fontWeight: '700' },
-  notesInput: { backgroundColor: '#F1F5F9', borderRadius: 8, padding: 10, fontSize: 12, color: '#0F172A', textAlignVertical: 'top', marginBottom: 12 },
-  logVitalsSubmitBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#38845A', paddingVertical: 12, borderRadius: 10 },
-  logVitalsSubmitBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
-  historyCard: { backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, marginBottom: 20 },
-  historyTitle: { fontSize: 14, fontWeight: '800', color: '#0F172A', marginBottom: 12 },
+  gcsBtnTextSelected: { color: '#FFFFFF', fontWeight: '700' },
+  notesInput: { backgroundColor: '#F1F5F9', borderRadius: 8, padding: 10, fontSize: 12, color: '#183153', textAlignVertical: 'top', marginBottom: 12 },
+  logVitalsSubmitBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1565C0', paddingVertical: 12, borderRadius: 10 },
+  logVitalsSubmitBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
+  historyCard: { backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, marginBottom: 20 },
+  historyTitle: { fontSize: 14, fontWeight: '800', color: '#183153', marginBottom: 12 },
   historyItem: { backgroundColor: '#F8FAFC', borderRadius: 10, padding: 12, marginBottom: 10, borderWidth: 1, borderColor: '#E2E8F0' },
   historyHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-  historyTimeBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E0F2FE', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  historyTimeText: { fontSize: 10, fontWeight: '800', color: '#0369A1' },
-  historyGcs: { fontSize: 11, fontWeight: '800', color: '#38845A' },
+  historyTimeBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E8F1FC', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
+  historyTimeText: { fontSize: 10, fontWeight: '800', color: '#0D47A1' },
+  historyGcs: { fontSize: 11, fontWeight: '800', color: '#1565C0' },
   historyStatsRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
-  historyStat: { fontSize: 11, color: '#334155' },
+  historyStat: { fontSize: 11, color: '#475569' },
   historyNotes: { fontSize: 11, color: '#64748B', fontStyle: 'italic', marginTop: 4 },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.6)', justifyContent: 'flex-end' },
-  handshakeModalCard: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 16 },
+  handshakeModalCard: { backgroundColor: '#FFFFFF', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 16 },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
-  modalTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
+  modalTitle: { fontSize: 16, fontWeight: '800', color: '#183153' },
   modalBody: { paddingVertical: 14 },
-  alertSuccessBadge: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#ECFDF5', padding: 12, borderRadius: 10, marginBottom: 14 },
-  alertSuccessTitle: { fontSize: 13, fontWeight: '800', color: '#065F46' },
-  alertSuccessSub: { fontSize: 11, color: '#047857', marginTop: 2 },
+  alertSuccessBadge: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#E0F2F1', padding: 12, borderRadius: 10, marginBottom: 14 },
+  alertSuccessTitle: { fontSize: 13, fontWeight: '800', color: '#183153' },
+  alertSuccessSub: { fontSize: 11, color: '#00897B', marginTop: 2 },
   handshakeDetailList: { backgroundColor: '#F8FAFC', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#E2E8F0' },
   handshakeDetailItem: { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
   detailKey: { fontSize: 10, color: '#64748B', fontWeight: '700', textTransform: 'uppercase' },
-  detailValue: { fontSize: 12, fontWeight: '700', color: '#0F172A', marginTop: 2 },
+  detailValue: { fontSize: 12, fontWeight: '700', color: '#183153', marginTop: 2 },
   modalFooter: { paddingTop: 12, borderTopWidth: 1, borderTopColor: '#E2E8F0' },
-  closeModalBtn: { backgroundColor: '#38845A', paddingVertical: 12, borderRadius: 10, alignItems: 'center' },
-  closeModalBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  closeModalBtn: { backgroundColor: '#1565C0', paddingVertical: 12, borderRadius: 10, alignItems: 'center' },
+  closeModalBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
 });

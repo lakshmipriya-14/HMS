@@ -271,14 +271,14 @@ export default function AdminDoctorsScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#38845A" />
+          <ActivityIndicator size="large" color="#1565C0" />
         </View>
       ) : (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />
+            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#1565C0" />
           }
         >
           {filtered.length === 0 ? (
@@ -297,7 +297,7 @@ export default function AdminDoctorsScreen() {
                 <View key={doc.id} style={styles.card}>
                   <View style={styles.cardHeader}>
                     <View style={styles.avatar}>
-                      <Stethoscope size={18} color="#38845A" />
+                      <Stethoscope size={18} color="#1565C0" />
                     </View>
                     <View style={{ flex: 1, marginLeft: 10 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -305,13 +305,13 @@ export default function AdminDoctorsScreen() {
                         <View
                           style={[
                             styles.statusTag,
-                            { backgroundColor: isActive ? '#D1FAE5' : '#EAF5ED' },
+                            { backgroundColor: isActive ? '#DCFCE7' : '#E8F1FC' },
                           ]}
                         >
                           <Text
                             style={[
                               styles.statusTagText,
-                              { color: isActive ? '#059669' : '#DC2626' },
+                              { color: isActive ? '#00897B' : '#DC2626' },
                             ]}
                           >
                             {isActive ? 'ACTIVE' : 'INACTIVE'}
@@ -323,14 +323,14 @@ export default function AdminDoctorsScreen() {
                       </Text>
                     </View>
                     <View style={styles.switchWrapper}>
-                      <Text style={[styles.switchLabel, { color: isAvail ? '#059669' : '#94A3B8' }]}>
+                      <Text style={[styles.switchLabel, { color: isAvail ? '#00897B' : '#94A3B8' }]}>
                         {isAvail ? 'ON DUTY' : 'OFF'}
                       </Text>
                       <Switch
                         value={isAvail}
                         onValueChange={() => handleToggleAvailability(doc)}
-                        trackColor={{ false: '#E2E8F0', true: '#EAF5ED' }}
-                        thumbColor={isAvail ? '#38845A' : '#94A3B8'}
+                        trackColor={{ false: '#E2E8F0', true: '#E8F1FC' }}
+                        thumbColor={isAvail ? '#1565C0' : '#94A3B8'}
                       />
                     </View>
                   </View>
@@ -361,22 +361,22 @@ export default function AdminDoctorsScreen() {
                         setEditShift(doc.shift || 'GENERAL');
                       }}
                     >
-                      <Edit2 size={13} color="#38845A" />
+                      <Edit2 size={13} color="#1565C0" />
                       <Text style={styles.actionBtnText}>Edit Profile</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       style={[
                         styles.actionBtn,
-                        { borderColor: isActive ? '#FECDD3' : '#A7F3D0' },
+                        { borderColor: isActive ? '#FEE2E2' : '#B2DFDB' },
                       ]}
                       onPress={() => handleToggleDoctorStatus(doc)}
                     >
-                      <Power size={13} color={isActive ? '#E11D48' : '#059669'} />
+                      <Power size={13} color={isActive ? '#DC2626' : '#00897B'} />
                       <Text
                         style={[
                           styles.actionBtnText,
-                          { color: isActive ? '#E11D48' : '#059669' },
+                          { color: isActive ? '#DC2626' : '#00897B' },
                         ]}
                       >
                         {isActive ? 'Deactivate' : 'Activate'}
@@ -475,7 +475,7 @@ export default function AdminDoctorsScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Provision Doctor Account</Text>
               )}
@@ -526,7 +526,7 @@ export default function AdminDoctorsScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Save Changes</Text>
               )}
@@ -561,13 +561,13 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
     paddingVertical: 8,
   },
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingHorizontal: 14,
     borderRadius: 10,
     gap: 6,
@@ -594,7 +594,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   chipActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   chipText: {
     fontSize: 12,
@@ -634,14 +634,14 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     justifyContent: 'center',
     alignItems: 'center',
   },
   docName: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   statusTag: {
     paddingHorizontal: 6,
@@ -700,12 +700,12 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#EAF5ED',
+    borderColor: '#E8F1FC',
   },
   actionBtnText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   modalBg: {
     flex: 1,
@@ -728,7 +728,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   fieldLabel: {
     fontSize: 12,
@@ -745,7 +745,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#0F172A',
+    color: '#183153',
   },
   deptOptions: {
     flexDirection: 'row',
@@ -762,8 +762,8 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   deptChipSelected: {
-    backgroundColor: '#EAF5ED',
-    borderColor: '#38845A',
+    backgroundColor: '#E8F1FC',
+    borderColor: '#1565C0',
   },
   deptChipText: {
     fontSize: 11,
@@ -771,10 +771,10 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   deptChipTextSelected: {
-    color: '#38845A',
+    color: '#1565C0',
   },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: 'center',

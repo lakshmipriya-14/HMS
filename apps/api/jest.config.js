@@ -1,5 +1,5 @@
 module.exports = {
-  moduleFileExtensions: ['js', 'json', 'ts'],
+  moduleFileExtensions: ['ts', 'js', 'json'],
   rootDir: 'src',
   testRegex: '.*\\.spec\\.ts$',
   transform: {

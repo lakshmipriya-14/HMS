@@ -143,28 +143,28 @@ export const PharmacyOverview: React.FC = () => {
     <div className="space-y-6 pb-12">
       {/* Messages */}
       {successMessage && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             {successMessage}
           </div>
-          <button onClick={() => setSuccessMessage('')} className="text-emerald-600 hover:text-emerald-900">×</button>
+          <button onClick={() => setSuccessMessage('')} className="text-[#16A34A] hover:text-emerald-900">×</button>
         </div>
       )}
       {errorMessage && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600" />
+            <AlertCircle className="w-4 h-4 text-[#DC2626]" />
             {errorMessage}
           </div>
-          <button onClick={() => setErrorMessage('')} className="text-rose-600 hover:text-rose-900">×</button>
+          <button onClick={() => setErrorMessage('')} className="text-[#DC2626] hover:text-rose-900">×</button>
         </div>
       )}
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="p-2.5 bg-teal-50 text-teal-700 rounded-xl border border-teal-100">
+          <span className="p-2.5 bg-[#E0F2F1] text-[#00897B] rounded-xl border border-[#B2DFDB]">
             <Pill className="w-6 h-6" />
           </span>
           <div>
@@ -179,7 +179,7 @@ export const PharmacyOverview: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setAddMedModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-all"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-xl text-xs font-semibold shadow-sm transition-all"
           >
             <Plus className="w-4 h-4" />
             Add Medicine
@@ -190,7 +190,7 @@ export const PharmacyOverview: React.FC = () => {
             <button
               onClick={() => setActiveTab('INVENTORY')}
               className={`px-3 py-1.5 rounded-lg transition-all ${
-                activeTab === 'INVENTORY' ? 'bg-white text-teal-700 shadow-sm' : 'hover:text-slate-900'
+                activeTab === 'INVENTORY' ? 'bg-white text-[#00897B] shadow-sm' : 'hover:text-slate-900'
               }`}
             >
               Formulary Stock ({medicines.length})
@@ -206,7 +206,7 @@ export const PharmacyOverview: React.FC = () => {
             <button
               onClick={() => setActiveTab('QUEUE')}
               className={`px-3 py-1.5 rounded-lg transition-all ${
-                activeTab === 'QUEUE' ? 'bg-white text-sky-700 shadow-sm' : 'hover:text-slate-900'
+                activeTab === 'QUEUE' ? 'bg-white text-[#1565C0] shadow-sm' : 'hover:text-slate-900'
               }`}
             >
               Dispense Queue ({prescriptions.length})
@@ -258,7 +258,7 @@ export const PharmacyOverview: React.FC = () => {
                       <td className="py-3.5 px-4 text-center">
                         <span
                           className={`inline-flex px-2.5 py-0.5 rounded-full font-bold text-xs ${
-                            isLow ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-emerald-50 text-emerald-700'
+                            isLow ? 'bg-[#FEE2E2] text-[#DC2626] border border-[#FECACA]' : 'bg-[#DCFCE7] text-[#16A34A]'
                           }`}
                         >
                           {m.currentStock} units
@@ -275,7 +275,7 @@ export const PharmacyOverview: React.FC = () => {
                             setAdjustmentReason('Stock Replenishment');
                             setAdjustModalOpen(true);
                           }}
-                          className="px-2.5 py-1 text-teal-700 bg-teal-50 hover:bg-teal-100 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1"
+                          className="px-2.5 py-1 text-[#00897B] bg-[#E0F2F1] hover:bg-[#E0F2F1] rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           Restock
@@ -308,11 +308,11 @@ export const PharmacyOverview: React.FC = () => {
                   className="p-4 bg-amber-50/50 border border-amber-200/70 rounded-xl flex flex-col justify-between"
                 >
                   <div>
-                    <span className="text-[10px] font-bold text-rose-700 uppercase">Critical Low</span>
+                    <span className="text-[10px] font-bold text-[#DC2626] uppercase">Critical Low</span>
                     <h4 className="font-bold text-slate-900 text-sm mt-0.5">{med.name}</h4>
                     <p className="text-xs text-slate-500 mt-1">{med.composition || 'Generic'}</p>
                     <div className="mt-2 text-xs font-semibold text-amber-900">
-                      Remaining Stock: <span className="text-rose-700 font-bold">{med.currentStock} units</span>
+                      Remaining Stock: <span className="text-[#DC2626] font-bold">{med.currentStock} units</span>
                     </div>
                   </div>
 
@@ -351,7 +351,7 @@ export const PharmacyOverview: React.FC = () => {
               <tbody className="divide-y divide-slate-100">
                 {prescriptions.map((rx) => (
                   <tr key={rx.id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-teal-700">
+                    <td className="py-3.5 px-4 font-mono font-bold text-[#00897B]">
                       {rx.prescriptionNumber || rx.id.slice(0, 8)}
                     </td>
                     <td className="py-3.5 px-4 font-bold text-slate-800">
@@ -420,7 +420,7 @@ export const PharmacyOverview: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-lg shadow-sm"
             >
               {submitting ? 'Applying...' : 'Confirm Restock'}
             </button>
@@ -553,7 +553,7 @@ export const PharmacyOverview: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-lg shadow-sm"
             >
               {submitting ? 'Adding...' : 'Add Medicine'}
             </button>

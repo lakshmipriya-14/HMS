@@ -53,23 +53,23 @@ export default function AdminMoreScreen() {
       desc: 'Live tokens, booking desk & patient check-in',
       icon: CalendarCheck,
       route: '/(admin)/opd',
-      color: '#38845A',
-      bgColor: '#EAF5ED',
+      color: '#1565C0',
+      bgColor: '#E8F1FC',
     },
     {
       title: 'IPD Inpatient Census',
       desc: 'Admissions, transfers, discharges & bed turnover',
       icon: DoorOpen,
       route: '/(admin)/ipd',
-      color: '#E11D48',
-      bgColor: '#FFE4E6',
+      color: '#DC2626',
+      bgColor: '#FEE2E2',
     },
     {
       title: 'Hospital Staff & HR',
       desc: 'Employee directory, department assignments & accounts',
       icon: Users,
       route: '/(admin)/staff',
-      color: '#2563EB',
+      color: '#1565C0',
       bgColor: '#DBEAFE',
     },
     {
@@ -77,15 +77,15 @@ export default function AdminMoreScreen() {
       desc: 'Bed turnover, maintenance status & allocations',
       icon: BedDouble,
       route: '/(admin)/wards',
-      color: '#38845A',
-      bgColor: '#EAF5ED',
+      color: '#1565C0',
+      bgColor: '#E8F1FC',
     },
     {
       title: 'Approvals Hub',
       desc: 'Department coverage & bed turnover clearances',
       icon: CheckSquare,
       route: '/(admin)/approvals',
-      color: '#D97706',
+      color: '#F59E0B',
       bgColor: '#FEF3C7',
     },
     {
@@ -93,24 +93,24 @@ export default function AdminMoreScreen() {
       desc: 'OPD, IPD, revenue, pharmacy and audit reports',
       icon: BarChart3,
       route: '/(admin)/reports',
-      color: '#7C3AED',
-      bgColor: '#EDE9FE',
+      color: '#1565C0',
+      bgColor: '#E8F1FC',
     },
     {
       title: '108 Emergency Fleet',
       desc: 'Ambulance tracking, availability & active dispatches',
       icon: Ambulance,
       route: '/(admin)/fleet',
-      color: '#E11D48',
-      bgColor: '#FFE4E6',
+      color: '#DC2626',
+      bgColor: '#FEE2E2',
     },
     {
       title: 'Admin Profile & Security',
       desc: 'Credentials, hospital branch & security settings',
       icon: ShieldCheck,
       route: '/(admin)/profile',
-      color: '#059669',
-      bgColor: '#D1FAE5',
+      color: '#00897B',
+      bgColor: '#DCFCE7',
     },
   ];
 
@@ -126,7 +126,7 @@ export default function AdminMoreScreen() {
         {/* User Card */}
         <View style={styles.userCard}>
           <View style={styles.avatar}>
-            <ShieldCheck size={24} color="#38845A" />
+            <ShieldCheck size={24} color="#1565C0" />
           </View>
           <View style={{ flex: 1, marginLeft: 12 }}>
             <Text style={styles.userName}>{displayName}</Text>
@@ -188,14 +188,14 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     alignItems: 'center',
     justifyContent: 'center',
   },
   userName: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   userEmail: {
     fontSize: 12,
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
   },
   sectionTitle: {
     fontSize: 14,
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   cardDesc: {
     fontSize: 11,
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     paddingVertical: 14,
     borderRadius: 12,
     marginTop: 20,

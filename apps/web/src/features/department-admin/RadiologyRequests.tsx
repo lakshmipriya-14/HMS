@@ -56,7 +56,7 @@ export const RadiologyRequests: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <Scan className="w-6 h-6 text-teal-600" />
+            <Scan className="w-6 h-6 text-[#00897B]" />
             Radiology & Imaging Requests
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -73,7 +73,7 @@ export const RadiologyRequests: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs font-semibold">
+        <div className="p-4 bg-[#FEE2E2] border border-[#FECACA] rounded-xl flex items-center gap-2 text-[#DC2626] text-xs font-semibold">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
@@ -93,13 +93,13 @@ export const RadiologyRequests: React.FC = () => {
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
           <p className="text-xs font-bold text-sky-500 uppercase tracking-wider">In Progress</p>
-          <p className="text-2xl font-black text-sky-600 mt-1">
+          <p className="text-2xl font-black text-[#1565C0] mt-1">
             {orders.filter((o) => o.status === 'IN_PROGRESS').length}
           </p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-          <p className="text-xs font-bold text-emerald-500 uppercase tracking-wider">Completed Reports</p>
-          <p className="text-2xl font-black text-emerald-600 mt-1">
+          <p className="text-xs font-bold text-[#16A34A] uppercase tracking-wider">Completed Reports</p>
+          <p className="text-2xl font-black text-[#16A34A] mt-1">
             {orders.filter((o) => ['COMPLETED', 'REPORTED'].includes(o.status)).length}
           </p>
         </div>
@@ -114,7 +114,7 @@ export const RadiologyRequests: React.FC = () => {
             placeholder="Search by UHID, patient name, scan order #, modality..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
           />
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -122,7 +122,7 @@ export const RadiologyRequests: React.FC = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full sm:w-48 px-3 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+            className="w-full sm:w-48 px-3 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
           >
             <option value="">All Statuses</option>
             <option value="ORDERED">Ordered</option>
@@ -164,7 +164,7 @@ export const RadiologyRequests: React.FC = () => {
                   <tr key={o.id} className="hover:bg-slate-50/60 transition">
                     <td className="py-3.5 px-4 font-mono font-bold text-slate-800">
                       <div>{o.orderNumber || o.id.slice(0, 8).toUpperCase()}</div>
-                      <div className="text-[10px] text-teal-600 font-sans font-semibold">
+                      <div className="text-[10px] text-[#00897B] font-sans font-semibold">
                         {o.modality || 'Imaging'}
                       </div>
                     </td>
@@ -189,7 +189,7 @@ export const RadiologyRequests: React.FC = () => {
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
                           o.priority === 'STAT' || o.urgency === 'STAT'
-                            ? 'bg-rose-100 text-rose-700'
+                            ? 'bg-rose-100 text-[#DC2626]'
                             : o.priority === 'URGENT' || o.urgency === 'URGENT'
                             ? 'bg-amber-100 text-amber-700'
                             : 'bg-slate-100 text-slate-600'
@@ -204,7 +204,7 @@ export const RadiologyRequests: React.FC = () => {
                     <td className="py-3.5 px-4 text-right">
                       <button
                         onClick={() => setSelectedOrder(o)}
-                        className="px-2.5 py-1 text-[11px] font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 rounded-lg transition"
+                        className="px-2.5 py-1 text-[11px] font-bold text-[#00897B] bg-[#E0F2F1] hover:bg-[#E0F2F1] rounded-lg transition"
                       >
                         View Order
                       </button>
@@ -223,7 +223,7 @@ export const RadiologyRequests: React.FC = () => {
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <Scan className="w-5 h-5 text-teal-600" />
+                <Scan className="w-5 h-5 text-[#00897B]" />
                 <h3 className="text-base font-black text-slate-800">Radiology Order Details</h3>
               </div>
               <button
@@ -249,7 +249,7 @@ export const RadiologyRequests: React.FC = () => {
               </div>
               <div className="flex justify-between py-1 border-b border-slate-50">
                 <span className="text-slate-500">Scan / Investigation:</span>
-                <span className="font-bold text-teal-700">
+                <span className="font-bold text-[#00897B]">
                   {selectedOrder.testName || selectedOrder.scanType || 'Diagnostic Imaging'}
                 </span>
               </div>

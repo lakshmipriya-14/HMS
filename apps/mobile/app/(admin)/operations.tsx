@@ -343,7 +343,7 @@ export default function AdminOperationsScreen() {
           style={[styles.tabItem, activeTab === 'beds' && styles.tabItemActive]}
           onPress={() => setActiveTab('beds')}
         >
-          <BedDouble size={16} color={activeTab === 'beds' ? '#38845A' : '#64748B'} />
+          <BedDouble size={16} color={activeTab === 'beds' ? '#1565C0' : '#64748B'} />
           <Text style={[styles.tabLabel, activeTab === 'beds' && styles.tabLabelActive]}>
             Bed Census
           </Text>
@@ -353,7 +353,7 @@ export default function AdminOperationsScreen() {
           style={[styles.tabItem, activeTab === 'ipd' && styles.tabItemActive]}
           onPress={() => setActiveTab('ipd')}
         >
-          <Users size={16} color={activeTab === 'ipd' ? '#38845A' : '#64748B'} />
+          <Users size={16} color={activeTab === 'ipd' ? '#1565C0' : '#64748B'} />
           <Text style={[styles.tabLabel, activeTab === 'ipd' && styles.tabLabelActive]}>
             IPD Inpatients ({admissions.filter((a) => a.status === 'ADMITTED').length})
           </Text>
@@ -363,7 +363,7 @@ export default function AdminOperationsScreen() {
           style={[styles.tabItem, activeTab === 'opd' && styles.tabItemActive]}
           onPress={() => setActiveTab('opd')}
         >
-          <CalendarCheck size={16} color={activeTab === 'opd' ? '#38845A' : '#64748B'} />
+          <CalendarCheck size={16} color={activeTab === 'opd' ? '#1565C0' : '#64748B'} />
           <Text style={[styles.tabLabel, activeTab === 'opd' && styles.tabLabelActive]}>
             OPD Flow ({queue.length})
           </Text>
@@ -372,14 +372,14 @@ export default function AdminOperationsScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#38845A" />
+          <ActivityIndicator size="large" color="#1565C0" />
         </View>
       ) : (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />
+            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#1565C0" />
           }
         >
           {/* TAB 1: BED CENSUS */}
@@ -412,7 +412,7 @@ export default function AdminOperationsScreen() {
                           styles.progressBarFill,
                           {
                             width: `${occRate}%`,
-                            backgroundColor: occRate > 85 ? '#E11D48' : '#38845A',
+                            backgroundColor: occRate > 85 ? '#DC2626' : '#1565C0',
                           },
                         ]}
                       />
@@ -505,7 +505,7 @@ export default function AdminOperationsScreen() {
                           style={[
                             styles.statusTag,
                             {
-                              backgroundColor: isAdmitted ? '#EAF5ED' : '#F1F5F9',
+                              backgroundColor: isAdmitted ? '#E8F1FC' : '#F1F5F9',
                             },
                           ]}
                         >
@@ -513,7 +513,7 @@ export default function AdminOperationsScreen() {
                             style={[
                               styles.statusTagText,
                               {
-                                color: isAdmitted ? '#38845A' : '#64748B',
+                                color: isAdmitted ? '#1565C0' : '#64748B',
                               },
                             ]}
                           >
@@ -545,12 +545,12 @@ export default function AdminOperationsScreen() {
                               setTargetBedId('');
                             }}
                           >
-                            <ArrowRightLeft size={13} color="#4F46E5" />
-                            <Text style={[styles.opdActionBtnText, { color: '#4F46E5' }]}>Transfer Bed</Text>
+                            <ArrowRightLeft size={13} color="#1565C0" />
+                            <Text style={[styles.opdActionBtnText, { color: '#1565C0' }]}>Transfer Bed</Text>
                           </TouchableOpacity>
 
                           <TouchableOpacity
-                            style={[styles.opdActionBtn, { borderColor: '#FECDD3' }]}
+                            style={[styles.opdActionBtn, { borderColor: '#FEE2E2' }]}
                             onPress={() => {
                               setDischargeModal(adm);
                               setDischargeSummary('');
@@ -654,7 +654,7 @@ export default function AdminOperationsScreen() {
                           <View style={styles.opdActionsRow}>
                             {isSched && (
                               <TouchableOpacity
-                                style={[styles.opdActionBtn, { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' }]}
+                                style={[styles.opdActionBtn, { backgroundColor: '#DCFCE7', borderColor: '#BBF7D0' }]}
                                 onPress={() => handleCheckIn(q.id)}
                               >
                                 <CheckCircle size={13} color="#16A34A" />
@@ -664,17 +664,17 @@ export default function AdminOperationsScreen() {
 
                             {isChecked && (
                               <TouchableOpacity
-                                style={[styles.opdActionBtn, { backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' }]}
+                                style={[styles.opdActionBtn, { backgroundColor: '#E8F1FC', borderColor: '#BFDBFE' }]}
                                 onPress={() => handleUpdateAppointmentStatus(q.id, 'IN_PROGRESS')}
                               >
-                                <Clock size={13} color="#2563EB" />
-                                <Text style={[styles.opdActionBtnText, { color: '#2563EB' }]}>Start Consult</Text>
+                                <Clock size={13} color="#1565C0" />
+                                <Text style={[styles.opdActionBtnText, { color: '#1565C0' }]}>Start Consult</Text>
                               </TouchableOpacity>
                             )}
 
                             {isInProgress && (
                               <TouchableOpacity
-                                style={[styles.opdActionBtn, { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' }]}
+                                style={[styles.opdActionBtn, { backgroundColor: '#DCFCE7', borderColor: '#BBF7D0' }]}
                                 onPress={() => handleUpdateAppointmentStatus(q.id, 'COMPLETED')}
                               >
                                 <CheckSquare size={13} color="#16A34A" />
@@ -692,12 +692,12 @@ export default function AdminOperationsScreen() {
                                 setReschedTime(q.slotTime || q.appointmentTime || '10:00');
                               }}
                             >
-                              <Edit2 size={13} color="#38845A" />
+                              <Edit2 size={13} color="#1565C0" />
                               <Text style={styles.opdActionBtnText}>Reschedule</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                              style={[styles.opdActionBtn, { borderColor: '#FECDD3' }]}
+                              style={[styles.opdActionBtn, { borderColor: '#FEE2E2' }]}
                               onPress={() => {
                                 setCancelModal(q);
                                 setCancelReason('');
@@ -752,7 +752,7 @@ export default function AdminOperationsScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Confirm Reschedule</Text>
               )}
@@ -789,7 +789,7 @@ export default function AdminOperationsScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Confirm Cancellation</Text>
               )}
@@ -871,7 +871,7 @@ export default function AdminOperationsScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Generate Appointment Token</Text>
               )}
@@ -967,7 +967,7 @@ export default function AdminOperationsScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Confirm Inpatient Admission</Text>
               )}
@@ -989,7 +989,7 @@ export default function AdminOperationsScreen() {
               </TouchableOpacity>
             </View>
 
-            <Text style={{ fontSize: 12, color: '#38845A', fontWeight: '700', marginBottom: 12 }}>
+            <Text style={{ fontSize: 12, color: '#1565C0', fontWeight: '700', marginBottom: 12 }}>
               Patient: {transferModal?.patient?.firstName} {transferModal?.patient?.lastName}
             </Text>
 
@@ -1041,12 +1041,12 @@ export default function AdminOperationsScreen() {
             />
 
             <TouchableOpacity
-              style={[styles.submitBtn, { backgroundColor: '#4F46E5' }]}
+              style={[styles.submitBtn, { backgroundColor: '#1565C0' }]}
               onPress={handleTransferBed}
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Confirm Bed Transfer</Text>
               )}
@@ -1087,7 +1087,7 @@ export default function AdminOperationsScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Sign Clearances & Discharge</Text>
               )}
@@ -1112,24 +1112,24 @@ export default function AdminOperationsScreen() {
             </View>
 
             <Text style={{ fontSize: 12, color: '#64748B', marginBottom: 16 }}>
-              Current Status: <Text style={{ fontWeight: '700', color: '#0F172A' }}>{bedStatusModal?.status}</Text>
+              Current Status: <Text style={{ fontWeight: '700', color: '#183153' }}>{bedStatusModal?.status}</Text>
             </Text>
 
             <View style={{ gap: 10 }}>
               <TouchableOpacity
-                style={[styles.quickStatusBtn, { backgroundColor: '#ECFDF5', borderColor: '#A7F3D0' }]}
+                style={[styles.quickStatusBtn, { backgroundColor: '#E0F2F1', borderColor: '#B2DFDB' }]}
                 onPress={() => handleUpdateBedStatus('AVAILABLE')}
               >
-                <CheckCircle size={16} color="#059669" />
-                <Text style={[styles.quickStatusBtnText, { color: '#059669' }]}>Mark AVAILABLE (Cleaned)</Text>
+                <CheckCircle size={16} color="#00897B" />
+                <Text style={[styles.quickStatusBtnText, { color: '#00897B' }]}>Mark AVAILABLE (Cleaned)</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.quickStatusBtn, { backgroundColor: '#FFFBEB', borderColor: '#FDE68A' }]}
+                style={[styles.quickStatusBtn, { backgroundColor: '#FEF3C7', borderColor: '#FDE68A' }]}
                 onPress={() => handleUpdateBedStatus('HOUSEKEEPING')}
               >
-                <Sparkles size={16} color="#D97706" />
-                <Text style={[styles.quickStatusBtnText, { color: '#D97706' }]}>Mark HOUSEKEEPING (Cleaning)</Text>
+                <Sparkles size={16} color="#F59E0B" />
+                <Text style={[styles.quickStatusBtnText, { color: '#F59E0B' }]}>Mark HOUSEKEEPING (Cleaning)</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -1168,7 +1168,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   tabItemActive: {
-    borderBottomColor: '#38845A',
+    borderBottomColor: '#1565C0',
   },
   tabLabel: {
     fontSize: 12,
@@ -1176,7 +1176,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   tabLabelActive: {
-    color: '#38845A',
+    color: '#1565C0',
   },
   scroll: { flex: 1 },
   scrollContent: { padding: 14, paddingBottom: 30 },
@@ -1185,7 +1185,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 10,
     borderRadius: 12,
     marginBottom: 14,
@@ -1216,7 +1216,7 @@ const styles = StyleSheet.create({
   wardName: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   wardMeta: {
     fontSize: 11,
@@ -1224,7 +1224,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   occBadge: {
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -1232,7 +1232,7 @@ const styles = StyleSheet.create({
   occBadgeText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
   },
   progressBarBg: {
     height: 6,
@@ -1257,24 +1257,24 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   bedChip: {
-    backgroundColor: '#D1FAE5',
+    backgroundColor: '#DCFCE7',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#A7F3D0',
+    borderColor: '#B2DFDB',
   },
   bedChipText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#059669',
+    color: '#00897B',
   },
   bedChipOcc: {
-    backgroundColor: '#FFE4E6',
-    borderColor: '#FECDD3',
+    backgroundColor: '#FEE2E2',
+    borderColor: '#FEE2E2',
   },
   bedChipTextOcc: {
-    color: '#E11D48',
+    color: '#DC2626',
   },
   bedChipMaint: {
     backgroundColor: '#F1F5F9',
@@ -1288,7 +1288,7 @@ const styles = StyleSheet.create({
     borderColor: '#FDE68A',
   },
   bedChipTextClean: {
-    color: '#D97706',
+    color: '#F59E0B',
   },
   ipdHead: {
     flexDirection: 'row',
@@ -1298,7 +1298,7 @@ const styles = StyleSheet.create({
   patientName: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   uhidText: {
     fontSize: 11,
@@ -1323,7 +1323,7 @@ const styles = StyleSheet.create({
   },
   ipdDetailText: {
     fontSize: 11,
-    color: '#334155',
+    color: '#475569',
     fontWeight: '500',
   },
   queueRow: {
@@ -1334,14 +1334,14 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     alignItems: 'center',
     justifyContent: 'center',
   },
   tokenText: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
   },
   queueMeta: {
     fontSize: 11,
@@ -1378,7 +1378,7 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   opdFilterChipActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   opdFilterChipText: {
     fontSize: 11,
@@ -1406,12 +1406,12 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#EAF5ED',
+    borderColor: '#E8F1FC',
   },
   opdActionBtnText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   chipSelect: {
     paddingHorizontal: 10,
@@ -1423,8 +1423,8 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   chipSelectActive: {
-    backgroundColor: '#EAF5ED',
-    borderColor: '#38845A',
+    backgroundColor: '#E8F1FC',
+    borderColor: '#1565C0',
   },
   chipSelectText: {
     fontSize: 11,
@@ -1432,7 +1432,7 @@ const styles = StyleSheet.create({
     color: '#475569',
   },
   chipSelectTextActive: {
-    color: '#38845A',
+    color: '#1565C0',
     fontWeight: '700',
   },
   quickStatusBtn: {
@@ -1468,7 +1468,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   fieldLabel: {
     fontSize: 12,
@@ -1485,10 +1485,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: 'center',

@@ -82,7 +82,7 @@ export default function DepartmentAdminMobileDashboard() {
   if (loading && !refreshing) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#38845A" />
+        <ActivityIndicator size="large" color="#1565C0" />
         <Text style={styles.loadingText}>Loading Department Command...</Text>
       </View>
     );
@@ -117,7 +117,7 @@ export default function DepartmentAdminMobileDashboard() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={fetchTelemetry} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={fetchTelemetry} tintColor="#1565C0" />
         }
       >
         {/* Department Info Header Banner (Clickable -> Module 2: Dept Info) */}
@@ -127,7 +127,7 @@ export default function DepartmentAdminMobileDashboard() {
           activeOpacity={0.8}
         >
           <View style={styles.deptIconCircle}>
-            <Building2 size={24} color="#38845A" />
+            <Building2 size={24} color="#1565C0" />
           </View>
           <View style={styles.deptTextCol}>
             <Text style={styles.deptName}>{department.name || 'Department Workspace'}</Text>
@@ -147,8 +147,8 @@ export default function DepartmentAdminMobileDashboard() {
             onPress={() => router.push('/(department-admin)/appointments')}
             activeOpacity={0.7}
           >
-            <View style={[styles.kpiIconBox, { backgroundColor: '#EAF5ED' }]}>
-              <CalendarCheck size={18} color="#38845A" />
+            <View style={[styles.kpiIconBox, { backgroundColor: '#E8F1FC' }]}>
+              <CalendarCheck size={18} color="#1565C0" />
             </View>
             <Text style={styles.kpiValue}>{stats.todayAppointments ?? 0}</Text>
             <Text style={styles.kpiLabel}>Appointments</Text>
@@ -160,8 +160,8 @@ export default function DepartmentAdminMobileDashboard() {
             onPress={() => router.push('/(department-admin)/opd')}
             activeOpacity={0.7}
           >
-            <View style={[styles.kpiIconBox, { backgroundColor: '#E0F2FE' }]}>
-              <Users size={18} color="#0284C7" />
+            <View style={[styles.kpiIconBox, { backgroundColor: '#E8F1FC' }]}>
+              <Users size={18} color="#1565C0" />
             </View>
             <Text style={styles.kpiValue}>{stats.todayOpd ?? 0}</Text>
             <Text style={styles.kpiLabel}>Today's OPD</Text>
@@ -173,8 +173,8 @@ export default function DepartmentAdminMobileDashboard() {
             onPress={() => router.push('/(department-admin)/ipd')}
             activeOpacity={0.7}
           >
-            <View style={[styles.kpiIconBox, { backgroundColor: '#EDE9FE' }]}>
-              <DoorOpen size={18} color="#7C3AED" />
+            <View style={[styles.kpiIconBox, { backgroundColor: '#E8F1FC' }]}>
+              <DoorOpen size={18} color="#1565C0" />
             </View>
             <Text style={styles.kpiValue}>{stats.currentIpd ?? 0}</Text>
             <Text style={styles.kpiLabel}>Current IPD</Text>
@@ -187,7 +187,7 @@ export default function DepartmentAdminMobileDashboard() {
             activeOpacity={0.7}
           >
             <View style={[styles.kpiIconBox, { backgroundColor: '#FEF3C7' }]}>
-              <BedDouble size={18} color="#D97706" />
+              <BedDouble size={18} color="#F59E0B" />
             </View>
             <Text style={styles.kpiValue}>
               {stats.occupiedBeds ?? 0}/{stats.totalBeds ?? 0}
@@ -205,7 +205,7 @@ export default function DepartmentAdminMobileDashboard() {
             activeOpacity={0.8}
           >
             <View style={styles.summaryTop}>
-              <UserCheck size={20} color="#38845A" />
+              <UserCheck size={20} color="#1565C0" />
               <ChevronRight size={16} color="#94A3B8" />
             </View>
             <Text style={styles.summaryNumber}>
@@ -220,7 +220,7 @@ export default function DepartmentAdminMobileDashboard() {
             activeOpacity={0.8}
           >
             <View style={styles.summaryTop}>
-              <Users size={20} color="#0284C7" />
+              <Users size={20} color="#1565C0" />
               <ChevronRight size={16} color="#94A3B8" />
             </View>
             <Text style={styles.summaryNumber}>
@@ -259,7 +259,7 @@ export default function DepartmentAdminMobileDashboard() {
             onPress={() => router.push('/(department-admin)/lab-requests')}
             activeOpacity={0.7}
           >
-            <Text style={[styles.requestMiniCount, { color: '#38845A' }]}>
+            <Text style={[styles.requestMiniCount, { color: '#1565C0' }]}>
               {stats.pendingLabRequests ?? 0}
             </Text>
             <Text style={styles.requestMiniLabel}>Lab Orders</Text>
@@ -271,7 +271,7 @@ export default function DepartmentAdminMobileDashboard() {
             onPress={() => router.push('/(department-admin)/radiology-requests')}
             activeOpacity={0.7}
           >
-            <Text style={[styles.requestMiniCount, { color: '#0284C7' }]}>
+            <Text style={[styles.requestMiniCount, { color: '#1565C0' }]}>
               {stats.pendingRadiologyRequests ?? 0}
             </Text>
             <Text style={styles.requestMiniLabel}>Radiology</Text>
@@ -295,7 +295,7 @@ export default function DepartmentAdminMobileDashboard() {
             onPress={() => router.push('/(department-admin)/maintenance-requests')}
             activeOpacity={0.7}
           >
-            <Text style={[styles.requestMiniCount, { color: '#D97706' }]}>
+            <Text style={[styles.requestMiniCount, { color: '#F59E0B' }]}>
               {stats.pendingMaintenanceRequests ?? 0}
             </Text>
             <Text style={styles.requestMiniLabel}>Maintenance</Text>
@@ -310,7 +310,7 @@ export default function DepartmentAdminMobileDashboard() {
             onPress={() => router.push('/(department-admin)/operations')}
           >
             <View style={[styles.actionIconBox, { backgroundColor: '#F1F5F9' }]}>
-              <BedDouble size={20} color="#334155" />
+              <BedDouble size={20} color="#475569" />
             </View>
             <View style={styles.actionTextCol}>
               <Text style={styles.actionTitle}>Wards & Inpatients Hub</Text>
@@ -323,8 +323,8 @@ export default function DepartmentAdminMobileDashboard() {
             style={styles.actionItem}
             onPress={() => router.push('/(department-admin)/patients')}
           >
-            <View style={[styles.actionIconBox, { backgroundColor: '#EAF5ED' }]}>
-              <Activity size={20} color="#38845A" />
+            <View style={[styles.actionIconBox, { backgroundColor: '#E8F1FC' }]}>
+              <Activity size={20} color="#1565C0" />
             </View>
             <View style={styles.actionTextCol}>
               <Text style={styles.actionTitle}>Patient Directory</Text>
@@ -337,8 +337,8 @@ export default function DepartmentAdminMobileDashboard() {
             style={styles.actionItem}
             onPress={() => router.push('/(department-admin)/inventory')}
           >
-            <View style={[styles.actionIconBox, { backgroundColor: '#E0F2FE' }]}>
-              <Pill size={20} color="#0284C7" />
+            <View style={[styles.actionIconBox, { backgroundColor: '#E8F1FC' }]}>
+              <Pill size={20} color="#1565C0" />
             </View>
             <View style={styles.actionTextCol}>
               <Text style={styles.actionTitle}>Supplies & Inventory</Text>
@@ -352,7 +352,7 @@ export default function DepartmentAdminMobileDashboard() {
             onPress={() => router.push('/(department-admin)/approvals-hub')}
           >
             <View style={[styles.actionIconBox, { backgroundColor: '#FEF3C7' }]}>
-              <Layers size={20} color="#D97706" />
+              <Layers size={20} color="#F59E0B" />
             </View>
             <View style={styles.actionTextCol}>
               <Text style={styles.actionTitle}>Requisitions & Approvals Hub</Text>
@@ -366,7 +366,7 @@ export default function DepartmentAdminMobileDashboard() {
             onPress={() => router.push('/(department-admin)/reports')}
           >
             <View style={[styles.actionIconBox, { backgroundColor: '#F3E8FF' }]}>
-              <BarChart3 size={20} color="#7C3AED" />
+              <BarChart3 size={20} color="#1565C0" />
             </View>
             <View style={styles.actionTextCol}>
               <Text style={styles.actionTitle}>Reports & Analytics</Text>
@@ -451,7 +451,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   filterChipActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   filterChipText: {
     fontSize: 11,
@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
   deptName: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   deptMeta: {
     fontSize: 11,
@@ -509,7 +509,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#334155',
+    color: '#475569',
     textTransform: 'uppercase',
     letterSpacing: 0.6,
     marginBottom: 10,
@@ -525,7 +525,7 @@ const styles = StyleSheet.create({
   viewAllText: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
   },
   kpiGrid: {
     flexDirection: 'row',
@@ -557,7 +557,7 @@ const styles = StyleSheet.create({
   kpiValue: {
     fontSize: 20,
     fontWeight: '900',
-    color: '#0F172A',
+    color: '#183153',
   },
   kpiLabel: {
     fontSize: 11,
@@ -587,7 +587,7 @@ const styles = StyleSheet.create({
   summaryNumber: {
     fontSize: 18,
     fontWeight: '900',
-    color: '#0F172A',
+    color: '#183153',
   },
   summarySubtitle: {
     fontSize: 11,
@@ -613,7 +613,7 @@ const styles = StyleSheet.create({
   requestMiniCount: {
     fontSize: 16,
     fontWeight: '900',
-    color: '#0F172A',
+    color: '#183153',
   },
   requestMiniLabel: {
     fontSize: 10,
@@ -651,7 +651,7 @@ const styles = StyleSheet.create({
   actionTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   actionDesc: {
     fontSize: 11,
@@ -682,7 +682,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     marginTop: 4,
     marginRight: 10,
   },
@@ -692,7 +692,7 @@ const styles = StyleSheet.create({
   activityAction: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   activityDetails: {
     fontSize: 11,

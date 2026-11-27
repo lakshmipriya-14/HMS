@@ -17,7 +17,7 @@ export default function AmbulanceDriverProfileScreen() {
     <View style={styles.container}>
       <View style={styles.card}>
         <View style={styles.avatar}>
-          <Ambulance size={36} color="#38845A" />
+          <Ambulance size={36} color="#1565C0" />
         </View>
         <Text style={styles.name}>{user?.firstName || 'Velu'} {user?.lastName || 'Pandian'}</Text>
         <Text style={styles.role}>Emergency Response Driver</Text>
@@ -33,7 +33,7 @@ export default function AmbulanceDriverProfileScreen() {
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Duty Status</Text>
-          <Text style={[styles.infoVal, { color: '#38845A' }]}>On Duty (Rapid Response)</Text>
+          <Text style={[styles.infoVal, { color: '#1565C0' }]}>On Duty (Rapid Response)</Text>
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Dispatch Base</Text>
@@ -52,7 +52,7 @@ export default function AmbulanceDriverProfileScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC', padding: 20 },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 24,
     borderWidth: 1,
@@ -63,13 +63,13 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
   },
-  name: { fontSize: 18, fontWeight: 'bold', color: '#1E293B' },
-  role: { fontSize: 12, fontWeight: 'bold', color: '#38845A', marginTop: 2 },
+  name: { fontSize: 18, fontWeight: 'bold', color: '#183153' },
+  role: { fontSize: 12, fontWeight: 'bold', color: '#1565C0', marginTop: 2 },
   email: { fontSize: 12, color: '#64748B', marginTop: 2, marginBottom: 20 },
   infoRow: {
     flexDirection: 'row',
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#F1F5F9',
   },
   infoLabel: { fontSize: 12, color: '#64748B' },
-  infoVal: { fontSize: 12, fontWeight: 'bold', color: '#1E293B' },
+  infoVal: { fontSize: 12, fontWeight: 'bold', color: '#183153' },
   logoutBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
   },
   logoutText: { color: '#DC2626', fontWeight: 'bold', fontSize: 13 },
 });

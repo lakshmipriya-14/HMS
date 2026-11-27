@@ -508,21 +508,27 @@ model PatientDocument {
 // 5. APPOINTMENTS & QUEUE
 // ==========================================
 
+enum AppointmentSource {
+  ONLINE_PATIENT
+  RECEPTION_WALK_IN
+}
+
 model Appointment {
-  id                String         @id @default(uuid())
-  appointmentNumber String         @unique // APT-YYYY-XXXX
+  id                String            @id @default(uuid())
+  appointmentNumber String            @unique // APT-YYYY-XXXX
   patientId         String
-  patient           Patient        @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  patient           Patient           @relation(fields: [patientId], references: [id], onDelete: Restrict)
   doctorId          String
-  doctor            Doctor         @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  doctor            Doctor            @relation(fields: [doctorId], references: [id], onDelete: Restrict)
   departmentId      String
-  department        Department     @relation(fields: [departmentId], references: [id], onDelete: Restrict)
-  appointmentDate   DateTime       @db.Date
-  appointmentTime   String         // "10:30"
+  department        Department        @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  appointmentDate   DateTime          @db.Date
+  appointmentTime   String            // "10:30"
   tokenNumber       Int
-  status            String         @default("SCHEDULED") // SCHEDULED, CHECKED_IN, IN_PROGRESS, COMPLETED, CANCELLED
-  type              String         @default("OPD") // OPD, FOLLOW_UP, EMERGENCY
-  priority          String         @default("ROUTINE") // ROUTINE, URGENT, STAT_EMERGENCY
+  status            String            @default("SCHEDULED") // SCHEDULED, CHECKED_IN, IN_PROGRESS, COMPLETED, CANCELLED
+  type              String            @default("OPD") // OPD, FOLLOW_UP, EMERGENCY
+  source            AppointmentSource @default(ONLINE_PATIENT)
+  priority          String            @default("ROUTINE") // ROUTINE, URGENT, STAT_EMERGENCY
   reasonForVisit    String
   consultationFee   Decimal        @db.Decimal(10, 2)
   isPaid            Boolean        @default(false)

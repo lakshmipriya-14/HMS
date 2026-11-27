@@ -88,7 +88,7 @@ export const MaintenanceRequests: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <Hammer className="w-6 h-6 text-teal-600" />
+            <Hammer className="w-6 h-6 text-[#00897B]" />
             Department Facility & Maintenance Work Orders
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -97,7 +97,7 @@ export const MaintenanceRequests: React.FC = () => {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm self-start sm:self-auto"
+          className="px-4 py-2.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           Log Maintenance Ticket
@@ -105,14 +105,14 @@ export const MaintenanceRequests: React.FC = () => {
       </div>
 
       {successMessage && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-emerald-800 text-xs font-semibold animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="p-4 bg-[#DCFCE7] border border-[#BBF7D0] rounded-xl flex items-center gap-2 text-[#16A34A] text-xs font-semibold animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-[#16A34A]" />
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs font-semibold">
+        <div className="p-4 bg-[#FEE2E2] border border-[#FECACA] rounded-xl flex items-center gap-2 text-[#DC2626] text-xs font-semibold">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
@@ -132,13 +132,13 @@ export const MaintenanceRequests: React.FC = () => {
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
           <p className="text-xs font-bold text-rose-500 uppercase tracking-wider">Critical / Urgent</p>
-          <p className="text-2xl font-black text-rose-600 mt-1">
+          <p className="text-2xl font-black text-[#DC2626] mt-1">
             {requests.filter((r) => ['URGENT', 'CRITICAL', 'HIGH'].includes(r.priority) && r.status !== 'RESOLVED').length}
           </p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Resolved Tickets</p>
-          <p className="text-2xl font-black text-emerald-600 mt-1">
+          <p className="text-xs font-bold text-[#16A34A] uppercase tracking-wider">Resolved Tickets</p>
+          <p className="text-2xl font-black text-[#16A34A] mt-1">
             {requests.filter((r) => ['RESOLVED', 'COMPLETED', 'CLOSED'].includes(r.status)).length}
           </p>
         </div>
@@ -153,13 +153,13 @@ export const MaintenanceRequests: React.FC = () => {
             placeholder="Search tickets by subject, room, description..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="w-full sm:w-48 px-3 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+          className="w-full sm:w-48 px-3 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
         >
           <option value="">All Statuses</option>
           <option value="PENDING">Pending</option>
@@ -200,7 +200,7 @@ export const MaintenanceRequests: React.FC = () => {
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
                           item.priority === 'URGENT' || item.priority === 'CRITICAL'
-                            ? 'bg-rose-100 text-rose-700'
+                            ? 'bg-rose-100 text-[#DC2626]'
                             : item.priority === 'HIGH'
                             ? 'bg-amber-100 text-amber-700'
                             : 'bg-slate-100 text-slate-600'
@@ -246,7 +246,7 @@ export const MaintenanceRequests: React.FC = () => {
                   placeholder="e.g. AC leaking in Doctor Consultation Room 3"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
                 />
               </div>
 
@@ -258,7 +258,7 @@ export const MaintenanceRequests: React.FC = () => {
                   placeholder="e.g. 2nd Floor, Room 204, Ward A"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
                 />
               </div>
 
@@ -267,7 +267,7 @@ export const MaintenanceRequests: React.FC = () => {
                 <select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
                 >
                   <option value="LOW">Low (Cosmetic / Routine)</option>
                   <option value="MEDIUM">Medium (Maintenance needed today)</option>
@@ -284,7 +284,7 @@ export const MaintenanceRequests: React.FC = () => {
                   placeholder="Describe the failure, duration, and any safety precautions taken..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
                 />
               </div>
 
@@ -299,7 +299,7 @@ export const MaintenanceRequests: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs transition shadow-sm"
+                  className="px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white font-bold rounded-xl text-xs transition shadow-sm"
                 >
                   {submitting ? 'Submitting...' : 'Dispatch Ticket'}
                 </button>

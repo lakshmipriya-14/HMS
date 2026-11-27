@@ -166,7 +166,7 @@ export default function DoctorPrescriptionScreen() {
         <View style={styles.headerTop}>
           <Text style={styles.headerTitle}>Digital Rx Prescription Pad</Text>
           <View style={styles.rxBadge}>
-            <Pill size={14} color="#38845A" />
+            <Pill size={14} color="#1565C0" />
             <Text style={styles.rxBadgeText}>e-Prescription</Text>
           </View>
         </View>
@@ -228,7 +228,7 @@ export default function DoctorPrescriptionScreen() {
                 style={styles.presetPill}
                 onPress={() => applyPreset(preset)}
               >
-                <Plus size={12} color="#38845A" />
+                <Plus size={12} color="#1565C0" />
                 <Text style={styles.presetText}>{preset.name}</Text>
               </TouchableOpacity>
             ))}
@@ -314,7 +314,7 @@ export default function DoctorPrescriptionScreen() {
           </View>
 
           <TouchableOpacity style={styles.addBtn} onPress={addItem}>
-            <Plus size={16} color="#38845A" />
+            <Plus size={16} color="#1565C0" />
             <Text style={styles.addBtnText}>Add Drug to Prescription</Text>
           </TouchableOpacity>
         </View>
@@ -322,7 +322,7 @@ export default function DoctorPrescriptionScreen() {
         {/* Issued Rx Status Banner */}
         {issuedRxNumber && (
           <View style={styles.successBanner}>
-            <CheckCircle2 size={20} color="#065F46" />
+            <CheckCircle2 size={20} color="#183153" />
             <View style={{ flex: 1 }}>
               <Text style={styles.successTitle}>Prescription {issuedRxNumber} Dispatched</Text>
               <Text style={styles.successSub}>
@@ -339,10 +339,10 @@ export default function DoctorPrescriptionScreen() {
           disabled={submitting}
         >
           {submitting ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
             <>
-              <FileText size={18} color="#fff" />
+              <FileText size={18} color="#FFFFFF" />
               <Text style={styles.submitBtnText}>
                 Digitally Sign & Issue Prescription ({items.length} Medicines)
               </Text>
@@ -356,17 +356,17 @@ export default function DoctorPrescriptionScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
-  header: { padding: 18, backgroundColor: '#38845A', borderBottomLeftRadius: 18, borderBottomRightRadius: 18 },
+  header: { padding: 18, backgroundColor: '#1565C0', borderBottomLeftRadius: 18, borderBottomRightRadius: 18 },
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
-  rxBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, gap: 4 },
-  rxBadgeText: { color: '#38845A', fontSize: 11, fontWeight: '700' },
-  headerSub: { fontSize: 12, color: '#CDE8D5', marginTop: 4 },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: '#FFFFFF' },
+  rxBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E8F1FC', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, gap: 4 },
+  rxBadgeText: { color: '#1565C0', fontSize: 11, fontWeight: '700' },
+  headerSub: { fontSize: 12, color: '#BFDBFE', marginTop: 4 },
   form: { padding: 16 },
-  card: { backgroundColor: '#fff', padding: 16, borderRadius: 12, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, elevation: 2 },
-  cardTitle: { fontSize: 14, fontWeight: '700', color: '#0F172A', marginBottom: 12 },
-  label: { fontSize: 12, fontWeight: '600', color: '#334155', marginBottom: 4 },
-  input: { backgroundColor: '#F8FAFC', borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: '#0F172A', marginBottom: 10 },
+  card: { backgroundColor: '#FFFFFF', padding: 16, borderRadius: 12, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, elevation: 2 },
+  cardTitle: { fontSize: 14, fontWeight: '700', color: '#183153', marginBottom: 12 },
+  label: { fontSize: 12, fontWeight: '600', color: '#475569', marginBottom: 4 },
+  input: { backgroundColor: '#F8FAFC', borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: '#183153', marginBottom: 10 },
   textArea: { minHeight: 56, textAlignVertical: 'top' },
   row: { flexDirection: 'row', gap: 10 },
   col: { flex: 1 },
@@ -375,33 +375,33 @@ const styles = StyleSheet.create({
   presetSection: { marginBottom: 14 },
   presetTitle: { fontSize: 12, fontWeight: '700', color: '#475569', marginBottom: 6 },
   presetRow: { flexDirection: 'row' },
-  presetPill: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E6FFFA', borderWidth: 1, borderColor: '#CDE8D5', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 16, marginRight: 8, gap: 4 },
-  presetText: { fontSize: 12, color: '#38845A', fontWeight: '600' },
+  presetPill: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E6FFFA', borderWidth: 1, borderColor: '#BFDBFE', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 16, marginRight: 8, gap: 4 },
+  presetText: { fontSize: 12, color: '#1565C0', fontWeight: '600' },
 
   // Items
   itemsSection: { marginBottom: 14 },
-  sectionHeader: { fontSize: 15, fontWeight: '700', color: '#0F172A', marginBottom: 10 },
-  itemCard: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 10, padding: 12, marginBottom: 8 },
+  sectionHeader: { fontSize: 15, fontWeight: '700', color: '#183153', marginBottom: 10 },
+  itemCard: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 10, padding: 12, marginBottom: 8 },
   itemHeader: { flexDirection: 'row', alignItems: 'flex-start' },
-  itemNumBadge: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#EAF5ED', alignItems: 'center', justifyContent: 'center', marginRight: 10 },
-  itemNumText: { color: '#38845A', fontWeight: '800', fontSize: 12 },
-  itemName: { fontSize: 15, fontWeight: '700', color: '#0F172A' },
-  itemMeta: { fontSize: 12, color: '#334155', marginTop: 2, fontWeight: '500' },
+  itemNumBadge: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#E8F1FC', alignItems: 'center', justifyContent: 'center', marginRight: 10 },
+  itemNumText: { color: '#1565C0', fontWeight: '800', fontSize: 12 },
+  itemName: { fontSize: 15, fontWeight: '700', color: '#183153' },
+  itemMeta: { fontSize: 12, color: '#475569', marginTop: 2, fontWeight: '500' },
   itemInstr: { fontSize: 12, color: '#64748B', marginTop: 2, fontStyle: 'italic' },
   trashBtn: { padding: 4 },
 
   // Add Card
-  addCard: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 12, padding: 16, marginBottom: 16 },
-  addBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#EAF5ED', paddingVertical: 10, borderRadius: 8, marginTop: 4, gap: 6 },
-  addBtnText: { color: '#38845A', fontSize: 13, fontWeight: '700' },
+  addCard: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 12, padding: 16, marginBottom: 16 },
+  addBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#E8F1FC', paddingVertical: 10, borderRadius: 8, marginTop: 4, gap: 6 },
+  addBtnText: { color: '#1565C0', fontSize: 13, fontWeight: '700' },
 
   // Success
-  successBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#D1FAE5', borderWidth: 1, borderColor: '#6EE7B7', padding: 12, borderRadius: 10, marginBottom: 16, gap: 10 },
-  successTitle: { fontSize: 13, fontWeight: '700', color: '#065F46' },
-  successSub: { fontSize: 12, color: '#047857', marginTop: 2 },
+  successBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#DCFCE7', borderWidth: 1, borderColor: '#6EE7B7', padding: 12, borderRadius: 10, marginBottom: 16, gap: 10 },
+  successTitle: { fontSize: 13, fontWeight: '700', color: '#183153' },
+  successSub: { fontSize: 12, color: '#00897B', marginTop: 2 },
 
   // Submit
-  submitBtn: { flexDirection: 'row', backgroundColor: '#38845A', paddingVertical: 14, borderRadius: 10, alignItems: 'center', justifyContent: 'center', gap: 8 },
-  submitBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
+  submitBtn: { flexDirection: 'row', backgroundColor: '#1565C0', paddingVertical: 14, borderRadius: 10, alignItems: 'center', justifyContent: 'center', gap: 8 },
+  submitBtnText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
 });
 

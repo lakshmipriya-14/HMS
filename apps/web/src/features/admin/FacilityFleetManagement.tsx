@@ -127,28 +127,28 @@ export const FacilityFleetManagement: React.FC = () => {
     <div className="space-y-6 pb-12">
       {/* Messages */}
       {successMessage && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             {successMessage}
           </div>
-          <button onClick={() => setSuccessMessage('')} className="text-emerald-600 hover:text-emerald-900">×</button>
+          <button onClick={() => setSuccessMessage('')} className="text-[#16A34A] hover:text-emerald-900">×</button>
         </div>
       )}
       {errorMessage && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600" />
+            <AlertCircle className="w-4 h-4 text-[#DC2626]" />
             {errorMessage}
           </div>
-          <button onClick={() => setErrorMessage('')} className="text-rose-600 hover:text-rose-900">×</button>
+          <button onClick={() => setErrorMessage('')} className="text-[#DC2626] hover:text-rose-900">×</button>
         </div>
       )}
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="p-2.5 bg-rose-50 text-rose-700 rounded-xl border border-rose-100">
+          <span className="p-2.5 bg-[#FEE2E2] text-[#DC2626] rounded-xl border border-[#FECACA]">
             <Ambulance className="w-6 h-6" />
           </span>
           <div>
@@ -184,7 +184,7 @@ export const FacilityFleetManagement: React.FC = () => {
               setErrorMessage('');
               setDispatchModalOpen(true);
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-[#DC2626] hover:bg-[#B91C1C] text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
           >
             <Radio className="w-4 h-4 animate-pulse" />
             Trigger 108 Dispatch
@@ -200,13 +200,13 @@ export const FacilityFleetManagement: React.FC = () => {
           <p className="text-xs text-slate-400 mt-0.5">Advanced Life Support (ALS) & Basic (BLS)</p>
         </div>
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Ready at Hospital Bay</span>
-          <h3 className="text-2xl font-bold text-emerald-700 mt-1">{availableVehicles.length} Units Ready</h3>
+          <span className="text-xs font-bold text-[#16A34A] uppercase tracking-wider">Ready at Hospital Bay</span>
+          <h3 className="text-2xl font-bold text-[#16A34A] mt-1">{availableVehicles.length} Units Ready</h3>
           <p className="text-xs text-slate-400 mt-0.5">Paramedics & drivers standing by</p>
         </div>
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">Active Dispatches</span>
-          <h3 className="text-2xl font-bold text-rose-700 mt-1">{activeTrips.length} En Route</h3>
+          <span className="text-xs font-bold text-[#DC2626] uppercase tracking-wider">Active Dispatches</span>
+          <h3 className="text-2xl font-bold text-[#DC2626] mt-1">{activeTrips.length} En Route</h3>
           <p className="text-xs text-slate-400 mt-0.5">Transits undergoing trauma run</p>
         </div>
       </div>
@@ -216,7 +216,7 @@ export const FacilityFleetManagement: React.FC = () => {
         <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div>
             <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
-              <Radio className="w-4 h-4 text-rose-600 animate-pulse" />
+              <Radio className="w-4 h-4 text-[#DC2626] animate-pulse" />
               Real-Time Emergency Dispatches & Trips
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">Live monitoring of vehicles currently dispatched</p>
@@ -279,7 +279,7 @@ export const FacilityFleetManagement: React.FC = () => {
                 </div>
                 <div className="mt-2">
                   <h4 className="font-bold text-slate-900 text-sm">{v.vehicleModel || 'Force Traveller'}</h4>
-                  <p className="text-xs text-teal-700 font-semibold">{v.type?.replace(/_/g, ' ') || 'ADVANCED LIFE SUPPORT'}</p>
+                  <p className="text-xs text-[#00897B] font-semibold">{v.type?.replace(/_/g, ' ') || 'ADVANCED LIFE SUPPORT'}</p>
                 </div>
               </div>
 
@@ -382,7 +382,7 @@ export const FacilityFleetManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#DC2626] hover:bg-[#B91C1C] rounded-lg shadow-sm"
             >
               {submitting ? 'Dispatching...' : 'Dispatch Vehicle Now'}
             </button>
@@ -440,7 +440,7 @@ export const FacilityFleetManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#DC2626] hover:bg-[#B91C1C] rounded-lg shadow-sm"
             >
               {submitting ? 'Registering...' : 'Register Vehicle'}
             </button>

@@ -125,7 +125,7 @@ export default function NurseShiftHandoverScreen() {
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
       {/* Top Banner */}
       <View style={styles.banner}>
-        <RotateCcw size={20} color="#38845A" />
+        <RotateCcw size={20} color="#1565C0" />
         <View style={{ flex: 1, marginLeft: 10 }}>
           <Text style={styles.bannerTitle}>Digital Nursing Shift Handover</Text>
           <Text style={styles.bannerSub}>Continuity of patient care, medication, and clinical escalations</Text>
@@ -208,7 +208,7 @@ export default function NurseShiftHandoverScreen() {
 
           <TouchableOpacity style={styles.submitBtn} onPress={handleSubmitHandover} disabled={isSubmitting}>
             {isSubmitting ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color="#FFFFFF" />
             ) : (
               <Text style={styles.submitBtnText}>Submit & Transfer Shift Handover</Text>
             )}
@@ -242,12 +242,12 @@ export default function NurseShiftHandoverScreen() {
 
               {h.status === 'PENDING_ACKNOWLEDGEMENT' ? (
                 <TouchableOpacity style={styles.ackBtn} onPress={() => handleAcknowledge(h.id)}>
-                  <CheckCircle2 size={16} color="#fff" />
+                  <CheckCircle2 size={16} color="#FFFFFF" />
                   <Text style={styles.ackBtnText}>Acknowledge & Accept Shift Responsibility</Text>
                 </TouchableOpacity>
               ) : (
                 <View style={styles.ackBox}>
-                  <CheckCircle2 size={14} color="#059669" />
+                  <CheckCircle2 size={14} color="#00897B" />
                   <Text style={styles.ackText}>Handover Acknowledged at {h.acknowledgedAt}</Text>
                 </View>
               )}
@@ -263,33 +263,33 @@ export default function NurseShiftHandoverScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC', padding: 14 },
-  banner: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EAF5ED', padding: 14, borderRadius: 12, marginBottom: 12 },
-  bannerTitle: { fontSize: 14, fontWeight: '800', color: '#38845A' },
-  bannerSub: { fontSize: 11, color: '#115E59', marginTop: 2 },
-  tabRow: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 10, padding: 4, marginBottom: 12 },
+  banner: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E8F1FC', padding: 14, borderRadius: 12, marginBottom: 12 },
+  bannerTitle: { fontSize: 14, fontWeight: '800', color: '#1565C0' },
+  bannerSub: { fontSize: 11, color: '#00897B', marginTop: 2 },
+  tabRow: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 10, padding: 4, marginBottom: 12 },
   tab: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 8 },
-  tabActive: { backgroundColor: '#38845A' },
+  tabActive: { backgroundColor: '#1565C0' },
   tabText: { fontSize: 11, fontWeight: '700', color: '#64748B' },
-  tabTextActive: { color: '#fff' },
-  card: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 16 },
-  cardHeader: { fontSize: 14, fontWeight: '800', color: '#0F172A', marginBottom: 12 },
+  tabTextActive: { color: '#FFFFFF' },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 16 },
+  cardHeader: { fontSize: 14, fontWeight: '800', color: '#183153', marginBottom: 12 },
   fieldLabel: { fontSize: 11, fontWeight: '700', color: '#475569', marginTop: 10, marginBottom: 4 },
-  input: { borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, padding: 10, fontSize: 12, backgroundColor: '#F8FAFC', color: '#0F172A' },
-  submitBtn: { backgroundColor: '#38845A', paddingVertical: 14, borderRadius: 10, alignItems: 'center', marginTop: 18 },
-  submitBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  input: { borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, padding: 10, fontSize: 12, backgroundColor: '#F8FAFC', color: '#183153' },
+  submitBtn: { backgroundColor: '#1565C0', paddingVertical: 14, borderRadius: 10, alignItems: 'center', marginTop: 18 },
+  submitBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
   historyList: { gap: 12 },
-  handoverCard: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 12 },
+  handoverCard: { backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 12 },
   hTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-  badgeShift: { backgroundColor: '#E0F2FE', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  badgeShiftText: { fontSize: 10, fontWeight: '800', color: '#0284C7' },
+  badgeShift: { backgroundColor: '#E8F1FC', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  badgeShiftText: { fontSize: 10, fontWeight: '800', color: '#1565C0' },
   hDate: { fontSize: 10, color: '#64748B' },
-  hStaff: { fontSize: 12, fontWeight: '700', color: '#0F172A', marginBottom: 10 },
+  hStaff: { fontSize: 12, fontWeight: '700', color: '#183153', marginBottom: 10 },
   hSection: { marginBottom: 8 },
   hLabel: { fontSize: 10, color: '#94A3B8', fontWeight: '800' },
-  hVal: { fontSize: 12, color: '#334155', marginTop: 1, lineHeight: 16 },
-  ackBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#38845A', paddingVertical: 10, borderRadius: 8, gap: 6, marginTop: 8 },
-  ackBtnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
-  ackBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#ECFDF5', padding: 8, borderRadius: 8, marginTop: 8 },
-  ackText: { fontSize: 11, fontWeight: '700', color: '#065F46' },
+  hVal: { fontSize: 12, color: '#475569', marginTop: 1, lineHeight: 16 },
+  ackBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#1565C0', paddingVertical: 10, borderRadius: 8, gap: 6, marginTop: 8 },
+  ackBtnText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
+  ackBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#E0F2F1', padding: 8, borderRadius: 8, marginTop: 8 },
+  ackText: { fontSize: 11, fontWeight: '700', color: '#183153' },
 });
 

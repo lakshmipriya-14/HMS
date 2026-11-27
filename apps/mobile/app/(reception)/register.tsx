@@ -113,18 +113,17 @@ export default function ReceptionRegisterScreen() {
 
       // Real API Call to Backend
       const res = await mobileApiClient.reception.registerPatient(payload);
-      const newPatient = res?.data || {
-        uhid: `ALM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-        firstName: payload.firstName,
-        lastName: payload.lastName,
-        phone: payload.phone,
-        id: `pat-${Date.now()}`,
-      };
+      const newPatient = res?.data;
+      if (!newPatient?.id) {
+        throw new Error('Patient registration did not confirm a record ID.');
+      }
 
       setRegisteredPatient(newPatient);
       Alert.alert(
-        isEmergencyMode ? '🚨 Emergency Patient Registered' : '✓ Patient Registered',
-        `Permanent UHID issued: ${newPatient.uhid}. Patient digital health record created.`
+        isEmergencyMode ? 'Emergency Patient Registered' : 'Patient Registered',
+        `Permanent UHID issued: ${newPatient.uhid}. Patient record created.${
+          newPatient.portalAccess ? `\nPortal activation code: ${newPatient.portalAccess.accessCode}` : ''
+        }`,
       );
     } catch (e: any) {
       Alert.alert('Registration Error', e.message || 'Could not register patient with backend server.');
@@ -150,7 +149,7 @@ export default function ReceptionRegisterScreen() {
           style={[styles.modeTab, !isEmergencyMode && styles.modeTabActive]}
           onPress={() => { setIsEmergencyMode(false); setCategory('WALK_IN'); }}
         >
-          <UserPlus size={16} color={!isEmergencyMode ? '#fff' : '#0284C7'} />
+          <UserPlus size={16} color={!isEmergencyMode ? '#FFFFFF' : '#1565C0'} />
           <Text style={[styles.modeTabText, !isEmergencyMode && styles.modeTabTextActive]}>
             Walk-In / Standard OPD
           </Text>
@@ -160,8 +159,8 @@ export default function ReceptionRegisterScreen() {
           style={[styles.modeTab, isEmergencyMode && styles.modeTabEmergency]}
           onPress={() => { setIsEmergencyMode(true); setCategory('EMERGENCY'); }}
         >
-          <ShieldAlert size={16} color={isEmergencyMode ? '#fff' : '#DC2626'} />
-          <Text style={[styles.modeTabText, isEmergencyMode && styles.modeTabTextActive, { color: isEmergencyMode ? '#fff' : '#DC2626' }]}>
+          <ShieldAlert size={16} color={isEmergencyMode ? '#FFFFFF' : '#DC2626'} />
+          <Text style={[styles.modeTabText, isEmergencyMode && styles.modeTabTextActive, { color: isEmergencyMode ? '#FFFFFF' : '#DC2626' }]}>
             🚨 Emergency Triage
           </Text>
         </TouchableOpacity>
@@ -171,7 +170,7 @@ export default function ReceptionRegisterScreen() {
       {registeredPatient && (
         <View style={styles.receiptCard}>
           <View style={styles.receiptHeader}>
-            <CheckCircle2 size={24} color="#38845A" />
+            <CheckCircle2 size={24} color="#1565C0" />
             <View style={{ flex: 1, marginLeft: 10 }}>
               <Text style={styles.receiptTitle}>Official Patient Registration Receipt</Text>
               <Text style={styles.receiptSub}>Uyirinai Multispeciality Hospital • Ground Floor Front Desk</Text>
@@ -182,8 +181,14 @@ export default function ReceptionRegisterScreen() {
             <Text style={styles.uhidLabel}>ISSUED PERMANENT UHID</Text>
             <Text style={styles.uhidValue}>{registeredPatient.uhid}</Text>
             <Text style={styles.uhidPatient}>
-              {registeredPatient.firstName} {registeredPatient.lastName} • {phone}
+              {registeredPatient.firstName} {registeredPatient.lastName} • {registeredPatient.phone || phone}
             </Text>
+            {registeredPatient.portalAccess && (
+              <Text style={[styles.uhidPatient, { marginTop: 6, color: '#183153', fontWeight: '700', textAlign: 'center' }]}>
+                Portal Account Created ({registeredPatient.portalAccess.email}){'\n'}
+                One-time access code: {registeredPatient.portalAccess.accessCode}
+              </Text>
+            )}
           </View>
 
           <View style={styles.receiptActions}>
@@ -191,7 +196,7 @@ export default function ReceptionRegisterScreen() {
               style={styles.bookNowBtn}
               onPress={() => router.push('/(reception)/appointments' as any)}
             >
-              <Calendar size={14} color="#fff" />
+              <Calendar size={14} color="#FFFFFF" />
               <Text style={styles.bookNowText}>Book OPD Doctor Appointment</Text>
             </TouchableOpacity>
 
@@ -359,10 +364,10 @@ export default function ReceptionRegisterScreen() {
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color="#FFFFFF" />
           ) : (
             <>
-              <UserPlus size={18} color="#fff" />
+              <UserPlus size={18} color="#FFFFFF" />
               <Text style={styles.submitBtnText}>
                 {isEmergencyMode
                   ? 'Register & Dispatch Emergency Triage Token'
@@ -386,30 +391,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#EAF5ED',
+    borderColor: '#E8F1FC',
     borderRadius: 10,
     paddingVertical: 10,
     gap: 6,
   },
-  modeTabActive: { backgroundColor: '#38845A', borderColor: '#38845A' },
+  modeTabActive: { backgroundColor: '#1565C0', borderColor: '#1565C0' },
   modeTabEmergency: { backgroundColor: '#DC2626', borderColor: '#DC2626' },
-  modeTabText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
-  modeTabTextActive: { color: '#fff' },
+  modeTabText: { fontSize: 11, fontWeight: '700', color: '#1565C0' },
+  modeTabTextActive: { color: '#FFFFFF' },
   receiptCard: {
-    backgroundColor: '#F0FDF4',
+    backgroundColor: '#DCFCE7',
     borderWidth: 1.5,
-    borderColor: '#86EFAC',
+    borderColor: '#BBF7D0',
     borderRadius: 14,
     padding: 16,
     marginBottom: 14,
   },
   receiptHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  receiptTitle: { fontSize: 14, fontWeight: '800', color: '#166534' },
-  receiptSub: { fontSize: 10, color: '#15803D', marginTop: 1 },
+  receiptTitle: { fontSize: 14, fontWeight: '800', color: '#16A34A' },
+  receiptSub: { fontSize: 10, color: '#16A34A', marginTop: 1 },
   receiptUhidBox: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
     padding: 14,
     borderWidth: 1,
@@ -417,31 +422,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
-  uhidLabel: { fontSize: 10, fontWeight: '800', color: '#15803D', letterSpacing: 0.5 },
-  uhidValue: { fontSize: 22, fontWeight: '900', color: '#0F172A', marginTop: 3, fontFamily: 'monospace' },
-  uhidPatient: { fontSize: 12, color: '#334155', fontWeight: '700', marginTop: 4 },
+  uhidLabel: { fontSize: 10, fontWeight: '800', color: '#16A34A', letterSpacing: 0.5 },
+  uhidValue: { fontSize: 22, fontWeight: '900', color: '#183153', marginTop: 3, fontFamily: 'monospace' },
+  uhidPatient: { fontSize: 12, color: '#475569', fontWeight: '700', marginTop: 4 },
   receiptActions: { gap: 8 },
   bookNowBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0284C7',
+    backgroundColor: '#1565C0',
     paddingVertical: 12,
     borderRadius: 8,
     gap: 6,
   },
-  bookNowText: { color: '#fff', fontSize: 12, fontWeight: '800' },
+  bookNowText: { color: '#FFFFFF', fontSize: 12, fontWeight: '800' },
   newRegBtn: { paddingVertical: 8, alignItems: 'center' },
-  newRegText: { fontSize: 11, fontWeight: '700', color: '#15803D' },
+  newRegText: { fontSize: 11, fontWeight: '700', color: '#16A34A' },
   formCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     borderWidth: 1,
     borderColor: '#E2E8F0',
     padding: 16,
   },
-  formCardEmergency: { borderColor: '#CDE8D5', backgroundColor: '#FFFDFD' },
-  formTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
+  formCardEmergency: { borderColor: '#BFDBFE', backgroundColor: '#FFFFFF' },
+  formTitle: { fontSize: 16, fontWeight: '800', color: '#183153' },
   formSub: { fontSize: 11, color: '#64748B', marginTop: 2, marginBottom: 14 },
   row: { flexDirection: 'row', gap: 10, marginBottom: 8 },
   col: { flex: 1 },
@@ -453,7 +458,7 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 13,
     backgroundColor: '#F8FAFC',
-    color: '#0F172A',
+    color: '#183153',
     marginBottom: 8,
   },
   genderRow: { flexDirection: 'row', gap: 6 },
@@ -466,21 +471,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F8FAFC',
   },
-  genderChipActive: { backgroundColor: '#38845A', borderColor: '#38845A' },
+  genderChipActive: { backgroundColor: '#1565C0', borderColor: '#1565C0' },
   genderText: { fontSize: 11, fontWeight: '800', color: '#475569' },
-  genderTextActive: { color: '#fff' },
-  sectionDivider: { fontSize: 12, fontWeight: '800', color: '#38845A', marginTop: 8, marginBottom: 8 },
+  genderTextActive: { color: '#FFFFFF' },
+  sectionDivider: { fontSize: 12, fontWeight: '800', color: '#1565C0', marginTop: 8, marginBottom: 8 },
   submitBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 14,
     borderRadius: 10,
     marginTop: 14,
     gap: 8,
   },
   submitBtnEmergency: { backgroundColor: '#DC2626' },
-  submitBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  submitBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
 });
 

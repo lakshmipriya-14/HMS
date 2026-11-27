@@ -44,14 +44,17 @@ export default function PatientAppointmentsScreen() {
   const { data, isLoading, isError, error, refetch, isRefetching } = useQuery({
     queryKey: ['patient-portal-active-appointments', user?.id],
     enabled: !!user,
+    refetchInterval: 20_000,
+    refetchOnWindowFocus: true,
     queryFn: async () => (await mobileApiClient.patientPortal.get(1)).data,
   });
 
   // Cancel mutation
   const cancelMutation = useMutation({
-    mutationFn: async ({ id }: { id: string; reason?: string }) => {
+    mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
       return await mobileApiClient.patientPortal.changeAppointment(id, {
         action: 'cancel',
+        reason,
       });
     },
     onSuccess: () => {
@@ -62,6 +65,9 @@ export default function PatientAppointmentsScreen() {
       queryClient.invalidateQueries({ queryKey: ['patient-portal-active-appointments'] });
       queryClient.invalidateQueries({ queryKey: ['patient-portal-home'] });
       queryClient.invalidateQueries({ queryKey: ['patient-portal-records'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['reception-notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['doctor-workspace'] });
     },
     onError: (err) => {
       setCancelError(err instanceof Error ? err.message : 'Could not cancel appointment.');
@@ -141,7 +147,9 @@ export default function PatientAppointmentsScreen() {
             const docUser = apt.doctor?.employee?.user;
             const doctorName = docUser ? `Dr. ${docUser.firstName} ${docUser.lastName}` : 'Consultant Doctor';
             const deptName = apt.department?.name || 'General Medicine';
-            const branchName = apt.branch?.name || 'Main Branch';
+            const hospitalName = apt.branch?.hospital?.name || data?.patient?.hospital?.name;
+            const branchName = apt.branch?.name || data?.patient?.registrationBranch?.name || 'Hospital Branch';
+            const branchLoc = [apt.branch?.address, apt.branch?.city].filter(Boolean).join(', ');
             const dateStr = apt.appointmentDate?.slice(0, 10);
             const timeStr = apt.appointmentTime || '10:30';
 
@@ -156,7 +164,7 @@ export default function PatientAppointmentsScreen() {
                     <View style={styles.docNameCol}>
                       <Text style={styles.docName}>{doctorName}</Text>
                       <Text style={styles.docDept}>
-                        {deptName} · {branchName}
+                        {deptName} · {hospitalName ? `${hospitalName} — ` : ''}{branchName}{branchLoc ? ` (${branchLoc})` : ''}
                       </Text>
                     </View>
                   </View>
@@ -180,6 +188,19 @@ export default function PatientAppointmentsScreen() {
                   ) : null}
                 </View>
 
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                  {apt.appointmentNumber ? (
+                    <Text style={{ fontSize: 11.5, fontWeight: '700', color: UyirinaiTheme.colors.textSecondary }}>
+                      Appointment ID: {apt.appointmentNumber}
+                    </Text>
+                  ) : <View />}
+                  {apt.source ? (
+                    <Text style={{ fontSize: 11, fontWeight: '700', color: apt.source === 'RECEPTION_WALK_IN' ? '#F59E0B' : UyirinaiTheme.colors.primaryDark }}>
+                      {apt.source === 'RECEPTION_WALK_IN' ? 'Walk-in / Reception' : 'Online Booking'}
+                    </Text>
+                  ) : null}
+                </View>
+
                 {apt.reasonForVisit ? (
                   <Text style={styles.reasonText}>
                     <Text style={{ fontWeight: '700' }}>Reason: </Text>
@@ -195,14 +216,20 @@ export default function PatientAppointmentsScreen() {
                 </View>
 
                 <View style={styles.cardActionsRow}>
-                  <Pressable
-                    style={styles.cancelBtn}
-                    onPress={() => handleCancelClick(apt)}
-                    disabled={cancelMutation.isPending}
-                  >
-                    <XCircle size={15} color={UyirinaiTheme.colors.error} />
-                    <Text style={styles.cancelText}>Cancel Appointment</Text>
-                  </Pressable>
+                  {apt.status === 'IN_PROGRESS' ? (
+                    <Text style={styles.rescheduleNoticeText}>
+                      Consultation is currently in progress with your doctor.
+                    </Text>
+                  ) : (
+                    <Pressable
+                      style={styles.cancelBtn}
+                      onPress={() => handleCancelClick(apt)}
+                      disabled={cancelMutation.isPending}
+                    >
+                      <XCircle size={15} color={UyirinaiTheme.colors.error} />
+                      <Text style={styles.cancelText}>Cancel Appointment</Text>
+                    </Pressable>
+                  )}
                 </View>
               </View>
             );
@@ -489,11 +516,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: '#FDE8E8',
+    backgroundColor: '#FEE2E2',
     paddingVertical: 10,
     borderRadius: UyirinaiTheme.borderRadius.md,
     borderWidth: 1,
-    borderColor: '#F8B4B4',
+    borderColor: '#FECACA',
   },
   cancelText: {
     fontSize: 13,
@@ -681,7 +708,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#FDE8E8',
+    backgroundColor: '#FEE2E2',
     padding: 10,
     borderRadius: UyirinaiTheme.borderRadius.md,
     marginBottom: 10,

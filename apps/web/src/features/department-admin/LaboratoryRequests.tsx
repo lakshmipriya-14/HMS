@@ -53,7 +53,7 @@ export const LaboratoryRequests: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <FlaskConical className="w-6 h-6 text-teal-600" />
+            <FlaskConical className="w-6 h-6 text-[#00897B]" />
             Department Laboratory Requests Monitoring
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -63,8 +63,8 @@ export const LaboratoryRequests: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600" />
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-[#DC2626]" />
           <span>{error}</span>
         </div>
       )}
@@ -78,7 +78,7 @@ export const LaboratoryRequests: React.FC = () => {
             placeholder="Search by order ID, patient, barcode..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500"
+            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B]"
           />
         </div>
 
@@ -87,7 +87,7 @@ export const LaboratoryRequests: React.FC = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500 font-medium text-slate-700"
+            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B] font-medium text-slate-700"
           >
             <option value="">All Statuses</option>
             <option value="ORDERED">Ordered</option>
@@ -124,7 +124,7 @@ export const LaboratoryRequests: React.FC = () => {
 
                   return (
                     <tr key={ord.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 px-4 font-mono font-bold text-teal-800">
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#183153]">
                         {ord.orderNumber}
                       </td>
                       <td className="py-3.5 px-4 font-mono text-slate-600 flex items-center gap-1.5">
@@ -142,7 +142,7 @@ export const LaboratoryRequests: React.FC = () => {
                         {testNames}
                       </td>
                       <td className="py-3.5 px-4">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${ord.priority === 'STAT' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-slate-100 text-slate-600'}`}>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${ord.priority === 'STAT' ? 'bg-[#FEE2E2] text-[#DC2626] border border-[#FECACA]' : 'bg-slate-100 text-slate-600'}`}>
                           {ord.priority}
                         </span>
                       </td>

@@ -83,11 +83,11 @@ export default function OtherDiagnosticsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadDiagnostics} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadDiagnostics} tintColor="#1565C0" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <Stethoscope size={40} color="#CBD5E1" />
@@ -111,13 +111,13 @@ export default function OtherDiagnosticsScreen() {
                   <View
                     style={[
                       styles.statusPill,
-                      { backgroundColor: isCompleted ? '#EAF5ED' : '#FEF3C7' },
+                      { backgroundColor: isCompleted ? '#E8F1FC' : '#FEF3C7' },
                     ]}
                   >
                     <Text
                       style={[
                         styles.statusPillText,
-                        { color: isCompleted ? '#38845A' : '#D97706' },
+                        { color: isCompleted ? '#1565C0' : '#F59E0B' },
                       ]}
                     >
                       {item.status || 'ORDERED'}
@@ -127,7 +127,7 @@ export default function OtherDiagnosticsScreen() {
 
                 <View style={styles.detailsRow}>
                   <View style={styles.serviceTag}>
-                    <Activity size={12} color="#38845A" />
+                    <Activity size={12} color="#1565C0" />
                     <Text style={styles.serviceTagText}>{item.category || 'Specialized Diagnostic'}</Text>
                   </View>
                   <Text style={styles.docText}>
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 8,
     fontSize: 12,
-    color: '#0F172A',
+    color: '#183153',
     marginLeft: 6,
   },
   statusChips: {
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
   },
   chipActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   chipText: {
     fontSize: 11,
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   serviceTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   patUhid: {
     fontSize: 11,
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -268,11 +268,11 @@ const styles = StyleSheet.create({
   serviceTagText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   docText: {
     fontSize: 11,
-    color: '#334155',
+    color: '#475569',
     fontWeight: '500',
   },
 });

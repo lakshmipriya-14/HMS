@@ -54,7 +54,7 @@ export const IpdManagement: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <DoorOpen className="w-6 h-6 text-teal-600" />
+            <DoorOpen className="w-6 h-6 text-[#00897B]" />
             IPD Inpatient Monitoring & Census
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -64,8 +64,8 @@ export const IpdManagement: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600" />
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-[#DC2626]" />
           <span>{error}</span>
         </div>
       )}
@@ -79,7 +79,7 @@ export const IpdManagement: React.FC = () => {
             placeholder="Search by patient, UHID, or admission ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500"
+            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B]"
           />
         </div>
 
@@ -88,7 +88,7 @@ export const IpdManagement: React.FC = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500 font-medium text-slate-700"
+            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B] font-medium text-slate-700"
           >
             <option value="">All Statuses</option>
             <option value="ADMITTED">Currently Admitted</option>
@@ -126,7 +126,7 @@ export const IpdManagement: React.FC = () => {
                   );
                   return (
                     <tr key={adm.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 px-4 font-mono font-bold text-teal-800">
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#183153]">
                         {adm.admissionNumber}
                       </td>
                       <td className="py-3.5 px-4">
@@ -135,7 +135,7 @@ export const IpdManagement: React.FC = () => {
                       </td>
                       <td className="py-3.5 px-4">
                         <p className="font-semibold text-slate-800">{adm.ward?.name || 'General Ward'}</p>
-                        <p className="text-[11px] text-teal-700 font-bold">
+                        <p className="text-[11px] text-[#00897B] font-bold">
                           Room {adm.bed?.roomNumber || '—'} • Bed {adm.bed?.bedNumber || '—'}
                         </p>
                       </td>

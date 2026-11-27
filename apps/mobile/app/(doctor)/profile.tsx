@@ -41,11 +41,11 @@ export default function DoctorProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { padding: 18, gap: 10, backgroundColor: '#fff', flexGrow: 1 },
+  page: { padding: 18, gap: 10, backgroundColor: '#FFFFFF', flexGrow: 1 },
   avatar: { width: 64, height: 64, borderRadius: 32 },
   title: { fontSize: 23, fontWeight: '800', color: UyirinaiTheme.colors.primary },
   heading: { marginTop: 8, fontSize: 16, fontWeight: '700', color: UyirinaiTheme.colors.primary },
-  card: { padding: 10, gap: 3, backgroundColor: '#fff5f5', borderRadius: 8 },
-  signOut: { alignSelf: 'flex-start', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 8, backgroundColor: '#fff5f5' },
+  card: { padding: 10, gap: 3, backgroundColor: '#FEE2E2', borderRadius: 8 },
+  signOut: { alignSelf: 'flex-start', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 8, backgroundColor: '#FEE2E2' },
   action: { color: UyirinaiTheme.colors.primary, fontWeight: '700' },
 });

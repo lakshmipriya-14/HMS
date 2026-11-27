@@ -109,21 +109,21 @@ export const BillingFinanceManagement: React.FC = () => {
     <div className="space-y-6 pb-12">
       {/* Messages */}
       {successMessage && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             {successMessage}
           </div>
-          <button onClick={() => setSuccessMessage('')} className="text-emerald-600 hover:text-emerald-900">×</button>
+          <button onClick={() => setSuccessMessage('')} className="text-[#16A34A] hover:text-emerald-900">×</button>
         </div>
       )}
       {errorMessage && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600" />
+            <AlertCircle className="w-4 h-4 text-[#DC2626]" />
             {errorMessage}
           </div>
-          <button onClick={() => setErrorMessage('')} className="text-rose-600 hover:text-rose-900">×</button>
+          <button onClick={() => setErrorMessage('')} className="text-[#DC2626] hover:text-rose-900">×</button>
         </div>
       )}
 
@@ -158,8 +158,8 @@ export const BillingFinanceManagement: React.FC = () => {
           <p className="text-xs text-slate-400 mt-0.5">{invoices.length} total hospital invoices issued</p>
         </div>
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Total Collected Collections</span>
-          <h3 className="text-2xl font-bold text-emerald-700 mt-1">₹{totalPaid.toLocaleString('en-IN')}</h3>
+          <span className="text-xs font-bold text-[#16A34A] uppercase tracking-wider">Total Collected Collections</span>
+          <h3 className="text-2xl font-bold text-[#16A34A] mt-1">₹{totalPaid.toLocaleString('en-IN')}</h3>
           <p className="text-xs text-slate-400 mt-0.5">Realized via Cash, UPI, Cards, TPA</p>
         </div>
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
@@ -227,7 +227,7 @@ export const BillingFinanceManagement: React.FC = () => {
                   const balance = billed - paid;
                   return (
                     <tr key={inv.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 px-4 font-mono font-bold text-teal-700">{inv.invoiceNumber}</td>
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#00897B]">{inv.invoiceNumber}</td>
                       <td className="py-3.5 px-4">
                         <div className="font-bold text-slate-800">
                           {inv.patient?.firstName} {inv.patient?.lastName}
@@ -235,7 +235,7 @@ export const BillingFinanceManagement: React.FC = () => {
                         <span className="text-[10px] text-slate-400 font-mono">{inv.patient?.uhid}</span>
                       </td>
                       <td className="py-3.5 px-4 text-right font-bold text-slate-900">₹{billed.toLocaleString('en-IN')}</td>
-                      <td className="py-3.5 px-4 text-right font-semibold text-emerald-700">₹{paid.toLocaleString('en-IN')}</td>
+                      <td className="py-3.5 px-4 text-right font-semibold text-[#16A34A]">₹{paid.toLocaleString('en-IN')}</td>
                       <td className="py-3.5 px-4 text-right font-bold text-amber-700">₹{balance.toLocaleString('en-IN')}</td>
                       <td className="py-3.5 px-4 text-slate-500">
                         {new Date(inv.createdAt).toLocaleDateString('en-IN', {
@@ -257,13 +257,13 @@ export const BillingFinanceManagement: React.FC = () => {
                               setErrorMessage('');
                               setPaymentModalOpen(true);
                             }}
-                            className="px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1"
+                            className="px-2.5 py-1 bg-[#DCFCE7] text-[#16A34A] hover:bg-[#DCFCE7] border border-[#BBF7D0] rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1"
                           >
                             <DollarSign className="w-3.5 h-3.5" />
                             Collect
                           </button>
                         ) : (
-                          <span className="text-emerald-600 font-semibold text-[11px]">Settled</span>
+                          <span className="text-[#16A34A] font-semibold text-[11px]">Settled</span>
                         )}
                       </td>
                     </tr>
@@ -338,7 +338,7 @@ export const BillingFinanceManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting || paymentAmount <= 0}
-              className="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] rounded-lg shadow-sm"
             >
               {submitting ? 'Recording...' : 'Record Payment Receipt'}
             </button>

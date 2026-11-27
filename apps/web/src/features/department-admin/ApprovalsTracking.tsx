@@ -91,7 +91,7 @@ export const ApprovalsTracking: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <CheckSquare className="w-6 h-6 text-teal-600" />
+            <CheckSquare className="w-6 h-6 text-[#00897B]" />
             Centralized Requisitions & Approvals Hub
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -101,7 +101,7 @@ export const ApprovalsTracking: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs font-semibold">
+        <div className="p-4 bg-[#FEE2E2] border border-[#FECACA] rounded-xl flex items-center gap-2 text-[#DC2626] text-xs font-semibold">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
@@ -120,14 +120,14 @@ export const ApprovalsTracking: React.FC = () => {
           </p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Approved / Active</p>
-          <p className="text-2xl font-black text-emerald-600 mt-1">
+          <p className="text-xs font-bold text-[#16A34A] uppercase tracking-wider">Approved / Active</p>
+          <p className="text-2xl font-black text-[#16A34A] mt-1">
             {combinedList.filter((i) => i.status === 'APPROVED').length}
           </p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-          <p className="text-xs font-bold text-teal-600 uppercase tracking-wider">Completed / Resolved</p>
-          <p className="text-2xl font-black text-teal-700 mt-1">
+          <p className="text-xs font-bold text-[#00897B] uppercase tracking-wider">Completed / Resolved</p>
+          <p className="text-2xl font-black text-[#00897B] mt-1">
             {combinedList.filter((i) => ['RESOLVED', 'COMPLETED', 'DELIVERED'].includes(i.status)).length}
           </p>
         </div>
@@ -142,7 +142,7 @@ export const ApprovalsTracking: React.FC = () => {
               onClick={() => setActiveTab(tab)}
               className={`px-3 py-1.5 text-xs font-bold rounded-xl transition shrink-0 ${
                 activeTab === tab
-                  ? 'bg-teal-600 text-white shadow-sm'
+                  ? 'bg-[#1565C0] text-white shadow-sm'
                   : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
               }`}
             >
@@ -166,7 +166,7 @@ export const ApprovalsTracking: React.FC = () => {
             placeholder="Search items..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+            className="w-full pl-10 pr-4 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
           />
         </div>
       </div>
@@ -210,7 +210,7 @@ export const ApprovalsTracking: React.FC = () => {
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
                           item.priority === 'URGENT' || item.priority === 'CRITICAL'
-                            ? 'bg-rose-100 text-rose-700'
+                            ? 'bg-rose-100 text-[#DC2626]'
                             : item.priority === 'HIGH'
                             ? 'bg-amber-100 text-amber-700'
                             : 'bg-slate-100 text-slate-600'
@@ -228,7 +228,7 @@ export const ApprovalsTracking: React.FC = () => {
                     <td className="py-3.5 px-4 text-right">
                       <Link
                         to={item.link}
-                        className="px-2.5 py-1 text-[11px] font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 rounded-lg transition inline-flex items-center gap-1"
+                        className="px-2.5 py-1 text-[11px] font-bold text-[#00897B] bg-[#E0F2F1] hover:bg-[#E0F2F1] rounded-lg transition inline-flex items-center gap-1"
                       >
                         Open <ArrowRight className="w-3 h-3" />
                       </Link>

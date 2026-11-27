@@ -93,18 +93,18 @@ export default function EquipmentManagementScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadEquipment} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadEquipment} tintColor="#1565C0" />
         }
       >
         {success && (
           <View style={styles.successBanner}>
-            <CheckCircle2 size={16} color="#38845A" />
+            <CheckCircle2 size={16} color="#1565C0" />
             <Text style={styles.successText}>Biomedical maintenance ticket created</Text>
           </View>
         )}
 
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <Wrench size={40} color="#CBD5E1" />
@@ -126,13 +126,13 @@ export default function EquipmentManagementScreen() {
                   <View
                     style={[
                       styles.statusPill,
-                      { backgroundColor: isOperational ? '#EAF5ED' : '#EAF5ED' },
+                      { backgroundColor: isOperational ? '#E8F1FC' : '#E8F1FC' },
                     ]}
                   >
                     <Text
                       style={[
                         styles.statusPillText,
-                        { color: isOperational ? '#38845A' : '#DC2626' },
+                        { color: isOperational ? '#1565C0' : '#DC2626' },
                       ]}
                     >
                       {item.status || 'OPERATIONAL'}
@@ -151,7 +151,7 @@ export default function EquipmentManagementScreen() {
                       setReportModal(true);
                     }}
                   >
-                    <Wrench size={12} color="#D97706" />
+                    <Wrench size={12} color="#F59E0B" />
                     <Text style={styles.reportBtnText}>Report Issue</Text>
                   </TouchableOpacity>
                 </View>
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 8,
     fontSize: 12,
-    color: '#0F172A',
+    color: '#183153',
     marginLeft: 6,
   },
   content: {
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     padding: 12,
     borderRadius: 12,
     marginBottom: 16,
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   emptyState: {
     alignItems: 'center',
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   equipName: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   equipMeta: {
     fontSize: 11,
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
   reportBtnText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#D97706',
+    color: '#F59E0B',
   },
   modalOverlay: {
     flex: 1,
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   inputLabel: {
     fontSize: 11,
@@ -363,10 +363,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',

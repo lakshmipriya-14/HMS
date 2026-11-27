@@ -112,7 +112,7 @@ export default function RadiologyReportsScreen() {
             {/* Simulated PACS Thumbnail */}
             <View style={styles.pacsPreviewBox}>
               <View style={styles.pacsBar}>
-                <Eye size={14} color="#38845A" />
+                <Eye size={14} color="#1565C0" />
                 <Text style={styles.pacsBarText}>PACS DICOM Preview (Verified Series)</Text>
               </View>
             </View>
@@ -146,35 +146,35 @@ export default function RadiologyReportsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
-  header: { backgroundColor: '#fff', padding: 16, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
-  title: { fontSize: 18, fontWeight: '800', color: '#0F172A' },
+  header: { backgroundColor: '#FFFFFF', padding: 16, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
+  title: { fontSize: 18, fontWeight: '800', color: '#183153' },
   sub: { fontSize: 12, color: '#64748B', marginTop: 2 },
   searchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, marginTop: 12, gap: 8 },
-  input: { flex: 1, fontSize: 13, color: '#0F172A', padding: 0 },
+  input: { flex: 1, fontSize: 13, color: '#183153', padding: 0 },
   scroll: { flex: 1, padding: 14 },
-  card: { backgroundColor: '#fff', borderRadius: 14, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: '#E2E8F0' },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: '#E2E8F0' },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   idBadge: { backgroundColor: '#F1F5F9', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  idText: { fontSize: 11, fontWeight: '800', color: '#334155' },
-  modalityBadge: { backgroundColor: '#E0F2FE', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  modalityText: { fontSize: 10, fontWeight: '800', color: '#0369A1' },
-  criticalPill: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, gap: 4, marginLeft: 'auto' },
+  idText: { fontSize: 11, fontWeight: '800', color: '#475569' },
+  modalityBadge: { backgroundColor: '#E8F1FC', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  modalityText: { fontSize: 10, fontWeight: '800', color: '#0D47A1' },
+  criticalPill: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E8F1FC', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, gap: 4, marginLeft: 'auto' },
   criticalPillText: { fontSize: 10, fontWeight: '800', color: '#DC2626' },
-  scanTitle: { fontSize: 15, fontWeight: '800', color: '#0F172A', marginTop: 8 },
+  scanTitle: { fontSize: 15, fontWeight: '800', color: '#183153', marginTop: 8 },
   patientMeta: { fontSize: 12, color: '#64748B', marginTop: 2 },
-  boldText: { fontWeight: '700', color: '#1E293B' },
-  pacsPreviewBox: { backgroundColor: '#EAF5ED', borderRadius: 8, padding: 8, marginVertical: 8, borderWidth: 1, borderColor: '#EAF5ED' },
+  boldText: { fontWeight: '700', color: '#183153' },
+  pacsPreviewBox: { backgroundColor: '#E8F1FC', borderRadius: 8, padding: 8, marginVertical: 8, borderWidth: 1, borderColor: '#E8F1FC' },
   pacsBar: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  pacsBarText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
+  pacsBarText: { fontSize: 11, fontWeight: '700', color: '#1565C0' },
   textBox: { marginVertical: 4 },
   textLabel: { fontSize: 10, fontWeight: '700', color: '#64748B', textTransform: 'uppercase' },
-  textContent: { fontSize: 12, color: '#334155', marginTop: 2, lineHeight: 17 },
+  textContent: { fontSize: 12, color: '#475569', marginTop: 2, lineHeight: 17 },
   impressionBox: { backgroundColor: '#F8FAFC', borderRadius: 8, padding: 10, marginVertical: 6, borderWidth: 1, borderColor: '#E2E8F0' },
-  impressionCritical: { backgroundColor: '#FEF2F2', borderColor: '#CDE8D5' },
-  impressionLabel: { fontSize: 11, fontWeight: '800', color: '#38845A', textTransform: 'uppercase' },
+  impressionCritical: { backgroundColor: '#FEE2E2', borderColor: '#BFDBFE' },
+  impressionLabel: { fontSize: 11, fontWeight: '800', color: '#1565C0', textTransform: 'uppercase' },
   impressionCriticalLabel: { color: '#DC2626' },
-  impressionContent: { fontSize: 12, color: '#0F172A', marginTop: 2, fontWeight: '600' },
-  impressionCriticalContent: { color: '#991B1B' },
+  impressionContent: { fontSize: 12, color: '#183153', marginTop: 2, fontWeight: '600' },
+  impressionCriticalContent: { color: '#DC2626' },
   footerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
   signeeText: { fontSize: 11, color: '#64748B', fontStyle: 'italic' },
   dateText: { fontSize: 11, color: '#94A3B8' },

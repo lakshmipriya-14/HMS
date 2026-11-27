@@ -1,18 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { Image, View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import {
-  UserPlus,
+  User,
   LogOut,
-  Building2,
-  Calendar,
   Search,
-  Ticket,
   FileBarChart,
   Stethoscope,
   ChevronRight,
-  Clock,
 } from 'lucide-react-native';
 
 export default function ReceptionProfileScreen() {
@@ -28,20 +24,26 @@ export default function ReceptionProfileScreen() {
     <ScrollView style={styles.container}>
       <View style={styles.card}>
         <View style={styles.avatar}>
-          <UserPlus size={36} color="#0284C7" />
+          {user?.avatarUrl ? (
+            <Image source={{ uri: user.avatarUrl }} style={styles.avatarImage} />
+          ) : (
+            <User size={34} color="#1565C0" />
+          )}
         </View>
         <Text style={styles.name}>{user?.firstName || 'Front Desk'} {user?.lastName || 'Receptionist'}</Text>
         <Text style={styles.role}>Patient Registration & OPD Front Desk</Text>
-        <Text style={styles.sub}>{user?.email || 'receptionist@uyirinaihospital.com'}</Text>
-        <Text style={styles.deskTag}>Terminal 01 • Ground Floor Main Atrium</Text>
+        <Text style={styles.sub}>{user?.email || 'Not provided'}</Text>
+        <Text style={styles.deskTag}>
+          Employee ID: {user?.employeeCode || user?.employeeId || 'Assigned'}
+        </Text>
 
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Hospital Facility</Text>
-          <Text style={styles.infoVal}>Uyirinai Multispeciality Hospital</Text>
+          <Text style={styles.infoVal}>{user?.hospitalName || 'Uyirinai Multispeciality Hospital'}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Assigned Counter</Text>
-          <Text style={styles.infoVal}>OPD Registration & Token Desk</Text>
+          <Text style={styles.infoLabel}>Assigned Branch</Text>
+          <Text style={styles.infoVal}>{user?.branchName || 'OPD Registration & Token Desk'}</Text>
         </View>
       </View>
 
@@ -54,7 +56,7 @@ export default function ReceptionProfileScreen() {
           onPress={() => router.push('/(reception)/search' as any)}
         >
           <View style={styles.menuLeft}>
-            <Search size={18} color="#0284C7" />
+            <Search size={18} color="#1565C0" />
             <Text style={styles.menuText}>Search Patient Directory</Text>
           </View>
           <ChevronRight size={16} color="#94A3B8" />
@@ -65,7 +67,7 @@ export default function ReceptionProfileScreen() {
           onPress={() => router.push('/(reception)/doctors' as any)}
         >
           <View style={styles.menuLeft}>
-            <Stethoscope size={18} color="#0284C7" />
+            <Stethoscope size={18} color="#1565C0" />
             <Text style={styles.menuText}>Doctor Schedules & OPD Hours</Text>
           </View>
           <ChevronRight size={16} color="#94A3B8" />
@@ -76,7 +78,7 @@ export default function ReceptionProfileScreen() {
           onPress={() => router.push('/(reception)/reports' as any)}
         >
           <View style={styles.menuLeft}>
-            <FileBarChart size={18} color="#0284C7" />
+            <FileBarChart size={18} color="#1565C0" />
             <Text style={styles.menuText}>Daily Reception Reports & Analytics</Text>
           </View>
           <ChevronRight size={16} color="#94A3B8" />
@@ -95,21 +97,22 @@ export default function ReceptionProfileScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC', padding: 16 },
-  card: { backgroundColor: '#fff', padding: 20, borderRadius: 16, alignItems: 'center', borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 14 },
-  avatar: { width: 68, height: 68, borderRadius: 34, backgroundColor: '#E0F2FE', alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
-  name: { fontSize: 17, fontWeight: '800', color: '#0F172A' },
-  role: { fontSize: 12, fontWeight: '700', color: '#0284C7', marginTop: 2 },
+  card: { backgroundColor: '#FFFFFF', padding: 20, borderRadius: 16, alignItems: 'center', borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 14 },
+  avatar: { width: 68, height: 68, borderRadius: 34, backgroundColor: '#E8F1FC', alignItems: 'center', justifyContent: 'center', marginBottom: 10, overflow: 'hidden' },
+  avatarImage: { width: '100%', height: '100%' },
+  name: { fontSize: 17, fontWeight: '800', color: '#183153' },
+  role: { fontSize: 12, fontWeight: '700', color: '#1565C0', marginTop: 2 },
   sub: { fontSize: 11, color: '#64748B', marginTop: 2 },
-  deskTag: { backgroundColor: '#F0F9FF', color: '#0284C7', fontSize: 10, fontWeight: '800', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginTop: 10, marginBottom: 12 },
+  deskTag: { backgroundColor: '#E8F1FC', color: '#1565C0', fontSize: 10, fontWeight: '800', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginTop: 10, marginBottom: 12 },
   infoRow: { flexDirection: 'row', justifyContent: 'space-between', width: '100%', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#F8FAFC' },
   infoLabel: { fontSize: 11, color: '#64748B' },
-  infoVal: { fontSize: 11, fontWeight: '700', color: '#0F172A' },
-  menuCard: { backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 14 },
+  infoVal: { fontSize: 11, fontWeight: '700', color: '#183153' },
+  menuCard: { backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 14 },
   menuTitle: { fontSize: 11, fontWeight: '800', color: '#64748B', marginBottom: 10 },
   menuItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#F8FAFC' },
   menuLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  menuText: { fontSize: 13, fontWeight: '700', color: '#1E293B' },
-  logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#EAF5ED', paddingVertical: 14, borderRadius: 10, gap: 8 },
+  menuText: { fontSize: 13, fontWeight: '700', color: '#183153' },
+  logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#E8F1FC', paddingVertical: 14, borderRadius: 10, gap: 8 },
   logoutText: { color: '#DC2626', fontSize: 13, fontWeight: '800' },
 });
 

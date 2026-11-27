@@ -131,7 +131,7 @@ export const NursingDashboard: React.FC = () => {
                   <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500 mb-2">
                     <span>Latest Vitals</span>
                     {latestVitals?.isAbnormal && (
-                      <span className="text-rose-600 font-bold flex items-center space-x-1">
+                      <span className="text-[#DC2626] font-bold flex items-center space-x-1">
                         <AlertTriangle className="w-3 h-3" />
                         <span>Abnormal</span>
                       </span>
@@ -164,7 +164,7 @@ export const NursingDashboard: React.FC = () => {
               <div className="mt-4 pt-3 border-t border-slate-100">
                 <button
                   onClick={() => setSelectedAdmission(adm)}
-                  className="w-full py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors flex items-center justify-center space-x-1.5"
+                  className="w-full py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm transition-colors flex items-center justify-center space-x-1.5"
                 >
                   <Thermometer className="w-4 h-4" />
                   <span>Chart Vitals</span>
@@ -184,7 +184,7 @@ export const NursingDashboard: React.FC = () => {
       >
         {feedbackMessage ? (
           <div className="p-6 text-center space-y-2">
-            <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto" />
+            <CheckCircle2 className="w-10 h-10 text-[#16A34A] mx-auto" />
             <h4 className="text-sm font-bold text-slate-800">{feedbackMessage}</h4>
           </div>
         ) : (
@@ -296,7 +296,7 @@ export const NursingDashboard: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
+                className="px-6 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
               >
                 {isSubmitting ? 'Recording Vitals...' : 'Save & Verify'}
               </button>

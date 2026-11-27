@@ -19,7 +19,7 @@ export const RolePermissionsView: React.FC = () => {
       {/* Header */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="p-2.5 bg-teal-50 text-teal-700 rounded-xl border border-teal-100">
+          <span className="p-2.5 bg-[#E0F2F1] text-[#00897B] rounded-xl border border-[#B2DFDB]">
             <ShieldCheck className="w-6 h-6" />
           </span>
           <div>
@@ -35,7 +35,7 @@ export const RolePermissionsView: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
         <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
           <div className="flex items-center gap-2 font-bold text-slate-800 mb-1">
-            <Shield className="w-4 h-4 text-purple-600" />
+            <Shield className="w-4 h-4 text-[#1565C0]" />
             Super Admin Authority
           </div>
           <p className="text-slate-500">
@@ -46,22 +46,22 @@ export const RolePermissionsView: React.FC = () => {
 
         <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
           <div className="flex items-center gap-2 font-bold text-slate-800 mb-1">
-            <Shield className="w-4 h-4 text-teal-600" />
+            <Shield className="w-4 h-4 text-[#00897B]" />
             Hospital Admin Authority
           </div>
           <p className="text-slate-500">
-            Operating branch scope (<code className="font-mono text-teal-700">branch:{"{branchId}"}</code>).
+            Operating branch scope (<code className="font-mono text-[#00897B]">branch:{"{branchId}"}</code>).
             Governs departments, rosters doctors, hires staff, manages wards/beds, and inspects financial ledgers.
           </p>
         </div>
 
         <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
           <div className="flex items-center gap-2 font-bold text-slate-800 mb-1">
-            <Shield className="w-4 h-4 text-sky-600" />
+            <Shield className="w-4 h-4 text-[#1565C0]" />
             Department Admin Authority
           </div>
           <p className="text-slate-500">
-            Department-level scope (<code className="font-mono text-sky-700">branch:{"{b}"}:dept:{"{d}"}</code>).
+            Department-level scope (<code className="font-mono text-[#1565C0]">branch:{"{b}"}:dept:{"{d}"}</code>).
             Exactly 1 active admin per department. Governs intra-department clinical rosters and attendance.
           </p>
         </div>
@@ -95,7 +95,7 @@ export const RolePermissionsView: React.FC = () => {
               onClick={() => setSelectedRole(role)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
                 selectedRole === role
-                  ? 'bg-teal-700 text-white border-teal-800 shadow-xs'
+                  ? 'bg-[#0D47A1] text-white border-teal-800 shadow-xs'
                   : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
               }`}
             >
@@ -108,7 +108,7 @@ export const RolePermissionsView: React.FC = () => {
         <div>
           <div className="flex items-center justify-between mb-3 text-xs">
             <span className="font-bold text-slate-700">
-              Granted Permissions for <span className="text-teal-700 font-mono">{selectedRole}</span>:
+              Granted Permissions for <span className="text-[#00897B] font-mono">{selectedRole}</span>:
             </span>
             <span className="text-slate-400 font-medium">{filteredPermissions.length} permissions</span>
           </div>
@@ -121,7 +121,7 @@ export const RolePermissionsView: React.FC = () => {
                   key={perm}
                   className="p-3 bg-slate-50/80 border border-slate-200/80 rounded-xl flex items-center gap-2 text-xs"
                 >
-                  <Key className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+                  <Key className="w-3.5 h-3.5 text-[#00897B] shrink-0" />
                   <div>
                     <span className="font-bold text-slate-800 font-mono">{perm}</span>
                     <span className="text-[10px] text-slate-400 block">

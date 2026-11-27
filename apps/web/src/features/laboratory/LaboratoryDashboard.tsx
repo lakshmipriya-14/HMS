@@ -137,7 +137,7 @@ export const LaboratoryDashboard: React.FC = () => {
       <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center space-x-2">
-            <FlaskConical className="w-4 h-4 text-teal-600" />
+            <FlaskConical className="w-4 h-4 text-[#00897B]" />
             <h3 className="font-bold text-sm text-slate-800">Pending Laboratory Orders Worklist</h3>
           </div>
           <span className="text-xs text-slate-500">{worklist.length} active orders</span>
@@ -160,7 +160,7 @@ export const LaboratoryDashboard: React.FC = () => {
                 <tr key={order.id} className="hover:bg-slate-50/60 transition-colors">
                   <td className="py-3.5 px-4">
                     <div className="font-mono font-bold text-slate-800">{order.orderNumber}</div>
-                    <div className="text-[11px] text-teal-700 font-mono flex items-center space-x-1 mt-0.5">
+                    <div className="text-[11px] text-[#00897B] font-mono flex items-center space-x-1 mt-0.5">
                       <Barcode className="w-3.5 h-3.5" />
                       <span>{order.barcode}</span>
                     </div>
@@ -201,7 +201,7 @@ export const LaboratoryDashboard: React.FC = () => {
                     {order.status === 'ORDERED' && (
                       <button
                         onClick={() => handleCollectSample(order.id)}
-                        className="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
+                        className="px-3 py-1.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
                       >
                         Collect Sample
                       </button>
@@ -209,7 +209,7 @@ export const LaboratoryDashboard: React.FC = () => {
                     {(order.status === 'COLLECTED' || order.status === 'PROCESSING') && (
                       <button
                         onClick={() => openResultEntry(order)}
-                        className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
+                        className="px-3 py-1.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
                       >
                         Enter Results
                       </button>
@@ -217,7 +217,7 @@ export const LaboratoryDashboard: React.FC = () => {
                     {order.status === 'PROCESSING' && (
                       <button
                         onClick={() => handleReleaseReport(order.id)}
-                        className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors inline-flex items-center space-x-1"
+                        className="px-3 py-1.5 bg-[#16A34A] hover:bg-[#15803D] text-white rounded-lg text-xs font-semibold shadow-sm transition-colors inline-flex items-center space-x-1"
                       >
                         <ShieldCheck className="w-3.5 h-3.5" />
                         <span>Release Report</span>
@@ -296,7 +296,7 @@ export const LaboratoryDashboard: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm"
+              className="px-6 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm"
             >
               {isSubmitting ? 'Saving...' : 'Save Results'}
             </button>

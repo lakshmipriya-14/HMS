@@ -51,7 +51,7 @@ export const ActivityHistory: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <History className="w-6 h-6 text-teal-600" />
+            <History className="w-6 h-6 text-[#00897B]" />
             Department Audit Log & Activity Trail
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -68,7 +68,7 @@ export const ActivityHistory: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs font-semibold">
+        <div className="p-4 bg-[#FEE2E2] border border-[#FECACA] rounded-xl flex items-center gap-2 text-[#DC2626] text-xs font-semibold">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
@@ -82,7 +82,7 @@ export const ActivityHistory: React.FC = () => {
           placeholder="Filter audit logs by action, user, entity, or keyword..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+          className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
         />
       </div>
 
@@ -99,13 +99,13 @@ export const ActivityHistory: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-6">
           {filtered.map((log) => (
             <div key={log.id} className="flex items-start gap-4 pb-6 border-b border-slate-100 last:border-0 last:pb-0">
-              <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-9 h-9 rounded-xl bg-[#E0F2F1] text-[#00897B] flex items-center justify-center shrink-0 mt-0.5">
                 <Activity className="w-4 h-4" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[11px] font-black uppercase text-teal-700 bg-teal-50 px-2 py-0.5 rounded">
+                    <span className="font-mono text-[11px] font-black uppercase text-[#00897B] bg-[#E0F2F1] px-2 py-0.5 rounded">
                       {log.action}
                     </span>
                     <span className="text-xs font-bold text-slate-800">

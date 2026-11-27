@@ -133,7 +133,7 @@ export const BillingDashboard: React.FC = () => {
                   const balance = Number(inv.totalAmount) - Number(inv.paidAmount);
                   return (
                     <tr key={inv.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-3.5 px-4 font-mono font-bold text-teal-700">
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#00897B]">
                         {inv.invoiceNumber}
                       </td>
                       <td className="py-3.5 px-4">
@@ -157,7 +157,7 @@ export const BillingDashboard: React.FC = () => {
                       <td className="py-3.5 px-4 font-bold text-slate-800 font-mono text-sm">
                         ₹{Number(inv.totalAmount).toLocaleString('en-IN')}
                       </td>
-                      <td className="py-3.5 px-4 font-semibold text-emerald-700 font-mono">
+                      <td className="py-3.5 px-4 font-semibold text-[#16A34A] font-mono">
                         ₹{Number(inv.paidAmount).toLocaleString('en-IN')}
                       </td>
                       <td className="py-3.5 px-4">
@@ -167,12 +167,12 @@ export const BillingDashboard: React.FC = () => {
                         {balance > 0 ? (
                           <button
                             onClick={() => openPaymentModal(inv)}
-                            className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
+                            className="px-3 py-1.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
                           >
                             Collect ₹{balance}
                           </button>
                         ) : (
-                          <span className="text-emerald-600 font-semibold text-[11px]">
+                          <span className="text-[#16A34A] font-semibold text-[11px]">
                             Fully Settled
                           </span>
                         )}
@@ -291,7 +291,7 @@ export const BillingDashboard: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm inline-flex items-center space-x-1"
+              className="px-6 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm inline-flex items-center space-x-1"
             >
               <CheckCircle className="w-4 h-4" />
               <span>{isSubmitting ? 'Processing...' : 'Confirm Payment & Print Receipt'}</span>

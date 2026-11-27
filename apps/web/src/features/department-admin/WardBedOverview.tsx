@@ -57,7 +57,7 @@ export const WardBedOverview: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <BedDouble className="w-6 h-6 text-teal-600" />
+            <BedDouble className="w-6 h-6 text-[#00897B]" />
             Wards & Bed Utilization Overview
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -74,8 +74,8 @@ export const WardBedOverview: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600" />
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-[#DC2626]" />
           <span>{error}</span>
         </div>
       )}
@@ -88,14 +88,14 @@ export const WardBedOverview: React.FC = () => {
           <span className="text-[10px] text-slate-500">Across {wards.length} wards</span>
         </div>
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <span className="text-[11px] font-bold text-emerald-600 uppercase">Available Beds</span>
-          <p className="text-2xl font-black text-emerald-600 mt-1">{availableCount}</p>
-          <span className="text-[10px] text-emerald-700/80">Ready for admission</span>
+          <span className="text-[11px] font-bold text-[#16A34A] uppercase">Available Beds</span>
+          <p className="text-2xl font-black text-[#16A34A] mt-1">{availableCount}</p>
+          <span className="text-[10px] text-[#16A34A]/80">Ready for admission</span>
         </div>
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <span className="text-[11px] font-bold text-sky-600 uppercase">Occupied Beds</span>
-          <p className="text-2xl font-black text-sky-600 mt-1">{occupiedCount}</p>
-          <span className="text-[10px] text-sky-700/80">Active inpatients</span>
+          <span className="text-[11px] font-bold text-[#1565C0] uppercase">Occupied Beds</span>
+          <p className="text-2xl font-black text-[#1565C0] mt-1">{occupiedCount}</p>
+          <span className="text-[10px] text-[#1565C0]/80">Active inpatients</span>
         </div>
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
           <span className="text-[11px] font-bold text-amber-600 uppercase">Maintenance / Cleaning</span>
@@ -116,13 +116,13 @@ export const WardBedOverview: React.FC = () => {
               onClick={() => setSelectedWardId(w.id)}
               className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-2 ${
                 isSelected
-                  ? 'bg-teal-600 text-white shadow-md shadow-teal-900/20'
+                  ? 'bg-[#1565C0] text-white shadow-md shadow-teal-900/20'
                   : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
               }`}
             >
               <Building2 className="w-3.5 h-3.5" />
               <span>{w.name}</span>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] ${isSelected ? 'bg-teal-700 text-teal-100' : 'bg-slate-100 text-slate-500'}`}>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] ${isSelected ? 'bg-[#0D47A1] text-teal-100' : 'bg-slate-100 text-slate-500'}`}>
                 {occ}/{wBeds.length}
               </span>
             </button>
@@ -139,7 +139,7 @@ export const WardBedOverview: React.FC = () => {
               <p className="text-xs text-slate-500">Floor {currentWard.floorNumber} • Code: {currentWard.code}</p>
             </div>
             <div className="flex items-center gap-4 text-xs">
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Available</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#16A34A]" /> Available</span>
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-sky-500" /> Occupied</span>
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Maintenance</span>
             </div>
@@ -157,9 +157,9 @@ export const WardBedOverview: React.FC = () => {
                   key={bed.id}
                   className={`p-3.5 rounded-xl border flex flex-col justify-between transition-all ${
                     isAvailable
-                      ? 'bg-emerald-50/40 border-emerald-200 text-emerald-950 hover:border-emerald-400'
+                      ? 'bg-[#DCFCE7]/40 border-[#BBF7D0] text-emerald-950 hover:border-emerald-400'
                       : isOccupied
-                      ? 'bg-sky-50/40 border-sky-200 text-sky-950 hover:border-sky-400'
+                      ? 'bg-[#E8F1FC]/40 border-[#BFDBFE] text-sky-950 hover:border-sky-400'
                       : 'bg-amber-50/40 border-amber-200 text-amber-950 hover:border-amber-400'
                   }`}
                 >
@@ -178,7 +178,7 @@ export const WardBedOverview: React.FC = () => {
                         <p className="font-mono text-[10px] text-slate-500">{pat.uhid}</p>
                       </div>
                     ) : (
-                      <p className="text-[11px] font-semibold text-emerald-700">Available</p>
+                      <p className="text-[11px] font-semibold text-[#16A34A]">Available</p>
                     )}
                   </div>
                 </div>

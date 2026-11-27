@@ -97,7 +97,7 @@ export default function AmbulanceTrackerScreen() {
       <View style={styles.header}>
         <View style={styles.headerTitleRow}>
           <View style={styles.iconBox}>
-            <Navigation size={22} color="#38845A" />
+            <Navigation size={22} color="#1565C0" />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.title}>Live Vehicle Route Tracker</Text>
@@ -107,8 +107,8 @@ export default function AmbulanceTrackerScreen() {
             style={[styles.sirenToggleBtn, sirenActive ? styles.sirenActive : styles.sirenInactive]}
             onPress={() => setSirenActive(!sirenActive)}
           >
-            <Siren size={14} color={sirenActive ? '#fff' : '#64748B'} />
-            <Text style={[styles.sirenToggleText, sirenActive ? { color: '#fff' } : { color: '#64748B' }]}>
+            <Siren size={14} color={sirenActive ? '#FFFFFF' : '#64748B'} />
+            <Text style={[styles.sirenToggleText, sirenActive ? { color: '#FFFFFF' } : { color: '#64748B' }]}>
               {sirenActive ? 'SIREN ON' : 'SIREN OFF'}
             </Text>
           </TouchableOpacity>
@@ -117,7 +117,7 @@ export default function AmbulanceTrackerScreen() {
         {/* Live Telemetry KPI Cards */}
         <View style={styles.telemetryGrid}>
           <View style={styles.telemetryKpi}>
-            <Clock size={16} color="#38845A" />
+            <Clock size={16} color="#1565C0" />
             <Text style={styles.kpiValue}>{formatMinSec(secondsRemaining)}</Text>
             <Text style={styles.kpiLabel}>ETA COUNTDOWN</Text>
           </View>
@@ -129,7 +129,7 @@ export default function AmbulanceTrackerScreen() {
           </View>
 
           <View style={styles.telemetryKpi}>
-            <Gauge size={16} color="#0284C7" />
+            <Gauge size={16} color="#1565C0" />
             <Text style={styles.kpiValue}>{currentSpeed} km/h</Text>
             <Text style={styles.kpiLabel}>CURRENT SPEED</Text>
           </View>
@@ -140,13 +140,13 @@ export default function AmbulanceTrackerScreen() {
       <View style={styles.mapCanvasCard}>
         <View style={styles.mapCanvasHeader}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Radio size={16} color="#38845A" />
+            <Radio size={16} color="#1565C0" />
             <Text style={styles.gpsCoordText}>
               GPS: {currentWaypoint.lat.toFixed(4)}° N, {currentWaypoint.lng.toFixed(4)}° E • Alt 138m
             </Text>
           </View>
           <View style={styles.greenCorridorPill}>
-            <ShieldCheck size={12} color="#38845A" />
+            <ShieldCheck size={12} color="#1565C0" />
             <Text style={styles.greenCorridorText}>Smart Corridor Active</Text>
           </View>
         </View>
@@ -163,9 +163,9 @@ export default function AmbulanceTrackerScreen() {
                 <View style={styles.nodeColumn}>
                   <View style={[styles.nodeDot, isCompleted && styles.nodeDotCompleted, isVehicleHere && styles.nodeDotActive]}>
                     {isVehicleHere ? (
-                      <Ambulance size={14} color="#fff" />
+                      <Ambulance size={14} color="#FFFFFF" />
                     ) : isCompleted ? (
-                      <CheckCircle2 size={12} color="#fff" />
+                      <CheckCircle2 size={12} color="#FFFFFF" />
                     ) : (
                       <View style={styles.innerDot} />
                     )}
@@ -216,7 +216,7 @@ export default function AmbulanceTrackerScreen() {
             style={styles.simControlBtn}
             onPress={() => setIsPlaying(!isPlaying)}
           >
-            {isPlaying ? <Pause size={14} color="#0F172A" /> : <Play size={14} color="#0F172A" />}
+            {isPlaying ? <Pause size={14} color="#183153" /> : <Play size={14} color="#183153" />}
             <Text style={styles.simControlBtnText}>{isPlaying ? 'Pause' : 'Play'}</Text>
           </TouchableOpacity>
 
@@ -224,8 +224,8 @@ export default function AmbulanceTrackerScreen() {
             style={[styles.simControlBtn, styles.advanceBtn]}
             onPress={advanceStep}
           >
-            <Navigation size={14} color="#fff" />
-            <Text style={[styles.simControlBtnText, { color: '#fff' }]}>Advance GPS Step</Text>
+            <Navigation size={14} color="#FFFFFF" />
+            <Text style={[styles.simControlBtnText, { color: '#FFFFFF' }]}>Advance GPS Step</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -251,7 +251,7 @@ export default function AmbulanceTrackerScreen() {
           style={styles.goToTransitBtn}
           onPress={() => router.push('/(ambulance)/transit')}
         >
-          <HeartPulse size={16} color="#fff" />
+          <HeartPulse size={16} color="#FFFFFF" />
           <Text style={styles.goToTransitBtnText}>Open Pre-Hospital Vitals & ER Handshake</Text>
         </TouchableOpacity>
       </View>
@@ -261,10 +261,10 @@ export default function AmbulanceTrackerScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC', padding: 16 },
-  header: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, marginBottom: 14 },
+  header: { backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, marginBottom: 14 },
   headerTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 14 },
-  iconBox: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#EAF5ED', alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 17, fontWeight: '800', color: '#0F172A' },
+  iconBox: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#E8F1FC', alignItems: 'center', justifyContent: 'center' },
+  title: { fontSize: 17, fontWeight: '800', color: '#183153' },
   subtitle: { fontSize: 11, color: '#64748B' },
   sirenToggleBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
   sirenActive: { backgroundColor: '#DC2626' },
@@ -272,41 +272,41 @@ const styles = StyleSheet.create({
   sirenToggleText: { fontSize: 10, fontWeight: '800' },
   telemetryGrid: { flexDirection: 'row', gap: 10 },
   telemetryKpi: { flex: 1, backgroundColor: '#F8FAFC', borderRadius: 10, borderWidth: 1, borderColor: '#E2E8F0', padding: 10, alignItems: 'center' },
-  kpiValue: { fontSize: 17, fontWeight: '900', color: '#0F172A', marginTop: 4 },
+  kpiValue: { fontSize: 17, fontWeight: '900', color: '#183153', marginTop: 4 },
   kpiLabel: { fontSize: 8, fontWeight: '800', color: '#64748B', marginTop: 2 },
-  mapCanvasCard: { backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, marginBottom: 14 },
+  mapCanvasCard: { backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, marginBottom: 14 },
   mapCanvasHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#F1F5F9', paddingBottom: 10, marginBottom: 14 },
-  gpsCoordText: { fontSize: 11, fontWeight: '700', color: '#0F172A', fontFamily: 'monospace' },
-  greenCorridorPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#ECFDF5', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  greenCorridorText: { fontSize: 10, color: '#065F46', fontWeight: '700' },
+  gpsCoordText: { fontSize: 11, fontWeight: '700', color: '#183153', fontFamily: 'monospace' },
+  greenCorridorPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E0F2F1', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  greenCorridorText: { fontSize: 10, color: '#183153', fontWeight: '700' },
   routeDiagram: { marginVertical: 8 },
   waypointRow: { flexDirection: 'row', gap: 12 },
   nodeColumn: { alignItems: 'center', width: 26 },
   nodeDot: { width: 26, height: 26, borderRadius: 13, backgroundColor: '#E2E8F0', alignItems: 'center', justifyContent: 'center' },
-  nodeDotCompleted: { backgroundColor: '#38845A' },
-  nodeDotActive: { backgroundColor: '#DC2626', borderWidth: 3, borderColor: '#CDE8D5' },
+  nodeDotCompleted: { backgroundColor: '#1565C0' },
+  nodeDotActive: { backgroundColor: '#DC2626', borderWidth: 3, borderColor: '#BFDBFE' },
   innerDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#94A3B8' },
   connectingLine: { width: 3, height: 38, backgroundColor: '#E2E8F0', marginVertical: 2 },
-  connectingLineCompleted: { backgroundColor: '#38845A' },
+  connectingLineCompleted: { backgroundColor: '#1565C0' },
   waypointContent: { flex: 1, paddingBottom: 20 },
-  waypointContentActive: { backgroundColor: '#FEF2F2', padding: 8, borderRadius: 8, marginBottom: 12 },
+  waypointContentActive: { backgroundColor: '#FEE2E2', padding: 8, borderRadius: 8, marginBottom: 12 },
   waypointHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  waypointName: { fontSize: 13, fontWeight: '700', color: '#334155' },
-  waypointNameActive: { color: '#991B1B', fontWeight: '800' },
+  waypointName: { fontSize: 13, fontWeight: '700', color: '#475569' },
+  waypointNameActive: { color: '#DC2626', fontWeight: '800' },
   waypointCoords: { fontSize: 10, color: '#94A3B8', marginTop: 2, fontFamily: 'monospace' },
   currentVehicleTag: { backgroundColor: '#DC2626', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  currentVehicleTagText: { fontSize: 8, fontWeight: '900', color: '#fff' },
+  currentVehicleTagText: { fontSize: 8, fontWeight: '900', color: '#FFFFFF' },
   vehicleDetailsStrip: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#F8FAFC', borderRadius: 10, padding: 12, marginTop: 4 },
   vehicleCol: { flex: 1 },
   vehicleDetailLabel: { fontSize: 9, color: '#64748B', fontWeight: '700', textTransform: 'uppercase' },
-  vehicleDetailVal: { fontSize: 12, fontWeight: '800', color: '#0F172A', marginTop: 2 },
+  vehicleDetailVal: { fontSize: 12, fontWeight: '800', color: '#183153', marginTop: 2 },
   simulationControlRow: { flexDirection: 'row', gap: 10, marginTop: 14, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
   simControlBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#F1F5F9', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: '#E2E8F0' },
-  advanceBtn: { flex: 1, backgroundColor: '#38845A', borderColor: '#38845A' },
-  simControlBtnText: { fontSize: 12, fontWeight: '700', color: '#1E293B' },
-  bottomCard: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, marginBottom: 20 },
-  bottomCardTitle: { fontSize: 14, fontWeight: '800', color: '#991B1B' },
+  advanceBtn: { flex: 1, backgroundColor: '#1565C0', borderColor: '#1565C0' },
+  simControlBtnText: { fontSize: 12, fontWeight: '700', color: '#183153' },
+  bottomCard: { backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, marginBottom: 20 },
+  bottomCardTitle: { fontSize: 14, fontWeight: '800', color: '#DC2626' },
   bottomCardSub: { fontSize: 11, color: '#64748B', lineHeight: 16, marginBottom: 12 },
   goToTransitBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#DC2626', paddingVertical: 12, borderRadius: 10 },
-  goToTransitBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  goToTransitBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
 });

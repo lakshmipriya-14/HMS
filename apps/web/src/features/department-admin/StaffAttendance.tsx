@@ -83,7 +83,7 @@ export const StaffAttendance: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <Clock className="w-6 h-6 text-teal-600" />
+            <Clock className="w-6 h-6 text-[#00897B]" />
             Staff Daily Attendance & Duty Roster
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -93,7 +93,7 @@ export const StaffAttendance: React.FC = () => {
         <button
           onClick={handleSaveAttendance}
           disabled={saving}
-          className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md shadow-teal-900/20 disabled:opacity-50"
+          className="px-4 py-2 bg-[#1565C0] hover:bg-[#00897B] text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md shadow-teal-900/20 disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
           {saving ? 'Saving...' : 'Save Daily Records'}
@@ -101,18 +101,18 @@ export const StaffAttendance: React.FC = () => {
       </div>
 
       {success && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-medium flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-medium flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             <span>{success}</span>
           </div>
-          <button onClick={() => setSuccess('')} className="text-emerald-600 hover:text-emerald-900 font-bold">×</button>
+          <button onClick={() => setSuccess('')} className="text-[#16A34A] hover:text-emerald-900 font-bold">×</button>
         </div>
       )}
 
       {error && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600" />
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-[#DC2626]" />
           <span>{error}</span>
         </div>
       )}
@@ -121,7 +121,7 @@ export const StaffAttendance: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
           <span className="text-[11px] font-bold text-slate-400 uppercase">Present</span>
-          <p className="text-2xl font-black text-emerald-600 mt-1">{presentCount}</p>
+          <p className="text-2xl font-black text-[#16A34A] mt-1">{presentCount}</p>
           <span className="text-[10px] text-slate-500">On duty today</span>
         </div>
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
@@ -131,12 +131,12 @@ export const StaffAttendance: React.FC = () => {
         </div>
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
           <span className="text-[11px] font-bold text-slate-400 uppercase">Absent</span>
-          <p className="text-2xl font-black text-rose-600 mt-1">{absentCount}</p>
+          <p className="text-2xl font-black text-[#DC2626] mt-1">{absentCount}</p>
           <span className="text-[10px] text-slate-500">Unexcused</span>
         </div>
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
           <span className="text-[11px] font-bold text-slate-400 uppercase">On Approved Leave</span>
-          <p className="text-2xl font-black text-indigo-600 mt-1">{leaveCount}</p>
+          <p className="text-2xl font-black text-[#1565C0] mt-1">{leaveCount}</p>
           <span className="text-[10px] text-slate-500">Documented</span>
         </div>
       </div>
@@ -150,7 +150,7 @@ export const StaffAttendance: React.FC = () => {
             placeholder="Search staff by name or code..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500"
+            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B]"
           />
         </div>
 
@@ -160,7 +160,7 @@ export const StaffAttendance: React.FC = () => {
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-teal-500 font-medium text-slate-700"
+            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#00897B] font-medium text-slate-700"
           />
         </div>
       </div>
@@ -210,12 +210,12 @@ export const StaffAttendance: React.FC = () => {
                         onChange={(e) => handleStatusChange(index, e.target.value)}
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold border outline-none ${
                           row.status === 'PRESENT'
-                            ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                            ? 'bg-[#DCFCE7] text-[#16A34A] border-emerald-300'
                             : row.status === 'LATE'
                             ? 'bg-amber-50 text-amber-800 border-amber-300'
                             : row.status === 'ON_LEAVE'
-                            ? 'bg-indigo-50 text-indigo-800 border-indigo-300'
-                            : 'bg-rose-50 text-rose-800 border-rose-300'
+                            ? 'bg-[#E8F1FC] text-[#183153] border-[#BFDBFE]'
+                            : 'bg-[#FEE2E2] text-rose-800 border-rose-300'
                         }`}
                       >
                         <option value="PRESENT">PRESENT</option>

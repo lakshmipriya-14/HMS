@@ -168,28 +168,28 @@ export const DoctorManagement: React.FC = () => {
     <div className="space-y-6 pb-12">
       {/* Messages */}
       {successMessage && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             {successMessage}
           </div>
-          <button onClick={() => setSuccessMessage('')} className="text-emerald-600 hover:text-emerald-900">×</button>
+          <button onClick={() => setSuccessMessage('')} className="text-[#16A34A] hover:text-emerald-900">×</button>
         </div>
       )}
       {errorMessage && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600" />
+            <AlertCircle className="w-4 h-4 text-[#DC2626]" />
             {errorMessage}
           </div>
-          <button onClick={() => setErrorMessage('')} className="text-rose-600 hover:text-rose-900">×</button>
+          <button onClick={() => setErrorMessage('')} className="text-[#DC2626] hover:text-rose-900">×</button>
         </div>
       )}
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="p-2.5 bg-sky-50 text-sky-700 rounded-xl border border-sky-100">
+          <span className="p-2.5 bg-[#E8F1FC] text-[#1565C0] rounded-xl border border-[#BFDBFE]">
             <UserCheck className="w-6 h-6" />
           </span>
           <div>
@@ -201,8 +201,8 @@ export const DoctorManagement: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-bold">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[#DCFCE7] text-[#16A34A] border border-[#BBF7D0] rounded-xl text-xs font-bold">
+            <span className="w-2 h-2 rounded-full bg-[#16A34A] animate-pulse"></span>
             {availableCount} / {doctors.length} Doctors Available Today
           </div>
 
@@ -230,7 +230,7 @@ export const DoctorManagement: React.FC = () => {
               setErrorMessage('');
               setAddModalOpen(true);
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
           >
             <Plus className="w-4 h-4" />
             Add Doctor
@@ -302,7 +302,7 @@ export const DoctorManagement: React.FC = () => {
                       <h3 className="text-base font-bold text-slate-900 mt-1">
                         Dr. {user?.firstName} {user?.lastName}
                       </h3>
-                      <p className="text-xs font-semibold text-teal-700">{doc.specialization}</p>
+                      <p className="text-xs font-semibold text-[#00897B]">{doc.specialization}</p>
                       <p className="text-[11px] text-slate-400 mt-0.5">{doc.department?.name}</p>
                     </div>
 
@@ -310,7 +310,7 @@ export const DoctorManagement: React.FC = () => {
                       onClick={() => handleToggleTodayAvailability(doc)}
                       className={`px-2.5 py-1 rounded-full text-[10px] font-bold border transition-all ${
                         doc.isAvailableToday
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                          ? 'bg-[#DCFCE7] text-[#16A34A] border-[#BBF7D0] hover:bg-[#DCFCE7]'
                           : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200'
                       }`}
                     >
@@ -337,7 +337,7 @@ export const DoctorManagement: React.FC = () => {
                       <span className="text-slate-400 flex items-center gap-1">
                         <DollarSign className="w-3.5 h-3.5 text-slate-400" /> OPD Fee
                       </span>
-                      <span className="font-bold text-emerald-700">₹{Number(doc.consultationFee || 500)}</span>
+                      <span className="font-bold text-[#16A34A]">₹{Number(doc.consultationFee || 500)}</span>
                     </div>
 
                     {user?.phone && (
@@ -364,8 +364,8 @@ export const DoctorManagement: React.FC = () => {
                       onClick={() => handleToggleDoctorStatus(doc)}
                       className={`flex items-center gap-1 px-2.5 py-1 font-semibold rounded-lg text-xs transition-all ${
                         doc.employee?.user?.isActive
-                          ? 'bg-rose-50 text-rose-700 hover:bg-rose-100'
-                          : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                          ? 'bg-[#FEE2E2] text-[#DC2626] hover:bg-rose-100'
+                          : 'bg-[#DCFCE7] text-[#16A34A] hover:bg-[#DCFCE7]'
                       }`}
                       title={doc.employee?.user?.isActive ? 'Deactivate Doctor' : 'Activate Doctor'}
                     >
@@ -550,7 +550,7 @@ export const DoctorManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-lg shadow-sm"
             >
               {submitting ? 'Registering...' : 'Complete Doctor Registration'}
             </button>
@@ -574,7 +574,7 @@ export const DoctorManagement: React.FC = () => {
               type="checkbox"
               checked={scheduleData.isAvailableToday}
               onChange={(e) => setScheduleData({ ...scheduleData, isAvailableToday: e.target.checked })}
-              className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500"
+              className="w-4 h-4 text-[#00897B] rounded focus:ring-teal-500"
             />
           </div>
 
@@ -616,7 +616,7 @@ export const DoctorManagement: React.FC = () => {
                     }}
                     className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all border ${
                       checked
-                        ? 'bg-teal-600 text-white border-teal-600 shadow-xs'
+                        ? 'bg-[#1565C0] text-white border-teal-600 shadow-xs'
                         : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                     }`}
                   >
@@ -638,7 +638,7 @@ export const DoctorManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-lg shadow-sm"
             >
               {submitting ? 'Saving...' : 'Update Schedule'}
             </button>

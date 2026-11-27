@@ -202,7 +202,7 @@ export default function NursePatientsScreen() {
     <View style={styles.container}>
       {/* Search Header */}
       <View style={styles.searchBar}>
-        <Search size={18} color="#38845A" />
+        <Search size={18} color="#1565C0" />
         <TextInput
           style={styles.searchInput}
           placeholder="Search patient, UHID, or Bed (e.g. ICCU-01)..."
@@ -233,8 +233,8 @@ export default function NursePatientsScreen() {
             style={[styles.filterChip, selectedFilter === 'CRITICAL' && styles.filterChipCritical]}
             onPress={() => setSelectedFilter('CRITICAL')}
           >
-            <AlertTriangle size={12} color={selectedFilter === 'CRITICAL' ? '#fff' : '#DC2626'} />
-            <Text style={[styles.filterText, selectedFilter === 'CRITICAL' && styles.filterTextWhite, { color: selectedFilter === 'CRITICAL' ? '#fff' : '#DC2626' }]}>
+            <AlertTriangle size={12} color={selectedFilter === 'CRITICAL' ? '#FFFFFF' : '#DC2626'} />
+            <Text style={[styles.filterText, selectedFilter === 'CRITICAL' && styles.filterTextWhite, { color: selectedFilter === 'CRITICAL' ? '#FFFFFF' : '#DC2626' }]}>
               Critical / Flagged
             </Text>
           </TouchableOpacity>
@@ -243,7 +243,7 @@ export default function NursePatientsScreen() {
             style={[styles.filterChip, selectedFilter === 'PENDING_TASKS' && styles.filterChipActive]}
             onPress={() => setSelectedFilter('PENDING_TASKS')}
           >
-            <Clock size={12} color={selectedFilter === 'PENDING_TASKS' ? '#fff' : '#38845A'} />
+            <Clock size={12} color={selectedFilter === 'PENDING_TASKS' ? '#FFFFFF' : '#1565C0'} />
             <Text style={[styles.filterText, selectedFilter === 'PENDING_TASKS' && styles.filterTextActive]}>
               Tasks Pending
             </Text>
@@ -263,14 +263,14 @@ export default function NursePatientsScreen() {
       {/* Patient Cards List */}
       {loading ? (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#38845A" />
+          <ActivityIndicator size="large" color="#1565C0" />
           <Text style={styles.loadingText}>Loading assigned ward patients...</Text>
         </View>
       ) : (
         <FlatList
           data={filteredPatients}
           keyExtractor={(item) => item.id}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1565C0']} />}
           ListEmptyComponent={
             <View style={styles.emptyCard}>
               <BedDouble size={36} color="#94A3B8" />
@@ -294,7 +294,7 @@ export default function NursePatientsScreen() {
                 {/* Header: Bed & UHID */}
                 <View style={styles.cardHeader}>
                   <View style={[styles.bedBadge, isCritical && styles.bedBadgeRed]}>
-                    <BedDouble size={13} color={isCritical ? '#DC2626' : '#38845A'} />
+                    <BedDouble size={13} color={isCritical ? '#DC2626' : '#1565C0'} />
                     <Text style={[styles.bedText, isCritical && styles.bedTextRed]}>
                       {item.bed?.bedNumber || 'Bed Assigned'}
                     </Text>
@@ -363,7 +363,7 @@ export default function NursePatientsScreen() {
                   </Text>
                   <View style={styles.openChartBtn}>
                     <Text style={styles.openChartText}>Open 14-Sec Nursing Chart</Text>
-                    <ChevronRight size={14} color="#38845A" />
+                    <ChevronRight size={14} color="#1565C0" />
                   </View>
                 </View>
               </TouchableOpacity>
@@ -392,7 +392,7 @@ export default function NursePatientsScreen() {
                 style={styles.closeBtn}
                 onPress={() => setActivePatient(null)}
               >
-                <X size={20} color="#0F172A" />
+                <X size={20} color="#183153" />
               </TouchableOpacity>
             </View>
 
@@ -402,26 +402,26 @@ export default function NursePatientsScreen() {
                 style={styles.toolBtn}
                 onPress={() => setVitalsModalVisible(true)}
               >
-                <HeartPulse size={16} color="#fff" />
+                <HeartPulse size={16} color="#FFFFFF" />
                 <Text style={styles.toolBtnText}>Record Vitals</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.toolBtn, { backgroundColor: '#D97706' }]}
+                style={[styles.toolBtn, { backgroundColor: '#F59E0B' }]}
                 onPress={() => {
                   setActivePatient(null);
                   router.push('/(nurse)/medications');
                 }}
               >
-                <Pill size={16} color="#fff" />
+                <Pill size={16} color="#FFFFFF" />
                 <Text style={styles.toolBtnText}>Give Med (MAR)</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.toolBtn, { backgroundColor: '#0284C7' }]}
+                style={[styles.toolBtn, { backgroundColor: '#1565C0' }]}
                 onPress={() => setNoteModalVisible(true)}
               >
-                <FileText size={16} color="#fff" />
+                <FileText size={16} color="#FFFFFF" />
                 <Text style={styles.toolBtnText}>+ Nurse Note</Text>
               </TouchableOpacity>
             </View>
@@ -507,7 +507,7 @@ export default function NursePatientsScreen() {
                     <Text style={styles.cardSectionTitle}>2. Admitting Clinical Diagnosis</Text>
                     <Text style={styles.mainDiagnosis}>{activePatient.initialDiagnosis}</Text>
                     <View style={styles.docInfoBox}>
-                      <Stethoscope size={16} color="#38845A" />
+                      <Stethoscope size={16} color="#1565C0" />
                       <Text style={styles.docInfoText}>
                         Attending: Dr. {activePatient.admittingDoctor?.employee?.user?.firstName} {activePatient.admittingDoctor?.employee?.user?.lastName} ({activePatient.admittingDoctor?.specialization})
                       </Text>
@@ -536,7 +536,7 @@ export default function NursePatientsScreen() {
                     <Text style={styles.cardSectionTitle}>4. Baseline Nursing Assessment</Text>
                     <View style={styles.assessRow}><Text style={styles.assessLabel}>Consciousness Level:</Text><Text style={styles.assessVal}>Alert & Oriented (GCS 15/15)</Text></View>
                     <View style={styles.assessRow}><Text style={styles.assessLabel}>Pain Score (0-10):</Text><Text style={styles.assessVal}>2 / 10 (Mild post-op)</Text></View>
-                    <View style={styles.assessRow}><Text style={styles.assessLabel}>Fall Risk:</Text><Text style={[styles.assessVal, { color: '#D97706' }]}>Moderate (Morse Score 35)</Text></View>
+                    <View style={styles.assessRow}><Text style={styles.assessLabel}>Fall Risk:</Text><Text style={[styles.assessVal, { color: '#F59E0B' }]}>Moderate (Morse Score 35)</Text></View>
                     <View style={styles.assessRow}><Text style={styles.assessLabel}>Pressure Ulcer Risk:</Text><Text style={styles.assessVal}>Low (Braden 19)</Text></View>
                   </View>
                 </View>
@@ -603,7 +603,7 @@ export default function NursePatientsScreen() {
                   <View style={styles.notesTop}>
                     <Text style={styles.cardSectionTitle}>Nursing Clinical Observation Notes</Text>
                     <TouchableOpacity style={styles.addNoteBtn} onPress={() => setNoteModalVisible(true)}>
-                      <PlusCircle size={14} color="#38845A" />
+                      <PlusCircle size={14} color="#1565C0" />
                       <Text style={styles.addNoteText}>Add Note</Text>
                     </TouchableOpacity>
                   </View>
@@ -620,14 +620,14 @@ export default function NursePatientsScreen() {
                 <View style={styles.sectionWrap}>
                   <Text style={styles.cardSectionTitle}>Laboratory & Radiology Investigation Status</Text>
                   <View style={styles.labCardItem}>
-                    <FlaskConical size={18} color="#0284C7" />
+                    <FlaskConical size={18} color="#1565C0" />
                     <View style={{ flex: 1, marginLeft: 10 }}>
                       <Text style={styles.labTitle}>Complete Blood Count (CBC) + Serum Electrolytes</Text>
                       <Text style={styles.labSub}>Status: Collected • Processing in Central Lab</Text>
                     </View>
                   </View>
                   <View style={styles.labCardItem}>
-                    <Radiation size={18} color="#7C3AED" />
+                    <Radiation size={18} color="#1565C0" />
                     <View style={{ flex: 1, marginLeft: 10 }}>
                       <Text style={styles.labTitle}>Bedside Chest X-Ray PA View</Text>
                       <Text style={styles.labSub}>Status: Completed • Verified by Radiologist</Text>
@@ -681,7 +681,7 @@ export default function NursePatientsScreen() {
             </View>
 
             <TouchableOpacity style={styles.saveVitalsBtn} onPress={handleSaveVitals} disabled={savingVitals}>
-              {savingVitals ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveVitalsText}>Save to Electronic Medical Record</Text>}
+              {savingVitals ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.saveVitalsText}>Save to Electronic Medical Record</Text>}
             </TouchableOpacity>
           </View>
         </View>
@@ -709,7 +709,7 @@ export default function NursePatientsScreen() {
             />
 
             <TouchableOpacity style={styles.saveVitalsBtn} onPress={handleSaveNote} disabled={savingNote}>
-              {savingNote ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveVitalsText}>Submit Clinical Note</Text>}
+              {savingNote ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.saveVitalsText}>Submit Clinical Note</Text>}
             </TouchableOpacity>
           </View>
         </View>
@@ -723,7 +723,7 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#CBD5E1',
     borderRadius: 12,
@@ -732,13 +732,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     gap: 8,
   },
-  searchInput: { flex: 1, fontSize: 13, color: '#0F172A' },
+  searchInput: { flex: 1, fontSize: 13, color: '#183153' },
   filterRow: { marginBottom: 10 },
   filterScroll: { gap: 8 },
   filterChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#E2E8F0',
     paddingHorizontal: 12,
@@ -746,18 +746,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 6,
   },
-  filterChipActive: { backgroundColor: '#38845A', borderColor: '#38845A' },
+  filterChipActive: { backgroundColor: '#1565C0', borderColor: '#1565C0' },
   filterChipCritical: { backgroundColor: '#DC2626', borderColor: '#DC2626' },
   filterText: { fontSize: 11, fontWeight: '700', color: '#475569' },
-  filterTextActive: { color: '#fff' },
-  filterTextWhite: { color: '#fff' },
+  filterTextActive: { color: '#FFFFFF' },
+  filterTextWhite: { color: '#FFFFFF' },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   loadingText: { marginTop: 8, color: '#64748B', fontSize: 12 },
-  emptyCard: { alignItems: 'center', padding: 30, backgroundColor: '#fff', borderRadius: 14 },
-  emptyTitle: { fontSize: 15, fontWeight: '700', color: '#334155', marginTop: 10 },
+  emptyCard: { alignItems: 'center', padding: 30, backgroundColor: '#FFFFFF', borderRadius: 14 },
+  emptyTitle: { fontSize: 15, fontWeight: '700', color: '#475569', marginTop: 10 },
   emptySub: { fontSize: 12, color: '#94A3B8', marginTop: 2 },
   patientCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     borderWidth: 1,
     borderColor: '#E2E8F0',
@@ -768,32 +768,32 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 1,
   },
-  cardCriticalBorder: { borderColor: '#FCA5A5', borderWidth: 1.5, backgroundColor: '#FFFDFD' },
+  cardCriticalBorder: { borderColor: '#FECACA', borderWidth: 1.5, backgroundColor: '#FFFFFF' },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   bedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
     gap: 4,
   },
-  bedBadgeRed: { backgroundColor: '#EAF5ED' },
-  bedText: { fontSize: 11, fontWeight: '800', color: '#38845A' },
+  bedBadgeRed: { backgroundColor: '#E8F1FC' },
+  bedText: { fontSize: 11, fontWeight: '800', color: '#1565C0' },
   bedTextRed: { color: '#DC2626' },
   uhidText: { fontSize: 10, color: '#64748B', fontFamily: 'monospace' },
   nameRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
-  patientName: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
+  patientName: { fontSize: 16, fontWeight: '800', color: '#183153' },
   genderAge: { fontSize: 11, color: '#64748B', fontWeight: '600' },
-  diagnosisText: { fontSize: 12, color: '#334155', marginTop: 3, fontWeight: '600' },
+  diagnosisText: { fontSize: 12, color: '#475569', marginTop: 3, fontWeight: '600' },
   doctorRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
   doctorText: { fontSize: 11, color: '#64748B' },
   allergyTag: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: '#FEE2E2',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -811,7 +811,7 @@ const styles = StyleSheet.create({
   },
   vitalCol: { alignItems: 'center' },
   vitalLabel: { fontSize: 9, color: '#64748B', fontWeight: '700' },
-  vitalValue: { fontSize: 12, fontWeight: '800', color: '#0F172A', marginTop: 2 },
+  vitalValue: { fontSize: 12, fontWeight: '800', color: '#183153', marginTop: 2 },
   vitalValueRed: { color: '#DC2626' },
   cardFooter: {
     flexDirection: 'row',
@@ -822,9 +822,9 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#F1F5F9',
   },
-  taskCount: { fontSize: 11, color: '#D97706', fontWeight: '700' },
+  taskCount: { fontSize: 11, color: '#F59E0B', fontWeight: '700' },
   openChartBtn: { flexDirection: 'row', alignItems: 'center', gap: 2 },
-  openChartText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
+  openChartText: { fontSize: 11, fontWeight: '700', color: '#1565C0' },
 
   // Modal styles
   modalContainer: { flex: 1, backgroundColor: '#F8FAFC' },
@@ -833,11 +833,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
   },
-  modalTitle: { fontSize: 18, fontWeight: '800', color: '#0F172A' },
+  modalTitle: { fontSize: 18, fontWeight: '800', color: '#183153' },
   modalSub: { fontSize: 11, color: '#64748B', marginTop: 2 },
   closeBtn: {
     width: 32,
@@ -850,7 +850,7 @@ const styles = StyleSheet.create({
   toolbar: {
     flexDirection: 'row',
     padding: 12,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     gap: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
@@ -860,102 +860,102 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 10,
     borderRadius: 8,
     gap: 6,
   },
-  toolBtnText: { color: '#fff', fontSize: 11, fontWeight: '700' },
+  toolBtnText: { color: '#FFFFFF', fontSize: 11, fontWeight: '700' },
   profileTabRow: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
     paddingVertical: 6,
     paddingHorizontal: 12,
   },
   profileTab: { paddingHorizontal: 12, paddingVertical: 6, marginRight: 8, borderRadius: 6 },
-  profileTabActive: { backgroundColor: '#EAF5ED' },
+  profileTabActive: { backgroundColor: '#E8F1FC' },
   profileTabText: { fontSize: 12, fontWeight: '600', color: '#64748B' },
-  profileTabTextActive: { color: '#38845A', fontWeight: '800' },
+  profileTabTextActive: { color: '#1565C0', fontWeight: '800' },
   profileBody: { flex: 1, padding: 14 },
   sectionWrap: { gap: 12, paddingBottom: 40 },
   infoCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E2E8F0',
     padding: 14,
   },
-  cardSectionTitle: { fontSize: 13, fontWeight: '800', color: '#0F172A', marginBottom: 10 },
+  cardSectionTitle: { fontSize: 13, fontWeight: '800', color: '#183153', marginBottom: 10 },
   fieldGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   fieldItem: { width: '46%' },
   fieldLabel: { fontSize: 10, color: '#94A3B8', fontWeight: '700' },
-  fieldVal: { fontSize: 12, fontWeight: '700', color: '#1E293B', marginTop: 2 },
-  mainDiagnosis: { fontSize: 14, fontWeight: '700', color: '#0F172A' },
+  fieldVal: { fontSize: 12, fontWeight: '700', color: '#183153', marginTop: 2 },
+  mainDiagnosis: { fontSize: 14, fontWeight: '700', color: '#183153' },
   docInfoBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     padding: 8,
     borderRadius: 8,
     gap: 6,
     marginTop: 8,
   },
-  docInfoText: { fontSize: 11, color: '#38845A', fontWeight: '700' },
+  docInfoText: { fontSize: 11, color: '#1565C0', fontWeight: '700' },
   allergyTagList: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  allergyPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  allergyPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E8F1FC', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   allergyPillText: { fontSize: 11, color: '#DC2626', fontWeight: '800' },
-  noAllergyText: { fontSize: 12, color: '#059669', fontWeight: '600' },
+  noAllergyText: { fontSize: 12, color: '#00897B', fontWeight: '600' },
   assessRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: '#F8FAFC' },
   assessLabel: { fontSize: 12, color: '#475569' },
-  assessVal: { fontSize: 12, fontWeight: '700', color: '#0F172A' },
-  vitalCardItem: { backgroundColor: '#fff', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 8 },
-  vitalCardAbnormal: { borderColor: '#CDE8D5', backgroundColor: '#FEF2F2' },
+  assessVal: { fontSize: 12, fontWeight: '700', color: '#183153' },
+  vitalCardItem: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 8 },
+  vitalCardAbnormal: { borderColor: '#BFDBFE', backgroundColor: '#FEE2E2' },
   vitalCardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   vitalCardTime: { fontSize: 11, color: '#64748B' },
   abnormalBadge: { backgroundColor: '#DC2626', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  abnormalBadgeText: { color: '#fff', fontSize: 9, fontWeight: '800' },
+  abnormalBadgeText: { color: '#FFFFFF', fontSize: 9, fontWeight: '800' },
   vitalValueGrid: { flexDirection: 'row', justifyContent: 'space-between' },
   vitalMini: { alignItems: 'center' },
   vmLabel: { fontSize: 9, color: '#64748B' },
-  vmVal: { fontSize: 13, fontWeight: '800', color: '#0F172A' },
-  medCardItem: { flexDirection: 'row', backgroundColor: '#fff', padding: 12, borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 8, alignItems: 'center' },
-  medNameText: { fontSize: 13, fontWeight: '800', color: '#0F172A' },
+  vmVal: { fontSize: 13, fontWeight: '800', color: '#183153' },
+  medCardItem: { flexDirection: 'row', backgroundColor: '#FFFFFF', padding: 12, borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 8, alignItems: 'center' },
+  medNameText: { fontSize: 13, fontWeight: '800', color: '#183153' },
   medDetailText: { fontSize: 11, color: '#475569', marginTop: 2 },
   medDocText: { fontSize: 10, color: '#94A3B8', marginTop: 2 },
   medStatusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  statusGiven: { backgroundColor: '#D1FAE5' },
+  statusGiven: { backgroundColor: '#DCFCE7' },
   statusDue: { backgroundColor: '#FEF3C7' },
   medStatusText: { fontSize: 10, fontWeight: '800' },
-  textGiven: { color: '#059669' },
-  textDue: { color: '#D97706' },
-  orderCardItem: { backgroundColor: '#fff', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 8 },
+  textGiven: { color: '#00897B' },
+  textDue: { color: '#F59E0B' },
+  orderCardItem: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 8 },
   orderTop: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
-  orderTypeBadge: { backgroundColor: '#E0F2FE', color: '#0284C7', fontSize: 10, fontWeight: '800', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
+  orderTypeBadge: { backgroundColor: '#E8F1FC', color: '#1565C0', fontSize: 10, fontWeight: '800', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   orderTimeText: { fontSize: 10, color: '#64748B' },
-  orderDetailText: { fontSize: 12, color: '#1E293B', fontWeight: '600' },
+  orderDetailText: { fontSize: 12, color: '#183153', fontWeight: '600' },
   orderDocText: { fontSize: 10, color: '#94A3B8', marginTop: 4 },
   notesTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   addNoteBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  addNoteText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
-  noteCardItem: { backgroundColor: '#fff', padding: 12, borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 8 },
-  noteText: { fontSize: 12, color: '#1E293B', lineHeight: 18 },
+  addNoteText: { fontSize: 11, fontWeight: '700', color: '#1565C0' },
+  noteCardItem: { backgroundColor: '#FFFFFF', padding: 12, borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 8 },
+  noteText: { fontSize: 12, color: '#183153', lineHeight: 18 },
   noteAuthorText: { fontSize: 10, color: '#64748B', marginTop: 6 },
-  labCardItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 12, borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 8 },
-  labTitle: { fontSize: 12, fontWeight: '700', color: '#0F172A' },
+  labCardItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', padding: 12, borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 8 },
+  labTitle: { fontSize: 12, fontWeight: '700', color: '#183153' },
   labSub: { fontSize: 10, color: '#64748B', marginTop: 2 },
 
   // Sheet styles
   sheetOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheetContent: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20 },
+  sheetContent: { backgroundColor: '#FFFFFF', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20 },
   sheetHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  sheetTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
+  sheetTitle: { fontSize: 16, fontWeight: '800', color: '#183153' },
   vitalsInputGrid: { flexDirection: 'row', gap: 12, marginBottom: 12 },
   vInputCol: { flex: 1 },
   vInputLabel: { fontSize: 11, fontWeight: '700', color: '#475569', marginBottom: 4 },
-  vInput: { borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, padding: 10, fontSize: 14, color: '#0F172A', backgroundColor: '#F8FAFC' },
-  saveVitalsBtn: { backgroundColor: '#38845A', paddingVertical: 14, borderRadius: 10, alignItems: 'center', marginTop: 8 },
-  saveVitalsText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  vInput: { borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, padding: 10, fontSize: 14, color: '#183153', backgroundColor: '#F8FAFC' },
+  saveVitalsBtn: { backgroundColor: '#1565C0', paddingVertical: 14, borderRadius: 10, alignItems: 'center', marginTop: 8 },
+  saveVitalsText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
   noteInput: { borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, padding: 12, fontSize: 13, height: 100, textAlignVertical: 'top', backgroundColor: '#F8FAFC', marginBottom: 14 },
 });
 

@@ -83,7 +83,7 @@ export const LeaveManagement: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <CalendarOff className="w-6 h-6 text-teal-600" />
+            <CalendarOff className="w-6 h-6 text-[#00897B]" />
             Department Leave & Absence Approvals
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -93,14 +93,14 @@ export const LeaveManagement: React.FC = () => {
       </div>
 
       {successMessage && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-emerald-800 text-xs font-semibold animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="p-4 bg-[#DCFCE7] border border-[#BBF7D0] rounded-xl flex items-center gap-2 text-[#16A34A] text-xs font-semibold animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-[#16A34A]" />
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs font-semibold">
+        <div className="p-4 bg-[#FEE2E2] border border-[#FECACA] rounded-xl flex items-center gap-2 text-[#DC2626] text-xs font-semibold">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
@@ -119,14 +119,14 @@ export const LeaveManagement: React.FC = () => {
           </p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Approved / Active</p>
-          <p className="text-2xl font-black text-emerald-600 mt-1">
+          <p className="text-xs font-bold text-[#16A34A] uppercase tracking-wider">Approved / Active</p>
+          <p className="text-2xl font-black text-[#16A34A] mt-1">
             {leaves.filter((l) => l.status === 'APPROVED').length}
           </p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-          <p className="text-xs font-bold text-teal-600 uppercase tracking-wider">Recommended to HR</p>
-          <p className="text-2xl font-black text-teal-700 mt-1">
+          <p className="text-xs font-bold text-[#00897B] uppercase tracking-wider">Recommended to HR</p>
+          <p className="text-2xl font-black text-[#00897B] mt-1">
             {leaves.filter((l) => l.status === 'RECOMMENDED').length}
           </p>
         </div>
@@ -141,13 +141,13 @@ export const LeaveManagement: React.FC = () => {
             placeholder="Search by staff name, designation, leave type..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="w-full sm:w-48 px-3 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+          className="w-full sm:w-48 px-3 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
         >
           <option value="">All Statuses</option>
           <option value="PENDING">Pending</option>
@@ -201,7 +201,7 @@ export const LeaveManagement: React.FC = () => {
                         {new Date(item.startDate).toLocaleDateString('en-IN')} –{' '}
                         {new Date(item.endDate).toLocaleDateString('en-IN')}
                       </div>
-                      <div className="text-[10px] text-teal-600 font-bold">{item.totalDays || 1} day(s)</div>
+                      <div className="text-[10px] text-[#00897B] font-bold">{item.totalDays || 1} day(s)</div>
                     </td>
                     <td className="py-3.5 px-4 text-slate-500 max-w-[200px] truncate">{item.reason || 'Personal'}</td>
                     <td className="py-3.5 px-4">
@@ -212,19 +212,19 @@ export const LeaveManagement: React.FC = () => {
                         <div className="inline-flex items-center gap-1.5">
                           <button
                             onClick={() => handleOpenReview(item, 'RECOMMEND')}
-                            className="px-2 py-1 text-[11px] font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 rounded-lg transition"
+                            className="px-2 py-1 text-[11px] font-bold text-[#00897B] bg-[#E0F2F1] hover:bg-[#E0F2F1] rounded-lg transition"
                           >
                             Recommend
                           </button>
                           <button
                             onClick={() => handleOpenReview(item, 'APPROVE')}
-                            className="px-2 py-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition"
+                            className="px-2 py-1 text-[11px] font-bold text-[#16A34A] bg-[#DCFCE7] hover:bg-[#DCFCE7] rounded-lg transition"
                           >
                             Approve
                           </button>
                           <button
                             onClick={() => handleOpenReview(item, 'REJECT')}
-                            className="px-2 py-1 text-[11px] font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition"
+                            className="px-2 py-1 text-[11px] font-bold text-[#DC2626] bg-[#FEE2E2] hover:bg-rose-100 rounded-lg transition"
                           >
                             Reject
                           </button>
@@ -283,7 +283,7 @@ export const LeaveManagement: React.FC = () => {
                   placeholder="Enter coverage arrangements, justification, or reason..."
                   value={remarks}
                   onChange={(e) => setRemarks(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition"
                 />
               </div>
 
@@ -300,10 +300,10 @@ export const LeaveManagement: React.FC = () => {
                   disabled={submitting}
                   className={`px-4 py-2 text-white font-bold rounded-xl text-xs transition shadow-sm ${
                     reviewAction === 'REJECT'
-                      ? 'bg-rose-600 hover:bg-rose-700'
+                      ? 'bg-[#DC2626] hover:bg-[#B91C1C]'
                       : reviewAction === 'APPROVE'
-                      ? 'bg-emerald-600 hover:bg-emerald-700'
-                      : 'bg-teal-600 hover:bg-teal-700'
+                      ? 'bg-[#16A34A] hover:bg-[#15803D]'
+                      : 'bg-[#1565C0] hover:bg-[#0D47A1]'
                   }`}
                 >
                   {submitting ? 'Processing...' : `Confirm ${reviewAction}`}

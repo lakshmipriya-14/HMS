@@ -8,18 +8,24 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import { Menu, X, LogIn, ChevronRight, Phone, ShieldCheck, HeartPulse } from 'lucide-react-native';
+import { Menu, X, LogIn, ChevronRight, Phone, ShieldCheck, HeartPulse, LayoutDashboard } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { UyirinaiTheme } from '../constants/theme';
+import { useAuth } from '../hooks/useAuth';
 
 interface UyirinaiHeaderProps {
   onNavigateSection: (sectionId: string) => void;
   onLogin: () => void;
+  onPortal?: () => void;
 }
 
 export const UyirinaiHeader: React.FC<UyirinaiHeaderProps> = ({
   onNavigateSection,
   onLogin,
+  onPortal,
 }) => {
+  const { user } = useAuth();
+  const insets = useSafeAreaInsets();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const navItems = [
@@ -39,12 +45,16 @@ export const UyirinaiHeader: React.FC<UyirinaiHeaderProps> = ({
 
   const handleLoginPress = () => {
     setMenuOpen(false);
-    onLogin();
+    if (user && onPortal) {
+      onPortal();
+    } else {
+      onLogin();
+    }
   };
 
   return (
     <>
-      <SafeAreaView style={styles.safeArea}>
+      <View style={[styles.safeArea, { paddingTop: insets.top }]}>
         <View style={styles.topBar}>
           {/* Logo & Hospital Title */}
           <View style={styles.brandContainer}>
@@ -65,8 +75,14 @@ export const UyirinaiHeader: React.FC<UyirinaiHeaderProps> = ({
               onPress={handleLoginPress}
               activeOpacity={0.8}
             >
-              <LogIn size={16} color={UyirinaiTheme.colors.white} />
-              <Text style={styles.loginBtnText}>Login</Text>
+              {user ? (
+                <LayoutDashboard size={16} color={UyirinaiTheme.colors.white} />
+              ) : (
+                <LogIn size={16} color={UyirinaiTheme.colors.white} />
+              )}
+              <Text style={styles.loginBtnText}>
+                {user ? (user.role === 'PATIENT' ? 'My Portal' : 'Dashboard') : 'Login'}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -81,7 +97,7 @@ export const UyirinaiHeader: React.FC<UyirinaiHeaderProps> = ({
             </TouchableOpacity>
           </View>
         </View>
-      </SafeAreaView>
+      </View>
 
       {/* Mobile Navigation Drawer Modal */}
       <Modal visible={menuOpen} animationType="slide" onRequestClose={() => setMenuOpen(false)}>
@@ -137,7 +153,7 @@ export const UyirinaiHeader: React.FC<UyirinaiHeaderProps> = ({
               >
                 <ShieldCheck size={18} color={UyirinaiTheme.colors.white} />
                 <Text style={styles.portalCtaText}>
-                  Hospital Staff & Admin Login
+                  {user ? (user.role === 'PATIENT' ? 'Back to Patient Portal' : 'Back to Dashboard') : 'Login'}
                 </Text>
               </TouchableOpacity>
               <Text style={styles.copyrightText}>

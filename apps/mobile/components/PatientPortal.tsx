@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Image, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Link } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import { exportDirectoryFile } from '../services/downloadHelper';
+import { downloadPatientReceiptPdf, exportDirectoryFile } from '../services/downloadHelper';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { mobileApiClient } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
+import { UyirinaiTheme } from '../constants/theme';
 
 type Section = 'home' | 'appointments' | 'records' | 'billing' | 'profile';
 const date = (value?: string) => value ? value.slice(0, 10) : '';
@@ -60,17 +61,16 @@ function AppointmentRequestForm() {
   </>;
 }
 
-function DocumentDownload({ title, rows }: { title: string; rows: string[][] }) {
+function DocumentDownload({ title, rows, label }: { title: string; rows: string[][]; label?: string }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const download = async () => {
     setError('');
     setBusy(true);
-    const filename = title.replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 80);
+    const filename = title.replace(/[^a-zA-Z0-9_-]+/g, '_').slice(0, 80);
     try {
-      const preview = Platform.OS === 'web' ? window.open('', '_blank') ?? undefined : undefined;
       await exportDirectoryFile('pdf', filename, title, rows.map(([label]) => label),
-        [rows.map(([, value]) => value)], preview);
+        [rows.map(([, value]) => value)]);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Could not download the PDF.');
     } finally {
@@ -79,7 +79,7 @@ function DocumentDownload({ title, rows }: { title: string; rows: string[][] }) 
   };
   return <>
     <Pressable style={styles.chip} accessibilityRole="button" disabled={busy} onPress={() => void download()}>
-      <Text style={styles.link}>{busy ? 'Preparing PDF…' : Platform.OS === 'web' ? 'Print / save PDF' : 'Download PDF'}</Text>
+      <Text style={styles.link}>{busy ? 'Preparing PDF…' : label || 'Download PDF'}</Text>
     </Pressable>
     {!!error && <Text accessibilityRole="alert">{error}</Text>}
   </>;
@@ -211,58 +211,96 @@ export function PatientPortal({ section }: { section: Section }) {
         </View>)}
         <AppointmentRequestForm />
       </>}
-      {section === 'records' && <>
+      {section === 'records' && (() => {
+        const formatFacility = (branchObj: any) => {
+          const branch = branchObj || data.patient.registrationBranch;
+          const hospital = branch?.hospital?.name || data.patient.hospital?.name;
+          const loc = [branch?.address, branch?.city, branch?.state].filter(Boolean).join(', ');
+          return [hospital, branch?.name ? `${branch.name}${loc ? ` (${loc})` : ''}` : null].filter(Boolean).join(' · ');
+        };
+        return <>
         <Card title="Allergies" lines={[data.patient.allergies.join(', ') || 'No allergies recorded.']} />
         <Text style={styles.title}>Consultations</Text>
         {data.consultations.map((row: any) => <Card key={row.id} title={clinician(row.doctor)} lines={[
-          date(row.createdAt), row.diagnosisNotes, row.treatmentPlan, row.followUpDate && `Follow-up ${date(row.followUpDate)}`,
+          date(row.createdAt), formatFacility(row.branch), row.diagnosisNotes, row.treatmentPlan, row.followUpDate && `Follow-up ${date(row.followUpDate)}`,
         ]} />)}
         <Text style={styles.title}>Prescriptions</Text>
         {data.prescriptions.map((row: any) => <View key={row.id} style={styles.group}><Card title={row.prescriptionNumber} lines={[
-          date(row.createdAt), clinician(row.doctor), row.dispensingStatus,
+          date(row.createdAt), formatFacility(row.branch), clinician(row.doctor), row.dispensingStatus,
           ...row.items.map((item: any) => `${item.medicine.brandName} ${item.medicine.strength} · ${item.dosage} · ${item.route} · ${item.frequency} · ${item.durationDays} days · ${item.instructions}`),
         ]} />
-          <DocumentDownload title={row.prescriptionNumber} rows={[['Patient', data.patient.uhid], ['Doctor', clinician(row.doctor)], ...row.items.map((item: any) => [item.medicine.brandName + ' ' + item.medicine.strength, [item.dosage, item.route, item.frequency, item.durationDays + ' days', item.instructions].join(' · ')])]} />
+          <DocumentDownload title={row.prescriptionNumber} rows={[['Patient', data.patient.uhid], ['Facility', formatFacility(row.branch)], ['Doctor', clinician(row.doctor)], ...row.items.map((item: any) => [item.medicine.brandName + ' ' + item.medicine.strength, [item.dosage, item.route, item.frequency, item.durationDays + ' days', item.instructions].join(' · ')])]} />
         </View>)}
         <Text style={styles.title}>Laboratory</Text>
         {data.labOrders.map((row: any) => <View key={row.id} style={styles.group}><Card title={row.orderNumber} lines={[
-          date(row.createdAt), clinician(row.doctor), row.status, ...row.orderItems.map((item: any) => item.labTest.name),
+          date(row.createdAt), formatFacility(row.branch), clinician(row.doctor), row.status, ...row.orderItems.map((item: any) => item.labTest.name),
           ...row.results.map((result: any) => `${result.parameter.parameterName} · ${result.measuredValue} ${result.unit} (${result.referenceRange})`),
         ]} />
-          {row.results.length > 0 && <DocumentDownload title={row.orderNumber} rows={[['Patient', data.patient.uhid], ...row.results.map((item: any) => [item.parameter.parameterName, item.measuredValue + ' ' + item.unit + ' (' + item.referenceRange + ')'])]} />}
+          {row.results.length > 0 && <DocumentDownload title={row.orderNumber} rows={[['Patient', data.patient.uhid], ['Facility', formatFacility(row.branch)], ...row.results.map((item: any) => [item.parameter.parameterName, item.measuredValue + ' ' + item.unit + ' (' + item.referenceRange + ')'])]} />}
         </View>)}
         <Text style={styles.title}>Radiology</Text>
         {data.radiology.map((row: any) => <View key={row.id} style={styles.group}><Card title={row.test.name} lines={[
-          date(row.createdAt), clinician(row.doctor), row.status, row.findings, row.impression,
+          date(row.createdAt), formatFacility(row.branch), clinician(row.doctor), row.status, row.findings, row.impression,
         ]} />
-          {row.reportReleasedAt && row.status === 'REPORT_RELEASED' && <DocumentDownload title={row.orderNumber} rows={[['Patient', data.patient.uhid], ['Study', row.test.name], ['Findings', row.findings ?? ''], ['Impression', row.impression ?? '']]} />}
+          {row.reportReleasedAt && row.status === 'REPORT_RELEASED' && <DocumentDownload title={row.orderNumber} rows={[['Patient', data.patient.uhid], ['Facility', formatFacility(row.branch)], ['Study', row.test.name], ['Findings', row.findings ?? ''], ['Impression', row.impression ?? '']]} />}
         </View>)}
         <Text style={styles.title}>Admissions</Text>
         {data.admissions.map((row: any) => <View key={row.id} style={styles.group}><Card title={row.admissionNumber} lines={[
-          date(row.admittedAt), clinician(row.admittingDoctor), row.ward.name + ' · ' + row.bed.bedNumber,
+          date(row.admittedAt), formatFacility(row.branch), clinician(row.admittingDoctor), row.ward.name + ' · ' + row.bed.bedNumber,
           row.status, row.dischargeSummary,
         ]} />
-          {row.dischargeSummary && <DocumentDownload title={row.admissionNumber} rows={[['Patient', data.patient.uhid], ['Doctor', clinician(row.admittingDoctor)], ['Discharged', date(row.dischargedAt)], ['Summary', row.dischargeSummary]]} />}
+          {row.dischargeSummary && <DocumentDownload title={row.admissionNumber} rows={[['Patient', data.patient.uhid], ['Facility', formatFacility(row.branch)], ['Doctor', clinician(row.admittingDoctor)], ['Discharged', date(row.dischargedAt)], ['Summary', row.dischargeSummary]]} />}
         </View>)}
         <Text style={styles.title}>Vitals</Text>
         {data.vitals.map((row: any) => <Card key={row.id} title={date(row.createdAt)} lines={[
+          formatFacility(row.branch),
           row.systolicBp != null && row.diastolicBp != null ? `Blood pressure ${row.systolicBp}/${row.diastolicBp}` : null,
           row.pulseRate != null ? `Pulse ${row.pulseRate} bpm` : null,
           row.oxygenSaturation != null ? `Oxygen saturation ${row.oxygenSaturation}%` : null,
           row.temperature != null ? `Temperature ${row.temperature} °F` : null,
         ]} />)}
-      </>}
+      </>;
+      })()}
       {section === 'billing' && <>
         {data.invoices.length === 0 && <Text>No invoices on this page.</Text>}
-        {data.invoices.map((row: any) => <View key={row.id} style={styles.group}><Card title={row.invoiceNumber} lines={[
-          date(row.createdAt), row.status, `Total ₹${row.totalAmount} · Paid ₹${row.paidAmount}`,
-          ...row.items.map((item: any) => `${item.description} × ${item.quantity} · ₹${item.totalPrice}`),
-          ...row.payments.map((payment: any) => `${date(payment.createdAt)} · ${payment.paymentMethod} · ₹${payment.amount} · ${payment.paymentStatus}`),
-        ]} />
-          <DocumentDownload title={row.invoiceNumber} rows={[['Patient', data.patient.uhid], ['Total', row.totalAmount], ['Paid', row.paidAmount], ...row.items.map((item: any) => [item.description, String(item.totalPrice)])]} />{row.payments.filter((payment: any) => payment.paymentStatus === 'SUCCESS').map((payment: any) =>
-            <DocumentDownload key={payment.id} title={row.invoiceNumber + ' payment ' + payment.id.slice(0, 8)}
-              rows={[[ 'Patient', data.patient.uhid], ['Date', date(payment.createdAt)], ['Method', payment.paymentMethod], ['Paid', String(payment.amount)]]} />)}
-        </View>)}
+        {data.invoices.map((row: any) => {
+          const branch = row.branch || data.patient.registrationBranch;
+          const hospitalName = branch?.hospital?.name || data.patient.hospital?.name;
+          const branchLocation = [branch?.address, branch?.city, branch?.state].filter(Boolean).join(', ');
+          const receiptId = row.invoiceNumber || row.id;
+          return <View key={row.id} style={styles.group}><Card title={row.invoiceNumber} lines={[
+            date(row.createdAt),
+            hospitalName && branch?.name ? `${hospitalName} · ${branch.name}${branchLocation ? ` (${branchLocation})` : ''}` : branch?.name,
+            row.status, `Total ₹${row.totalAmount} · Paid ₹${row.paidAmount}`,
+            ...row.items.map((item: any) => `${item.description} × ${item.quantity} · ₹${item.totalPrice}`),
+            ...row.payments.map((payment: any) => `${date(payment.createdAt)} · ${payment.paymentMethod} · ₹${payment.amount} · ${payment.paymentStatus}`),
+          ]} />
+            <Pressable style={styles.chip} accessibilityRole="button" onPress={() => void downloadPatientReceiptPdf({
+              filename: `Patient_Receipt_${receiptId}`,
+              receiptId,
+              hospitalName,
+              branchName: branch?.name,
+              branchLocation,
+              branchPhone: branch?.phone,
+              date: date(row.createdAt),
+              status: row.status,
+              patientName: `${data.patient.firstName} ${data.patient.lastName}`,
+              patientUhid: data.patient.uhid,
+              patientEmail: data.patient.email || data.patient.user?.email,
+              patientPhone: data.patient.phone,
+              paymentMethod: row.payments?.[0]?.paymentMethod,
+              items: (row.items || []).map((item: any) => ({
+                description: item.description,
+                detail: item.quantity ? `Qty: ${item.quantity}` : undefined,
+                amount: `INR ${item.totalPrice}`,
+              })),
+              summaryLines: [
+                { label: 'Total Amount', value: `INR ${row.totalAmount}` },
+                { label: 'Paid Amount', value: `INR ${row.paidAmount}`, highlight: true },
+              ],
+            })}><Text style={styles.link}>Print Receipt (PDF)</Text></Pressable>
+          </View>;
+        })}
       </>}
       {section === 'profile' && <>
         {data.patient.user?.avatarUrl && <Image accessibilityLabel="Profile photo" source={{ uri: data.patient.user.avatarUrl }} style={styles.avatar} />}
@@ -302,18 +340,24 @@ export function PatientPortal({ section }: { section: Section }) {
   </ScrollView>;
 }
 
-export const patientColors = { pale: '#F8F2F9', soft: '#F6ECF7', text: '#251838', green: '#8E5DAF', border: '#EADCEE' };
+export const patientColors = {
+  pale: UyirinaiTheme.colors.background,
+  soft: UyirinaiTheme.colors.primaryLight,
+  text: UyirinaiTheme.colors.heading,
+  green: UyirinaiTheme.colors.primary,
+  border: UyirinaiTheme.colors.border,
+};
 const styles = StyleSheet.create({
   group: { gap: 8 },
   avatar: { width: 90, height: 90, borderRadius: 45 },
-  page: { padding: 16, gap: 12, backgroundColor: '#fff', flexGrow: 1 },
-  card: { backgroundColor: patientColors.pale, borderColor: patientColors.border, borderWidth: 1, borderRadius: 12, padding: 14, gap: 4 },
-  title: { fontSize: 17, fontWeight: '700', color: patientColors.text },
-  copy: { color: patientColors.text, fontSize: 14, lineHeight: 20 },
-  link: { color: patientColors.green, fontWeight: '700', paddingVertical: 8 },
+  page: { padding: 16, gap: 12, backgroundColor: UyirinaiTheme.colors.background, flexGrow: 1 },
+  card: { backgroundColor: UyirinaiTheme.colors.surface, borderColor: UyirinaiTheme.colors.border, borderWidth: 1, borderRadius: 12, padding: 14, gap: 4 },
+  title: { fontSize: 17, fontWeight: '700', color: UyirinaiTheme.colors.heading },
+  copy: { color: UyirinaiTheme.colors.bodyText, fontSize: 14, lineHeight: 20 },
+  link: { color: UyirinaiTheme.colors.primary, fontWeight: '700', paddingVertical: 8 },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { paddingHorizontal: 10, minHeight: 44, backgroundColor: patientColors.soft, borderRadius: 8, justifyContent: 'center' },
-  input: { padding: 12, minHeight: 44, borderWidth: 1, borderColor: patientColors.border, borderRadius: 8 },
-  button: { backgroundColor: patientColors.green, padding: 12, borderRadius: 8, alignItems: 'center' },
-  buttonText: { color: '#fff', fontWeight: '700' },
+  chip: { paddingHorizontal: 10, minHeight: 44, backgroundColor: UyirinaiTheme.colors.secondaryBg, borderRadius: 8, justifyContent: 'center' },
+  input: { padding: 12, minHeight: 44, borderWidth: 1, borderColor: UyirinaiTheme.colors.border, backgroundColor: UyirinaiTheme.colors.surface, color: UyirinaiTheme.colors.heading, borderRadius: 8 },
+  button: { backgroundColor: UyirinaiTheme.colors.primary, padding: 12, borderRadius: 8, alignItems: 'center' },
+  buttonText: { color: UyirinaiTheme.colors.white, fontWeight: '700' },
 });

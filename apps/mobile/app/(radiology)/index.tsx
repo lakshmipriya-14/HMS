@@ -301,7 +301,7 @@ export default function RadiologyWorklistScreen() {
             <Text style={styles.sub}>CT · MRI · X-Ray · Ultrasound · 2D Echo</Text>
           </View>
           <View style={styles.pacsPill}>
-            <Scan size={14} color="#38845A" />
+            <Scan size={14} color="#1565C0" />
             <Text style={styles.pacsPillText}>PACS Online</Text>
           </View>
         </View>
@@ -351,13 +351,13 @@ export default function RadiologyWorklistScreen() {
       {/* Worklist cards */}
       <ScrollView
         style={styles.scroll}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1565C0']} />}
       >
         {worklistError ? (
           <Text accessibilityRole="button" onPress={loadWorklist} style={styles.loadingText}>Could not load the worklist. Tap to retry.</Text>
         ) : loading && !refreshing ? (
           <View style={styles.centerLoading}>
-            <ActivityIndicator size="large" color="#38845A" />
+            <ActivityIndicator size="large" color="#1565C0" />
             <Text style={styles.loadingText}>Connecting to Modality RIS/PACS Broker...</Text>
           </View>
         ) : filteredList.length === 0 ? (
@@ -392,7 +392,7 @@ export default function RadiologyWorklistScreen() {
                 {/* Patient Information */}
                 <View style={styles.patientInfoRow}>
                   <View style={styles.avatarBox}>
-                    <User size={18} color="#38845A" />
+                    <User size={18} color="#1565C0" />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.patientName}>
@@ -423,7 +423,7 @@ export default function RadiologyWorklistScreen() {
                       style={styles.safetyBtn}
                       onPress={() => openSafetyModal(order)}
                     >
-                      <ShieldCheck size={14} color="#38845A" />
+                      <ShieldCheck size={14} color="#1565C0" />
                       <Text style={styles.safetyBtnText}>Pre-Scan Safety Clearance</Text>
                     </TouchableOpacity>
                   ) : order.status === 'SAFETY_CLEARED' ? (
@@ -431,12 +431,12 @@ export default function RadiologyWorklistScreen() {
                       style={styles.reportBtn}
                       onPress={() => openReportModal(order)}
                     >
-                      <Camera size={14} color="#fff" />
+                      <Camera size={14} color="#FFFFFF" />
                       <Text style={styles.reportBtnText}>Complete Scan & Sign Report</Text>
                     </TouchableOpacity>
                   ) : (
                     <View style={styles.releasedTag}>
-                      <CheckCircle2 size={16} color="#38845A" />
+                      <CheckCircle2 size={16} color="#1565C0" />
                       <Text style={styles.releasedTagText}>Report Signed & Released</Text>
                     </View>
                   )}
@@ -475,7 +475,7 @@ export default function RadiologyWorklistScreen() {
                 {/* Protocol 1: Creatinine Clearance */}
                 <View style={styles.safetyBlock}>
                   <View style={styles.safetyBlockHeader}>
-                    <ShieldAlert size={16} color="#D97706" />
+                    <ShieldAlert size={16} color="#F59E0B" />
                     <Text style={styles.safetyBlockTitle}>1. Creatinine & Renal Clearance Verification</Text>
                   </View>
                   <Text style={styles.safetyDesc}>
@@ -486,7 +486,7 @@ export default function RadiologyWorklistScreen() {
                     onPress={() => setCheckCreatinine(!checkCreatinine)}
                   >
                     <View style={[styles.checkBox, checkCreatinine && styles.checkBoxActive]}>
-                      {checkCreatinine && <Check size={12} color="#fff" />}
+                      {checkCreatinine && <Check size={12} color="#FFFFFF" />}
                     </View>
                     <Text style={styles.checkText}>
                       Confirmed eGFR &gt; 60 mL/min &amp; Serum Creatinine normal (&lt; 1.2 mg/dL). No dialysis requirement.
@@ -508,7 +508,7 @@ export default function RadiologyWorklistScreen() {
                     onPress={() => setCheckPregnancy(!checkPregnancy)}
                   >
                     <View style={[styles.checkBox, checkPregnancy && styles.checkBoxActive]}>
-                      {checkPregnancy && <Check size={12} color="#fff" />}
+                      {checkPregnancy && <Check size={12} color="#FFFFFF" />}
                     </View>
                     <Text style={styles.checkText}>
                       LMP recorded, urine pregnancy test (UPT) negative, or patient is male. Lead apron shielding positioned.
@@ -520,7 +520,7 @@ export default function RadiologyWorklistScreen() {
                 {selectedSafetyOrder.modality === 'MRI' || selectedSafetyOrder.requiresMriSafety ? (
                   <View style={styles.safetyBlock}>
                     <View style={styles.safetyBlockHeader}>
-                      <AlertCircle size={16} color="#38845A" />
+                      <AlertCircle size={16} color="#1565C0" />
                       <Text style={styles.safetyBlockTitle}>3. 3.0T MRI Ferromagnetic & Implant Screening</Text>
                     </View>
                     <Text style={styles.safetyDesc}>
@@ -531,7 +531,7 @@ export default function RadiologyWorklistScreen() {
                       onPress={() => setCheckMriMetals(!checkMriMetals)}
                     >
                       <View style={[styles.checkBox, checkMriMetals && styles.checkBoxActive]}>
-                        {checkMriMetals && <Check size={12} color="#fff" />}
+                        {checkMriMetals && <Check size={12} color="#FFFFFF" />}
                       </View>
                       <Text style={styles.checkText}>
                         No cardiac pacemaker, ICD, cochlear implant, or metallic ocular fragments confirmed by checklist.
@@ -546,7 +546,7 @@ export default function RadiologyWorklistScreen() {
                   onPress={() => setCheckContrastAllergy(!checkContrastAllergy)}
                 >
                   <View style={[styles.checkBox, checkContrastAllergy && styles.checkBoxActive]}>
-                    {checkContrastAllergy && <Check size={12} color="#fff" />}
+                    {checkContrastAllergy && <Check size={12} color="#FFFFFF" />}
                   </View>
                   <Text style={styles.checkText}>
                     No known previous adverse anaphylactoid reaction to radiographic contrast media.
@@ -559,7 +559,7 @@ export default function RadiologyWorklistScreen() {
                   <Text style={styles.backBtnText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.certifyBtn} onPress={handleConfirmSafety}>
-                  <ShieldCheck size={16} color="#fff" />
+                  <ShieldCheck size={16} color="#FFFFFF" />
                   <Text style={styles.certifyBtnText}>Certify Safe for Scan</Text>
                 </TouchableOpacity>
               </View>
@@ -595,7 +595,7 @@ export default function RadiologyWorklistScreen() {
               <ScrollView style={styles.modalBody}>
                 {/* PACS Image Link Simulation */}
                 <View style={styles.imageViewerBox}>
-                  <Eye size={20} color="#38845A" />
+                  <Eye size={20} color="#1565C0" />
                   <View style={{ flex: 1, marginLeft: 10 }}>
                     <Text style={styles.imageViewerTitle}>PACS DICOM Series Linked (32 Frames)</Text>
                     <Text style={styles.imageViewerUrl}>DICOM UID: 1.2.840.10008.5.1.4.1.1.{selectedReportOrder.orderNumber}</Text>
@@ -652,10 +652,10 @@ export default function RadiologyWorklistScreen() {
                   disabled={submittingReport}
                 >
                   {submittingReport ? (
-                    <ActivityIndicator color="#fff" size="small" />
+                    <ActivityIndicator color="#FFFFFF" size="small" />
                   ) : (
                     <>
-                      <FileText size={16} color="#fff" />
+                      <FileText size={16} color="#FFFFFF" />
                       <Text style={styles.releaseSubmitText}>Release Signed Report</Text>
                     </>
                   )}
@@ -672,26 +672,26 @@ export default function RadiologyWorklistScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
   header: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
   },
   titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  title: { fontSize: 18, fontWeight: '800', color: '#0F172A' },
+  title: { fontSize: 18, fontWeight: '800', color: '#183153' },
   sub: { fontSize: 12, color: '#64748B', marginTop: 2 },
   pacsPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
     gap: 4,
     borderWidth: 1,
-    borderColor: '#CDE8D5',
+    borderColor: '#BFDBFE',
   },
-  pacsPillText: { fontSize: 11, fontWeight: '800', color: '#38845A' },
+  pacsPillText: { fontSize: 11, fontWeight: '800', color: '#1565C0' },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -702,7 +702,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     gap: 8,
   },
-  searchInput: { flex: 1, fontSize: 13, color: '#0F172A', padding: 0 },
+  searchInput: { flex: 1, fontSize: 13, color: '#183153', padding: 0 },
   modalityScroll: { flexDirection: 'row', marginTop: 12 },
   modalityTab: {
     paddingHorizontal: 12,
@@ -711,9 +711,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
     marginRight: 8,
   },
-  modalityTabActive: { backgroundColor: '#334155' },
+  modalityTabActive: { backgroundColor: '#475569' },
   modalityTabText: { fontSize: 11, fontWeight: '700', color: '#64748B' },
-  modalityTabTextActive: { color: '#fff' },
+  modalityTabTextActive: { color: '#FFFFFF' },
   scroll: { flex: 1, padding: 14 },
   centerLoading: { alignItems: 'center', justifyContent: 'center', paddingVertical: 40 },
   loadingText: { marginTop: 10, fontSize: 13, color: '#64748B' },
@@ -721,74 +721,74 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 15, fontWeight: '700', color: '#475569', marginTop: 12 },
   emptySub: { fontSize: 12, color: '#94A3B8', marginTop: 4 },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 16,
     marginBottom: 14,
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    shadowColor: '#0F172A',
+    shadowColor: '#183153',
     shadowOpacity: 0.04,
     shadowRadius: 6,
     elevation: 1,
   },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   orderIdBadge: { backgroundColor: '#F1F5F9', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  orderIdText: { fontSize: 11, fontWeight: '800', color: '#334155' },
+  orderIdText: { fontSize: 11, fontWeight: '800', color: '#475569' },
   modalityBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, backgroundColor: '#E2E8F0' },
-  modality_CT_SCAN: { backgroundColor: '#EAF5ED' },
+  modality_CT_SCAN: { backgroundColor: '#E8F1FC' },
   modality_MRI: { backgroundColor: '#FCE7F3' },
-  modality_X_RAY: { backgroundColor: '#E0F2FE' },
+  modality_X_RAY: { backgroundColor: '#E8F1FC' },
   modality_ULTRASOUND: { backgroundColor: '#FEF3C7' },
-  modality_SPECIALIZED: { backgroundColor: '#D1FAE5' },
-  modalityBadgeText: { fontSize: 10, fontWeight: '800', color: '#1E293B' },
+  modality_SPECIALIZED: { backgroundColor: '#DCFCE7' },
+  modalityBadgeText: { fontSize: 10, fontWeight: '800', color: '#183153' },
   priorityBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 7, paddingVertical: 3, borderRadius: 6, marginLeft: 'auto', gap: 3 },
-  priorityStat: { backgroundColor: '#EAF5ED' },
+  priorityStat: { backgroundColor: '#E8F1FC' },
   priorityStatText: { color: '#DC2626', fontSize: 10, fontWeight: '800' },
   priorityRoutine: { backgroundColor: '#F1F5F9' },
   priorityRoutineText: { color: '#64748B', fontSize: 10, fontWeight: '700' },
   priorityText: { fontSize: 10, fontWeight: '800' },
   patientInfoRow: { flexDirection: 'row', alignItems: 'center', marginTop: 12, gap: 10 },
-  avatarBox: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#EAF5ED', alignItems: 'center', justifyContent: 'center' },
-  patientName: { fontSize: 14, fontWeight: '700', color: '#1E293B' },
+  avatarBox: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#E8F1FC', alignItems: 'center', justifyContent: 'center' },
+  patientName: { fontSize: 14, fontWeight: '700', color: '#183153' },
   dimMeta: { fontSize: 12, fontWeight: '400', color: '#64748B' },
   uhidMeta: { fontSize: 11, color: '#64748B', fontWeight: '500' },
   timeMeta: { fontSize: 11, color: '#94A3B8' },
   scanBox: { backgroundColor: '#F8FAFC', borderRadius: 8, padding: 10, marginTop: 10, borderWidth: 1, borderColor: '#F1F5F9' },
-  scanTitle: { fontSize: 14, fontWeight: '800', color: '#0F172A' },
+  scanTitle: { fontSize: 14, fontWeight: '800', color: '#183153' },
   equipmentMeta: { fontSize: 11, color: '#64748B', marginTop: 2 },
   indicationBox: { marginTop: 10 },
   indicationLabel: { fontSize: 10, fontWeight: '700', color: '#94A3B8', textTransform: 'uppercase' },
-  indicationText: { fontSize: 12, color: '#334155', marginTop: 2 },
+  indicationText: { fontSize: 12, color: '#475569', marginTop: 2 },
   doctorMeta: { fontSize: 11, color: '#64748B', marginTop: 4, fontStyle: 'italic' },
   actionRow: { marginTop: 12, paddingTop: 10, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
   safetyBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#CDE8D5',
+    borderColor: '#BFDBFE',
     gap: 6,
   },
-  safetyBtnText: { fontSize: 12, fontWeight: '800', color: '#38845A' },
+  safetyBtnText: { fontSize: 12, fontWeight: '800', color: '#1565C0' },
   reportBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 10,
     borderRadius: 8,
     gap: 6,
   },
-  reportBtnText: { fontSize: 12, fontWeight: '800', color: '#fff' },
+  reportBtnText: { fontSize: 12, fontWeight: '800', color: '#FFFFFF' },
   releasedTag: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 4 },
-  releasedTagText: { fontSize: 12, fontWeight: '700', color: '#38845A' },
+  releasedTagText: { fontSize: 12, fontWeight: '700', color: '#1565C0' },
   // Modal styles
   modalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.6)', justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '90%', paddingBottom: 20 },
+  modalContent: { backgroundColor: '#FFFFFF', borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '90%', paddingBottom: 20 },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -797,7 +797,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
   },
-  modalHeading: { fontSize: 17, fontWeight: '800', color: '#0F172A' },
+  modalHeading: { fontSize: 17, fontWeight: '800', color: '#183153' },
   modalSub: { fontSize: 12, color: '#64748B', marginTop: 2 },
   closeBtn: { padding: 4 },
   modalBody: { padding: 18 },
@@ -810,7 +810,7 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   safetyBlockHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
-  safetyBlockTitle: { fontSize: 12, fontWeight: '800', color: '#0F172A' },
+  safetyBlockTitle: { fontSize: 12, fontWeight: '800', color: '#183153' },
   safetyDesc: { fontSize: 11, color: '#64748B', marginBottom: 8 },
   checkOption: { flexDirection: 'row', alignItems: 'flex-start', marginVertical: 6, gap: 10 },
   checkBox: {
@@ -823,21 +823,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 2,
   },
-  checkBoxActive: { backgroundColor: '#38845A', borderColor: '#38845A' },
-  checkText: { flex: 1, fontSize: 11, color: '#334155', lineHeight: 16 },
+  checkBoxActive: { backgroundColor: '#1565C0', borderColor: '#1565C0' },
+  checkText: { flex: 1, fontSize: 11, color: '#475569', lineHeight: 16 },
   imageViewerBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     padding: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#CDE8D5',
+    borderColor: '#BFDBFE',
     marginBottom: 14,
   },
-  imageViewerTitle: { fontSize: 12, fontWeight: '800', color: '#38845A' },
+  imageViewerTitle: { fontSize: 12, fontWeight: '800', color: '#1565C0' },
   imageViewerUrl: { fontSize: 10, color: '#64748B', marginTop: 2 },
-  formLabel: { fontSize: 12, fontWeight: '700', color: '#334155', marginTop: 8, marginBottom: 4 },
+  formLabel: { fontSize: 12, fontWeight: '700', color: '#475569', marginTop: 8, marginBottom: 4 },
   textArea: {
     backgroundColor: '#F8FAFC',
     borderRadius: 8,
@@ -845,7 +845,7 @@ const styles = StyleSheet.create({
     borderColor: '#CBD5E1',
     padding: 10,
     fontSize: 12,
-    color: '#0F172A',
+    color: '#183153',
     textAlignVertical: 'top',
   },
   criticalToggleRow: {
@@ -858,8 +858,8 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
     marginTop: 14,
   },
-  criticalToggleRowActive: { backgroundColor: '#FEF2F2', borderColor: '#CDE8D5' },
-  criticalToggleTitle: { fontSize: 12, fontWeight: '700', color: '#334155' },
+  criticalToggleRowActive: { backgroundColor: '#FEE2E2', borderColor: '#BFDBFE' },
+  criticalToggleTitle: { fontSize: 12, fontWeight: '700', color: '#475569' },
   criticalToggleTitleActive: { color: '#DC2626', fontWeight: '800' },
   criticalToggleSub: { fontSize: 10, color: '#64748B', marginTop: 2 },
   toggleCircle: { width: 18, height: 18, borderRadius: 9, borderWidth: 2, borderColor: '#CBD5E1' },
@@ -877,24 +877,24 @@ const styles = StyleSheet.create({
   certifyBtn: {
     flex: 2,
     flexDirection: 'row',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
   },
-  certifyBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  certifyBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
   releaseSubmitBtn: {
     flex: 2,
     flexDirection: 'row',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
   },
-  releaseSubmitText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  releaseSubmitText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
 });
 

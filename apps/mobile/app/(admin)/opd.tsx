@@ -244,7 +244,7 @@ export default function AdminOpdScreen() {
               style={[styles.tabItem, isActive && styles.tabItemActive]}
               onPress={() => setActiveTab(tab.id as OpdTab)}
             >
-              <Icon size={14} color={isActive ? '#38845A' : '#64748B'} />
+              <Icon size={14} color={isActive ? '#1565C0' : '#64748B'} />
               <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>{tab.label}</Text>
             </TouchableOpacity>
           );
@@ -253,14 +253,14 @@ export default function AdminOpdScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#38845A" />
+          <ActivityIndicator size="large" color="#1565C0" />
           <Text style={styles.loadingText}>Loading OPD telemetry & live queue...</Text>
         </View>
       ) : (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#1565C0" />}
         >
           {/* Header Action Button */}
           <TouchableOpacity
@@ -282,12 +282,12 @@ export default function AdminOpdScreen() {
             <View>
               {/* Quick Queue Stats */}
               <View style={styles.statRow}>
-                <View style={[styles.miniStatCard, { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' }]}>
+                <View style={[styles.miniStatCard, { backgroundColor: '#DCFCE7', borderColor: '#BBF7D0' }]}>
                   <Text style={[styles.miniStatNum, { color: '#16A34A' }]}>{waitingCount}</Text>
                   <Text style={styles.miniStatLabel}>Waiting</Text>
                 </View>
-                <View style={[styles.miniStatCard, { backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' }]}>
-                  <Text style={[styles.miniStatNum, { color: '#2563EB' }]}>{inProgressCount}</Text>
+                <View style={[styles.miniStatCard, { backgroundColor: '#E8F1FC', borderColor: '#BFDBFE' }]}>
+                  <Text style={[styles.miniStatNum, { color: '#1565C0' }]}>{inProgressCount}</Text>
                   <Text style={styles.miniStatLabel}>Consulting</Text>
                 </View>
                 <View style={[styles.miniStatCard, { backgroundColor: '#F8FAFC', borderColor: '#E2E8F0' }]}>
@@ -299,7 +299,7 @@ export default function AdminOpdScreen() {
               {/* Live Queue Cards */}
               {appointments.filter((a) => a.status !== 'CANCELLED' && a.status !== 'COMPLETED').length === 0 ? (
                 <View style={styles.emptyCard}>
-                  <CheckCircle size={32} color="#10B981" />
+                  <CheckCircle size={32} color="#16A34A" />
                   <Text style={styles.emptyTitle}>OPD Queue Clear</Text>
                   <Text style={styles.emptySub}>All scheduled consultations for today have been completed.</Text>
                 </View>
@@ -337,7 +337,7 @@ export default function AdminOpdScreen() {
                               styles.statusBadge,
                               {
                                 backgroundColor: isChecked
-                                  ? '#EAF5ED'
+                                  ? '#E8F1FC'
                                   : isInProgress
                                   ? '#DBEAFE'
                                   : '#FEF3C7',
@@ -349,10 +349,10 @@ export default function AdminOpdScreen() {
                                 styles.statusBadgeText,
                                 {
                                   color: isChecked
-                                    ? '#38845A'
+                                    ? '#1565C0'
                                     : isInProgress
-                                    ? '#1D4ED8'
-                                    : '#B45309',
+                                    ? '#1565C0'
+                                    : '#F59E0B',
                                 },
                               ]}
                             >
@@ -365,7 +365,7 @@ export default function AdminOpdScreen() {
                         <View style={styles.actionRow}>
                           {isSched && (
                             <TouchableOpacity
-                              style={[styles.actionBtn, { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' }]}
+                              style={[styles.actionBtn, { backgroundColor: '#DCFCE7', borderColor: '#BBF7D0' }]}
                               onPress={() => handleCheckIn(apt.id)}
                             >
                               <CheckCircle size={13} color="#16A34A" />
@@ -375,17 +375,17 @@ export default function AdminOpdScreen() {
 
                           {isChecked && (
                             <TouchableOpacity
-                              style={[styles.actionBtn, { backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' }]}
+                              style={[styles.actionBtn, { backgroundColor: '#E8F1FC', borderColor: '#BFDBFE' }]}
                               onPress={() => handleUpdateStatus(apt.id, 'IN_PROGRESS')}
                             >
-                              <Clock size={13} color="#2563EB" />
-                              <Text style={[styles.actionBtnText, { color: '#2563EB' }]}>Call In / Start</Text>
+                              <Clock size={13} color="#1565C0" />
+                              <Text style={[styles.actionBtnText, { color: '#1565C0' }]}>Call In / Start</Text>
                             </TouchableOpacity>
                           )}
 
                           {isInProgress && (
                             <TouchableOpacity
-                              style={[styles.actionBtn, { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' }]}
+                              style={[styles.actionBtn, { backgroundColor: '#DCFCE7', borderColor: '#BBF7D0' }]}
                               onPress={() => handleUpdateStatus(apt.id, 'COMPLETED')}
                             >
                               <CheckSquare size={13} color="#16A34A" />
@@ -405,12 +405,12 @@ export default function AdminOpdScreen() {
                               setReschedTime(apt.slotTime || apt.appointmentTime || '10:00');
                             }}
                           >
-                            <Edit2 size={13} color="#38845A" />
+                            <Edit2 size={13} color="#1565C0" />
                             <Text style={styles.actionBtnText}>Reschedule</Text>
                           </TouchableOpacity>
 
                           <TouchableOpacity
-                            style={[styles.actionBtn, { borderColor: '#FECDD3' }]}
+                            style={[styles.actionBtn, { borderColor: '#FEE2E2' }]}
                             onPress={() => {
                               setCancelModal(apt);
                               setCancelReason('');
@@ -502,7 +502,7 @@ export default function AdminOpdScreen() {
               <Text style={styles.sectionHeader}>Patients Scheduled for Arrival Today</Text>
               {appointments.filter((a) => a.status === 'SCHEDULED').length === 0 ? (
                 <View style={styles.emptyCard}>
-                  <CheckCircle size={32} color="#10B981" />
+                  <CheckCircle size={32} color="#16A34A" />
                   <Text style={styles.emptyTitle}>No Pending Arrivals</Text>
                   <Text style={styles.emptySub}>All scheduled patients have either checked in or completed consultations.</Text>
                 </View>
@@ -519,7 +519,7 @@ export default function AdminOpdScreen() {
                           <Text style={styles.docSubtitle}>Token #{apt.tokenNumber} • Slot: {apt.slotTime || apt.appointmentTime}</Text>
                         </View>
                         <TouchableOpacity
-                          style={[styles.actionBtn, { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0', paddingVertical: 8, paddingHorizontal: 14 }]}
+                          style={[styles.actionBtn, { backgroundColor: '#DCFCE7', borderColor: '#BBF7D0', paddingVertical: 8, paddingHorizontal: 14 }]}
                           onPress={() => handleCheckIn(apt.id)}
                         >
                           <CheckCircle size={14} color="#16A34A" />
@@ -597,7 +597,7 @@ export default function AdminOpdScreen() {
                     <Text style={styles.metricLabel}>Consulted</Text>
                   </View>
                   <View style={styles.metricItem}>
-                    <Text style={[styles.metricNum, { color: '#2563EB' }]}>{waitingCount}</Text>
+                    <Text style={[styles.metricNum, { color: '#1565C0' }]}>{waitingCount}</Text>
                     <Text style={styles.metricLabel}>In Waiting Queue</Text>
                   </View>
                   <View style={styles.metricItem}>
@@ -610,7 +610,7 @@ export default function AdminOpdScreen() {
               <View style={styles.revenueCard}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                   <View style={styles.revenueIcon}>
-                    <DollarSign size={20} color="#38845A" />
+                    <DollarSign size={20} color="#1565C0" />
                   </View>
                   <View>
                     <Text style={styles.revenueTitle}>Est. Consultation Revenue</Text>
@@ -692,7 +692,7 @@ export default function AdminOpdScreen() {
             />
 
             <TouchableOpacity style={styles.submitBtn} onPress={handleBookAppointment} disabled={submitting}>
-              {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitBtnText}>Generate OPD Token</Text>}
+              {submitting ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.submitBtnText}>Generate OPD Token</Text>}
             </TouchableOpacity>
           </View>
         </View>
@@ -728,7 +728,7 @@ export default function AdminOpdScreen() {
             />
 
             <TouchableOpacity style={styles.submitBtn} onPress={handleReschedule} disabled={submitting}>
-              {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitBtnText}>Confirm Reschedule</Text>}
+              {submitting ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.submitBtnText}>Confirm Reschedule</Text>}
             </TouchableOpacity>
           </View>
         </View>
@@ -761,7 +761,7 @@ export default function AdminOpdScreen() {
               onPress={handleCancelAppointment}
               disabled={submitting}
             >
-              {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitBtnText}>Confirm Cancellation</Text>}
+              {submitting ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.submitBtnText}>Confirm Cancellation</Text>}
             </TouchableOpacity>
           </View>
         </View>
@@ -820,7 +820,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   tabItemActive: {
-    borderBottomColor: '#38845A',
+    borderBottomColor: '#1565C0',
   },
   tabLabel: {
     fontSize: 11,
@@ -828,7 +828,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   tabLabelActive: {
-    color: '#38845A',
+    color: '#1565C0',
   },
   scroll: { flex: 1 },
   scrollContent: { padding: 14, paddingBottom: 30 },
@@ -837,7 +837,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 11,
     borderRadius: 12,
     marginBottom: 14,
@@ -890,19 +890,19 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     alignItems: 'center',
     justifyContent: 'center',
   },
   tokenNum: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
   },
   patientName: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   docSubtitle: {
     fontSize: 11,
@@ -943,12 +943,12 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#EAF5ED',
+    borderColor: '#E8F1FC',
   },
   actionBtnText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   searchBox: {
     flexDirection: 'row',
@@ -965,7 +965,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 8,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   filterChip: {
     paddingHorizontal: 12,
@@ -975,7 +975,7 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   filterChipActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   filterChipText: {
     fontSize: 11,
@@ -1004,12 +1004,12 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 11,
-    color: '#334155',
+    color: '#475569',
   },
   sectionHeader: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
     marginBottom: 10,
   },
   emptyCard: {
@@ -1023,7 +1023,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
     marginTop: 10,
   },
   emptySub: {
@@ -1048,7 +1048,7 @@ const styles = StyleSheet.create({
   metricsTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
     marginBottom: 10,
   },
   metricsGrid: {
@@ -1065,7 +1065,7 @@ const styles = StyleSheet.create({
   metricNum: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   metricLabel: {
     fontSize: 10,
@@ -1083,7 +1083,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1094,7 +1094,7 @@ const styles = StyleSheet.create({
   revenueVal: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
     marginTop: 2,
   },
   chipSelect: {
@@ -1107,8 +1107,8 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   chipSelectActive: {
-    backgroundColor: '#EAF5ED',
-    borderColor: '#38845A',
+    backgroundColor: '#E8F1FC',
+    borderColor: '#1565C0',
   },
   chipSelectText: {
     fontSize: 11,
@@ -1116,7 +1116,7 @@ const styles = StyleSheet.create({
     color: '#475569',
   },
   chipSelectTextActive: {
-    color: '#38845A',
+    color: '#1565C0',
     fontWeight: '700',
   },
   modalBg: {
@@ -1140,7 +1140,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   fieldLabel: {
     fontSize: 12,
@@ -1157,10 +1157,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: 'center',

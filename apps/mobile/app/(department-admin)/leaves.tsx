@@ -97,7 +97,7 @@ export default function DepartmentLeavesScreen() {
 
       {toastMsg ? (
         <View style={styles.toast}>
-          <CheckCircle2 size={16} color="#059669" />
+          <CheckCircle2 size={16} color="#00897B" />
           <Text style={styles.toastText}>{toastMsg}</Text>
         </View>
       ) : null}
@@ -106,11 +106,11 @@ export default function DepartmentLeavesScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadLeaves} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadLeaves} tintColor="#1565C0" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 40 }} />
         ) : leaves.length === 0 ? (
           <View style={styles.emptyState}>
             <CalendarOff size={40} color="#CBD5E1" />
@@ -147,9 +147,9 @@ export default function DepartmentLeavesScreen() {
                       {
                         backgroundColor:
                           status === 'APPROVED'
-                            ? '#D1FAE5'
+                            ? '#DCFCE7'
                             : status === 'REJECTED'
-                            ? '#EAF5ED'
+                            ? '#E8F1FC'
                             : '#FEF3C7',
                       },
                     ]}
@@ -160,10 +160,10 @@ export default function DepartmentLeavesScreen() {
                         {
                           color:
                             status === 'APPROVED'
-                              ? '#059669'
+                              ? '#00897B'
                               : status === 'REJECTED'
                               ? '#DC2626'
-                              : '#D97706',
+                              : '#F59E0B',
                         },
                       ]}
                     >
@@ -193,7 +193,7 @@ export default function DepartmentLeavesScreen() {
                       style={[styles.btn, styles.recommendBtn]}
                       onPress={() => openReviewModal(item, 'RECOMMEND')}
                     >
-                      <ThumbsUp size={13} color="#38845A" />
+                      <ThumbsUp size={13} color="#1565C0" />
                       <Text style={styles.recommendBtnText}>Recommend</Text>
                     </TouchableOpacity>
 
@@ -318,18 +318,18 @@ const styles = StyleSheet.create({
   toast: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#D1FAE5',
+    backgroundColor: '#DCFCE7',
     marginHorizontal: 16,
     marginTop: 8,
     padding: 10,
     borderRadius: 8,
     gap: 8,
     borderWidth: 1,
-    borderColor: '#A7F3D0',
+    borderColor: '#B2DFDB',
   },
   toastText: {
     fontSize: 12,
-    color: '#065F46',
+    color: '#183153',
     fontWeight: '600',
   },
   content: {
@@ -371,13 +371,13 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#E0F2FE',
+    backgroundColor: '#E8F1FC',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   avatarText: {
-    color: '#0284C7',
+    color: '#1565C0',
     fontWeight: '800',
     fontSize: 14,
   },
@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
   staffName: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   leaveType: {
     fontSize: 12,
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 12,
-    color: '#334155',
+    color: '#475569',
     fontWeight: '600',
   },
   reasonBox: {
@@ -429,7 +429,7 @@ const styles = StyleSheet.create({
   },
   reasonText: {
     fontSize: 12,
-    color: '#1E293B',
+    color: '#183153',
     marginTop: 2,
   },
   actionsRow: {
@@ -450,17 +450,17 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   recommendBtn: {
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     borderWidth: 1,
-    borderColor: '#EAF5ED',
+    borderColor: '#E8F1FC',
   },
   recommendBtnText: {
-    color: '#38845A',
+    color: '#1565C0',
     fontSize: 11,
     fontWeight: '700',
   },
   approveBtn: {
-    backgroundColor: '#059669',
+    backgroundColor: '#00897B',
   },
   approveBtnText: {
     color: '#FFFFFF',
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   rejectBtn: {
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
   },
   rejectBtnText: {
     color: '#DC2626',
@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   modalBody: {
     padding: 16,
@@ -513,7 +513,7 @@ const styles = StyleSheet.create({
   summaryName: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   summarySub: {
     fontSize: 12,
@@ -523,14 +523,14 @@ const styles = StyleSheet.create({
   },
   summaryDates: {
     fontSize: 11,
-    color: '#38845A',
+    color: '#1565C0',
     marginTop: 4,
     fontWeight: '700',
   },
   inputLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#334155',
+    color: '#475569',
     marginBottom: 6,
     marginTop: 10,
   },
@@ -548,11 +548,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   actChipActive: {
-    backgroundColor: '#EAF5ED',
-    borderColor: '#38845A',
+    backgroundColor: '#E8F1FC',
+    borderColor: '#1565C0',
   },
   actChipReject: {
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     borderColor: '#DC2626',
   },
   actChipText: {
@@ -561,7 +561,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   actChipTextActive: {
-    color: '#38845A',
+    color: '#1565C0',
   },
   modalInput: {
     backgroundColor: '#F8FAFC',
@@ -570,10 +570,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',

@@ -229,10 +229,10 @@ export default function InsuranceDeskScreen() {
           </View>
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <TouchableOpacity style={styles.calcHeaderBtn} onPress={() => setCalcVisible(true)}>
-              <Calculator size={16} color="#38845A" />
+              <Calculator size={16} color="#1565C0" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.addBtn} onPress={() => setNewPreAuthVisible(true)}>
-              <Plus size={16} color="#fff" />
+              <Plus size={16} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
         </View>
@@ -293,7 +293,7 @@ export default function InsuranceDeskScreen() {
 
             {/* Policy & TPA Details */}
             <View style={styles.policyRow}>
-              <Building size={14} color="#38845A" />
+              <Building size={14} color="#1565C0" />
               <Text style={styles.tpaText}>{c.tpaName}</Text>
             </View>
             <Text style={styles.policyNoText}>Policy #: {c.policyNo}</Text>
@@ -306,7 +306,7 @@ export default function InsuranceDeskScreen() {
               </View>
               <View style={styles.amountBox}>
                 <Text style={styles.amtLabel}>Sanctioned Amount</Text>
-                <Text style={[styles.amtVal, { color: '#38845A' }]}>
+                <Text style={[styles.amtVal, { color: '#1565C0' }]}>
                   ₹{c.initialSanctionedAmount.toLocaleString('en-IN')}
                 </Text>
               </View>
@@ -341,13 +341,13 @@ export default function InsuranceDeskScreen() {
                   setCalcVisible(true);
                 }}
               >
-                <Calculator size={13} color="#38845A" />
+                <Calculator size={13} color="#1565C0" />
                 <Text style={styles.openCalcBtnText}>Co-Pay Audit</Text>
               </TouchableOpacity>
 
               {c.status === 'Cashless Approved' && (
                 <View style={styles.approvedTag}>
-                  <CheckCircle2 size={13} color="#38845A" />
+                  <CheckCircle2 size={13} color="#1565C0" />
                   <Text style={styles.approvedTagText}>Cashless Sanction Ready</Text>
                 </View>
               )}
@@ -502,7 +502,7 @@ export default function InsuranceDeskScreen() {
             </ScrollView>
 
             <TouchableOpacity style={styles.submitClaimBtn} onPress={handleCreatePreAuth}>
-              <ShieldCheck size={18} color="#fff" />
+              <ShieldCheck size={18} color="#FFFFFF" />
               <Text style={styles.submitClaimBtnText}>Transmit Pre-Auth to TPA Gateway</Text>
             </TouchableOpacity>
           </View>
@@ -516,22 +516,22 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
   header: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
   },
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  title: { fontSize: 18, fontWeight: '800', color: '#0F172A' },
+  title: { fontSize: 18, fontWeight: '800', color: '#183153' },
   sub: { fontSize: 12, color: '#64748B', marginTop: 2 },
   calcHeaderBtn: {
-    backgroundColor: '#ECFDF5',
+    backgroundColor: '#E0F2F1',
     padding: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#A7F3D0',
+    borderColor: '#B2DFDB',
   },
   addBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     padding: 8,
     borderRadius: 8,
   },
@@ -545,10 +545,10 @@ const styles = StyleSheet.create({
     height: 38,
     gap: 8,
   },
-  searchInput: { flex: 1, fontSize: 13, color: '#0F172A' },
+  searchInput: { flex: 1, fontSize: 13, color: '#183153' },
   listContainer: { padding: 16 },
   claimCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 16,
     marginBottom: 14,
@@ -561,21 +561,21 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   claimCardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  claimNo: { fontSize: 13, fontWeight: '800', color: '#0F172A', fontFamily: 'monospace' },
+  claimNo: { fontSize: 13, fontWeight: '800', color: '#183153', fontFamily: 'monospace' },
   admBadge: { backgroundColor: '#F1F5F9', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   admBadgeText: { fontSize: 10, fontWeight: '700', color: '#475569' },
-  patientName: { fontSize: 15, fontWeight: '700', color: '#1E293B', marginTop: 4 },
+  patientName: { fontSize: 15, fontWeight: '700', color: '#183153', marginTop: 4 },
   uhidText: { fontSize: 11, color: '#64748B' },
   statusPill: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  pillApproved: { backgroundColor: '#D1FAE5' },
-  pillQuery: { backgroundColor: '#EAF5ED' },
+  pillApproved: { backgroundColor: '#DCFCE7' },
+  pillQuery: { backgroundColor: '#E8F1FC' },
   pillPending: { backgroundColor: '#FEF3C7' },
   statusPillText: { fontSize: 10, fontWeight: '800' },
-  textGreen: { color: '#065F46' },
+  textGreen: { color: '#183153' },
   textRed: { color: '#DC2626' },
-  textAmber: { color: '#92400E' },
+  textAmber: { color: '#F59E0B' },
   policyRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10 },
-  tpaText: { fontSize: 12, fontWeight: '700', color: '#38845A' },
+  tpaText: { fontSize: 12, fontWeight: '700', color: '#1565C0' },
   policyNoText: { fontSize: 11, color: '#64748B', marginTop: 2 },
   amountGrid: {
     flexDirection: 'row',
@@ -589,85 +589,85 @@ const styles = StyleSheet.create({
   },
   amountBox: { alignItems: 'center' },
   amtLabel: { fontSize: 10, color: '#64748B' },
-  amtVal: { fontSize: 12, fontWeight: '800', color: '#0F172A', marginTop: 2 },
+  amtVal: { fontSize: 12, fontWeight: '800', color: '#183153', marginTop: 2 },
   queryBox: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: '#FEE2E2',
     borderWidth: 1,
-    borderColor: '#FCA5A5',
+    borderColor: '#FECACA',
     padding: 8,
     borderRadius: 6,
     marginTop: 10,
   },
-  queryText: { fontSize: 11, color: '#991B1B', flex: 1 },
+  queryText: { fontSize: 11, color: '#DC2626', flex: 1 },
   remarksText: { fontSize: 11, color: '#64748B', marginTop: 8, fontStyle: 'italic' },
   actionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 },
   openCalcBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#ECFDF5',
+    backgroundColor: '#E0F2F1',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#A7F3D0',
+    borderColor: '#B2DFDB',
   },
-  openCalcBtnText: { color: '#38845A', fontSize: 11, fontWeight: '700' },
+  openCalcBtnText: { color: '#1565C0', fontSize: 11, fontWeight: '700' },
   approvedTag: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  approvedTagText: { fontSize: 11, color: '#38845A', fontWeight: '700' },
+  approvedTagText: { fontSize: 11, color: '#1565C0', fontWeight: '700' },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(15, 23, 42, 0.6)',
     justifyContent: 'flex-end',
   },
   modalCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
   },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 14 },
-  modalTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
+  modalTitle: { fontSize: 16, fontWeight: '800', color: '#183153' },
   modalSub: { fontSize: 11, color: '#64748B', marginTop: 2 },
   calcForm: { backgroundColor: '#F8FAFC', padding: 12, borderRadius: 10, marginBottom: 14 },
   inputLabel: { fontSize: 11, fontWeight: '700', color: '#475569', marginBottom: 4 },
   modalInput: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#CBD5E1',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   calcResultsBox: {
-    backgroundColor: '#ECFDF5',
+    backgroundColor: '#E0F2F1',
     borderWidth: 1,
-    borderColor: '#A7F3D0',
+    borderColor: '#B2DFDB',
     borderRadius: 10,
     padding: 12,
     marginBottom: 16,
     gap: 6,
   },
-  calcResultsTitle: { fontSize: 12, fontWeight: '800', color: '#065F46', marginBottom: 4 },
+  calcResultsTitle: { fontSize: 12, fontWeight: '800', color: '#183153', marginBottom: 4 },
   splitRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  splitLabel: { fontSize: 11, color: '#047857' },
-  splitTpaVal: { fontSize: 13, fontWeight: '800', color: '#38845A' },
-  splitVal: { fontSize: 12, fontWeight: '700', color: '#1E293B' },
-  splitTotalRow: { borderTopWidth: 1, borderTopColor: '#A7F3D0', paddingTop: 6, marginTop: 4 },
-  splitTotalLabel: { fontSize: 12, fontWeight: '800', color: '#0F172A' },
+  splitLabel: { fontSize: 11, color: '#00897B' },
+  splitTpaVal: { fontSize: 13, fontWeight: '800', color: '#1565C0' },
+  splitVal: { fontSize: 12, fontWeight: '700', color: '#183153' },
+  splitTotalRow: { borderTopWidth: 1, borderTopColor: '#B2DFDB', paddingTop: 6, marginTop: 4 },
+  splitTotalLabel: { fontSize: 12, fontWeight: '800', color: '#183153' },
   splitTotalVal: { fontSize: 15, fontWeight: '900', color: '#DC2626' },
   closeModalBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 10,
     paddingVertical: 12,
     alignItems: 'center',
   },
-  closeModalBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  closeModalBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
   tpaPillRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 },
   tpaPill: {
     paddingHorizontal: 10,
@@ -677,18 +677,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
-  tpaPillActive: { backgroundColor: '#ECFDF5', borderColor: '#38845A' },
+  tpaPillActive: { backgroundColor: '#E0F2F1', borderColor: '#1565C0' },
   tpaPillText: { fontSize: 11, color: '#475569' },
-  tpaPillTextActive: { color: '#38845A', fontWeight: '700' },
+  tpaPillTextActive: { color: '#1565C0', fontWeight: '700' },
   submitClaimBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 10,
     paddingVertical: 14,
     marginTop: 14,
     gap: 8,
   },
-  submitClaimBtnText: { color: '#fff', fontSize: 14, fontWeight: '800' },
+  submitClaimBtnText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
 });

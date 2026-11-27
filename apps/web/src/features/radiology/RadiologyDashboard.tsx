@@ -81,7 +81,7 @@ export const RadiologyDashboard: React.FC = () => {
       <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center space-x-2">
-            <Scan className="w-4 h-4 text-teal-600" />
+            <Scan className="w-4 h-4 text-[#00897B]" />
             <h3 className="font-bold text-sm text-slate-800">Diagnostic Imaging Schedule</h3>
           </div>
           <span className="text-xs text-slate-500">{orders.length} studies listed</span>
@@ -103,7 +103,7 @@ export const RadiologyDashboard: React.FC = () => {
             <tbody className="divide-y divide-slate-100">
               {orders.map((o) => (
                 <tr key={o.id} className="hover:bg-slate-50/60 transition-colors">
-                  <td className="py-3.5 px-4 font-mono font-bold text-teal-700">{o.orderNumber}</td>
+                  <td className="py-3.5 px-4 font-mono font-bold text-[#00897B]">{o.orderNumber}</td>
                   <td className="py-3.5 px-4">
                     <div className="font-semibold text-slate-800">
                       {o.patient?.firstName} {o.patient?.lastName}
@@ -114,7 +114,7 @@ export const RadiologyDashboard: React.FC = () => {
                   </td>
                   <td className="py-3.5 px-4">
                     <div className="font-semibold text-slate-800">{o.test?.name}</div>
-                    <div className="text-[10px] text-teal-700 font-bold uppercase">{o.test?.modality}</div>
+                    <div className="text-[10px] text-[#00897B] font-bold uppercase">{o.test?.modality}</div>
                   </td>
                   <td className="py-3.5 px-4 text-slate-600">
                     Dr. {o.doctor?.employee?.user?.firstName} {o.doctor?.employee?.user?.lastName}
@@ -125,11 +125,11 @@ export const RadiologyDashboard: React.FC = () => {
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     {o.status === 'REPORT_RELEASED' ? (
-                      <span className="text-emerald-600 font-semibold text-[11px]">Report Released</span>
+                      <span className="text-[#16A34A] font-semibold text-[11px]">Report Released</span>
                     ) : (
                       <button
                         onClick={() => openReportModal(o)}
-                        className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
+                        className="px-3 py-1.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
                       >
                         Enter Findings & Release
                       </button>
@@ -191,7 +191,7 @@ export const RadiologyDashboard: React.FC = () => {
               type="checkbox"
               checked={criticalAlert}
               onChange={(e) => setCriticalAlert(e.target.checked)}
-              className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500"
+              className="w-4 h-4 text-[#00897B] rounded border-slate-300 focus:ring-teal-500"
             />
           </div>
 
@@ -206,7 +206,7 @@ export const RadiologyDashboard: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm inline-flex items-center space-x-1"
+              className="px-6 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm inline-flex items-center space-x-1"
             >
               <ShieldCheck className="w-4 h-4" />
               <span>{isSubmitting ? 'Releasing...' : 'Sign & Release Diagnostic Scan'}</span>

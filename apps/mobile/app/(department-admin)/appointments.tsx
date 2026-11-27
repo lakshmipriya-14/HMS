@@ -239,7 +239,7 @@ export default function DepartmentAppointmentsScreen() {
 
       {toastMsg ? (
         <View style={styles.toast}>
-          <CheckCircle2 size={16} color="#059669" />
+          <CheckCircle2 size={16} color="#00897B" />
           <Text style={styles.toastText}>{toastMsg}</Text>
         </View>
       ) : null}
@@ -290,11 +290,11 @@ export default function DepartmentAppointmentsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#1565C0" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <CalendarCheck size={40} color="#CBD5E1" />
@@ -320,11 +320,11 @@ export default function DepartmentAppointmentsScreen() {
                       styles.statusPill,
                       {
                         backgroundColor: isCheckedIn
-                          ? '#EAF5ED'
+                          ? '#E8F1FC'
                           : isCompleted
-                          ? '#E0F2FE'
+                          ? '#E8F1FC'
                           : isCancelled
-                          ? '#EAF5ED'
+                          ? '#E8F1FC'
                           : '#FEF3C7',
                       },
                     ]}
@@ -334,12 +334,12 @@ export default function DepartmentAppointmentsScreen() {
                         styles.statusPillText,
                         {
                           color: isCheckedIn
-                            ? '#38845A'
+                            ? '#1565C0'
                             : isCompleted
-                            ? '#0284C7'
+                            ? '#1565C0'
                             : isCancelled
                             ? '#DC2626'
-                            : '#D97706',
+                            : '#F59E0B',
                         },
                       ]}
                     >
@@ -362,7 +362,7 @@ export default function DepartmentAppointmentsScreen() {
                   <View style={styles.actionsRow}>
                     {(item.status === 'SCHEDULED' || item.status === 'PENDING') && (
                       <TouchableOpacity
-                        style={[styles.btn, { backgroundColor: '#38845A' }]}
+                        style={[styles.btn, { backgroundColor: '#1565C0' }]}
                         onPress={() => handleApprove(item.id)}
                         disabled={processing}
                       >
@@ -398,7 +398,7 @@ export default function DepartmentAppointmentsScreen() {
 
                     {isCheckedIn && (
                       <TouchableOpacity
-                        style={[styles.btn, { backgroundColor: '#0284C7' }]}
+                        style={[styles.btn, { backgroundColor: '#1565C0' }]}
                         onPress={() => handleComplete(item.id)}
                         disabled={processing}
                       >
@@ -418,7 +418,7 @@ export default function DepartmentAppointmentsScreen() {
                       }}
                       disabled={processing}
                     >
-                      <Calendar size={13} color="#38845A" />
+                      <Calendar size={13} color="#1565C0" />
                       <Text style={styles.rescheduleText}>Reschedule</Text>
                     </TouchableOpacity>
 
@@ -659,7 +659,7 @@ const styles = StyleSheet.create({
   bookBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
@@ -673,18 +673,18 @@ const styles = StyleSheet.create({
   toast: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#D1FAE5',
+    backgroundColor: '#DCFCE7',
     marginHorizontal: 16,
     marginTop: 8,
     padding: 10,
     borderRadius: 8,
     gap: 8,
     borderWidth: 1,
-    borderColor: '#A7F3D0',
+    borderColor: '#B2DFDB',
   },
   toastText: {
     fontSize: 12,
-    color: '#065F46',
+    color: '#183153',
     fontWeight: '600',
   },
   topFilterBar: {
@@ -714,7 +714,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 8,
     fontSize: 12,
-    color: '#0F172A',
+    color: '#183153',
     marginLeft: 6,
   },
   statusChips: {
@@ -730,8 +730,8 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   chipActive: {
-    backgroundColor: '#EAF5ED',
-    borderColor: '#38845A',
+    backgroundColor: '#E8F1FC',
+    borderColor: '#1565C0',
   },
   chipText: {
     fontSize: 11,
@@ -739,7 +739,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   chipTextActive: {
-    color: '#38845A',
+    color: '#1565C0',
   },
   content: {
     flex: 1,
@@ -783,7 +783,7 @@ const styles = StyleSheet.create({
   patName: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   patUhid: {
     fontSize: 11,
@@ -807,7 +807,7 @@ const styles = StyleSheet.create({
   doctorText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#334155',
+    color: '#475569',
   },
   timeText: {
     fontSize: 11,
@@ -832,7 +832,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   checkInBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   checkInText: {
     color: '#FFFFFF',
@@ -840,15 +840,15 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   rescheduleBtn: {
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
   },
   rescheduleText: {
-    color: '#38845A',
+    color: '#1565C0',
     fontSize: 11,
     fontWeight: '700',
   },
   cancelBtn: {
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
   },
   cancelText: {
     color: '#DC2626',
@@ -877,7 +877,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   modalBody: {
     padding: 16,
@@ -885,7 +885,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#334155',
+    color: '#475569',
     marginBottom: 6,
     marginTop: 10,
   },
@@ -896,7 +896,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   docChip: {
     paddingHorizontal: 12,
@@ -908,8 +908,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   docChipActive: {
-    backgroundColor: '#EAF5ED',
-    borderColor: '#38845A',
+    backgroundColor: '#E8F1FC',
+    borderColor: '#1565C0',
   },
   docChipText: {
     fontSize: 12,
@@ -917,11 +917,11 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   docChipTextActive: {
-    color: '#38845A',
+    color: '#1565C0',
     fontWeight: '700',
   },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',

@@ -38,28 +38,28 @@ export const AdminProfile: React.FC = () => {
     <div className="space-y-6 pb-12 max-w-4xl mx-auto">
       {/* Messages */}
       {successMessage && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             {successMessage}
           </div>
-          <button onClick={() => setSuccessMessage('')} className="text-emerald-600 hover:text-emerald-900">×</button>
+          <button onClick={() => setSuccessMessage('')} className="text-[#16A34A] hover:text-emerald-900">×</button>
         </div>
       )}
       {errorMessage && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600" />
+            <AlertCircle className="w-4 h-4 text-[#DC2626]" />
             {errorMessage}
           </div>
-          <button onClick={() => setErrorMessage('')} className="text-rose-600 hover:text-rose-900">×</button>
+          <button onClick={() => setErrorMessage('')} className="text-[#DC2626] hover:text-rose-900">×</button>
         </div>
       )}
 
       {/* Header */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center font-bold text-xl shadow-md">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#1565C0] to-[#00897B] text-white flex items-center justify-center font-bold text-xl shadow-md">
             {user?.firstName?.[0] || 'A'}
           </div>
           <div>
@@ -68,7 +68,7 @@ export const AdminProfile: React.FC = () => {
             </h1>
             <p className="text-xs text-slate-500">{user?.email}</p>
             <div className="flex items-center gap-2 mt-1">
-              <span className="px-2 py-0.5 rounded font-mono font-bold text-[10px] bg-teal-50 text-teal-700 border border-teal-200">
+              <span className="px-2 py-0.5 rounded font-mono font-bold text-[10px] bg-[#E0F2F1] text-[#00897B] border border-[#B2DFDB]">
                 {user?.role}
               </span>
               <span className="text-xs text-slate-400">•</span>
@@ -79,7 +79,7 @@ export const AdminProfile: React.FC = () => {
 
         <button
           onClick={logout}
-          className="flex items-center gap-2 px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold rounded-xl transition-all self-start sm:self-center"
+          className="flex items-center gap-2 px-4 py-2 bg-[#FEE2E2] hover:bg-rose-100 text-[#DC2626] border border-[#FECACA] text-xs font-semibold rounded-xl transition-all self-start sm:self-center"
         >
           <LogOut className="w-4 h-4" />
           Sign Out
@@ -90,7 +90,7 @@ export const AdminProfile: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-4">
           <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 pb-2 border-b border-slate-100">
-            <User className="w-4 h-4 text-teal-600" />
+            <User className="w-4 h-4 text-[#00897B]" />
             Administrative Account Info
           </h3>
 
@@ -109,7 +109,7 @@ export const AdminProfile: React.FC = () => {
             </div>
             <div className="flex justify-between py-1.5 border-b border-slate-100">
               <span className="text-slate-400">Scope Authority</span>
-              <span className="font-semibold text-teal-700">Full Operating Branch</span>
+              <span className="font-semibold text-[#00897B]">Full Operating Branch</span>
             </div>
           </div>
         </div>
@@ -118,7 +118,7 @@ export const AdminProfile: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-4 flex flex-col justify-between">
           <div>
             <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 pb-2 border-b border-slate-100">
-              <Shield className="w-4 h-4 text-teal-600" />
+              <Shield className="w-4 h-4 text-[#00897B]" />
               Security & Credential Management
             </h3>
             <p className="text-xs text-slate-500 mt-2">
@@ -191,7 +191,7 @@ export const AdminProfile: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
+                  className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-lg shadow-sm"
                 >
                   Save New Password
                 </button>

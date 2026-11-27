@@ -183,21 +183,21 @@ export const DepartmentManagement: React.FC = () => {
     <div className="space-y-6 pb-12">
       {/* Notifications */}
       {successMessage && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             {successMessage}
           </div>
-          <button onClick={() => setSuccessMessage('')} className="text-emerald-600 hover:text-emerald-900">×</button>
+          <button onClick={() => setSuccessMessage('')} className="text-[#16A34A] hover:text-emerald-900">×</button>
         </div>
       )}
       {errorMessage && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600" />
+            <AlertCircle className="w-4 h-4 text-[#DC2626]" />
             {errorMessage}
           </div>
-          <button onClick={() => setErrorMessage('')} className="text-rose-600 hover:text-rose-900">×</button>
+          <button onClick={() => setErrorMessage('')} className="text-[#DC2626] hover:text-rose-900">×</button>
         </div>
       )}
 
@@ -205,7 +205,7 @@ export const DepartmentManagement: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-2 bg-teal-50 text-teal-700 rounded-xl border border-teal-100">
+            <span className="p-2 bg-[#E0F2F1] text-[#00897B] rounded-xl border border-[#B2DFDB]">
               <Building2 className="w-5 h-5" />
             </span>
             <div>
@@ -223,7 +223,7 @@ export const DepartmentManagement: React.FC = () => {
             setErrorMessage('');
             setCreateModalOpen(true);
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+          className="flex items-center gap-2 px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
         >
           <Plus className="w-4 h-4" />
           Create Department
@@ -295,7 +295,7 @@ export const DepartmentManagement: React.FC = () => {
                     {/* Department Admin */}
                     <div className="flex items-center justify-between bg-slate-50 p-2.5 rounded-xl">
                       <div className="flex items-center gap-2">
-                        <Shield className="w-4 h-4 text-teal-600 shrink-0" />
+                        <Shield className="w-4 h-4 text-[#00897B] shrink-0" />
                         <div>
                           <p className="text-[10px] text-slate-400 font-semibold uppercase">Department Admin</p>
                           <p className="font-semibold text-slate-800">
@@ -310,7 +310,7 @@ export const DepartmentManagement: React.FC = () => {
                           setErrorMessage('');
                           setAssignAdminModalOpen(true);
                         }}
-                        className="text-[11px] font-semibold text-teal-600 hover:text-teal-800 underline"
+                        className="text-[11px] font-semibold text-[#00897B] hover:text-[#183153] underline"
                       >
                         {assignedAdmin ? 'Replace' : 'Assign'}
                       </button>
@@ -319,7 +319,7 @@ export const DepartmentManagement: React.FC = () => {
                     {/* Head of Department (HOD) */}
                     <div className="flex items-center justify-between bg-slate-50 p-2.5 rounded-xl">
                       <div className="flex items-center gap-2">
-                        <UserCheck className="w-4 h-4 text-sky-600 shrink-0" />
+                        <UserCheck className="w-4 h-4 text-[#1565C0] shrink-0" />
                         <div>
                           <p className="text-[10px] text-slate-400 font-semibold uppercase">Head of Department (HOD)</p>
                           <p className="font-semibold text-slate-800">
@@ -338,7 +338,7 @@ export const DepartmentManagement: React.FC = () => {
                           setErrorMessage('');
                           setAssignHodModalOpen(true);
                         }}
-                        className="text-[11px] font-semibold text-sky-600 hover:text-sky-800 underline"
+                        className="text-[11px] font-semibold text-[#1565C0] hover:text-sky-800 underline"
                       >
                         Configure
                       </button>
@@ -380,7 +380,7 @@ export const DepartmentManagement: React.FC = () => {
                   <button
                     onClick={() => handleToggleStatus(dept)}
                     className={`flex items-center gap-1 font-semibold ${
-                      dept.isActive ? 'text-amber-600 hover:text-amber-800' : 'text-emerald-600 hover:text-emerald-800'
+                      dept.isActive ? 'text-amber-600 hover:text-amber-800' : 'text-[#16A34A] hover:text-[#16A34A]'
                     }`}
                   >
                     <Power className="w-3.5 h-3.5" />
@@ -389,7 +389,7 @@ export const DepartmentManagement: React.FC = () => {
 
                   <button
                     onClick={() => handleArchiveDepartment(dept)}
-                    className="flex items-center gap-1 font-semibold text-rose-600 hover:text-rose-800"
+                    className="flex items-center gap-1 font-semibold text-[#DC2626] hover:text-rose-800"
                     title="Archive Department"
                   >
                     <Archive className="w-3.5 h-3.5" />
@@ -449,7 +449,7 @@ export const DepartmentManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-lg shadow-sm"
             >
               {submitting ? 'Creating...' : 'Create Department'}
             </button>
@@ -491,7 +491,7 @@ export const DepartmentManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-lg shadow-sm"
             >
               {submitting ? 'Saving...' : 'Save Changes'}
             </button>
@@ -506,7 +506,7 @@ export const DepartmentManagement: React.FC = () => {
         title={`Designate Department Admin: ${selectedDept?.name}`}
       >
         <form onSubmit={handleAssignDepartmentAdmin} className="space-y-4">
-          <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl text-xs text-teal-800">
+          <div className="p-3 bg-[#E0F2F1] border border-[#B2DFDB] rounded-xl text-xs text-[#183153]">
             <span className="font-bold">Hospital Policy Enforcement:</span>
             <ul className="list-disc pl-4 mt-1 space-y-0.5 text-[11px]">
               <li>One department must have exactly ONE active Department Admin.</li>
@@ -547,7 +547,7 @@ export const DepartmentManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting || !selectedUserId}
-              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-lg shadow-sm"
             >
               {submitting ? 'Assigning...' : 'Confirm Assignment'}
             </button>
@@ -593,7 +593,7 @@ export const DepartmentManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-lg shadow-sm"
             >
               {submitting ? 'Saving...' : 'Update HOD'}
             </button>

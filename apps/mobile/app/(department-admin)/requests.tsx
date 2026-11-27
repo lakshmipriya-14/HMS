@@ -83,11 +83,11 @@ export default function DepartmentRequestsScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadRequests} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadRequests} tintColor="#1565C0" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 40 }} />
         ) : requests.length === 0 ? (
           <View style={styles.emptyState}>
             <Layers size={40} color="#CBD5E1" />
@@ -111,7 +111,7 @@ export default function DepartmentRequestsScreen() {
                         {
                           backgroundColor:
                             item.priority === 'URGENT' || item.priority === 'HIGH'
-                              ? '#EAF5ED'
+                              ? '#E8F1FC'
                               : '#F1F5F9',
                         },
                       ]}
@@ -134,13 +134,13 @@ export default function DepartmentRequestsScreen() {
                   <View
                     style={[
                       styles.statusBadge,
-                      { backgroundColor: isApproved ? '#EAF5ED' : isPending ? '#FEF3C7' : '#EAF5ED' },
+                      { backgroundColor: isApproved ? '#E8F1FC' : isPending ? '#FEF3C7' : '#E8F1FC' },
                     ]}
                   >
                     <Text
                       style={[
                         styles.statusBadgeText,
-                        { color: isApproved ? '#38845A' : isPending ? '#D97706' : '#DC2626' },
+                        { color: isApproved ? '#1565C0' : isPending ? '#F59E0B' : '#DC2626' },
                       ]}
                     >
                       {item.status || 'PENDING'}
@@ -267,13 +267,13 @@ const styles = StyleSheet.create({
   topBarTitle: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#334155',
+    color: '#475569',
     textTransform: 'uppercase',
   },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
   typeTagText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#334155',
+    color: '#475569',
     textTransform: 'uppercase',
   },
   priorityTag: {
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   itemDesc: {
     fontSize: 12,
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   modalForm: {
     marginBottom: 20,
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   typeSelectBtnActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   typeSelectText: {
     fontSize: 11,
@@ -441,10 +441,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   submitButton: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',

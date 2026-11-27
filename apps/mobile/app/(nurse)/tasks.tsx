@@ -237,7 +237,7 @@ export default function NurseTasksScreen() {
           <Text style={styles.headerSub}>Active Ward Shift Task Queue ({tasks.filter((t) => !t.isCompleted).length} Pending)</Text>
         </View>
         <TouchableOpacity style={styles.addBtn} onPress={() => setCreateModalVisible(true)}>
-          <PlusCircle size={16} color="#fff" />
+          <PlusCircle size={16} color="#FFFFFF" />
           <Text style={styles.addBtnText}>New Task</Text>
         </TouchableOpacity>
       </View>
@@ -285,10 +285,10 @@ export default function NurseTasksScreen() {
       <FlatList
         data={filteredTasks}
         keyExtractor={(item) => item.id}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1565C0']} />}
         ListEmptyComponent={
           <View style={styles.emptyBox}>
-            <CheckCircle2 size={36} color="#059669" />
+            <CheckCircle2 size={36} color="#00897B" />
             <Text style={styles.emptyTitle}>No pending tasks in this category</Text>
             <Text style={styles.emptySub}>All scheduled patient care activities are up to date</Text>
           </View>
@@ -303,7 +303,7 @@ export default function NurseTasksScreen() {
                 onPress={() => toggleTaskStatus(item)}
               >
                 {item.isCompleted ? (
-                  <CheckSquare size={22} color="#38845A" />
+                  <CheckSquare size={22} color="#1565C0" />
                 ) : (
                   <Square size={22} color={isUrgent ? '#DC2626' : '#94A3B8'} />
                 )}
@@ -338,7 +338,7 @@ export default function NurseTasksScreen() {
 
                 {item.doctorInstruction ? (
                   <View style={styles.docInstrBox}>
-                    <Stethoscope size={12} color="#38845A" />
+                    <Stethoscope size={12} color="#1565C0" />
                     <Text style={styles.docInstrText}>{item.doctorInstruction}</Text>
                   </View>
                 ) : null}
@@ -410,7 +410,7 @@ export default function NurseTasksScreen() {
               </View>
 
               <TouchableOpacity style={styles.submitBtn} onPress={handleCreateTask} disabled={isSaving}>
-                {isSaving ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitBtnText}>Save to Shift Task Schedule</Text>}
+                {isSaving ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.submitBtnText}>Save to Shift Task Schedule</Text>}
               </TouchableOpacity>
             </ScrollView>
           </View>
@@ -423,21 +423,21 @@ export default function NurseTasksScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC', padding: 14 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  headerTitle: { fontSize: 17, fontWeight: '800', color: '#0F172A' },
+  headerTitle: { fontSize: 17, fontWeight: '800', color: '#183153' },
   headerSub: { fontSize: 11, color: '#64748B', marginTop: 2 },
-  addBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#38845A', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, gap: 6 },
-  addBtnText: { color: '#fff', fontSize: 11, fontWeight: '700' },
-  tabBar: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 10, padding: 4, marginBottom: 12 },
+  addBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1565C0', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, gap: 6 },
+  addBtnText: { color: '#FFFFFF', fontSize: 11, fontWeight: '700' },
+  tabBar: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 10, padding: 4, marginBottom: 12 },
   tab: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 8 },
-  tabActive: { backgroundColor: '#38845A' },
+  tabActive: { backgroundColor: '#1565C0' },
   tabText: { fontSize: 11, fontWeight: '700', color: '#64748B' },
-  tabTextActive: { color: '#fff' },
-  emptyBox: { alignItems: 'center', padding: 30, backgroundColor: '#fff', borderRadius: 12 },
-  emptyTitle: { fontSize: 14, fontWeight: '700', color: '#0F172A', marginTop: 8 },
+  tabTextActive: { color: '#FFFFFF' },
+  emptyBox: { alignItems: 'center', padding: 30, backgroundColor: '#FFFFFF', borderRadius: 12 },
+  emptyTitle: { fontSize: 14, fontWeight: '700', color: '#183153', marginTop: 8 },
   emptySub: { fontSize: 11, color: '#64748B', marginTop: 2 },
   taskCard: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     borderWidth: 1,
     borderColor: '#E2E8F0',
@@ -446,41 +446,41 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   taskCardDone: { backgroundColor: '#F8FAFC', opacity: 0.65 },
-  taskCardUrgent: { borderColor: '#CDE8D5', backgroundColor: '#FFFDFD' },
+  taskCardUrgent: { borderColor: '#BFDBFE', backgroundColor: '#FFFFFF' },
   checkboxTouch: { paddingRight: 10, paddingTop: 2 },
   taskContent: { flex: 1 },
   taskMetaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
   priorityPill: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  pillRoutine: { backgroundColor: '#E0F2FE' },
-  pillUrgent: { backgroundColor: '#EAF5ED' },
+  pillRoutine: { backgroundColor: '#E8F1FC' },
+  pillUrgent: { backgroundColor: '#E8F1FC' },
   priorityText: { fontSize: 9, fontWeight: '800' },
-  textRoutine: { color: '#0284C7' },
+  textRoutine: { color: '#1565C0' },
   textUrgent: { color: '#DC2626' },
   timeBadge: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   timeText: { fontSize: 10, fontWeight: '600', color: '#64748B' },
-  taskTitle: { fontSize: 13, fontWeight: '700', color: '#0F172A', marginTop: 2 },
+  taskTitle: { fontSize: 13, fontWeight: '700', color: '#183153', marginTop: 2 },
   taskTitleDone: { textDecorationLine: 'line-through', color: '#64748B' },
   taskDesc: { fontSize: 11, color: '#475569', marginTop: 3, lineHeight: 16 },
   patientRow: { marginTop: 6 },
-  patientText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
-  docInstrBox: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EAF5ED', padding: 6, borderRadius: 6, marginTop: 6 },
-  docInstrText: { fontSize: 10, fontWeight: '700', color: '#38845A' },
-  completedAtText: { fontSize: 10, color: '#059669', fontStyle: 'italic', marginTop: 6 },
+  patientText: { fontSize: 11, fontWeight: '700', color: '#1565C0' },
+  docInstrBox: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E8F1FC', padding: 6, borderRadius: 6, marginTop: 6 },
+  docInstrText: { fontSize: 10, fontWeight: '700', color: '#1565C0' },
+  completedAtText: { fontSize: 10, color: '#00897B', fontStyle: 'italic', marginTop: 6 },
 
   // Modal
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
-  modalBox: { backgroundColor: '#fff', borderRadius: 16, padding: 18, maxHeight: '90%' },
+  modalBox: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 18, maxHeight: '90%' },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
-  modalTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
+  modalTitle: { fontSize: 16, fontWeight: '800', color: '#183153' },
   fieldLabel: { fontSize: 11, fontWeight: '700', color: '#475569', marginTop: 10, marginBottom: 4 },
   input: { borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, padding: 10, fontSize: 13, backgroundColor: '#F8FAFC' },
   row: { flexDirection: 'row' },
   prioRow: { flexDirection: 'row', gap: 6 },
   prioChip: { flex: 1, paddingVertical: 8, borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, alignItems: 'center' },
-  prioChipActive: { backgroundColor: '#38845A', borderColor: '#38845A' },
+  prioChipActive: { backgroundColor: '#1565C0', borderColor: '#1565C0' },
   prioText: { fontSize: 10, fontWeight: '700', color: '#475569' },
-  prioTextActive: { color: '#fff' },
-  submitBtn: { backgroundColor: '#38845A', paddingVertical: 12, borderRadius: 10, alignItems: 'center', marginTop: 18 },
-  submitBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  prioTextActive: { color: '#FFFFFF' },
+  submitBtn: { backgroundColor: '#1565C0', paddingVertical: 12, borderRadius: 10, alignItems: 'center', marginTop: 18 },
+  submitBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
 });
 

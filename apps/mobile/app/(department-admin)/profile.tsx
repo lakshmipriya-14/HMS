@@ -88,7 +88,7 @@ export default function DepartmentAdminProfileScreen() {
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#38845A" />
+        <ActivityIndicator size="large" color="#1565C0" />
       </View>
     );
   }
@@ -117,7 +117,7 @@ export default function DepartmentAdminProfileScreen() {
           </View>
 
           <View style={styles.metaRow}>
-            <Building2 size={14} color="#38845A" />
+            <Building2 size={14} color="#1565C0" />
             <Text style={styles.metaText}>
               Assigned Dept: {profile?.department?.name || 'Department'}
             </Text>
@@ -129,7 +129,7 @@ export default function DepartmentAdminProfileScreen() {
           <Text style={styles.formTitle}>Contact Details</Text>
           {phoneSaved && (
             <View style={styles.successBox}>
-              <CheckCircle2 size={14} color="#38845A" />
+              <CheckCircle2 size={14} color="#1565C0" />
               <Text style={styles.successText}>Phone number updated successfully</Text>
             </View>
           )}
@@ -158,7 +158,7 @@ export default function DepartmentAdminProfileScreen() {
 
           {passSaved && (
             <View style={styles.successBox}>
-              <CheckCircle2 size={14} color="#38845A" />
+              <CheckCircle2 size={14} color="#1565C0" />
               <Text style={styles.successText}>Password updated successfully</Text>
             </View>
           )}
@@ -200,7 +200,7 @@ export default function DepartmentAdminProfileScreen() {
           />
 
           <TouchableOpacity
-            style={[styles.saveBtn, { backgroundColor: '#334155' }, changingPass && { opacity: 0.6 }]}
+            style={[styles.saveBtn, { backgroundColor: '#475569' }, changingPass && { opacity: 0.6 }]}
             onPress={handleChangePassword}
             disabled={changingPass}
           >
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 18,
     fontWeight: '900',
-    color: '#38845A',
+    color: '#1565C0',
   },
   profileInfo: {
     flex: 1,
@@ -261,12 +261,12 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   profileRole: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
     marginTop: 2,
     letterSpacing: 0.5,
   },
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
   metaText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#334155',
+    color: '#475569',
   },
   formCard: {
     backgroundColor: '#FFFFFF',
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   formTitle: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
     marginBottom: 12,
   },
   inputLabel: {
@@ -319,10 +319,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
   },
   saveBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 10,
     paddingVertical: 12,
     alignItems: 'center',
@@ -337,18 +337,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     padding: 8,
     borderRadius: 8,
     marginBottom: 10,
   },
   successText: {
     fontSize: 11,
-    color: '#38845A',
+    color: '#1565C0',
     fontWeight: '600',
   },
   errorBox: {
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     padding: 8,
     borderRadius: 8,
     marginBottom: 10,

@@ -71,7 +71,7 @@ export default function HeadNurseSupervisionScreen() {
       {/* Head Nurse Header */}
       <View style={styles.headerBanner}>
         <View style={styles.badgeTop}>
-          <UserCheck size={18} color="#7C3AED" />
+          <UserCheck size={18} color="#1565C0" />
           <Text style={styles.badgeTopText}>HEAD NURSE CLINICAL SUPERVISION</Text>
         </View>
         <Text style={styles.wardTitle}>Intensive Coronary Care Unit (ICCU) Floor 2</Text>
@@ -100,11 +100,11 @@ export default function HeadNurseSupervisionScreen() {
               <Text style={styles.mLabel}>Total Beds</Text>
             </View>
             <View style={styles.mCard}>
-              <Text style={[styles.mNum, { color: '#38845A' }]}>7</Text>
+              <Text style={[styles.mNum, { color: '#1565C0' }]}>7</Text>
               <Text style={styles.mLabel}>Occupied</Text>
             </View>
             <View style={styles.mCard}>
-              <Text style={[styles.mNum, { color: '#059669' }]}>3</Text>
+              <Text style={[styles.mNum, { color: '#00897B' }]}>3</Text>
               <Text style={styles.mLabel}>Available</Text>
             </View>
             <View style={styles.mCard}>
@@ -218,7 +218,7 @@ export default function HeadNurseSupervisionScreen() {
             <TextInput style={[styles.fInput, { height: 80, textAlignVertical: 'top' }]} multiline numberOfLines={3} value={escalateSubject} onChangeText={setEscalateSubject} />
 
             <TouchableOpacity style={styles.sendEscBtn} onPress={handleSendEscalation}>
-              <Send size={16} color="#fff" />
+              <Send size={16} color="#FFFFFF" />
               <Text style={styles.sendEscText}>Send Escalation Notice</Text>
             </TouchableOpacity>
           </View>
@@ -251,69 +251,69 @@ export default function HeadNurseSupervisionScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC', padding: 14 },
-  headerBanner: { backgroundColor: '#F5F3FF', borderWidth: 1, borderColor: '#DDD6FE', borderRadius: 14, padding: 16, marginBottom: 12 },
+  headerBanner: { backgroundColor: '#E8F1FC', borderWidth: 1, borderColor: '#BFDBFE', borderRadius: 14, padding: 16, marginBottom: 12 },
   badgeTop: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
-  badgeTopText: { fontSize: 10, fontWeight: '800', color: '#7C3AED' },
+  badgeTopText: { fontSize: 10, fontWeight: '800', color: '#1565C0' },
   wardTitle: { fontSize: 16, fontWeight: '800', color: '#1E1B4B' },
-  wardSub: { fontSize: 11, color: '#6D28D9', marginTop: 2 },
-  tabBar: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 10, padding: 4, marginBottom: 12 },
+  wardSub: { fontSize: 11, color: '#1565C0', marginTop: 2 },
+  tabBar: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 10, padding: 4, marginBottom: 12 },
   tab: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 8 },
-  tabActive: { backgroundColor: '#7C3AED' },
+  tabActive: { backgroundColor: '#1565C0' },
   tabText: { fontSize: 11, fontWeight: '700', color: '#64748B' },
-  tabTextActive: { color: '#fff' },
+  tabTextActive: { color: '#FFFFFF' },
   sectionWrap: { gap: 12 },
   metricGrid: { flexDirection: 'row', gap: 8 },
-  mCard: { flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#E2E8F0', alignItems: 'center' },
-  mNum: { fontSize: 20, fontWeight: '900', color: '#0F172A' },
+  mCard: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#E2E8F0', alignItems: 'center' },
+  mNum: { fontSize: 20, fontWeight: '900', color: '#183153' },
   mLabel: { fontSize: 10, color: '#64748B', marginTop: 2, fontWeight: '700' },
-  secTitle: { fontSize: 14, fontWeight: '800', color: '#0F172A', marginBottom: 8 },
-  card: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 12 },
+  secTitle: { fontSize: 14, fontWeight: '800', color: '#183153', marginBottom: 8 },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E2E8F0', padding: 12 },
   bedRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F8FAFC' },
   bedLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   bedPill: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  pillRed: { backgroundColor: '#EAF5ED' },
-  pillGreen: { backgroundColor: '#D1FAE5' },
-  pillBlue: { backgroundColor: '#E0F2FE' },
-  bedPillText: { fontSize: 10, fontWeight: '800', color: '#0F172A' },
-  pNameText: { fontSize: 12, fontWeight: '700', color: '#0F172A' },
+  pillRed: { backgroundColor: '#E8F1FC' },
+  pillGreen: { backgroundColor: '#DCFCE7' },
+  pillBlue: { backgroundColor: '#E8F1FC' },
+  bedPillText: { fontSize: 10, fontWeight: '800', color: '#183153' },
+  pNameText: { fontSize: 12, fontWeight: '700', color: '#183153' },
   nurseNameText: { fontSize: 10, color: '#64748B' },
   reassignBtn: { backgroundColor: '#F1F5F9', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 },
-  reassignText: { fontSize: 10, fontWeight: '700', color: '#38845A' },
+  reassignText: { fontSize: 10, fontWeight: '700', color: '#1565C0' },
   rosterTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  ratioBadge: { backgroundColor: '#EAF5ED', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  ratioText: { fontSize: 10, fontWeight: '800', color: '#38845A' },
-  nurseCard: { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 8 },
+  ratioBadge: { backgroundColor: '#E8F1FC', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  ratioText: { fontSize: 10, fontWeight: '800', color: '#1565C0' },
+  nurseCard: { backgroundColor: '#FFFFFF', borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', padding: 14, marginBottom: 8 },
   nurseTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  nurseName: { fontSize: 14, fontWeight: '800', color: '#0F172A' },
+  nurseName: { fontSize: 14, fontWeight: '800', color: '#183153' },
   nurseShift: { fontSize: 11, color: '#64748B', marginTop: 2 },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  statusOn: { backgroundColor: '#D1FAE5' },
+  statusOn: { backgroundColor: '#DCFCE7' },
   statusOff: { backgroundColor: '#F1F5F9' },
   statusBadgeText: { fontSize: 9, fontWeight: '800' },
-  textOn: { color: '#059669' },
+  textOn: { color: '#00897B' },
   textOff: { color: '#64748B' },
   nurseBottom: { marginTop: 8, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F8FAFC', flexDirection: 'row', justifyContent: 'space-between' },
-  bedList: { fontSize: 11, color: '#334155' },
-  workloadText: { fontSize: 11, fontWeight: '700', color: '#38845A' },
-  escalateCard: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: '#CDE8D5', padding: 20, alignItems: 'center', gap: 10 },
+  bedList: { fontSize: 11, color: '#475569' },
+  workloadText: { fontSize: 11, fontWeight: '700', color: '#1565C0' },
+  escalateCard: { backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#BFDBFE', padding: 20, alignItems: 'center', gap: 10 },
   escTitle: { fontSize: 16, fontWeight: '800', color: '#DC2626' },
   escSub: { fontSize: 12, color: '#475569', textAlign: 'center', lineHeight: 18 },
   escButton: { backgroundColor: '#DC2626', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 8, marginTop: 10 },
-  escButtonText: { color: '#fff', fontSize: 12, fontWeight: '800' },
+  escButtonText: { color: '#FFFFFF', fontSize: 12, fontWeight: '800' },
 
   // Modal
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
-  modalBox: { backgroundColor: '#fff', borderRadius: 16, padding: 18 },
+  modalBox: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 18 },
   mHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  mTitle: { fontSize: 16, fontWeight: '800', color: '#0F172A' },
+  mTitle: { fontSize: 16, fontWeight: '800', color: '#183153' },
   fLabel: { fontSize: 11, fontWeight: '700', color: '#475569', marginTop: 10, marginBottom: 4 },
   fInput: { borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, padding: 10, fontSize: 12, backgroundColor: '#F8FAFC' },
   prioRow: { flexDirection: 'row', gap: 6 },
   prioChip: { flex: 1, paddingVertical: 6, borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 6, alignItems: 'center' },
   prioChipActive: { backgroundColor: '#DC2626', borderColor: '#DC2626' },
   prioText: { fontSize: 10, fontWeight: '700', color: '#475569' },
-  prioTextActive: { color: '#fff' },
-  sendEscBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#7C3AED', paddingVertical: 12, borderRadius: 10, marginTop: 16, gap: 6 },
-  sendEscText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  prioTextActive: { color: '#FFFFFF' },
+  sendEscBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#1565C0', paddingVertical: 12, borderRadius: 10, marginTop: 16, gap: 6 },
+  sendEscText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
 });
 

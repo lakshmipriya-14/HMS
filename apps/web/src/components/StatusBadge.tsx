@@ -16,7 +16,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, variant = 'sub
       case 'APPROVED':
       case 'SUCCESS':
       case 'ACTIVE':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        return 'bg-[#DCFCE7] text-[#16A34A] border-[#BBF7D0]';
 
       case 'SCHEDULED':
       case 'CHECKED_IN':
@@ -25,7 +25,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, variant = 'sub
       case 'DISPATCHED':
       case 'EN_ROUTE_PICKUP':
       case 'EN_ROUTE_HOSPITAL':
-        return 'bg-sky-50 text-sky-700 border-sky-200';
+        return 'bg-[#E8F1FC] text-[#1565C0] border-[#BFDBFE]';
 
       case 'PENDING':
       case 'PROCESSING':
@@ -43,7 +43,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, variant = 'sub
       case 'MAINTENANCE':
       case 'NO_SHOW':
       case 'FAILED':
-        return 'bg-rose-50 text-rose-700 border-rose-200';
+        return 'bg-[#FEE2E2] text-[#DC2626] border-[#FECACA]';
 
       default:
         return 'bg-slate-100 text-slate-700 border-slate-200';

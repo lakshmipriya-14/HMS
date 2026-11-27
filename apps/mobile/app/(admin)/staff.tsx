@@ -245,7 +245,7 @@ export default function AdminStaffScreen() {
           style={styles.backBtn}
           onPress={() => router.replace('/(admin)/more')}
         >
-          <ChevronLeft size={20} color="#38845A" />
+          <ChevronLeft size={20} color="#1565C0" />
         </TouchableOpacity>
         <View style={styles.searchBox}>
           <Search size={16} color="#64748B" />
@@ -267,7 +267,7 @@ export default function AdminStaffScreen() {
           {selectionMode ? (
             <CheckSquare size={18} color="#FFFFFF" />
           ) : (
-            <Square size={18} color="#38845A" />
+            <Square size={18} color="#1565C0" />
           )}
         </TouchableOpacity>
         <TouchableOpacity style={styles.addBtn} onPress={() => setAddModal(true)}>
@@ -300,7 +300,7 @@ export default function AdminStaffScreen() {
           </Text>
           <View style={styles.bulkActions}>
             <TouchableOpacity
-              style={[styles.bulkBtn, { backgroundColor: '#059669' }]}
+              style={[styles.bulkBtn, { backgroundColor: '#00897B' }]}
               onPress={() => handleBulkStatus(true)}
               disabled={selectedIds.length === 0 || submitting}
             >
@@ -333,14 +333,14 @@ export default function AdminStaffScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#38845A" />
+          <ActivityIndicator size="large" color="#1565C0" />
         </View>
       ) : (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#38845A" />
+            <RefreshControl refreshing={refreshing} onRefresh={loadData} tintColor="#1565C0" />
           }
         >
           {filtered.length === 0 ? (
@@ -378,7 +378,7 @@ export default function AdminStaffScreen() {
                         onPress={() => toggleSelectId(user.id)}
                       >
                         {isSelected ? (
-                          <CheckSquare size={20} color="#38845A" />
+                          <CheckSquare size={20} color="#1565C0" />
                         ) : (
                           <Square size={20} color="#CBD5E1" />
                         )}
@@ -402,14 +402,14 @@ export default function AdminStaffScreen() {
                     <TouchableOpacity
                       style={[
                         styles.statusBtn,
-                        { backgroundColor: isActive ? '#D1FAE5' : '#EAF5ED' },
+                        { backgroundColor: isActive ? '#DCFCE7' : '#E8F1FC' },
                       ]}
                       onPress={() => handleToggleStatus(user.id, isActive, staffName)}
                     >
                       <Text
                         style={[
                           styles.statusBtnText,
-                          { color: isActive ? '#059669' : '#DC2626' },
+                          { color: isActive ? '#00897B' : '#DC2626' },
                         ]}
                       >
                         {isActive ? 'ACTIVE' : 'SUSPENDED'}
@@ -432,7 +432,7 @@ export default function AdminStaffScreen() {
                           setEditDeptId(user.employee?.departmentId || user.departmentId || '');
                         }}
                       >
-                        <Edit2 size={13} color="#38845A" />
+                        <Edit2 size={13} color="#1565C0" />
                         <Text style={styles.actionBtnText}>Edit</Text>
                       </TouchableOpacity>
 
@@ -443,18 +443,18 @@ export default function AdminStaffScreen() {
                           setNewPassword('');
                         }}
                       >
-                        <KeyRound size={13} color="#2563EB" />
-                        <Text style={[styles.actionBtnText, { color: '#2563EB' }]}>Reset</Text>
+                        <KeyRound size={13} color="#1565C0" />
+                        <Text style={[styles.actionBtnText, { color: '#1565C0' }]}>Reset</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
                         style={[
                           styles.actionBtn,
-                          { borderColor: isActive ? '#FECDD3' : '#A7F3D0' },
+                          { borderColor: isActive ? '#FEE2E2' : '#B2DFDB' },
                         ]}
                         onPress={() => handleToggleStatus(user.id, isActive, staffName)}
                       >
-                        <Power size={13} color={isActive ? '#E11D48' : '#059669'} />
+                        <Power size={13} color={isActive ? '#DC2626' : '#00897B'} />
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -550,7 +550,7 @@ export default function AdminStaffScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Provision Account</Text>
               )}
@@ -604,7 +604,7 @@ export default function AdminStaffScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Save Changes</Text>
               )}
@@ -643,7 +643,7 @@ export default function AdminStaffScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.submitBtnText}>Confirm Reset</Text>
               )}
@@ -684,7 +684,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 13,
-    color: '#0F172A',
+    color: '#183153',
     paddingVertical: 8,
   },
   selectToggleBtn: {
@@ -692,16 +692,16 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#38845A',
+    borderColor: '#1565C0',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
   },
   selectToggleBtnActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   addBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     width: 36,
     height: 36,
     borderRadius: 10,
@@ -724,7 +724,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   roleChipActive: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
   },
   roleChipText: {
     fontSize: 11,
@@ -740,7 +740,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 14,
     paddingVertical: 10,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#183153',
   },
   bulkCountText: {
     color: '#FFFFFF',
@@ -784,8 +784,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   cardSelected: {
-    borderColor: '#38845A',
-    backgroundColor: '#EAF5ED',
+    borderColor: '#1565C0',
+    backgroundColor: '#E8F1FC',
   },
   cardHeader: {
     flexDirection: 'row',
@@ -795,19 +795,19 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#38845A',
+    color: '#1565C0',
   },
   userName: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   userEmail: {
     fontSize: 11,
@@ -861,13 +861,13 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#EAF5ED',
+    borderColor: '#E8F1FC',
     gap: 4,
   },
   actionBtnText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   modalBg: {
     flex: 1,
@@ -890,7 +890,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#183153',
   },
   fieldLabel: {
     fontSize: 12,
@@ -907,7 +907,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#0F172A',
+    color: '#183153',
   },
   roleGrid: {
     flexDirection: 'row',
@@ -924,8 +924,8 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   roleSelectChipActive: {
-    backgroundColor: '#EAF5ED',
-    borderColor: '#38845A',
+    backgroundColor: '#E8F1FC',
+    borderColor: '#1565C0',
   },
   roleSelectChipText: {
     fontSize: 11,
@@ -933,10 +933,10 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   roleSelectChipTextActive: {
-    color: '#38845A',
+    color: '#1565C0',
   },
   submitBtn: {
-    backgroundColor: '#38845A',
+    backgroundColor: '#1565C0',
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: 'center',

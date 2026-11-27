@@ -183,28 +183,28 @@ export const WardBedManagement: React.FC = () => {
     <div className="space-y-6 pb-12">
       {/* Messages */}
       {successMessage && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             {successMessage}
           </div>
-          <button onClick={() => setSuccessMessage('')} className="text-emerald-600 hover:text-emerald-900">×</button>
+          <button onClick={() => setSuccessMessage('')} className="text-[#16A34A] hover:text-emerald-900">×</button>
         </div>
       )}
       {errorMessage && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600" />
+            <AlertCircle className="w-4 h-4 text-[#DC2626]" />
             {errorMessage}
           </div>
-          <button onClick={() => setErrorMessage('')} className="text-rose-600 hover:text-rose-900">×</button>
+          <button onClick={() => setErrorMessage('')} className="text-[#DC2626] hover:text-rose-900">×</button>
         </div>
       )}
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="p-2.5 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100">
+          <span className="p-2.5 bg-[#DCFCE7] text-[#16A34A] rounded-xl border border-[#BBF7D0]">
             <BedDouble className="w-6 h-6" />
           </span>
           <div>
@@ -228,7 +228,7 @@ export const WardBedManagement: React.FC = () => {
               setErrorMessage('');
               setAddWardModalOpen(true);
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
           >
             <Plus className="w-4 h-4" />
             Add Ward
@@ -246,7 +246,7 @@ export const WardBedManagement: React.FC = () => {
               key={ward.id}
               onClick={() => setSelectedWard(ward)}
               className={`px-4 py-3 rounded-2xl border text-left shrink-0 transition-all ${isSelected
-                  ? 'bg-teal-700 text-white border-teal-800 shadow-md'
+                  ? 'bg-[#0D47A1] text-white border-teal-800 shadow-md'
                   : 'bg-white text-slate-700 border-slate-200/80 hover:bg-slate-50'
                 }`}
             >
@@ -279,7 +279,7 @@ export const WardBedManagement: React.FC = () => {
                 <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-100 text-slate-700">
                   {selectedWard.code}
                 </span>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700">
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#E0F2F1] text-[#00897B]">
                   Gender: {selectedWard.genderAllowed}
                 </span>
               </div>
@@ -300,7 +300,7 @@ export const WardBedManagement: React.FC = () => {
                 setErrorMessage('');
                 setAddBedModalOpen(true);
               }}
-              className="flex items-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+              className="flex items-center gap-2 px-3.5 py-2 bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
             >
               <Plus className="w-3.5 h-3.5" />
               Add Bed to Ward
@@ -326,14 +326,14 @@ export const WardBedManagement: React.FC = () => {
                 let borderStyle = 'border-slate-200 hover:border-slate-300';
                 let bgStyle = 'bg-slate-50/50';
                 if (isAvailable) {
-                  borderStyle = 'border-emerald-200 hover:border-emerald-400';
-                  bgStyle = 'bg-emerald-50/30';
+                  borderStyle = 'border-[#BBF7D0] hover:border-emerald-400';
+                  bgStyle = 'bg-[#DCFCE7]/30';
                 } else if (isOccupied) {
-                  borderStyle = 'border-sky-200 hover:border-sky-400';
-                  bgStyle = 'bg-sky-50/40';
+                  borderStyle = 'border-[#BFDBFE] hover:border-sky-400';
+                  bgStyle = 'bg-[#E8F1FC]/40';
                 } else if (isMaintenance) {
-                  borderStyle = 'border-rose-200 hover:border-rose-400';
-                  bgStyle = 'bg-rose-50/30';
+                  borderStyle = 'border-[#FECACA] hover:border-rose-400';
+                  bgStyle = 'bg-[#FEE2E2]/30';
                 } else if (isCleaning) {
                   borderStyle = 'border-amber-200 hover:border-amber-400';
                   bgStyle = 'bg-amber-50/30';
@@ -355,11 +355,11 @@ export const WardBedManagement: React.FC = () => {
                       <div className="mt-2 text-center py-2">
                         <BedDouble
                           className={`w-7 h-7 mx-auto ${isOccupied
-                              ? 'text-sky-600'
+                              ? 'text-[#1565C0]'
                               : isAvailable
-                                ? 'text-emerald-600'
+                                ? 'text-[#16A34A]'
                                 : isMaintenance
-                                  ? 'text-rose-600'
+                                  ? 'text-[#DC2626]'
                                   : 'text-amber-600'
                             }`}
                         />
@@ -387,7 +387,7 @@ export const WardBedManagement: React.FC = () => {
                       {!isOccupied && (
                         <button
                           onClick={() => handleDeleteBed(bed)}
-                          className="p-1 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
+                          className="p-1 text-slate-400 hover:text-[#DC2626] rounded-lg hover:bg-[#FEE2E2] transition-colors"
                           title="Delete Bed"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -483,7 +483,7 @@ export const WardBedManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-lg shadow-sm"
             >
               {submitting ? 'Creating...' : 'Create Ward'}
             </button>
@@ -556,7 +556,7 @@ export const WardBedManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] rounded-lg shadow-sm"
             >
               {submitting ? 'Adding...' : 'Add Bed'}
             </button>
@@ -596,7 +596,7 @@ export const WardBedManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-lg shadow-sm"
             >
               {submitting ? 'Updating...' : 'Save Bed Status'}
             </button>

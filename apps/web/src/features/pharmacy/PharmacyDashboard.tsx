@@ -152,7 +152,7 @@ export const PharmacyDashboard: React.FC = () => {
               <tbody className="divide-y divide-slate-100">
                 {queue.map((rx) => (
                   <tr key={rx.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-teal-700">
+                    <td className="py-3.5 px-4 font-mono font-bold text-[#00897B]">
                       {rx.prescriptionNumber}
                     </td>
                     <td className="py-3.5 px-4">
@@ -182,7 +182,7 @@ export const PharmacyDashboard: React.FC = () => {
                     <td className="py-3.5 px-4 text-right">
                       <button
                         onClick={() => openDispenseModal(rx)}
-                        className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
+                        className="px-3 py-1.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
                       >
                         Verify & Dispense
                       </button>
@@ -221,8 +221,8 @@ export const PharmacyDashboard: React.FC = () => {
                       <span
                         className={`font-semibold font-mono px-2 py-0.5 rounded text-[11px] ${
                           med.currentStock <= med.reorderLevel
-                            ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                            : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            ? 'bg-[#FEE2E2] text-[#DC2626] border border-[#FECACA]'
+                            : 'bg-[#DCFCE7] text-[#16A34A] border border-[#BBF7D0]'
                         }`}
                       >
                         {med.currentStock} units
@@ -240,8 +240,8 @@ export const PharmacyDashboard: React.FC = () => {
       {/* Tab 3: Low Stock Alerts */}
       {activeTab === 'lowstock' && (
         <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-6">
-          <div className="flex items-center space-x-2 text-rose-700 font-bold mb-4">
-            <AlertTriangle className="w-5 h-5 text-rose-600" />
+          <div className="flex items-center space-x-2 text-[#DC2626] font-bold mb-4">
+            <AlertTriangle className="w-5 h-5 text-[#DC2626]" />
             <h3>Critical Stock & Reorder Alerts</h3>
           </div>
           {lowStock.length === 0 ? (
@@ -251,16 +251,16 @@ export const PharmacyDashboard: React.FC = () => {
               {lowStock.map((med) => (
                 <div
                   key={med.id}
-                  className="p-4 bg-rose-50/60 border border-rose-200 rounded-xl flex items-center justify-between"
+                  className="p-4 bg-[#FEE2E2]/60 border border-[#FECACA] rounded-xl flex items-center justify-between"
                 >
                   <div>
                     <h4 className="font-bold text-slate-800 text-sm">{med.brandName}</h4>
                     <p className="text-xs text-slate-600">{med.genericName} - {med.strength}</p>
-                    <p className="text-xs text-rose-700 font-semibold mt-1">
+                    <p className="text-xs text-[#DC2626] font-semibold mt-1">
                       Current Stock: {med.currentStock} units (Reorder Threshold: {med.reorderLevel})
                     </p>
                   </div>
-                  <button className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-semibold shadow-sm">
+                  <button className="px-3 py-1.5 bg-[#DC2626] hover:bg-[#B91C1C] text-white rounded-lg text-xs font-semibold shadow-sm">
                     Generate Purchase Order
                   </button>
                 </div>
@@ -283,7 +283,7 @@ export const PharmacyDashboard: React.FC = () => {
               <div key={item.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs">
                 <div className="flex justify-between font-bold text-slate-800 mb-1">
                   <span>{item.medicine?.brandName || item.dosage}</span>
-                  <span className="text-teal-700">{item.frequency} x {item.durationDays} days</span>
+                  <span className="text-[#00897B]">{item.frequency} x {item.durationDays} days</span>
                 </div>
                 <div className="mt-2">
                   <label className="block text-[11px] font-semibold text-slate-500 mb-1">
@@ -319,7 +319,7 @@ export const PharmacyDashboard: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm"
+              className="px-6 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm"
             >
               {isSubmitting ? 'Dispensing...' : 'Confirm Dispensing & Update Inventory'}
             </button>

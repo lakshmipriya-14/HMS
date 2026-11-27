@@ -69,7 +69,7 @@ export const DepartmentReports: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2.5">
-            <BarChart3 className="w-6 h-6 text-teal-600" />
+            <BarChart3 className="w-6 h-6 text-[#00897B]" />
             Department Analytics & Operational Reports
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -81,13 +81,13 @@ export const DepartmentReports: React.FC = () => {
           disabled={!reportData?.rows?.length}
           className="px-4 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-50 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm self-start sm:self-auto"
         >
-          <Download className="w-4 h-4 text-teal-600" />
+          <Download className="w-4 h-4 text-[#00897B]" />
           Export CSV Spreadsheet
         </button>
       </div>
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs font-semibold">
+        <div className="p-4 bg-[#FEE2E2] border border-[#FECACA] rounded-xl flex items-center gap-2 text-[#DC2626] text-xs font-semibold">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
@@ -102,7 +102,7 @@ export const DepartmentReports: React.FC = () => {
           <select
             value={reportType}
             onChange={(e) => setReportType(e.target.value)}
-            className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition font-semibold text-slate-700"
+            className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition font-semibold text-slate-700"
           >
             <option value="opd_census">OPD Registrations & Consultations</option>
             <option value="ipd_census">IPD Admissions & Bed Occupancy</option>
@@ -119,7 +119,7 @@ export const DepartmentReports: React.FC = () => {
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition font-mono"
+              className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition font-mono"
             />
           </div>
           <div>
@@ -128,14 +128,14 @@ export const DepartmentReports: React.FC = () => {
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition font-mono"
+              className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#00897B] transition font-mono"
             />
           </div>
         </div>
 
         <button
           onClick={loadReport}
-          className="sm:self-end px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition shadow-sm w-full sm:w-auto"
+          className="sm:self-end px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-xl text-xs font-bold transition shadow-sm w-full sm:w-auto"
         >
           Generate
         </button>

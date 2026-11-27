@@ -80,7 +80,7 @@ export default function NurseDashboardScreen() {
   return (
     <ScrollView
       style={styles.container}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#38845A']} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1565C0']} />}
     >
       {/* Shift & Ward Header */}
       <View style={styles.banner}>
@@ -133,8 +133,8 @@ export default function NurseDashboardScreen() {
       <Text style={styles.sectionHeader}>Ward Overview & Duty Metrics</Text>
       <View style={styles.grid}>
         <TouchableOpacity style={styles.metricCard} onPress={() => router.push('/(nurse)/patients')}>
-          <View style={[styles.iconCircle, { backgroundColor: '#E0F2FE' }]}>
-            <Users size={18} color="#0284C7" />
+          <View style={[styles.iconCircle, { backgroundColor: '#E8F1FC' }]}>
+            <Users size={18} color="#1565C0" />
           </View>
           <Text style={styles.metricNumber}>{assignedPatientsCount}</Text>
           <Text style={styles.metricLabel}>Assigned Inpatients</Text>
@@ -142,7 +142,7 @@ export default function NurseDashboardScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.metricCard} onPress={() => router.push('/(nurse)/vitals' as any)}>
-          <View style={[styles.iconCircle, { backgroundColor: '#EAF5ED' }]}>
+          <View style={[styles.iconCircle, { backgroundColor: '#E8F1FC' }]}>
             <HeartPulse size={18} color="#DC2626" />
           </View>
           <Text style={[styles.metricNumber, { color: '#DC2626' }]}>
@@ -154,16 +154,16 @@ export default function NurseDashboardScreen() {
 
         <TouchableOpacity style={styles.metricCard} onPress={() => router.push('/(nurse)/medications')}>
           <View style={[styles.iconCircle, { backgroundColor: '#FEF3C7' }]}>
-            <Pill size={18} color="#D97706" />
+            <Pill size={18} color="#F59E0B" />
           </View>
-          <Text style={[styles.metricNumber, { color: '#D97706' }]}>3</Text>
+          <Text style={[styles.metricNumber, { color: '#F59E0B' }]}>3</Text>
           <Text style={styles.metricLabel}>MAR Doses Due</Text>
           <Text style={styles.metricSub}>Upcoming 2 Hours</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.metricCard} onPress={() => router.push('/(nurse)/tasks')}>
-          <View style={[styles.iconCircle, { backgroundColor: '#EAF5ED' }]}>
-            <ClipboardList size={18} color="#38845A" />
+          <View style={[styles.iconCircle, { backgroundColor: '#E8F1FC' }]}>
+            <ClipboardList size={18} color="#1565C0" />
           </View>
           <Text style={styles.metricNumber}>{pendingTasks.length || 4}</Text>
           <Text style={styles.metricLabel}>Pending Tasks</Text>
@@ -178,7 +178,7 @@ export default function NurseDashboardScreen() {
           style={styles.actionBtn}
           onPress={() => router.push('/(nurse)/vitals' as any)}
         >
-          <HeartPulse size={20} color="#38845A" />
+          <HeartPulse size={20} color="#1565C0" />
           <Text style={styles.actionBtnText}>Record Vitals</Text>
         </TouchableOpacity>
 
@@ -186,7 +186,7 @@ export default function NurseDashboardScreen() {
           style={styles.actionBtn}
           onPress={() => router.push('/(nurse)/medications')}
         >
-          <Pill size={20} color="#38845A" />
+          <Pill size={20} color="#1565C0" />
           <Text style={styles.actionBtnText}>Administer MAR</Text>
         </TouchableOpacity>
 
@@ -194,7 +194,7 @@ export default function NurseDashboardScreen() {
           style={styles.actionBtn}
           onPress={() => router.push('/(nurse)/tasks')}
         >
-          <FileText size={20} color="#38845A" />
+          <FileText size={20} color="#1565C0" />
           <Text style={styles.actionBtnText}>Doctor Orders</Text>
         </TouchableOpacity>
 
@@ -202,7 +202,7 @@ export default function NurseDashboardScreen() {
           style={styles.actionBtn}
           onPress={() => router.push('/(nurse)/handover' as any)}
         >
-          <RotateCcw size={20} color="#38845A" />
+          <RotateCcw size={20} color="#1565C0" />
           <Text style={styles.actionBtnText}>Shift Handover</Text>
         </TouchableOpacity>
       </View>
@@ -214,13 +214,13 @@ export default function NurseDashboardScreen() {
           onPress={() => router.push('/(nurse)/supervisor' as any)}
         >
           <View style={styles.supervisorLeft}>
-            <UserCheck size={24} color="#7C3AED" />
+            <UserCheck size={24} color="#1565C0" />
             <View style={{ marginLeft: 12 }}>
               <Text style={styles.supervisorTitle}>Head Nurse Ward Supervision</Text>
               <Text style={styles.supervisorDesc}>Census, nurse assignment, roster, and issue escalation</Text>
             </View>
           </View>
-          <ArrowRight size={18} color="#7C3AED" />
+          <ArrowRight size={18} color="#1565C0" />
         </TouchableOpacity>
       )}
 
@@ -235,7 +235,7 @@ export default function NurseDashboardScreen() {
       <View style={styles.careCard}>
         <View style={styles.careItem}>
           <View style={styles.timeBadge}>
-            <Clock size={12} color="#38845A" />
+            <Clock size={12} color="#1565C0" />
             <Text style={styles.timeText}>12:00 PM</Text>
           </View>
           <View style={{ flex: 1, marginLeft: 10 }}>
@@ -254,8 +254,8 @@ export default function NurseDashboardScreen() {
 
         <View style={styles.careItem}>
           <View style={[styles.timeBadge, { backgroundColor: '#FEF3C7' }]}>
-            <Clock size={12} color="#D97706" />
-            <Text style={[styles.timeText, { color: '#B45309' }]}>01:00 PM</Text>
+            <Clock size={12} color="#F59E0B" />
+            <Text style={[styles.timeText, { color: '#F59E0B' }]}>01:00 PM</Text>
           </View>
           <View style={{ flex: 1, marginLeft: 10 }}>
             <Text style={styles.careTitle}>Ecosprin 75mg Oral Dose</Text>
@@ -360,13 +360,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: UyirinaiTheme.colors.errorBg,
     borderWidth: 1,
-    borderColor: '#F8C8C7',
+    borderColor: '#FECACA',
     borderRadius: 14,
     padding: 14,
     marginBottom: 16,
   },
   criticalTitle: { fontSize: 13, fontWeight: '800', color: UyirinaiTheme.colors.error },
-  criticalDesc: { fontSize: 11, color: '#991B1B', marginTop: 2 },
+  criticalDesc: { fontSize: 11, color: '#DC2626', marginTop: 2 },
   sectionHeader: { fontSize: 15, fontWeight: '800', color: UyirinaiTheme.colors.textPrimary, marginBottom: 10 },
   sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
   seeAllText: { fontSize: 12, fontWeight: '700', color: UyirinaiTheme.colors.primary },

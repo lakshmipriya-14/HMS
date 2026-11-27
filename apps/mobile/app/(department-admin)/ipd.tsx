@@ -52,15 +52,15 @@ export default function IpdManagementScreen() {
       {/* Summary Row */}
       <View style={styles.summaryBar}>
         <View style={styles.sumBox}>
-          <Text style={[styles.sumVal, { color: '#38845A' }]}>{data?.totalInpatients ?? inpatients.length}</Text>
+          <Text style={[styles.sumVal, { color: '#1565C0' }]}>{data?.totalInpatients ?? inpatients.length}</Text>
           <Text style={styles.sumLbl}>Total Inpatients</Text>
         </View>
         <View style={styles.sumBox}>
-          <Text style={[styles.sumVal, { color: '#0284C7' }]}>{data?.bedOccupancyRate ?? 78}%</Text>
+          <Text style={[styles.sumVal, { color: '#1565C0' }]}>{data?.bedOccupancyRate ?? 78}%</Text>
           <Text style={styles.sumLbl}>Bed Occupancy</Text>
         </View>
         <View style={styles.sumBox}>
-          <Text style={[styles.sumVal, { color: '#D97706' }]}>{data?.averageStayDays ?? 4.2}d</Text>
+          <Text style={[styles.sumVal, { color: '#F59E0B' }]}>{data?.averageStayDays ?? 4.2}d</Text>
           <Text style={styles.sumLbl}>Avg Length Stay</Text>
         </View>
       </View>
@@ -80,11 +80,11 @@ export default function IpdManagementScreen() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={loadIpd} tintColor="#38845A" />
+          <RefreshControl refreshing={refreshing} onRefresh={loadIpd} tintColor="#1565C0" />
         }
       >
         {loading && !refreshing ? (
-          <ActivityIndicator size="large" color="#38845A" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 40 }} />
         ) : filtered.length === 0 ? (
           <View style={styles.emptyState}>
             <DoorOpen size={40} color="#CBD5E1" />
@@ -105,7 +105,7 @@ export default function IpdManagementScreen() {
                     <Text style={styles.uhidText}>UHID: {item.patient?.uhid || '—'}</Text>
                   </View>
                   <View style={styles.bedBadge}>
-                    <BedDouble size={14} color="#38845A" />
+                    <BedDouble size={14} color="#1565C0" />
                     <Text style={styles.bedBadgeText}>
                       Bed: {item.bed?.bedNumber || item.bedNumber || 'Assigned'}
                     </Text>
@@ -119,7 +119,7 @@ export default function IpdManagementScreen() {
                   </View>
                   <View style={styles.detailItem}>
                     <Text style={styles.detailLabel}>Length of Stay</Text>
-                    <Text style={[styles.detailVal, { color: daysStay > 7 ? '#D97706' : '#38845A' }]}>
+                    <Text style={[styles.detailVal, { color: daysStay > 7 ? '#F59E0B' : '#1565C0' }]}>
                       {daysStay} Day(s)
                     </Text>
                   </View>
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 8,
     fontSize: 12,
-    color: '#0F172A',
+    color: '#183153',
     marginLeft: 6,
   },
   content: {
@@ -232,11 +232,11 @@ const styles = StyleSheet.create({
   patientName: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#183153',
   },
   uhidText: {
     fontSize: 11,
-    color: '#38845A',
+    color: '#1565C0',
     fontFamily: 'monospace',
     marginTop: 1,
   },
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#EAF5ED',
+    backgroundColor: '#E8F1FC',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   bedBadgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#38845A',
+    color: '#1565C0',
   },
   detailsGrid: {
     flexDirection: 'row',
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   detailVal: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#334155',
+    color: '#475569',
     marginTop: 2,
   },
   cardFooter: {

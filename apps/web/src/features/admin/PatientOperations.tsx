@@ -72,7 +72,7 @@ export const PatientOperations: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="p-2.5 bg-rose-50 text-rose-700 rounded-xl border border-rose-100">
+          <span className="p-2.5 bg-[#FEE2E2] text-[#DC2626] rounded-xl border border-[#FECACA]">
             <HeartPulse className="w-6 h-6" />
           </span>
           <div>
@@ -145,7 +145,7 @@ export const PatientOperations: React.FC = () => {
               ) : (
                 filteredPatients.map((p) => (
                   <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-teal-700">{p.uhid}</td>
+                    <td className="py-3.5 px-4 font-mono font-bold text-[#00897B]">{p.uhid}</td>
                     <td className="py-3.5 px-4 font-bold text-slate-800">
                       {p.firstName} {p.lastName}
                     </td>
@@ -159,8 +159,8 @@ export const PatientOperations: React.FC = () => {
                     </td>
                     <td className="py-3.5 px-4">
                       {p.bloodGroup ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                          <Droplet className="w-3 h-3 text-rose-600" />
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-[#FEE2E2] text-[#DC2626] border border-[#FECACA]">
+                          <Droplet className="w-3 h-3 text-[#DC2626]" />
                           {p.bloodGroup}
                         </span>
                       ) : (

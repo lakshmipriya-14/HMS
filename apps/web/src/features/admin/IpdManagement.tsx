@@ -702,23 +702,23 @@ export const IpdManagement: React.FC = () => {
     <div className="space-y-6 pb-16">
       {/* Messages */}
       {successMessage && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center justify-between shadow-sm">
+        <div className="p-3.5 bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] rounded-xl text-xs font-semibold flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-[#16A34A] flex-shrink-0" />
             <span>{successMessage}</span>
           </div>
-          <button onClick={() => setSuccessMessage('')} className="text-emerald-600 hover:text-emerald-900 font-bold ml-4">
+          <button onClick={() => setSuccessMessage('')} className="text-[#16A34A] hover:text-emerald-900 font-bold ml-4">
             ×
           </button>
         </div>
       )}
       {errorMessage && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between shadow-sm">
+        <div className="p-3.5 bg-[#FEE2E2] border border-[#FECACA] text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+            <AlertCircle className="w-4 h-4 text-[#DC2626] flex-shrink-0" />
             <span>{errorMessage}</span>
           </div>
-          <button onClick={() => setErrorMessage('')} className="text-rose-600 hover:text-rose-900 font-bold ml-4">
+          <button onClick={() => setErrorMessage('')} className="text-[#DC2626] hover:text-rose-900 font-bold ml-4">
             ×
           </button>
         </div>
@@ -728,13 +728,13 @@ export const IpdManagement: React.FC = () => {
       <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="p-2.5 bg-teal-50 text-teal-700 rounded-xl border border-teal-100 shadow-sm">
+            <span className="p-2.5 bg-[#E0F2F1] text-[#00897B] rounded-xl border border-[#B2DFDB] shadow-sm">
               <DoorOpen className="w-6 h-6" />
             </span>
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-bold text-slate-900">Inpatient Department (IPD) Management</h1>
-                <span className="px-2 py-0.5 text-[10px] font-bold bg-teal-100 text-teal-800 rounded-md uppercase tracking-wider">
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-[#E0F2F1] text-[#183153] rounded-md uppercase tracking-wider">
                   Live Operations
                 </span>
               </div>
@@ -752,7 +752,7 @@ export const IpdManagement: React.FC = () => {
                 setPatientSearchQuery('');
                 setNewAdmissionModalOpen(true);
               }}
-              className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition-all shadow-sm"
+              className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-xl transition-all shadow-sm"
             >
               <Plus className="w-4 h-4" />
               New Inpatient Admission
@@ -803,11 +803,11 @@ export const IpdManagement: React.FC = () => {
                 onClick={() => setActiveTab(tab.id as IpdTab)}
                 className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   isActive
-                    ? 'bg-teal-50 text-teal-800 border border-teal-200/80 shadow-xs'
+                    ? 'bg-[#E0F2F1] text-[#183153] border border-[#B2DFDB]/80 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-teal-600' : 'text-slate-400'}`} />
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#00897B]' : 'text-slate-400'}`} />
                 <span>{tab.label}</span>
                 {tab.count !== undefined && (
                   <span
@@ -834,25 +834,25 @@ export const IpdManagement: React.FC = () => {
             <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
               <div className="flex items-center justify-between text-slate-500 mb-1">
                 <span className="text-[11px] font-medium uppercase tracking-wider">Inpatient Census</span>
-                <BedDouble className="w-4 h-4 text-teal-600" />
+                <BedDouble className="w-4 h-4 text-[#00897B]" />
               </div>
               <div className="text-2xl font-bold text-slate-900">{activeInpatients.length}</div>
-              <div className="text-[11px] text-teal-700 font-medium mt-1">Currently Admitted</div>
+              <div className="text-[11px] text-[#00897B] font-medium mt-1">Currently Admitted</div>
             </div>
 
             <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
               <div className="flex items-center justify-between text-slate-500 mb-1">
                 <span className="text-[11px] font-medium uppercase tracking-wider">Admissions Today</span>
-                <Plus className="w-4 h-4 text-emerald-600" />
+                <Plus className="w-4 h-4 text-[#16A34A]" />
               </div>
               <div className="text-2xl font-bold text-slate-900">{admissionsToday.length}</div>
-              <div className="text-[11px] text-emerald-700 font-medium mt-1">New Inpatients Today</div>
+              <div className="text-[11px] text-[#16A34A] font-medium mt-1">New Inpatients Today</div>
             </div>
 
             <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
               <div className="flex items-center justify-between text-slate-500 mb-1">
                 <span className="text-[11px] font-medium uppercase tracking-wider">Discharges Today</span>
-                <LogOut className="w-4 h-4 text-rose-600" />
+                <LogOut className="w-4 h-4 text-[#DC2626]" />
               </div>
               <div className="text-2xl font-bold text-slate-900">{dischargesToday.length}</div>
               <div className="text-[11px] text-slate-500 font-medium mt-1">Completed Discharges</div>
@@ -861,9 +861,9 @@ export const IpdManagement: React.FC = () => {
             <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
               <div className="flex items-center justify-between text-slate-500 mb-1">
                 <span className="text-[11px] font-medium uppercase tracking-wider">Available Beds</span>
-                <CheckCircle2 className="w-4 h-4 text-teal-600" />
+                <CheckCircle2 className="w-4 h-4 text-[#00897B]" />
               </div>
-              <div className="text-2xl font-bold text-teal-700">{availableBedsCount}</div>
+              <div className="text-2xl font-bold text-[#00897B]">{availableBedsCount}</div>
               <div className="text-[11px] text-slate-500 font-medium mt-1">
                 of {totalBedsCount} Total Beds ({totalBedsCount > 0 ? Math.round((availableBedsCount / totalBedsCount) * 100) : 0}%)
               </div>
@@ -872,7 +872,7 @@ export const IpdManagement: React.FC = () => {
             <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
               <div className="flex items-center justify-between text-slate-500 mb-1">
                 <span className="text-[11px] font-medium uppercase tracking-wider">ICU Occupancy</span>
-                <HeartPulse className="w-4 h-4 text-rose-600" />
+                <HeartPulse className="w-4 h-4 text-[#DC2626]" />
               </div>
               <div className="text-2xl font-bold text-slate-900">{icuOccupancyRate}%</div>
               <div className="text-[11px] text-slate-500 font-medium mt-1">
@@ -883,10 +883,10 @@ export const IpdManagement: React.FC = () => {
             <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
               <div className="flex items-center justify-between text-slate-500 mb-1">
                 <span className="text-[11px] font-medium uppercase tracking-wider">Avg Length of Stay</span>
-                <Clock className="w-4 h-4 text-indigo-600" />
+                <Clock className="w-4 h-4 text-[#1565C0]" />
               </div>
               <div className="text-2xl font-bold text-slate-900">{averageLos} <span className="text-xs font-normal text-slate-500">days</span></div>
-              <div className="text-[11px] text-indigo-700 font-medium mt-1">Hospital ALOS Metric</div>
+              <div className="text-[11px] text-[#1565C0] font-medium mt-1">Hospital ALOS Metric</div>
             </div>
           </div>
 
@@ -929,13 +929,13 @@ export const IpdManagement: React.FC = () => {
                 <div>
                   <div className="flex justify-between text-xs font-medium mb-1">
                     <span className="flex items-center gap-1.5 text-slate-700">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Available
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#16A34A]"></span> Available
                     </span>
                     <span className="font-bold text-slate-900">{availableBedsCount} beds</span>
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-2">
                     <div
-                      className="bg-emerald-500 h-2 rounded-full"
+                      className="bg-[#16A34A] h-2 rounded-full"
                       style={{ width: `${totalBedsCount > 0 ? (availableBedsCount / totalBedsCount) * 100 : 0}%` }}
                     ></div>
                   </div>
@@ -989,7 +989,7 @@ export const IpdManagement: React.FC = () => {
 
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
                 <span className="text-slate-500">Overall Occupancy Rate:</span>
-                <span className="font-bold text-teal-700 text-sm">
+                <span className="font-bold text-[#00897B] text-sm">
                   {totalBedsCount > 0 ? Math.round((occupiedBedsCount / totalBedsCount) * 100) : 0}%
                 </span>
               </div>
@@ -1004,7 +1004,7 @@ export const IpdManagement: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setActiveTab('wards')}
-                  className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"
+                  className="text-xs font-semibold text-[#00897B] hover:text-[#00897B] flex items-center gap-1"
                 >
                   Manage Wards <ChevronRight className="w-3.5 h-3.5" />
                 </button>
@@ -1030,9 +1030,9 @@ export const IpdManagement: React.FC = () => {
                           <span className="text-[11px] text-slate-500">Floor {ward.floorNumber}</span>
                         </div>
                         <div className="flex items-center gap-3 text-xs">
-                          <span className="text-emerald-700 font-semibold">{avail} avail</span>
+                          <span className="text-[#16A34A] font-semibold">{avail} avail</span>
                           <span className="text-slate-400">|</span>
-                          <span className="text-rose-700 font-semibold">{occ} occ</span>
+                          <span className="text-[#DC2626] font-semibold">{occ} occ</span>
                           {clean > 0 && (
                             <>
                               <span className="text-slate-400">|</span>
@@ -1046,7 +1046,7 @@ export const IpdManagement: React.FC = () => {
                       <div className="w-full bg-slate-200/80 rounded-full h-2">
                         <div
                           className={`h-2 rounded-full ${
-                            percent > 85 ? 'bg-rose-500' : percent > 60 ? 'bg-amber-500' : 'bg-teal-600'
+                            percent > 85 ? 'bg-rose-500' : percent > 60 ? 'bg-amber-500' : 'bg-[#1565C0]'
                           }`}
                           style={{ width: `${percent}%` }}
                         ></div>
@@ -1124,7 +1124,7 @@ export const IpdManagement: React.FC = () => {
                   setSelectedPatientForAdmission(null);
                   setNewAdmissionModalOpen(true);
                 }}
-                className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition-all shadow-xs"
+                className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-xl transition-all shadow-xs"
               >
                 <Plus className="w-4 h-4" />
                 Admit Patient
@@ -1155,7 +1155,7 @@ export const IpdManagement: React.FC = () => {
 
                     return (
                       <tr key={adm.id} className="hover:bg-slate-50/70 transition-colors">
-                        <td className="py-3.5 px-4 font-mono font-bold text-teal-800">
+                        <td className="py-3.5 px-4 font-mono font-bold text-[#183153]">
                           {adm.admissionNumber || 'ADM-PENDING'}
                         </td>
                         <td className="py-3.5 px-4">
@@ -1207,7 +1207,7 @@ export const IpdManagement: React.FC = () => {
                                 setAdmissionDetailModalOpen(true);
                               }}
                               title="View Details"
-                              className="p-1.5 text-slate-500 hover:text-teal-700 hover:bg-teal-50 rounded-lg transition-colors"
+                              className="p-1.5 text-slate-500 hover:text-[#00897B] hover:bg-[#E0F2F1] rounded-lg transition-colors"
                             >
                               <Eye className="w-4 h-4" />
                             </button>
@@ -1222,7 +1222,7 @@ export const IpdManagement: React.FC = () => {
                                     setTransferModalOpen(true);
                                   }}
                                   title="Transfer Bed"
-                                  className="p-1.5 text-slate-500 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg transition-colors"
+                                  className="p-1.5 text-slate-500 hover:text-[#1565C0] hover:bg-[#E8F1FC] rounded-lg transition-colors"
                                 >
                                   <ArrowRightLeft className="w-4 h-4" />
                                 </button>
@@ -1233,14 +1233,14 @@ export const IpdManagement: React.FC = () => {
                                     setDischargeModalOpen(true);
                                   }}
                                   title="Initiate Discharge"
-                                  className="p-1.5 text-slate-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
+                                  className="p-1.5 text-slate-500 hover:text-[#DC2626] hover:bg-[#FEE2E2] rounded-lg transition-colors"
                                 >
                                   <LogOut className="w-4 h-4" />
                                 </button>
                                 <button
                                   onClick={() => handleCancelAdmission(adm)}
                                   title="Cancel Admission"
-                                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                                  className="p-1.5 text-slate-400 hover:text-[#DC2626] hover:bg-[#FEE2E2] rounded-lg transition-colors"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
@@ -1356,7 +1356,7 @@ export const IpdManagement: React.FC = () => {
                           </div>
                         </td>
                         <td className="py-3.5 px-4">
-                          <div className="font-mono text-teal-800 font-semibold">{adm.admissionNumber}</div>
+                          <div className="font-mono text-[#183153] font-semibold">{adm.admissionNumber}</div>
                           <div className="text-[11px] text-slate-500">
                             Admitted {new Date(adm.admittedAt).toLocaleDateString('en-IN')}
                           </div>
@@ -1369,7 +1369,7 @@ export const IpdManagement: React.FC = () => {
                           <span className="font-bold text-slate-900">
                             Room {adm.bed?.roomNumber} • Bed {adm.bed?.bedNumber}
                           </span>
-                          <div className="text-[10px] text-teal-700 font-medium">{adm.bed?.type || 'STANDARD'}</div>
+                          <div className="text-[10px] text-[#00897B] font-medium">{adm.bed?.type || 'STANDARD'}</div>
                         </td>
                         <td className="py-3.5 px-4">
                           <div className="font-semibold text-slate-800">
@@ -1389,7 +1389,7 @@ export const IpdManagement: React.FC = () => {
                         <td className="py-3.5 px-4">
                           <div
                             className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold ${
-                              isLongStay ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-teal-50 text-teal-800'
+                              isLongStay ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-[#E0F2F1] text-[#183153]'
                             }`}
                           >
                             <Clock className="w-3 h-3" />
@@ -1406,7 +1406,7 @@ export const IpdManagement: React.FC = () => {
                                 setTransferTargetBedId('');
                                 setTransferModalOpen(true);
                               }}
-                              className="px-2.5 py-1.5 text-[11px] font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors flex items-center gap-1"
+                              className="px-2.5 py-1.5 text-[11px] font-semibold text-[#1565C0] bg-[#E8F1FC] hover:bg-[#E8F1FC] rounded-lg transition-colors flex items-center gap-1"
                             >
                               <ArrowRightLeft className="w-3 h-3" />
                               Transfer
@@ -1417,7 +1417,7 @@ export const IpdManagement: React.FC = () => {
                                 setDischargeSummary('');
                                 setDischargeModalOpen(true);
                               }}
-                              className="px-2.5 py-1.5 text-[11px] font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors flex items-center gap-1"
+                              className="px-2.5 py-1.5 text-[11px] font-semibold text-[#DC2626] bg-[#FEE2E2] hover:bg-rose-100 rounded-lg transition-colors flex items-center gap-1"
                             >
                               <LogOut className="w-3 h-3" />
                               Discharge
@@ -1457,7 +1457,7 @@ export const IpdManagement: React.FC = () => {
               <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Hospital Wards</h3>
               <button
                 onClick={() => setAddWardModalOpen(true)}
-                className="p-1.5 text-teal-700 bg-teal-50 hover:bg-teal-100 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors"
+                className="p-1.5 text-[#00897B] bg-[#E0F2F1] hover:bg-[#E0F2F1] rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Add Ward
@@ -1476,7 +1476,7 @@ export const IpdManagement: React.FC = () => {
                     onClick={() => setSelectedWard(ward)}
                     className={`p-3 rounded-xl border text-left cursor-pointer transition-all ${
                       isSelected
-                        ? 'bg-teal-50/80 border-teal-300 shadow-xs'
+                        ? 'bg-[#E0F2F1]/80 border-teal-300 shadow-xs'
                         : 'bg-white border-slate-200/70 hover:border-slate-300'
                     }`}
                   >
@@ -1539,7 +1539,7 @@ export const IpdManagement: React.FC = () => {
                         });
                         setAddBedModalOpen(true);
                       }}
-                      className="px-3.5 py-1.5 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition-all shadow-xs flex items-center gap-1.5"
+                      className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-xl transition-all shadow-xs flex items-center gap-1.5"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       Add Bed
@@ -1550,7 +1550,7 @@ export const IpdManagement: React.FC = () => {
                 {/* Bed Status Legend */}
                 <div className="flex flex-wrap items-center gap-4 text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
+                    <span className="w-3 h-3 rounded-full bg-[#16A34A]"></span>
                     <span className="text-slate-700 font-medium">Available</span>
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -1583,9 +1583,9 @@ export const IpdManagement: React.FC = () => {
                           key={bed.id}
                           className={`p-4 rounded-xl border transition-all ${
                             isOccupied
-                              ? 'bg-rose-50/40 border-rose-200'
+                              ? 'bg-[#FEE2E2]/40 border-[#FECACA]'
                               : isAvailable
-                              ? 'bg-emerald-50/40 border-emerald-200'
+                              ? 'bg-[#DCFCE7]/40 border-[#BBF7D0]'
                               : isCleaning
                               ? 'bg-amber-50/40 border-amber-200'
                               : 'bg-slate-50 border-slate-200'
@@ -1605,7 +1605,7 @@ export const IpdManagement: React.FC = () => {
                                 isOccupied
                                   ? 'bg-rose-100 text-rose-800'
                                   : isAvailable
-                                  ? 'bg-emerald-100 text-emerald-800'
+                                  ? 'bg-[#DCFCE7] text-[#16A34A]'
                                   : isCleaning
                                   ? 'bg-amber-100 text-amber-800'
                                   : 'bg-slate-200 text-slate-800'
@@ -1625,7 +1625,7 @@ export const IpdManagement: React.FC = () => {
                               <span className="font-semibold text-slate-800">₹{bed.dailyRate || 1000}</span>
                             </div>
                             {isOccupied && bed.currentPatientName && (
-                              <div className="pt-2 border-t border-rose-100 text-rose-900 font-semibold truncate">
+                              <div className="pt-2 border-t border-[#FECACA] text-rose-900 font-semibold truncate">
                                 👤 {bed.currentPatientName}
                               </div>
                             )}
@@ -1637,7 +1637,7 @@ export const IpdManagement: React.FC = () => {
                               {isCleaning && (
                                 <button
                                   onClick={() => handleQuickBedStatusUpdate(bed.id, 'AVAILABLE')}
-                                  className="p-1 text-emerald-700 bg-emerald-100 hover:bg-emerald-200 rounded text-[11px] font-semibold"
+                                  className="p-1 text-[#16A34A] bg-[#DCFCE7] hover:bg-emerald-200 rounded text-[11px] font-semibold"
                                   title="Mark Cleaned -> Available"
                                 >
                                   Cleaned ✓
@@ -1682,7 +1682,7 @@ export const IpdManagement: React.FC = () => {
                               {!isOccupied && (
                                 <button
                                   onClick={() => handleDeleteBed(bed)}
-                                  className="p-1 text-slate-400 hover:text-rose-600"
+                                  className="p-1 text-slate-400 hover:text-[#DC2626]"
                                   title="Delete Bed"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -1722,7 +1722,7 @@ export const IpdManagement: React.FC = () => {
         <div className="space-y-4">
           <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
             <div className="flex items-center gap-3">
-              <span className="p-2.5 bg-indigo-50 text-indigo-700 rounded-xl border border-indigo-100">
+              <span className="p-2.5 bg-[#E8F1FC] text-[#1565C0] rounded-xl border border-[#BFDBFE]">
                 <ArrowRightLeft className="w-5 h-5" />
               </span>
               <div>
@@ -1763,7 +1763,7 @@ export const IpdManagement: React.FC = () => {
                         </div>
                         <div className="text-[11px] text-slate-400 font-mono">UHID: {adm.patient?.uhid}</div>
                       </td>
-                      <td className="py-3.5 px-4 font-mono font-semibold text-teal-800">{adm.admissionNumber}</td>
+                      <td className="py-3.5 px-4 font-mono font-semibold text-[#183153]">{adm.admissionNumber}</td>
                       <td className="py-3.5 px-4 font-medium text-slate-800">{adm.ward?.name}</td>
                       <td className="py-3.5 px-4 font-semibold text-slate-900">
                         Room {adm.bed?.roomNumber} • Bed {adm.bed?.bedNumber}
@@ -1781,7 +1781,7 @@ export const IpdManagement: React.FC = () => {
                             setTransferTargetBedId('');
                             setTransferModalOpen(true);
                           }}
-                          className="px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-all shadow-xs flex items-center gap-1.5 ml-auto"
+                          className="px-3 py-1.5 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-xl transition-all shadow-xs flex items-center gap-1.5 ml-auto"
                         >
                           <ArrowRightLeft className="w-3.5 h-3.5" />
                           Initiate Transfer
@@ -1811,7 +1811,7 @@ export const IpdManagement: React.FC = () => {
         <div className="space-y-4">
           <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
             <div className="flex items-center gap-3">
-              <span className="p-2.5 bg-rose-50 text-rose-700 rounded-xl border border-rose-100">
+              <span className="p-2.5 bg-[#FEE2E2] text-[#DC2626] rounded-xl border border-[#FECACA]">
                 <LogOut className="w-5 h-5" />
               </span>
               <div>
@@ -1878,7 +1878,7 @@ export const IpdManagement: React.FC = () => {
                               setClearanceMedical(true);
                               setDischargeModalOpen(true);
                             }}
-                            className="px-3.5 py-1.5 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-all shadow-xs flex items-center gap-1.5 ml-auto"
+                            className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#DC2626] hover:bg-[#B91C1C] rounded-xl transition-all shadow-xs flex items-center gap-1.5 ml-auto"
                           >
                             <CheckSquare className="w-3.5 h-3.5" />
                             Sign Clearance & Discharge
@@ -1924,7 +1924,7 @@ export const IpdManagement: React.FC = () => {
               <button
                 onClick={handleBulkTurnoverComplete}
                 disabled={submitting}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-all shadow-sm"
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] rounded-xl transition-all shadow-sm"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 Sanitize & Release Selected ({selectedTurnoverBeds.length}) Beds
@@ -1971,7 +1971,7 @@ export const IpdManagement: React.FC = () => {
                             setSelectedTurnoverBeds([]);
                           }
                         }}
-                        className="rounded text-teal-600 focus:ring-teal-500"
+                        className="rounded text-[#00897B] focus:ring-teal-500"
                       />
                     </th>
                     <th className="py-3 px-4">Ward</th>
@@ -2003,7 +2003,7 @@ export const IpdManagement: React.FC = () => {
                                   setSelectedTurnoverBeds(selectedTurnoverBeds.filter((id) => id !== bed.id));
                                 }
                               }}
-                              className="rounded text-teal-600 focus:ring-teal-500"
+                              className="rounded text-[#00897B] focus:ring-teal-500"
                             />
                           </td>
                           <td className="py-3.5 px-4 font-semibold text-slate-800">{bed.wardName}</td>
@@ -2028,7 +2028,7 @@ export const IpdManagement: React.FC = () => {
                           <td className="py-3.5 px-4 text-right">
                             <button
                               onClick={() => handleQuickBedStatusUpdate(bed.id, 'AVAILABLE')}
-                              className="px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-all shadow-xs"
+                              className="px-3 py-1.5 text-xs font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] rounded-xl transition-all shadow-xs"
                             >
                               Mark Cleaned & Available
                             </button>
@@ -2081,7 +2081,7 @@ export const IpdManagement: React.FC = () => {
                     </div>
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        docInpatients.length > 0 ? 'bg-teal-100 text-teal-800' : 'bg-slate-100 text-slate-500'
+                        docInpatients.length > 0 ? 'bg-[#E0F2F1] text-[#183153]' : 'bg-slate-100 text-slate-500'
                       }`}
                     >
                       {docInpatients.length} Inpatients
@@ -2100,7 +2100,7 @@ export const IpdManagement: React.FC = () => {
                       </div>
                     ))}
                     {docInpatients.length > 3 && (
-                      <div className="text-[10px] text-teal-700 font-semibold text-center">
+                      <div className="text-[10px] text-[#00897B] font-semibold text-center">
                         +{docInpatients.length - 3} more inpatients under care
                       </div>
                     )}
@@ -2158,7 +2158,7 @@ export const IpdManagement: React.FC = () => {
                         <td className="py-3.5 px-4">{adm.bed?.type || 'STANDARD'}</td>
                         <td className="py-3.5 px-4 font-mono">₹{rate}/day</td>
                         <td className="py-3.5 px-4 font-semibold">{los} days</td>
-                        <td className="py-3.5 px-4 font-bold font-mono text-teal-800 text-sm">₹{totalRoomCharge}</td>
+                        <td className="py-3.5 px-4 font-bold font-mono text-[#183153] text-sm">₹{totalRoomCharge}</td>
                       </tr>
                     );
                   })}
@@ -2183,7 +2183,7 @@ export const IpdManagement: React.FC = () => {
       {activeTab === 'reports' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
-            <div className="p-3 bg-teal-50 text-teal-700 rounded-xl w-fit">
+            <div className="p-3 bg-[#E0F2F1] text-[#00897B] rounded-xl w-fit">
               <BedDouble className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-slate-900 text-sm">Active Inpatient Census Report</h3>
@@ -2192,7 +2192,7 @@ export const IpdManagement: React.FC = () => {
             </p>
             <button
               onClick={handleExportCensus}
-              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition-all shadow-xs"
+              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-xl transition-all shadow-xs"
             >
               <Download className="w-3.5 h-3.5" />
               Export Census CSV
@@ -2200,7 +2200,7 @@ export const IpdManagement: React.FC = () => {
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
-            <div className="p-3 bg-indigo-50 text-indigo-700 rounded-xl w-fit">
+            <div className="p-3 bg-[#E8F1FC] text-[#1565C0] rounded-xl w-fit">
               <DoorOpen className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-slate-900 text-sm">Admissions & Discharges Ledger</h3>
@@ -2209,7 +2209,7 @@ export const IpdManagement: React.FC = () => {
             </p>
             <button
               onClick={handleExportAdmissions}
-              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-all shadow-xs"
+              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#1565C0] bg-[#E8F1FC] hover:bg-[#E8F1FC] border border-[#BFDBFE] rounded-xl transition-all shadow-xs"
             >
               <Download className="w-3.5 h-3.5" />
               Export Admissions CSV
@@ -2261,19 +2261,19 @@ export const IpdManagement: React.FC = () => {
             </div>
 
             {selectedPatientForAdmission ? (
-              <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl flex items-center justify-between">
+              <div className="p-3 bg-[#E0F2F1] border border-[#B2DFDB] rounded-xl flex items-center justify-between">
                 <div>
                   <div className="font-bold text-xs text-teal-900">
                     {selectedPatientForAdmission.firstName} {selectedPatientForAdmission.lastName}
                   </div>
-                  <div className="text-[11px] text-teal-700 font-mono">
+                  <div className="text-[11px] text-[#00897B] font-mono">
                     UHID: {selectedPatientForAdmission.uhid} • Phone: {selectedPatientForAdmission.phone || 'N/A'}
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSelectedPatientForAdmission(null)}
-                  className="text-xs font-semibold text-teal-700 hover:text-teal-900 underline"
+                  className="text-xs font-semibold text-[#00897B] hover:text-teal-900 underline"
                 >
                   Change
                 </button>
@@ -2284,7 +2284,7 @@ export const IpdManagement: React.FC = () => {
                   <div
                     key={p.id}
                     onClick={() => setSelectedPatientForAdmission(p)}
-                    className="p-2.5 hover:bg-teal-50 cursor-pointer flex justify-between items-center transition-colors"
+                    className="p-2.5 hover:bg-[#E0F2F1] cursor-pointer flex justify-between items-center transition-colors"
                   >
                     <div>
                       <div className="font-semibold text-slate-900">
@@ -2294,7 +2294,7 @@ export const IpdManagement: React.FC = () => {
                         UHID: {p.uhid} • {p.phone || 'No phone'}
                       </div>
                     </div>
-                    <span className="text-[10px] font-semibold text-teal-700">Select</span>
+                    <span className="text-[10px] font-semibold text-[#00897B]">Select</span>
                   </div>
                 ))}
                 {searchedPatients.length === 0 && (
@@ -2405,7 +2405,7 @@ export const IpdManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-xl shadow-sm"
             >
               {submitting ? 'Admitting...' : 'Confirm Inpatient Admission'}
             </button>
@@ -2481,7 +2481,7 @@ export const IpdManagement: React.FC = () => {
             {selectedAdmission.dischargeSummary && (
               <div>
                 <span className="text-[10px] uppercase font-bold text-slate-400">Discharge Summary</span>
-                <p className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-200 text-emerald-900">
+                <p className="p-2.5 bg-[#DCFCE7] rounded-lg border border-[#BBF7D0] text-emerald-900">
                   {selectedAdmission.dischargeSummary}
                 </p>
               </div>
@@ -2509,7 +2509,7 @@ export const IpdManagement: React.FC = () => {
       >
         {selectedAdmission && (
           <form onSubmit={handleExecuteTransfer} className="space-y-4">
-            <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-xs space-y-1 text-indigo-900">
+            <div className="p-3 bg-[#E8F1FC] border border-[#BFDBFE] rounded-xl text-xs space-y-1 text-[#183153]">
               <div className="font-bold">
                 Patient: {selectedAdmission.patient?.firstName} {selectedAdmission.patient?.lastName}
               </div>
@@ -2595,7 +2595,7 @@ export const IpdManagement: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm"
+                className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-xl shadow-sm"
               >
                 {submitting ? 'Transferring...' : 'Execute Bed Transfer'}
               </button>
@@ -2614,7 +2614,7 @@ export const IpdManagement: React.FC = () => {
       >
         {selectedAdmission && (
           <form onSubmit={handleExecuteDischarge} className="space-y-4">
-            <div className="p-3 bg-rose-50 border border-rose-100 rounded-xl text-xs space-y-1 text-rose-900">
+            <div className="p-3 bg-[#FEE2E2] border border-[#FECACA] rounded-xl text-xs space-y-1 text-rose-900">
               <div className="font-bold">
                 Patient: {selectedAdmission.patient?.firstName} {selectedAdmission.patient?.lastName}
               </div>
@@ -2635,7 +2635,7 @@ export const IpdManagement: React.FC = () => {
                   type="checkbox"
                   checked={clearanceBilling}
                   onChange={(e) => setClearanceBilling(e.target.checked)}
-                  className="rounded text-teal-600 focus:ring-teal-500"
+                  className="rounded text-[#00897B] focus:ring-teal-500"
                 />
                 <span>1. Billing Clearance: Inpatient stay charges invoiced / settled.</span>
               </label>
@@ -2645,7 +2645,7 @@ export const IpdManagement: React.FC = () => {
                   type="checkbox"
                   checked={clearancePharmacy}
                   onChange={(e) => setClearancePharmacy(e.target.checked)}
-                  className="rounded text-teal-600 focus:ring-teal-500"
+                  className="rounded text-[#00897B] focus:ring-teal-500"
                 />
                 <span>2. Pharmacy Clearance: Discharge medication dispensed, unused returned.</span>
               </label>
@@ -2655,7 +2655,7 @@ export const IpdManagement: React.FC = () => {
                   type="checkbox"
                   checked={clearanceDiagnostics}
                   onChange={(e) => setClearanceDiagnostics(e.target.checked)}
-                  className="rounded text-teal-600 focus:ring-teal-500"
+                  className="rounded text-[#00897B] focus:ring-teal-500"
                 />
                 <span>3. Diagnostics Clearance: Laboratory & Radiology reports reviewed.</span>
               </label>
@@ -2665,7 +2665,7 @@ export const IpdManagement: React.FC = () => {
                   type="checkbox"
                   checked={clearanceMedical}
                   onChange={(e) => setClearanceMedical(e.target.checked)}
-                  className="rounded text-teal-600 focus:ring-teal-500"
+                  className="rounded text-[#00897B] focus:ring-teal-500"
                 />
                 <span>4. Medical Discharge Clearance: Attending physician approved discharge.</span>
               </label>
@@ -2696,7 +2696,7 @@ export const IpdManagement: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-sm"
+                className="px-4 py-2 text-xs font-semibold text-white bg-[#DC2626] hover:bg-[#B91C1C] rounded-xl shadow-sm"
               >
                 {submitting ? 'Discharging...' : 'Approve Clearances & Discharge'}
               </button>
@@ -2793,7 +2793,7 @@ export const IpdManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-xl shadow-sm"
             >
               {submitting ? 'Creating...' : 'Create Ward'}
             </button>
@@ -2866,7 +2866,7 @@ export const IpdManagement: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-sm"
+                className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-xl shadow-sm"
               >
                 {submitting ? 'Saving...' : 'Save Ward Changes'}
               </button>
@@ -2950,7 +2950,7 @@ export const IpdManagement: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-sm"
+              className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-xl shadow-sm"
             >
               {submitting ? 'Adding...' : 'Add Bed to Ward'}
             </button>
@@ -3030,7 +3030,7 @@ export const IpdManagement: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-sm"
+                className="px-4 py-2 text-xs font-semibold text-white bg-[#1565C0] hover:bg-[#0D47A1] rounded-xl shadow-sm"
               >
                 {submitting ? 'Saving...' : 'Save Changes'}
               </button>

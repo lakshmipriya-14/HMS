@@ -208,7 +208,7 @@ export const ReceptionDashboard: React.FC = () => {
         <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <h3 className="font-bold text-sm text-slate-800">Live Outpatient Queue Board</h3>
-            <span className="text-xs text-teal-600 font-semibold">Auto-refreshing</span>
+            <span className="text-xs text-[#00897B] font-semibold">Auto-refreshing</span>
           </div>
 
           {loading ? (
@@ -229,7 +229,7 @@ export const ReceptionDashboard: React.FC = () => {
                 <tbody className="divide-y divide-slate-100">
                   {queue.map((apt) => (
                     <tr key={apt.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-3.5 px-4 font-mono font-bold text-teal-700 text-sm">
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#00897B] text-sm">
                         #{apt.tokenNumber}
                       </td>
                       <td className="py-3.5 px-4">
@@ -251,12 +251,12 @@ export const ReceptionDashboard: React.FC = () => {
                         {apt.status === 'SCHEDULED' ? (
                           <button
                             onClick={() => handleCheckIn(apt.id)}
-                            className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
+                            className="px-3 py-1.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
                           >
                             Check-In Patient
                           </button>
                         ) : (
-                          <span className="text-emerald-600 font-semibold text-[11px]">
+                          <span className="text-[#16A34A] font-semibold text-[11px]">
                             Checked-In
                           </span>
                         )}
@@ -274,7 +274,7 @@ export const ReceptionDashboard: React.FC = () => {
       {activeTab === 'register' && (
         <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-6 max-w-4xl">
           <div className="flex items-center space-x-2 pb-4 border-b border-slate-100 mb-6">
-            <UserPlus className="w-5 h-5 text-teal-600" />
+            <UserPlus className="w-5 h-5 text-[#00897B]" />
             <h3 className="font-bold text-slate-800 text-base">New Patient Registration</h3>
           </div>
 
@@ -429,7 +429,7 @@ export const ReceptionDashboard: React.FC = () => {
             <div className="pt-4 flex justify-end">
               <button
                 type="submit"
-                className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors inline-flex items-center space-x-1.5"
+                className="px-6 py-2.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm transition-colors inline-flex items-center space-x-1.5"
               >
                 <CheckCircle className="w-4 h-4" />
                 <span>Create Patient & Issue UHID</span>
@@ -452,7 +452,7 @@ export const ReceptionDashboard: React.FC = () => {
             />
             <button
               type="submit"
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold"
+              className="px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold"
             >
               Search
             </button>
@@ -473,7 +473,7 @@ export const ReceptionDashboard: React.FC = () => {
                 <tbody className="divide-y divide-slate-100">
                   {searchResults.map((pt) => (
                     <tr key={pt.id}>
-                      <td className="p-3 font-mono font-bold text-teal-700">{pt.uhid}</td>
+                      <td className="p-3 font-mono font-bold text-[#00897B]">{pt.uhid}</td>
                       <td className="p-3 font-semibold text-slate-800">
                         {pt.firstName} {pt.lastName}
                       </td>
@@ -485,7 +485,7 @@ export const ReceptionDashboard: React.FC = () => {
                             setBookPatientId(pt.id);
                             setIsBookModalOpen(true);
                           }}
-                          className="px-3 py-1 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded text-xs font-semibold border border-teal-200"
+                          className="px-3 py-1 bg-[#E0F2F1] text-[#00897B] hover:bg-[#E0F2F1] rounded text-xs font-semibold border border-[#B2DFDB]"
                         >
                           Book Token
                         </button>
@@ -586,7 +586,7 @@ export const ReceptionDashboard: React.FC = () => {
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm"
+              className="px-6 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white rounded-lg text-xs font-semibold shadow-sm"
             >
               Confirm Booking & Generate Token
             </button>
