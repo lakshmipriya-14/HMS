@@ -1,34 +1,41 @@
 export const UyirinaiTheme = {
   colors: {
-    // Primary green palette
-    primary: '#38845A',          // Primary green: main brand, active states, key CTAs
-    primaryDark: '#287348',      // Dark green: header accents, high-contrast actions
-    softGreen: '#EAF5ED',        // Soft green: summary cards, active card backgrounds
-    lightGreen: '#CDE8D5',       // Light green: subtle highlights, badge backgrounds
-    white: '#FFFFFF',            // White: clean cards, backgrounds, text-on-green
+    // Purple & Lilac Palette (from User Specification)
+    // #EAB8E4 (Light Lilac) | #D6A2D5 (Soft Lavender) | #B57BC4 (Medium Violet) | #8E5DAF (Vibrant Purple) | #5B3F8D (Deep Royal Purple)
+    primary: '#8E5DAF',          // Vibrant Purple: main brand, primary actions, active indicators
+    primaryDark: '#5B3F8D',      // Deep Royal Purple: headers, high-contrast actions, titles
+    primaryMedium: '#B57BC4',    // Medium Violet: chips, secondary active states
+    softLilac: '#F6ECF7',        // Very soft lilac for card backgrounds
+    lightLilac: '#EAB8E4',       // Light lilac accent
+    lavender: '#D6A2D5',         // Soft lavender badge/highlight
+    white: '#FFFFFF',            // Pure white: clean cards, backgrounds, text-on-purple
+
+    // Backward-compatibility aliases for green tokens
+    softGreen: '#F6ECF7',        // Aliased to soft lilac for theme consistency
+    lightGreen: '#EAB8E4',       // Aliased to light lilac for theme consistency
+    softGreenCard: '#F6ECF7',
 
     // Background colors
-    background: '#FFFFFF',       // Main background
-    backgroundSecondary: '#F3F7F4', // Secondary background
-    cardBackground: '#FFFFFF',   // Card background
-    cardBackgroundSoft: '#EAF5ED', // Soft green card background
+    background: '#FFFFFF',          // Main background
+    backgroundSecondary: '#F8F2F9', // Secondary page background (subtle lilac tint)
+    cardBackground: '#FFFFFF',      // Card background
+    cardBackgroundSoft: '#F6ECF7',  // Soft lilac card background
 
-    // Text colors
-    textPrimary: '#26352C',      // Primary text
-    textSecondary: '#6B7A70',    // Secondary text
-    textMuted: '#96A39A',        // Muted text
-    textOnPrimary: '#FFFFFF',    // Text on primary green
+    // Text colors (Engineered for optimal WCAG contrast)
+    textPrimary: '#251838',         // Deep purple-black: crisp, high contrast primary text
+    textSecondary: '#5F4D73',       // Refined deep purple: clear secondary descriptions
+    textMuted: '#8B799E',           // Gentle purple-grey: subtle metadata
+    textOnPrimary: '#FFFFFF',       // Crisp white text on primary purple
 
     // Borders & dividers
-    border: '#DDE8E0',           // Default border
-    borderLight: '#EAF0EC',      // Light divider
-    borderDefault: '#DDE8E0',
+    border: '#EADCEE',              // Default soft purple-tinted border
+    borderLight: '#F3E9F6',         // Light divider
+    borderDefault: '#EADCEE',
 
     // Semantic helpers
     warning: '#D69A32',
     warningBg: '#FEF9EE',
-    secondaryBackground: '#F3F7F4',
-    softGreenCard: '#EAF5ED',
+    secondaryBackground: '#F8F2F9',
 
     // Status colors (restrained semantic colors)
     success: '#38845A',          // Success status

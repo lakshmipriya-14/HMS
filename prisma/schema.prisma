@@ -566,6 +566,8 @@ model AppointmentRequest {
   phone         String                   @db.VarChar(16)
   specialty     String                   @db.VarChar(80)
   preferredDate DateTime                 @db.Date
+  preferredTime String?                  @db.VarChar(16)
+  notes         String?                  @db.Text
   status        AppointmentRequestStatus @default(PENDING)
   submittedAt   DateTime                 @default(now())
   submissionKey String                   @db.Char(64)
