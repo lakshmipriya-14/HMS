@@ -302,7 +302,7 @@ export function PatientPortal({ section }: { section: Section }) {
   </ScrollView>;
 }
 
-export const patientColors = { pale: '#F3F7F4', soft: '#EAF5ED', text: '#26352C', green: '#287348', border: '#DDE8E0' };
+export const patientColors = { pale: '#F8F2F9', soft: '#F6ECF7', text: '#251838', green: '#8E5DAF', border: '#EADCEE' };
 const styles = StyleSheet.create({
   group: { gap: 8 },
   avatar: { width: 90, height: 90, borderRadius: 45 },

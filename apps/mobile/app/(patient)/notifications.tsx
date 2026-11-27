@@ -256,6 +256,9 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: 16,
     paddingBottom: 40,
+    width: '100%',
+    maxWidth: 500,
+    alignSelf: 'center',
   },
   navHeaderRow: {
     flexDirection: 'row',
@@ -288,12 +291,12 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   unreadCountPill: {
-    backgroundColor: UyirinaiTheme.colors.softGreen,
+    backgroundColor: UyirinaiTheme.colors.softLilac,
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderRadius: UyirinaiTheme.borderRadius.full,
     borderWidth: 1,
-    borderColor: UyirinaiTheme.colors.lightGreen,
+    borderColor: UyirinaiTheme.colors.lavender,
   },
   unreadCountText: {
     fontSize: 12,
@@ -326,16 +329,16 @@ const styles = StyleSheet.create({
     padding: 14,
     borderWidth: 1,
     borderColor: UyirinaiTheme.colors.borderDefault,
-    shadowColor: '#000',
+    shadowColor: UyirinaiTheme.colors.primaryDark,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
+    shadowOpacity: 0.04,
     shadowRadius: 3,
     elevation: 1,
     gap: 12,
   },
   notificationCardUnread: {
     borderColor: UyirinaiTheme.colors.primary,
-    backgroundColor: '#F8FDF9',
+    backgroundColor: UyirinaiTheme.colors.softLilac,
   },
   iconCol: {
     alignItems: 'center',

@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
   Alert,
-  Image,
   Modal,
   Platform,
   Pressable,
@@ -14,18 +13,26 @@ import {
 import { useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  Activity,
   Award,
   Calendar,
+  Check,
   CheckCircle2,
-  ChevronDown,
   Clock,
-  Filter,
+  Droplets,
+  Eye,
   GraduationCap,
+  Heart,
+  HeartPulse,
+  Info,
   MapPin,
   Search,
+  Shield,
+  Sparkles,
   Stethoscope,
   User,
   Users,
+  Volume2,
   X,
 } from 'lucide-react-native';
 import { mobileApiClient } from '../../services/api';
@@ -34,32 +41,54 @@ import { UyirinaiTheme } from '../../constants/theme';
 import { LoadingIndicator } from '../../components/ui/LoadingIndicator';
 import { ErrorState } from '../../components/ui/ErrorState';
 
+// Department icons mapping for visual selection
+const DEPARTMENTS = [
+  { code: 'ALL', name: 'All Specialties', icon: Stethoscope },
+  { code: 'CARD', name: 'Cardiology', icon: Heart, description: 'Heart & Vascular' },
+  { code: 'NEURO', name: 'Neurology', icon: Activity, description: 'Brain & Nervous System' },
+  { code: 'PED', name: 'Pediatrics', icon: HeartPulse, description: 'Child & Infant Care' },
+  { code: 'ORTHO', name: 'Orthopedics', icon: Shield, description: 'Bones & Joint Care' },
+  { code: 'GYN', name: 'Gynecology', icon: Sparkles, description: "Women's Health" },
+  { code: 'SURG', name: 'Surgery', icon: Award, description: 'Laparoscopic & General' },
+  { code: 'DERM', name: 'Dermatology', icon: Sparkles, description: 'Skin & Hair' },
+  { code: 'ENT', name: 'ENT', icon: Volume2, description: 'Ear, Nose & Throat' },
+  { code: 'OPHTH', name: 'Ophthalmology', icon: Eye, description: 'Eye & Vision Care' },
+  { code: 'NEPH', name: 'Nephrology', icon: Droplets, description: 'Kidney Health' },
+];
+
+// Predefined visual slot boxes
+const MORNING_SLOTS = ['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM'];
+const EVENING_SLOTS = ['02:00 PM', '02:30 PM', '03:30 PM', '04:30 PM', '05:30 PM', '06:30 PM', '07:30 PM'];
+
 export default function BookAppointmentScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   // Step 1: General vs Specialist
-  const [designationType, setDesignationType] = useState<'ALL' | 'GENERAL' | 'SPECIALIST'>('ALL');
+  const [consultationType, setConsultationType] = useState<'ALL' | 'GENERAL' | 'SPECIALIST'>('ALL');
 
-  // Step 2: Search & Filters
+  // Step 1b: Specialist Department Filter
+  const [selectedDeptCode, setSelectedDeptCode] = useState<string>('ALL');
+
+  // Step 2: Search & Advanced Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGender, setSelectedGender] = useState<'ALL' | 'MALE' | 'FEMALE'>('ALL');
   const [minExperience, setMinExperience] = useState<number>(0);
-  const [selectedTimeRange, setSelectedTimeRange] = useState<'ALL' | 'MORNING' | 'AFTERNOON' | 'EVENING'>('ALL');
+  const [selectedShift, setSelectedShift] = useState<'ALL' | 'MORNING' | 'EVENING'>('ALL');
   const [sortBy, setSortBy] = useState<'EXP_DESC' | 'FEE_ASC'>('EXP_DESC');
 
-  // Step 3: Selection
+  // Step 3: Selected Doctor & Visual Slots
   const [selectedDoctorId, setSelectedDoctorId] = useState<string>('');
   const [preferredDate, setPreferredDate] = useState<string>(() => {
     const tmrw = new Date();
     tmrw.setDate(tmrw.getDate() + 1);
     return tmrw.toISOString().slice(0, 10);
   });
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('10:30');
+  const [selectedVisualSlot, setSelectedVisualSlot] = useState<string>('10:30 AM');
   const [reason, setReason] = useState<string>('');
 
-  // Doctor Profile Modal State
+  // Doctor Clinical Profile Modal
   const [profileDoctor, setProfileDoctor] = useState<any>(null);
 
   // Success Confirmation State
@@ -76,70 +105,66 @@ export default function BookAppointmentScreen() {
 
   // Filtered Doctors List
   const filteredDoctors = useMemo(() => {
-    return doctors.filter((doc: any) => {
-      // 1. General vs Specialist
-      if (designationType === 'GENERAL' && doc.designation !== 'GENERAL_PHYSICIAN') {
-        return false;
-      }
-      if (designationType === 'SPECIALIST' && doc.designation === 'GENERAL_PHYSICIAN') {
-        return false;
-      }
-
-      // 2. Gender filter
-      if (selectedGender !== 'ALL') {
-        const docGender = (doc.gender || 'MALE').toUpperCase();
-        if (docGender !== selectedGender) return false;
-      }
-
-      // 3. Experience filter
-      if (minExperience > 0 && (doc.experienceYears || 0) < minExperience) {
-        return false;
-      }
-
-      // 4. Timing / Shift filter
-      if (selectedTimeRange !== 'ALL') {
-        const schedules = doc.schedules || [];
-        const matchesShift = schedules.some((s: any) => {
-          const startHour = parseInt(s.startTime?.split(':')[0] || '9', 10);
-          if (selectedTimeRange === 'MORNING' && startHour < 12) return true;
-          if (selectedTimeRange === 'AFTERNOON' && startHour >= 12 && startHour < 16) return true;
-          if (selectedTimeRange === 'EVENING' && startHour >= 16) return true;
-          return false;
-        });
-        if (!matchesShift && schedules.length > 0) return false;
-      }
-
-      // 5. Search query (matches from first letter)
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase().trim();
-        const docUser = doc.employee?.user;
-        const firstName = (docUser?.firstName || '').toLowerCase();
-        const lastName = (docUser?.lastName || '').toLowerCase();
-        const name = `${firstName} ${lastName}`.trim();
-        const spec = (doc.specialization || '').toLowerCase();
-        const dept = (doc.department?.name || '').toLowerCase();
-        const matches =
-          firstName.startsWith(q) ||
-          lastName.startsWith(q) ||
-          name.startsWith(q) ||
-          spec.startsWith(q) ||
-          dept.startsWith(q) ||
-          name.includes(q) ||
-          spec.includes(q) ||
-          dept.includes(q);
-        if (!matches) {
+    return doctors
+      .filter((doc: any) => {
+        // 1. General vs Specialist
+        if (consultationType === 'GENERAL' && doc.designation !== 'GENERAL_PHYSICIAN') {
           return false;
         }
-      }
+        if (consultationType === 'SPECIALIST' && doc.designation === 'GENERAL_PHYSICIAN') {
+          return false;
+        }
 
-      return true;
-    }).sort((a: any, b: any) => {
-      if (sortBy === 'EXP_DESC') {
-        return (b.experienceYears || 0) - (a.experienceYears || 0);
-      }
-      return parseFloat(a.consultationFee || '500') - parseFloat(b.consultationFee || '500');
-    });
-  }, [doctors, designationType, selectedGender, minExperience, selectedTimeRange, searchQuery, sortBy]);
+        // 1b. Specialist Department filter
+        if (selectedDeptCode !== 'ALL') {
+          const docDeptCode = (doc.department?.code || '').toUpperCase();
+          if (!docDeptCode.includes(selectedDeptCode)) return false;
+        }
+
+        // 2. Gender filter
+        if (selectedGender !== 'ALL') {
+          const docGender = (doc.gender || 'MALE').toUpperCase();
+          if (docGender !== selectedGender) return false;
+        }
+
+        // 3. Experience filter
+        if (minExperience > 0 && (doc.experienceYears || 0) < minExperience) {
+          return false;
+        }
+
+        // 4. Shift filter
+        if (selectedShift !== 'ALL') {
+          const schedules = doc.schedules || [];
+          const matches = schedules.some((s: any) => {
+            const startH = parseInt(s.startTime?.split(':')[0] || '9', 10);
+            if (selectedShift === 'MORNING' && startH < 13) return true;
+            if (selectedShift === 'EVENING' && startH >= 13) return true;
+            return false;
+          });
+          if (!matches && schedules.length > 0) return false;
+        }
+
+        // 5. Search query
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase();
+          const docUser = doc.employee?.user;
+          const name = `${docUser?.firstName || ''} ${docUser?.lastName || ''}`.toLowerCase();
+          const spec = (doc.specialization || '').toLowerCase();
+          const dept = (doc.department?.name || '').toLowerCase();
+          if (!name.includes(q) && !spec.includes(q) && !dept.includes(q)) {
+            return false;
+          }
+        }
+
+        return true;
+      })
+      .sort((a: any, b: any) => {
+        if (sortBy === 'EXP_DESC') {
+          return (b.experienceYears || 0) - (a.experienceYears || 0);
+        }
+        return parseFloat(a.consultationFee || '500') - parseFloat(b.consultationFee || '500');
+      });
+  }, [doctors, consultationType, selectedDeptCode, selectedGender, minExperience, selectedShift, searchQuery, sortBy]);
 
   // Booking Mutation
   const bookMutation = useMutation({
@@ -147,7 +172,7 @@ export default function BookAppointmentScreen() {
       return await mobileApiClient.patientPortal.requestAppointment({
         doctorId: selectedDoctorId,
         preferredDate: preferredDate.trim(),
-        reason: reason.trim() || 'General Consultation',
+        reason: `${reason.trim() || 'General Consultation'} (Slot: ${selectedVisualSlot})`,
       });
     },
     onSuccess: (res) => {
@@ -166,447 +191,580 @@ export default function BookAppointmentScreen() {
   // Quick Date options
   const quickDates = useMemo(() => {
     const list = [];
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 5; i++) {
       const d = new Date();
       d.setDate(d.getDate() + i);
       const iso = d.toISOString().slice(0, 10);
-      const label =
-        i === 1
-          ? 'Tomorrow'
-          : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-      list.push({ iso, label });
+      const dayName = i === 1 ? 'Tomorrow' : d.toLocaleDateString('en-US', { weekday: 'short' });
+      const dateNum = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      list.push({ iso, dayName, dateNum });
     }
     return list;
   }, []);
 
   if (isLoading) {
-    return <LoadingIndicator message="Fetching doctors and clinic schedules..." />;
+    return <LoadingIndicator message="Loading clinical specialties and schedules..." />;
   }
 
   if (isError) {
     return (
       <ErrorState
         title="Could not load doctors"
-        message={error instanceof Error ? error.message : 'Please check connection.'}
+        message={error instanceof Error ? error.message : 'Please check your connection and retry.'}
         onRetry={() => refetch()}
       />
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {/* 1. GENERAL VS SPECIALIST TOGGLE */}
-      <View style={styles.sectionBlock}>
-        <Text style={styles.sectionHeaderTitle}>1. Select Consultation Type</Text>
-        <View style={styles.toggleRow}>
-          <Pressable
-            style={[styles.toggleBtn, designationType === 'ALL' && styles.toggleBtnActive]}
-            onPress={() => setDesignationType('ALL')}
-          >
-            <Users size={16} color={designationType === 'ALL' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.textPrimary} />
-            <Text style={[styles.toggleBtnText, designationType === 'ALL' && styles.toggleBtnTextActive]}>
-              All Doctors
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={[styles.toggleBtn, designationType === 'GENERAL' && styles.toggleBtnActive]}
-            onPress={() => setDesignationType('GENERAL')}
-          >
-            <Stethoscope size={16} color={designationType === 'GENERAL' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.textPrimary} />
-            <Text style={[styles.toggleBtnText, designationType === 'GENERAL' && styles.toggleBtnTextActive]}>
-              General Physician
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={[styles.toggleBtn, designationType === 'SPECIALIST' && styles.toggleBtnActive]}
-            onPress={() => setDesignationType('SPECIALIST')}
-          >
-            <Award size={16} color={designationType === 'SPECIALIST' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.textPrimary} />
-            <Text style={[styles.toggleBtnText, designationType === 'SPECIALIST' && styles.toggleBtnTextActive]}>
-              Specialist
-            </Text>
-          </Pressable>
-        </View>
-      </View>
-
-      {/* 2. SEARCH & ADVANCED FILTERS */}
-      <View style={styles.sectionBlock}>
-        <Text style={styles.sectionHeaderTitle}>2. Search & Filter Doctors</Text>
-
-        {/* Search Bar */}
-        <View style={styles.searchBar}>
-          <Search size={18} color={UyirinaiTheme.colors.textMuted} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search by doctor name, specialty, or department..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
+    <View style={styles.outerContainer}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Phone Header Banner */}
+        <View style={styles.heroBanner}>
+          <View style={styles.heroIconBadge}>
+            <Stethoscope size={24} color={UyirinaiTheme.colors.white} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.heroTitle}>Book an Appointment</Text>
+            <Text style={styles.heroSub}>Choose General or Specialist care, view slots & confirm.</Text>
+          </View>
         </View>
 
-        {/* Gender Filter Pills */}
-        <View style={styles.filterPillsRow}>
-          <Text style={styles.filterRowLabel}>Gender:</Text>
-          {(['ALL', 'MALE', 'FEMALE'] as const).map((g) => (
+        {/* 1. GENERAL VS SPECIALIST TOGGLE */}
+        <View style={styles.cardSection}>
+          <Text style={styles.stepTitle}>1. Select Consultation Type</Text>
+          <View style={styles.typeSelectorRow}>
             <Pressable
-              key={g}
-              style={[styles.filterChip, selectedGender === g && styles.filterChipActive]}
-              onPress={() => setSelectedGender(g)}
+              style={[styles.typeBtn, consultationType === 'ALL' && styles.typeBtnActive]}
+              onPress={() => {
+                setConsultationType('ALL');
+                setSelectedDeptCode('ALL');
+              }}
             >
-              <Text style={[styles.filterChipText, selectedGender === g && styles.filterChipTextActive]}>
-                {g === 'ALL' ? 'Any Gender' : g === 'MALE' ? 'Male' : 'Female'}
+              <Users
+                size={16}
+                color={consultationType === 'ALL' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.primaryDark}
+              />
+              <Text style={[styles.typeBtnText, consultationType === 'ALL' && styles.typeBtnTextActive]}>
+                All Doctors
               </Text>
             </Pressable>
-          ))}
-        </View>
 
-        {/* Experience & Time Filter Pills */}
-        <View style={styles.filterPillsRow}>
-          <Text style={styles.filterRowLabel}>Experience:</Text>
-          {[0, 5, 10, 15].map((exp) => (
             <Pressable
-              key={exp}
-              style={[styles.filterChip, minExperience === exp && styles.filterChipActive]}
-              onPress={() => setMinExperience(exp)}
+              style={[styles.typeBtn, consultationType === 'GENERAL' && styles.typeBtnActive]}
+              onPress={() => {
+                setConsultationType('GENERAL');
+                setSelectedDeptCode('ALL');
+              }}
             >
-              <Text style={[styles.filterChipText, minExperience === exp && styles.filterChipTextActive]}>
-                {exp === 0 ? 'All' : `${exp}+ Yrs`}
+              <Stethoscope
+                size={16}
+                color={consultationType === 'GENERAL' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.primaryDark}
+              />
+              <Text style={[styles.typeBtnText, consultationType === 'GENERAL' && styles.typeBtnTextActive]}>
+                General Physician
               </Text>
             </Pressable>
-          ))}
-        </View>
 
-        {/* Timing Shift Range Filter */}
-        <View style={styles.filterPillsRow}>
-          <Text style={styles.filterRowLabel}>Shift Time:</Text>
-          {(['ALL', 'MORNING', 'AFTERNOON', 'EVENING'] as const).map((t) => (
             <Pressable
-              key={t}
-              style={[styles.filterChip, selectedTimeRange === t && styles.filterChipActive]}
-              onPress={() => setSelectedTimeRange(t)}
+              style={[styles.typeBtn, consultationType === 'SPECIALIST' && styles.typeBtnActive]}
+              onPress={() => setConsultationType('SPECIALIST')}
             >
-              <Text style={[styles.filterChipText, selectedTimeRange === t && styles.filterChipTextActive]}>
-                {t === 'ALL'
-                  ? 'All Hours'
-                  : t === 'MORNING'
-                  ? 'Morning'
-                  : t === 'AFTERNOON'
-                  ? 'Afternoon'
-                  : 'Evening'}
+              <Award
+                size={16}
+                color={consultationType === 'SPECIALIST' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.primaryDark}
+              />
+              <Text style={[styles.typeBtnText, consultationType === 'SPECIALIST' && styles.typeBtnTextActive]}>
+                Specialist
               </Text>
             </Pressable>
-          ))}
+          </View>
         </View>
 
-        {/* Sort Order Selector */}
-        <View style={styles.sortRow}>
-          <Text style={styles.filterRowLabel}>Sort by:</Text>
-          <Pressable
-            style={[styles.sortChip, sortBy === 'EXP_DESC' && styles.sortChipActive]}
-            onPress={() => setSortBy('EXP_DESC')}
-          >
-            <Text style={[styles.sortChipText, sortBy === 'EXP_DESC' && styles.sortChipTextActive]}>
-              Most Experienced
-            </Text>
-          </Pressable>
-          <Pressable
-            style={[styles.sortChip, sortBy === 'FEE_ASC' && styles.sortChipActive]}
-            onPress={() => setSortBy('FEE_ASC')}
-          >
-            <Text style={[styles.sortChipText, sortBy === 'FEE_ASC' && styles.sortChipTextActive]}>
-              Fee: Low to High
-            </Text>
-          </Pressable>
-        </View>
-      </View>
+        {/* 2. SPECIALIST DEPARTMENT SELECTOR (Prominently shown when Specialist is chosen) */}
+        {(consultationType === 'SPECIALIST' || consultationType === 'ALL') && (
+          <View style={styles.cardSection}>
+            <View style={styles.deptHeaderRow}>
+              <Text style={styles.stepTitle}>
+                {consultationType === 'SPECIALIST' ? '2. Choose Medical Specialty' : 'Specialty Filter (Optional)'}
+              </Text>
+              {selectedDeptCode !== 'ALL' && (
+                <Pressable onPress={() => setSelectedDeptCode('ALL')}>
+                  <Text style={styles.clearFilterText}>Show All</Text>
+                </Pressable>
+              )}
+            </View>
 
-      {/* 3. DOCTORS DIRECTORY LIST */}
-      <View style={styles.sectionBlock}>
-        <View style={styles.directoryHeaderRow}>
-          <Text style={styles.sectionHeaderTitle}>
-            3. Choose Doctor ({filteredDoctors.length} available)
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.deptScrollContainer}
+            >
+              {DEPARTMENTS.map((dept) => {
+                const IconComponent = dept.icon;
+                const isSelected = selectedDeptCode === dept.code;
+                return (
+                  <Pressable
+                    key={dept.code}
+                    style={[styles.deptVisualCard, isSelected && styles.deptVisualCardActive]}
+                    onPress={() => setSelectedDeptCode(dept.code)}
+                  >
+                    <View style={[styles.deptIconCircle, isSelected && styles.deptIconCircleActive]}>
+                      <IconComponent
+                        size={20}
+                        color={isSelected ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.primaryDark}
+                      />
+                    </View>
+                    <Text style={[styles.deptVisualName, isSelected && styles.deptVisualNameActive]}>
+                      {dept.name}
+                    </Text>
+                    {dept.description && (
+                      <Text style={[styles.deptVisualSub, isSelected && styles.deptVisualSubActive]}>
+                        {dept.description}
+                      </Text>
+                    )}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
+
+        {/* 3. SEARCH & DOCTOR FILTERS */}
+        <View style={styles.cardSection}>
+          <Text style={styles.stepTitle}>
+            {consultationType === 'SPECIALIST' ? '3. Search & Refine' : '2. Search Doctors'}
           </Text>
-          {selectedDoctor && (
-            <Text style={styles.selectedDocLabel}>
-              Selected: Dr. {selectedDoctor.employee?.user?.firstName}
+
+          <View style={styles.searchBox}>
+            <Search size={18} color={UyirinaiTheme.colors.textMuted} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search by doctor name or specialty..."
+              placeholderTextColor={UyirinaiTheme.colors.textMuted}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
+
+          {/* Gender Filter Pills */}
+          <View style={styles.pillsRow}>
+            <Text style={styles.pillLabel}>Gender:</Text>
+            {(['ALL', 'MALE', 'FEMALE'] as const).map((g) => (
+              <Pressable
+                key={g}
+                style={[styles.pillBtn, selectedGender === g && styles.pillBtnActive]}
+                onPress={() => setSelectedGender(g)}
+              >
+                <Text style={[styles.pillBtnText, selectedGender === g && styles.pillBtnTextActive]}>
+                  {g === 'ALL' ? 'Any' : g === 'MALE' ? 'Male' : 'Female'}
+                </Text>
+              </Pressable>
+            ))}
+
+            <View style={{ width: 8 }} />
+            <Text style={styles.pillLabel}>Timing:</Text>
+            {(['ALL', 'MORNING', 'EVENING'] as const).map((s) => (
+              <Pressable
+                key={s}
+                style={[styles.pillBtn, selectedShift === s && styles.pillBtnActive]}
+                onPress={() => setSelectedShift(s)}
+              >
+                <Text style={[styles.pillBtnText, selectedShift === s && styles.pillBtnTextActive]}>
+                  {s === 'ALL' ? 'All' : s === 'MORNING' ? 'Morning' : 'Evening'}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+
+        {/* 4. DOCTORS DIRECTORY WITH VISUAL SELECTION */}
+        <View style={styles.cardSection}>
+          <View style={styles.docSectionHeader}>
+            <Text style={styles.stepTitle}>
+              Choose Doctor ({filteredDoctors.length} Available)
             </Text>
+            {selectedDoctor && (
+              <View style={styles.selectedBadge}>
+                <Check size={12} color={UyirinaiTheme.colors.primaryDark} strokeWidth={3} />
+                <Text style={styles.selectedBadgeText}>
+                  Dr. {selectedDoctor.employee?.user?.firstName}
+                </Text>
+              </View>
+            )}
+          </View>
+
+          {filteredDoctors.length > 0 ? (
+            <View style={styles.doctorsList}>
+              {filteredDoctors.map((doc: any) => {
+                const isSelected = selectedDoctorId === doc.id;
+                const docUser = doc.employee?.user;
+                const name = `Dr. ${docUser?.firstName || 'Doctor'} ${docUser?.lastName || ''}`;
+                const deptName = doc.department?.name || 'General Medicine';
+                const fee = doc.consultationFee || '500';
+                const exp = doc.experienceYears || 10;
+                const isSpecialist = doc.designation !== 'GENERAL_PHYSICIAN';
+                const schedules = doc.schedules || [];
+
+                return (
+                  <View
+                    key={doc.id}
+                    style={[styles.doctorVisualCard, isSelected && styles.doctorVisualCardSelected]}
+                  >
+                    <Pressable
+                      style={styles.doctorCardContent}
+                      onPress={() => setSelectedDoctorId(doc.id)}
+                    >
+                      <View style={styles.docAvatarCol}>
+                        <View style={styles.docAvatarBubble}>
+                          <Stethoscope size={22} color={UyirinaiTheme.colors.primaryDark} />
+                        </View>
+                        <View style={styles.genderChip}>
+                          <Text style={styles.genderChipText}>{doc.gender || 'MALE'}</Text>
+                        </View>
+                      </View>
+
+                      <View style={styles.docDetailsCol}>
+                        <View style={styles.nameHeaderRow}>
+                          <Text style={styles.docTitleName} numberOfLines={1}>
+                            {name}
+                          </Text>
+                          <View
+                            style={[
+                              styles.categoryTag,
+                              isSpecialist ? styles.categoryTagSpecialist : styles.categoryTagGeneral,
+                            ]}
+                          >
+                            <Text
+                              style={[
+                                styles.categoryTagText,
+                                isSpecialist ? styles.categoryTagTextSpecialist : styles.categoryTagTextGeneral,
+                              ]}
+                            >
+                              {isSpecialist ? 'Specialist' : 'General'}
+                            </Text>
+                          </View>
+                        </View>
+
+                        <Text style={styles.docSpecialty}>{doc.specialization || deptName}</Text>
+                        <Text style={styles.docHospital}>{deptName} · Madurai Main Campus</Text>
+
+                        {/* Experience and Fee Pill Row */}
+                        <View style={styles.metricsPillsRow}>
+                          <View style={styles.metricPill}>
+                            <Award size={12} color={UyirinaiTheme.colors.primaryDark} />
+                            <Text style={styles.metricPillText}>{exp}+ Yrs Exp</Text>
+                          </View>
+                          <View style={styles.metricPill}>
+                            <Text style={styles.metricPillFee}>₹{fee}</Text>
+                            <Text style={styles.metricPillFeeLabel}>Fee</Text>
+                          </View>
+                        </View>
+
+                        {/* Timing Chips */}
+                        {schedules.length > 0 && (
+                          <View style={styles.timingPillsWrap}>
+                            <Clock size={12} color={UyirinaiTheme.colors.textMuted} />
+                            <Text style={styles.timingPillsText}>
+                              {schedules[0].startTime} - {schedules[0].endTime} IST
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    </Pressable>
+
+                    {/* Bottom Action Bar of Doctor Card */}
+                    <View style={styles.cardBottomBar}>
+                      <Pressable
+                        style={styles.viewProfileLink}
+                        onPress={() => setProfileDoctor(doc)}
+                      >
+                        <Info size={14} color={UyirinaiTheme.colors.primaryDark} />
+                        <Text style={styles.viewProfileLinkText}>View Doctor Profile & Bio</Text>
+                      </Pressable>
+
+                      <Pressable
+                        style={[styles.selectDoctorPill, isSelected && styles.selectDoctorPillActive]}
+                        onPress={() => setSelectedDoctorId(doc.id)}
+                      >
+                        <Text
+                          style={[
+                            styles.selectDoctorPillText,
+                            isSelected && styles.selectDoctorPillTextActive,
+                          ]}
+                        >
+                          {isSelected ? '✓ Selected' : 'Select'}
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          ) : (
+            <View style={styles.emptyDoctorState}>
+              <Stethoscope size={40} color={UyirinaiTheme.colors.textMuted} />
+              <Text style={styles.emptyDoctorTitle}>No Doctors Matching Filters</Text>
+              <Text style={styles.emptyDoctorSub}>
+                Try selecting "All Specialties" or relaxing your gender/shift filter above.
+              </Text>
+            </View>
           )}
         </View>
 
-        {filteredDoctors.length > 0 ? (
-          <View style={styles.doctorCardsList}>
-            {filteredDoctors.map((doc: any) => {
-              const isSelected = selectedDoctorId === doc.id;
-              const docUser = doc.employee?.user;
-              const name = `Dr. ${docUser?.firstName || 'Doctor'} ${docUser?.lastName || ''}`;
-              const deptName = doc.department?.name || 'General Medicine';
-              const fee = doc.consultationFee || '500';
-              const exp = doc.experienceYears || 0;
-              const isSpecialist = doc.designation !== 'GENERAL_PHYSICIAN';
-              const schedules = doc.schedules || [];
+        {/* 5. VISUAL CONSULTATION DATE & TIME SLOTS */}
+        <View style={styles.cardSection}>
+          <Text style={styles.stepTitle}>5. Choose Date & Time Slot</Text>
 
+          {/* Visual Date Selection Boxes */}
+          <Text style={styles.subLabel}>1. Select Consultation Date:</Text>
+          <View style={styles.dateBoxesGrid}>
+            {quickDates.map((q) => {
+              const isSelected = preferredDate === q.iso;
               return (
-                <View
-                  key={doc.id}
-                  style={[styles.doctorCard, isSelected && styles.doctorCardSelected]}
+                <Pressable
+                  key={q.iso}
+                  style={[styles.dateBox, isSelected && styles.dateBoxActive]}
+                  onPress={() => setPreferredDate(q.iso)}
                 >
-                  <Pressable
-                    style={styles.doctorCardBody}
-                    onPress={() => setSelectedDoctorId(doc.id)}
-                  >
-                    <View style={styles.docAvatarCol}>
-                      <View style={styles.docAvatarCirc}>
-                        <Stethoscope size={22} color={UyirinaiTheme.colors.primary} />
-                      </View>
-                      <View style={styles.genderBadge}>
-                        <Text style={styles.genderBadgeText}>{doc.gender || 'MALE'}</Text>
-                      </View>
-                    </View>
-
-                    <View style={styles.docDetailsCol}>
-                      <View style={styles.docNameHeaderRow}>
-                        <Text style={styles.doctorItemName}>{name}</Text>
-                        <View style={[styles.typePill, isSpecialist ? styles.specPill : styles.genPill]}>
-                          <Text style={[styles.typePillText, isSpecialist ? styles.specPillText : styles.genPillText]}>
-                            {isSpecialist ? 'Specialist' : 'General'}
-                          </Text>
-                        </View>
-                      </View>
-
-                      <Text style={styles.doctorItemSpec}>{doc.specialization || deptName}</Text>
-                      <Text style={styles.doctorItemDept}>
-                        {deptName} · {doc.branch?.name || 'Main Branch'}
-                      </Text>
-
-                      <View style={styles.docMetaBadges}>
-                        <Text style={styles.metaHighlight}>{exp} Years Experience</Text>
-                        <Text style={styles.metaDivider}>·</Text>
-                        <Text style={styles.metaFee}>₹{fee} Consultation Fee</Text>
-                      </View>
-
-                      {/* Timings preview */}
-                      {schedules.length > 0 && (
-                        <View style={styles.timingPillRow}>
-                          <Clock size={12} color={UyirinaiTheme.colors.textMuted} />
-                          <Text style={styles.timingPillText}>
-                            {schedules[0].startTime} - {schedules[0].endTime} ({schedules.map((s: any) => s.dayOfWeek.slice(0, 3)).join(', ')})
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                  </Pressable>
-
-                  {/* Doctor Card Footer: Select Button + View Profile Link */}
-                  <View style={styles.doctorCardFooter}>
-                    <Pressable
-                      style={styles.viewProfileBtn}
-                      onPress={() => setProfileDoctor(doc)}
-                    >
-                      <User size={13} color={UyirinaiTheme.colors.primary} />
-                      <Text style={styles.viewProfileBtnText}>View Doctor Profile</Text>
-                    </Pressable>
-
-                    <Pressable
-                      style={[styles.selectDocBtn, isSelected && styles.selectDocBtnActive]}
-                      onPress={() => setSelectedDoctorId(doc.id)}
-                    >
-                      <Text style={[styles.selectDocBtnText, isSelected && styles.selectDocBtnTextActive]}>
-                        {isSelected ? '✓ Selected' : 'Select Doctor'}
-                      </Text>
-                    </Pressable>
-                  </View>
-                </View>
+                  <Text style={[styles.dateBoxDay, isSelected && styles.dateBoxDayActive]}>
+                    {q.dayName}
+                  </Text>
+                  <Text style={[styles.dateBoxNum, isSelected && styles.dateBoxNumActive]}>
+                    {q.dateNum}
+                  </Text>
+                </Pressable>
               );
             })}
           </View>
-        ) : (
-          <View style={styles.emptyDoctors}>
-            <Stethoscope size={36} color={UyirinaiTheme.colors.textMuted} />
-            <Text style={styles.emptyDocTitle}>No Doctors Found</Text>
-            <Text style={styles.emptyDocSub}>
-              Try adjusting your gender, experience, or timing filters above.
-            </Text>
-          </View>
-        )}
-      </View>
 
-      {/* 4. DATE & TIME SELECTION */}
-      <View style={styles.sectionBlock}>
-        <Text style={styles.sectionHeaderTitle}>4. Choose Consultation Date & Time</Text>
-
-        {/* Quick Date Pills */}
-        <Text style={styles.inputSublabel}>Select Preferred Date:</Text>
-        <View style={styles.quickDatesRow}>
-          {quickDates.map((q) => (
-            <Pressable
-              key={q.iso}
-              style={[styles.quickDateChip, preferredDate === q.iso && styles.quickDateChipActive]}
-              onPress={() => setPreferredDate(q.iso)}
-            >
-              <Text style={[styles.quickDateText, preferredDate === q.iso && styles.quickDateTextActive]}>
-                {q.label}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-
-        <TextInput
-          style={styles.customDateInput}
-          value={preferredDate}
-          onChangeText={setPreferredDate}
-          placeholder="Or enter custom date: YYYY-MM-DD"
-        />
-
-        {/* Quick Time Slots */}
-        <Text style={[styles.inputSublabel, { marginTop: 12 }]}>Preferred Time Slot:</Text>
-        <View style={styles.timeSlotsRow}>
-          {['09:30', '10:00', '10:30', '11:00', '11:30', '14:30', '15:30', '17:00'].map((slot) => (
-            <Pressable
-              key={slot}
-              style={[styles.slotChip, selectedTimeSlot === slot && styles.slotChipActive]}
-              onPress={() => setSelectedTimeSlot(slot)}
-            >
-              <Text style={[styles.slotChipText, selectedTimeSlot === slot && styles.slotChipTextActive]}>
-                {slot} IST
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      </View>
-
-      {/* 5. REASON FOR APPOINTMENT */}
-      <View style={styles.sectionBlock}>
-        <Text style={styles.sectionHeaderTitle}>5. Reason for Consultation</Text>
-        <Text style={styles.inputSublabel}>
-          Describe symptoms, reason for visit, or clinical concerns (optional):
-        </Text>
-        <TextInput
-          style={styles.reasonInput}
-          value={reason}
-          onChangeText={setReason}
-          placeholder="e.g. Mild headache and throat irritation for 2 days, routine blood pressure checkup..."
-          multiline={true}
-          numberOfLines={3}
-        />
-      </View>
-
-      {/* 6. BOOK APPOINTMENT SUBMIT BUTTON */}
-      <View style={styles.submitSection}>
-        <Pressable
-          style={[
-            styles.bookAppointmentFinalBtn,
-            (!selectedDoctorId || !preferredDate || bookMutation.isPending) && styles.submitDisabled,
-          ]}
-          onPress={() => bookMutation.mutate()}
-          disabled={!selectedDoctorId || !preferredDate || bookMutation.isPending}
-        >
-          <Text style={styles.bookAppointmentFinalText}>
-            {bookMutation.isPending ? 'Sending to Department Admin...' : 'Book Appointment'}
+          {/* Morning Visual Slot Boxes */}
+          <Text style={[styles.subLabel, { marginTop: 14 }]}>
+            2. Morning Available Slots (09:00 AM - 12:30 PM):
           </Text>
-        </Pressable>
+          <View style={styles.slotsGrid}>
+            {MORNING_SLOTS.map((slot) => {
+              const isSelected = selectedVisualSlot === slot;
+              return (
+                <Pressable
+                  key={slot}
+                  style={[styles.slotVisualBox, isSelected && styles.slotVisualBoxActive]}
+                  onPress={() => setSelectedVisualSlot(slot)}
+                >
+                  <Text style={[styles.slotVisualText, isSelected && styles.slotVisualTextActive]}>
+                    {slot}
+                  </Text>
+                  {isSelected && <Check size={12} color={UyirinaiTheme.colors.white} strokeWidth={3} />}
+                </Pressable>
+              );
+            })}
+          </View>
 
-        <Text style={styles.submitDisclaimer}>
-          After booking, your request is forwarded to the Department Admin & Reception team for slot scheduling. Both doctor and patient will receive real-time notifications.
-        </Text>
-      </View>
+          {/* Afternoon / Evening Visual Slot Boxes */}
+          <Text style={[styles.subLabel, { marginTop: 14 }]}>
+            3. Afternoon & Evening Slots (02:00 PM - 08:00 PM):
+          </Text>
+          <View style={styles.slotsGrid}>
+            {EVENING_SLOTS.map((slot) => {
+              const isSelected = selectedVisualSlot === slot;
+              return (
+                <Pressable
+                  key={slot}
+                  style={[styles.slotVisualBox, isSelected && styles.slotVisualBoxActive]}
+                  onPress={() => setSelectedVisualSlot(slot)}
+                >
+                  <Text style={[styles.slotVisualText, isSelected && styles.slotVisualTextActive]}>
+                    {slot}
+                  </Text>
+                  {isSelected && <Check size={12} color={UyirinaiTheme.colors.white} strokeWidth={3} />}
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
 
-      {/* DOCTOR PROFILE MODAL */}
+        {/* 6. REASON FOR CONSULTATION */}
+        <View style={styles.cardSection}>
+          <Text style={styles.stepTitle}>6. Reason for Appointment (Optional)</Text>
+          <Text style={styles.subLabel}>
+            Briefly share your chief complaint, symptoms, or follow-up note:
+          </Text>
+          <TextInput
+            style={styles.reasonInputField}
+            value={reason}
+            onChangeText={setReason}
+            placeholder="e.g. Routine hypertension checkup, seasonal cough, chest discomfort..."
+            placeholderTextColor={UyirinaiTheme.colors.textMuted}
+            multiline={true}
+            numberOfLines={3}
+          />
+        </View>
+
+        {/* 7. SUBMIT BUTTON */}
+        <View style={styles.submitContainer}>
+          <Pressable
+            style={[
+              styles.primaryBookingBtn,
+              (!selectedDoctorId || !preferredDate || bookMutation.isPending) && styles.primaryBookingBtnDisabled,
+            ]}
+            onPress={() => bookMutation.mutate()}
+            disabled={!selectedDoctorId || !preferredDate || bookMutation.isPending}
+          >
+            <Text style={styles.primaryBookingBtnText}>
+              {bookMutation.isPending
+                ? 'Routing to Department Admin...'
+                : `Confirm Booking with Dr. ${
+                    selectedDoctor?.employee?.user?.firstName || 'Selected Doctor'
+                  }`}
+            </Text>
+          </Pressable>
+
+          <Text style={styles.submissionNotice}>
+            Your request will be scheduled by the Department Admin & Reception. Both doctor and patient receive instant in-app alerts.
+          </Text>
+        </View>
+      </ScrollView>
+
+      {/* ======================================================== */}
+      {/* PHONE-CONSTRAINED ENHANCED DOCTOR PROFILE MODAL          */}
+      {/* ======================================================== */}
       <Modal visible={!!profileDoctor} transparent={true} animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Doctor Clinical Profile</Text>
-              <Pressable onPress={() => setProfileDoctor(null)} style={styles.modalClose}>
-                <X size={20} color={UyirinaiTheme.colors.textSecondary} />
-              </Pressable>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.phoneModalSheet}>
+            {/* Modal Top Header */}
+            <View style={styles.sheetHeader}>
+              <View style={styles.sheetHandle} />
+              <View style={styles.sheetTitleRow}>
+                <Text style={styles.sheetTitle}>Doctor Clinical Profile</Text>
+                <Pressable onPress={() => setProfileDoctor(null)} style={styles.sheetCloseBtn}>
+                  <X size={20} color={UyirinaiTheme.colors.textSecondary} />
+                </Pressable>
+              </View>
             </View>
 
             {profileDoctor && (
-              <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
-                <View style={styles.docModalHero}>
-                  <View style={styles.docModalAvatarCircle}>
-                    <Stethoscope size={32} color={UyirinaiTheme.colors.primary} />
+              <ScrollView style={styles.sheetBody} showsVerticalScrollIndicator={false}>
+                {/* Doctor Hero Card */}
+                <View style={styles.doctorSheetHero}>
+                  <View style={styles.heroAvatarBig}>
+                    <Stethoscope size={36} color={UyirinaiTheme.colors.primaryDark} />
                   </View>
-                  <Text style={styles.docModalName}>
-                    Dr. {profileDoctor.employee?.user?.firstName} {profileDoctor.employee?.user?.lastName}
+                  <Text style={styles.heroDoctorName}>
+                    Dr. {profileDoctor.employee?.user?.firstName}{' '}
+                    {profileDoctor.employee?.user?.lastName}
                   </Text>
-                  <Text style={styles.docModalDesignation}>
+                  <Text style={styles.heroDoctorSpecialty}>
                     {profileDoctor.designation?.replace('_', ' ')} · {profileDoctor.specialization}
                   </Text>
-                  <Text style={styles.docModalDept}>
-                    {profileDoctor.department?.name} · {profileDoctor.branch?.name}
+                  <Text style={styles.heroDoctorDept}>
+                    {profileDoctor.department?.name} · Madurai Main Campus
                   </Text>
                 </View>
 
-                {/* Key Metrics */}
-                <View style={styles.modalMetricsRow}>
-                  <View style={styles.metricBox}>
-                    <Text style={styles.metricVal}>{profileDoctor.experienceYears || 10}+ Yrs</Text>
-                    <Text style={styles.metricLbl}>Experience</Text>
+                {/* Key Metrics Row */}
+                <View style={styles.sheetStatsRow}>
+                  <View style={styles.sheetStatItem}>
+                    <Text style={styles.sheetStatVal}>
+                      {profileDoctor.experienceYears || 10}+ Yrs
+                    </Text>
+                    <Text style={styles.sheetStatLbl}>Experience</Text>
                   </View>
-                  <View style={styles.metricBox}>
-                    <Text style={styles.metricVal}>₹{profileDoctor.consultationFee || 500}</Text>
-                    <Text style={styles.metricLbl}>Consultation</Text>
+                  <View style={styles.sheetStatDivider} />
+                  <View style={styles.sheetStatItem}>
+                    <Text style={styles.sheetStatVal}>₹{profileDoctor.consultationFee || 500}</Text>
+                    <Text style={styles.sheetStatLbl}>Fee</Text>
                   </View>
-                  <View style={styles.metricBox}>
-                    <Text style={styles.metricVal}>{profileDoctor.gender || 'MALE'}</Text>
-                    <Text style={styles.metricLbl}>Gender</Text>
+                  <View style={styles.sheetStatDivider} />
+                  <View style={styles.sheetStatItem}>
+                    <Text style={styles.sheetStatVal}>{profileDoctor.gender || 'MALE'}</Text>
+                    <Text style={styles.sheetStatLbl}>Gender</Text>
                   </View>
                 </View>
 
-                {/* Bio */}
-                <View style={styles.modalSection}>
-                  <Text style={styles.modalSectionTitle}>About Doctor</Text>
-                  <Text style={styles.docModalBio}>
+                {/* Clinical Bio */}
+                <View style={styles.sheetSection}>
+                  <Text style={styles.sheetSectionHeading}>About Doctor</Text>
+                  <Text style={styles.sheetBioText}>
                     {profileDoctor.bio ||
-                      'Senior clinician dedicated to holistic patient wellness, advanced diagnosis, and compassionate healthcare.'}
+                      'Experienced clinical consultant providing compassionate, comprehensive medical care and patient wellness management.'}
                   </Text>
                 </View>
 
                 {/* Qualifications */}
-                <View style={styles.modalSection}>
-                  <Text style={styles.modalSectionTitle}>Qualifications & Accreditations</Text>
+                <View style={styles.sheetSection}>
+                  <Text style={styles.sheetSectionHeading}>Qualifications & Degrees</Text>
                   {profileDoctor.qualifications?.length > 0 ? (
                     profileDoctor.qualifications.map((q: any, idx: number) => (
-                      <View key={idx} style={styles.qualificationItem}>
-                        <GraduationCap size={16} color={UyirinaiTheme.colors.primary} />
-                        <Text style={styles.qualText}>
-                          {q.degree} · <Text style={{ color: UyirinaiTheme.colors.textSecondary }}>{q.institution}</Text>
+                      <View key={idx} style={styles.qualRow}>
+                        <GraduationCap size={16} color={UyirinaiTheme.colors.primaryDark} />
+                        <Text style={styles.qualDegree}>
+                          {q.degree} · <Text style={styles.qualInst}>{q.institution}</Text>
                         </Text>
                       </View>
                     ))
                   ) : (
-                    <Text style={styles.docModalBio}>MBBS, MD - Certified Practitioner</Text>
+                    <Text style={styles.sheetBioText}>MBBS, MD - Certified Medical Specialist</Text>
                   )}
                 </View>
 
-                {/* Available Hours */}
-                <View style={styles.modalSection}>
-                  <Text style={styles.modalSectionTitle}>Weekly Consultation Schedule</Text>
+                {/* Visual Weekly Consultation Schedule */}
+                <View style={styles.sheetSection}>
+                  <Text style={styles.sheetSectionHeading}>Consultation Schedule & Days</Text>
                   {profileDoctor.schedules?.length > 0 ? (
-                    profileDoctor.schedules.map((s: any, idx: number) => (
-                      <View key={idx} style={styles.scheduleItemRow}>
-                        <Clock size={14} color={UyirinaiTheme.colors.primary} />
-                        <Text style={styles.scheduleItemText}>
-                          {s.dayOfWeek}: {s.startTime} - {s.endTime} IST
-                        </Text>
-                      </View>
-                    ))
+                    <View style={styles.scheduleDaysGrid}>
+                      {profileDoctor.schedules.map((s: any, idx: number) => (
+                        <View key={idx} style={styles.scheduleDayCard}>
+                          <Clock size={14} color={UyirinaiTheme.colors.primaryDark} />
+                          <View>
+                            <Text style={styles.scheduleDayTitle}>{s.dayOfWeek}</Text>
+                            <Text style={styles.scheduleDayTiming}>
+                              {s.startTime} - {s.endTime} IST
+                            </Text>
+                          </View>
+                        </View>
+                      ))}
+                    </View>
                   ) : (
-                    <Text style={styles.docModalBio}>Monday - Saturday: 09:00 - 13:00 IST</Text>
+                    <Text style={styles.sheetBioText}>Monday to Saturday: 09:00 AM - 01:00 PM IST</Text>
                   )}
                 </View>
 
+                {/* Visual Slots Picker Inside Modal */}
+                <View style={styles.sheetSection}>
+                  <Text style={styles.sheetSectionHeading}>Select Your Time Slot:</Text>
+                  <View style={styles.slotsGrid}>
+                    {MORNING_SLOTS.slice(0, 4).concat(EVENING_SLOTS.slice(0, 4)).map((slot) => {
+                      const isSel = selectedVisualSlot === slot;
+                      return (
+                        <Pressable
+                          key={slot}
+                          style={[styles.slotVisualBox, isSel && styles.slotVisualBoxActive]}
+                          onPress={() => setSelectedVisualSlot(slot)}
+                        >
+                          <Text style={[styles.slotVisualText, isSel && styles.slotVisualTextActive]}>
+                            {slot}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+
+                {/* Modal Select Doctor CTA */}
                 <Pressable
-                  style={styles.modalSelectDoctorBtn}
+                  style={styles.sheetCtaBtn}
                   onPress={() => {
                     setSelectedDoctorId(profileDoctor.id);
                     setProfileDoctor(null);
                   }}
                 >
-                  <Text style={styles.modalSelectDoctorText}>Select This Doctor for Booking</Text>
+                  <Text style={styles.sheetCtaBtnText}>
+                    Select Dr. {profileDoctor.employee?.user?.firstName} for Booking
+                  </Text>
                 </Pressable>
               </ScrollView>
             )}
@@ -614,60 +772,105 @@ export default function BookAppointmentScreen() {
         </View>
       </Modal>
 
-      {/* BOOKING SUCCESS MODAL */}
+      {/* ======================================================== */}
+      {/* PHONE-CONSTRAINED BOOKING SUCCESS MODAL                  */}
+      {/* ======================================================== */}
       <Modal visible={!!bookingSuccessData} transparent={true} animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.successModalCard}>
-            <View style={styles.successIconCircle}>
-              <CheckCircle2 size={42} color={UyirinaiTheme.colors.success} />
+        <View style={styles.modalBackdrop}>
+          <View style={styles.successSheetCard}>
+            <View style={styles.successCircle}>
+              <CheckCircle2 size={46} color={UyirinaiTheme.colors.white} />
             </View>
 
-            <Text style={styles.successModalTitle}>Appointment Request Submitted!</Text>
-            <Text style={styles.successModalText}>
-              Your booking request with{' '}
-              <Text style={{ fontWeight: '800' }}>
+            <Text style={styles.successHeading}>Appointment Booked!</Text>
+            <Text style={styles.successBody}>
+              Your consultation request with{' '}
+              <Text style={{ fontWeight: '800', color: UyirinaiTheme.colors.primaryDark }}>
                 Dr. {selectedDoctor?.employee?.user?.firstName || 'Doctor'}
               </Text>{' '}
-              for <Text style={{ fontWeight: '800' }}>{preferredDate}</Text> has been forwarded to the
-              Department Admin and Reception team for scheduling.
+              on <Text style={{ fontWeight: '800' }}>{preferredDate}</Text> at{' '}
+              <Text style={{ fontWeight: '800' }}>{selectedVisualSlot}</Text> has been forwarded to
+              the Department Admin for scheduling.
             </Text>
 
-            <View style={styles.refBox}>
-              <Text style={styles.refLabel}>Request Reference ID</Text>
-              <Text style={styles.refVal}>{bookingSuccessData?.id || 'REQ-2026-0042'}</Text>
+            <View style={styles.bookingRefCard}>
+              <Text style={styles.bookingRefTitle}>Request Reference Number</Text>
+              <Text style={styles.bookingRefCode}>{bookingSuccessData?.id || 'KZN-REQ-0042'}</Text>
             </View>
 
             <Pressable
-              style={styles.goToAptsBtn}
+              style={styles.successActionBtn}
               onPress={() => {
                 setBookingSuccessData(null);
                 router.replace('/(patient)/appointments' as any);
               }}
             >
-              <Text style={styles.goToAptsText}>View Active Appointments</Text>
+              <Text style={styles.successActionBtnText}>View My Active Appointments</Text>
             </Pressable>
           </View>
         </View>
       </Modal>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  outerContainer: {
     flex: 1,
     backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
   },
+  container: {
+    flex: 1,
+    maxWidth: 500,
+    width: '100%',
+    alignSelf: 'center',
+  },
   contentContainer: {
     padding: 16,
-    paddingBottom: 50,
+    paddingBottom: 60,
   },
-  sectionBlock: {
+
+  /* Hero Banner */
+  heroBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: UyirinaiTheme.colors.primaryDark,
+    borderRadius: UyirinaiTheme.borderRadius.xl,
+    padding: 16,
+    gap: 12,
+    marginBottom: 16,
+    shadowColor: UyirinaiTheme.colors.primaryDark,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  heroIconBadge: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.white,
+  },
+  heroSub: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.85)',
+    marginTop: 2,
+  },
+
+  /* Card Section */
+  cardSection: {
     backgroundColor: UyirinaiTheme.colors.white,
     borderRadius: UyirinaiTheme.borderRadius.xl,
     padding: 16,
     borderWidth: 1,
-    borderColor: UyirinaiTheme.colors.borderDefault,
+    borderColor: UyirinaiTheme.colors.border,
     marginBottom: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -675,19 +878,19 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 1,
   },
-  sectionHeaderTitle: {
+  stepTitle: {
     fontSize: 15,
     fontWeight: '800',
     color: UyirinaiTheme.colors.textPrimary,
     marginBottom: 12,
   },
 
-  /* Step 1 Toggle */
-  toggleRow: {
+  /* Step 1 Type Selector */
+  typeSelectorRow: {
     flexDirection: 'row',
     gap: 8,
   },
-  toggleBtn: {
+  typeBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -695,131 +898,170 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingVertical: 10,
     borderRadius: UyirinaiTheme.borderRadius.lg,
-    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
+    backgroundColor: UyirinaiTheme.colors.cardBackgroundSoft,
     borderWidth: 1,
-    borderColor: UyirinaiTheme.colors.borderDefault,
+    borderColor: UyirinaiTheme.colors.border,
   },
-  toggleBtnActive: {
-    backgroundColor: UyirinaiTheme.colors.primary,
-    borderColor: UyirinaiTheme.colors.primary,
+  typeBtnActive: {
+    backgroundColor: UyirinaiTheme.colors.primaryDark,
+    borderColor: UyirinaiTheme.colors.primaryDark,
   },
-  toggleBtnText: {
-    fontSize: 12,
+  typeBtnText: {
+    fontSize: 11,
     fontWeight: '700',
     color: UyirinaiTheme.colors.textPrimary,
   },
-  toggleBtnTextActive: {
+  typeBtnTextActive: {
     color: UyirinaiTheme.colors.white,
   },
 
-  /* Search & Filters */
-  searchBar: {
+  /* Specialist Department Visual Selector */
+  deptHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  clearFilterText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: UyirinaiTheme.colors.primary,
+  },
+  deptScrollContainer: {
+    gap: 10,
+    paddingVertical: 4,
+  },
+  deptVisualCard: {
+    width: 105,
+    backgroundColor: UyirinaiTheme.colors.cardBackgroundSoft,
+    borderRadius: UyirinaiTheme.borderRadius.lg,
+    padding: 12,
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: UyirinaiTheme.colors.border,
+  },
+  deptVisualCardActive: {
+    backgroundColor: UyirinaiTheme.colors.primaryDark,
+    borderColor: UyirinaiTheme.colors.primaryDark,
+  },
+  deptIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: UyirinaiTheme.colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
+  },
+  deptIconCircleActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+  },
+  deptVisualName: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.textPrimary,
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  deptVisualNameActive: {
+    color: UyirinaiTheme.colors.white,
+  },
+  deptVisualSub: {
+    fontSize: 9,
+    color: UyirinaiTheme.colors.textSecondary,
+    textAlign: 'center',
+  },
+  deptVisualSubActive: {
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+
+  /* Search & Filters */
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
     borderRadius: UyirinaiTheme.borderRadius.md,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderWidth: 1,
     borderColor: UyirinaiTheme.colors.borderLight,
-    marginBottom: 12,
+    marginBottom: 10,
+    gap: 8,
   },
   searchInput: {
     flex: 1,
     fontSize: 13,
     color: UyirinaiTheme.colors.textPrimary,
   },
-  filterPillsRow: {
+  pillsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
     gap: 6,
-    marginBottom: 8,
+    marginBottom: 4,
   },
-  filterRowLabel: {
-    fontSize: 12,
+  pillLabel: {
+    fontSize: 11,
     fontWeight: '700',
     color: UyirinaiTheme.colors.textSecondary,
-    marginRight: 4,
-    minWidth: 74,
   },
-  filterChip: {
+  pillBtn: {
     paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingVertical: 5,
     borderRadius: UyirinaiTheme.borderRadius.full,
-    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
+    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
     borderWidth: 1,
-    borderColor: UyirinaiTheme.colors.borderDefault,
+    borderColor: UyirinaiTheme.colors.border,
   },
-  filterChipActive: {
-    backgroundColor: UyirinaiTheme.colors.softGreen,
-    borderColor: UyirinaiTheme.colors.primary,
+  pillBtnActive: {
+    backgroundColor: UyirinaiTheme.colors.primaryDark,
+    borderColor: UyirinaiTheme.colors.primaryDark,
   },
-  filterChipText: {
+  pillBtnText: {
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: '700',
     color: UyirinaiTheme.colors.textSecondary,
   },
-  filterChipTextActive: {
-    color: UyirinaiTheme.colors.primaryDark,
-    fontWeight: '800',
-  },
-  sortRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginTop: 4,
-  },
-  sortChip: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: UyirinaiTheme.borderRadius.full,
-    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
-    borderWidth: 1,
-    borderColor: UyirinaiTheme.colors.borderDefault,
-  },
-  sortChipActive: {
-    backgroundColor: UyirinaiTheme.colors.softGreenCard,
-    borderColor: UyirinaiTheme.colors.primary,
-  },
-  sortChipText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: UyirinaiTheme.colors.textSecondary,
-  },
-  sortChipTextActive: {
-    color: UyirinaiTheme.colors.primary,
-    fontWeight: '800',
+  pillBtnTextActive: {
+    color: UyirinaiTheme.colors.white,
   },
 
-  /* Doctors List */
-  directoryHeaderRow: {
+  /* Doctors Directory List */
+  docSectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 12,
   },
-  selectedDocLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: UyirinaiTheme.colors.primary,
+  selectedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: UyirinaiTheme.colors.cardBackgroundSoft,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: UyirinaiTheme.borderRadius.full,
   },
-  doctorCardsList: {
+  selectedBadgeText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.primaryDark,
+  },
+  doctorsList: {
     gap: 12,
   },
-  doctorCard: {
+  doctorVisualCard: {
     backgroundColor: UyirinaiTheme.colors.white,
-    borderRadius: UyirinaiTheme.borderRadius.lg,
+    borderRadius: UyirinaiTheme.borderRadius.xl,
     borderWidth: 1.5,
-    borderColor: UyirinaiTheme.colors.borderLight,
+    borderColor: UyirinaiTheme.colors.border,
     overflow: 'hidden',
   },
-  doctorCardSelected: {
-    borderColor: UyirinaiTheme.colors.primary,
-    backgroundColor: '#F7FCF8',
+  doctorVisualCardSelected: {
+    borderColor: UyirinaiTheme.colors.primaryDark,
+    backgroundColor: '#FAF5FB',
   },
-  doctorCardBody: {
+  doctorCardContent: {
     flexDirection: 'row',
     padding: 14,
     gap: 12,
@@ -827,22 +1069,22 @@ const styles = StyleSheet.create({
   docAvatarCol: {
     alignItems: 'center',
   },
-  docAvatarCirc: {
+  docAvatarBubble: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: UyirinaiTheme.colors.softGreen,
+    backgroundColor: UyirinaiTheme.colors.cardBackgroundSoft,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 4,
   },
-  genderBadge: {
-    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
+  genderChip: {
+    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: UyirinaiTheme.borderRadius.sm,
   },
-  genderBadgeText: {
+  genderChipText: {
     fontSize: 9,
     fontWeight: '700',
     color: UyirinaiTheme.colors.textMuted,
@@ -850,212 +1092,225 @@ const styles = StyleSheet.create({
   docDetailsCol: {
     flex: 1,
   },
-  docNameHeaderRow: {
+  nameHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 2,
   },
-  doctorItemName: {
-    fontSize: 16,
+  docTitleName: {
+    fontSize: 15,
     fontWeight: '800',
     color: UyirinaiTheme.colors.textPrimary,
+    flex: 1,
   },
-  typePill: {
+  categoryTag: {
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: UyirinaiTheme.borderRadius.sm,
   },
-  typePillText: {
+  categoryTagSpecialist: {
+    backgroundColor: UyirinaiTheme.colors.cardBackgroundSoft,
+  },
+  categoryTagGeneral: {
+    backgroundColor: '#F0EAF5',
+  },
+  categoryTagText: {
     fontSize: 10,
     fontWeight: '800',
   },
-  specPill: {
-    backgroundColor: '#E8F4FD',
-  },
-  specPillText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#1D72B8',
-  },
-  genPill: {
-    backgroundColor: UyirinaiTheme.colors.softGreen,
-  },
-  genPillText: {
-    fontSize: 10,
-    fontWeight: '800',
+  categoryTagTextSpecialist: {
     color: UyirinaiTheme.colors.primaryDark,
   },
-  doctorItemSpec: {
+  categoryTagTextGeneral: {
+    color: UyirinaiTheme.colors.textSecondary,
+  },
+  docSpecialty: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: UyirinaiTheme.colors.primary,
     marginBottom: 1,
   },
-  doctorItemDept: {
+  docHospital: {
     fontSize: 11,
     color: UyirinaiTheme.colors.textSecondary,
     marginBottom: 6,
   },
-  docMetaBadges: {
+  metricsPillsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
     marginBottom: 6,
   },
-  metaHighlight: {
-    fontSize: 12,
+  metricPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: UyirinaiTheme.borderRadius.sm,
+  },
+  metricPillText: {
+    fontSize: 11,
     fontWeight: '700',
     color: UyirinaiTheme.colors.textPrimary,
   },
-  metaDivider: {
-    color: UyirinaiTheme.colors.textMuted,
-  },
-  metaFee: {
-    fontSize: 12,
+  metricPillFee: {
+    fontSize: 13,
     fontWeight: '800',
     color: UyirinaiTheme.colors.primaryDark,
   },
-  timingPillRow: {
+  metricPillFeeLabel: {
+    fontSize: 10,
+    color: UyirinaiTheme.colors.textMuted,
+  },
+  timingPillsWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: 4,
   },
-  timingPillText: {
+  timingPillsText: {
     fontSize: 11,
     color: UyirinaiTheme.colors.textMuted,
   },
-  doctorCardFooter: {
+  cardBottomBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 14,
-    paddingVertical: 9,
-    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
+    paddingVertical: 8,
+    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
     borderTopWidth: 1,
     borderTopColor: UyirinaiTheme.colors.borderLight,
   },
-  viewProfileBtn: {
+  viewProfileLink: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
   },
-  viewProfileBtnText: {
+  viewProfileLinkText: {
     fontSize: 12,
     fontWeight: '700',
-    color: UyirinaiTheme.colors.primary,
+    color: UyirinaiTheme.colors.primaryDark,
   },
-  selectDocBtn: {
+  selectDoctorPill: {
     backgroundColor: UyirinaiTheme.colors.white,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 5,
     borderRadius: UyirinaiTheme.borderRadius.full,
     borderWidth: 1,
-    borderColor: UyirinaiTheme.colors.borderDefault,
+    borderColor: UyirinaiTheme.colors.border,
   },
-  selectDocBtnActive: {
-    backgroundColor: UyirinaiTheme.colors.primary,
-    borderColor: UyirinaiTheme.colors.primary,
+  selectDoctorPillActive: {
+    backgroundColor: UyirinaiTheme.colors.primaryDark,
+    borderColor: UyirinaiTheme.colors.primaryDark,
   },
-  selectDocBtnText: {
-    fontSize: 11,
+  selectDoctorPillText: {
+    fontSize: 12,
     fontWeight: '700',
     color: UyirinaiTheme.colors.textPrimary,
   },
-  selectDocBtnTextActive: {
+  selectDoctorPillTextActive: {
     color: UyirinaiTheme.colors.white,
   },
-  emptyDoctors: {
+  emptyDoctorState: {
     alignItems: 'center',
     padding: 24,
   },
-  emptyDocTitle: {
+  emptyDoctorTitle: {
     fontSize: 15,
     fontWeight: '800',
     color: UyirinaiTheme.colors.textPrimary,
     marginTop: 8,
   },
-  emptyDocSub: {
+  emptyDoctorSub: {
     fontSize: 12,
     color: UyirinaiTheme.colors.textSecondary,
     textAlign: 'center',
     marginTop: 2,
   },
 
-  /* Step 4 Date & Time */
-  inputSublabel: {
+  /* Step 5 Visual Dates & Slots */
+  subLabel: {
     fontSize: 12,
     fontWeight: '700',
     color: UyirinaiTheme.colors.textSecondary,
     marginBottom: 6,
   },
-  quickDatesRow: {
+  dateBoxesGrid: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 8,
   },
-  quickDateChip: {
+  dateBox: {
     flex: 1,
+    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
+    borderRadius: UyirinaiTheme.borderRadius.lg,
+    paddingVertical: 10,
     alignItems: 'center',
-    paddingVertical: 8,
-    borderRadius: UyirinaiTheme.borderRadius.md,
-    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
-    borderWidth: 1,
-    borderColor: UyirinaiTheme.colors.borderDefault,
+    borderWidth: 1.5,
+    borderColor: UyirinaiTheme.colors.border,
   },
-  quickDateChipActive: {
-    backgroundColor: UyirinaiTheme.colors.primary,
-    borderColor: UyirinaiTheme.colors.primary,
+  dateBoxActive: {
+    backgroundColor: UyirinaiTheme.colors.primaryDark,
+    borderColor: UyirinaiTheme.colors.primaryDark,
   },
-  quickDateText: {
+  dateBoxDay: {
     fontSize: 11,
     fontWeight: '700',
-    color: UyirinaiTheme.colors.textPrimary,
+    color: UyirinaiTheme.colors.textSecondary,
+    marginBottom: 2,
   },
-  quickDateTextActive: {
+  dateBoxDayActive: {
     color: UyirinaiTheme.colors.white,
   },
-  customDateInput: {
-    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
-    borderWidth: 1,
-    borderColor: UyirinaiTheme.colors.borderLight,
-    borderRadius: UyirinaiTheme.borderRadius.md,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+  dateBoxNum: {
     fontSize: 13,
+    fontWeight: '800',
     color: UyirinaiTheme.colors.textPrimary,
   },
-  timeSlotsRow: {
+  dateBoxNumActive: {
+    color: UyirinaiTheme.colors.white,
+  },
+
+  /* Visual Slots Grid */
+  slotsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
   },
-  slotChip: {
+  slotVisualBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 9,
     borderRadius: UyirinaiTheme.borderRadius.md,
-    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
-    borderWidth: 1,
-    borderColor: UyirinaiTheme.colors.borderDefault,
+    backgroundColor: UyirinaiTheme.colors.cardBackgroundSoft,
+    borderWidth: 1.5,
+    borderColor: UyirinaiTheme.colors.border,
+    minWidth: 92,
   },
-  slotChipActive: {
-    backgroundColor: UyirinaiTheme.colors.softGreen,
-    borderColor: UyirinaiTheme.colors.primary,
+  slotVisualBoxActive: {
+    backgroundColor: UyirinaiTheme.colors.primaryDark,
+    borderColor: UyirinaiTheme.colors.primaryDark,
   },
-  slotChipText: {
+  slotVisualText: {
     fontSize: 12,
     fontWeight: '700',
-    color: UyirinaiTheme.colors.textSecondary,
+    color: UyirinaiTheme.colors.textPrimary,
   },
-  slotChipTextActive: {
-    color: UyirinaiTheme.colors.primaryDark,
+  slotVisualTextActive: {
+    color: UyirinaiTheme.colors.white,
+    fontWeight: '800',
   },
 
-  /* Step 5 Reason */
-  reasonInput: {
-    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
+  /* Step 6 Reason */
+  reasonInputField: {
+    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
     borderWidth: 1,
-    borderColor: UyirinaiTheme.colors.borderLight,
+    borderColor: UyirinaiTheme.colors.border,
     borderRadius: UyirinaiTheme.borderRadius.md,
     padding: 10,
     fontSize: 13,
@@ -1064,32 +1319,32 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
 
-  /* Step 6 Submit */
-  submitSection: {
+  /* Step 7 Submit */
+  submitContainer: {
     alignItems: 'center',
     marginBottom: 20,
   },
-  bookAppointmentFinalBtn: {
+  primaryBookingBtn: {
     width: '100%',
-    backgroundColor: UyirinaiTheme.colors.primary,
-    paddingVertical: 14,
+    backgroundColor: UyirinaiTheme.colors.primaryDark,
+    paddingVertical: 15,
     borderRadius: UyirinaiTheme.borderRadius.xl,
     alignItems: 'center',
-    shadowColor: UyirinaiTheme.colors.primary,
+    shadowColor: UyirinaiTheme.colors.primaryDark,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 5,
-    elevation: 3,
+    elevation: 4,
   },
-  submitDisabled: {
+  primaryBookingBtnDisabled: {
     opacity: 0.5,
   },
-  bookAppointmentFinalText: {
+  primaryBookingBtnText: {
     color: UyirinaiTheme.colors.white,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '800',
   },
-  submitDisclaimer: {
+  submissionNotice: {
     fontSize: 11,
     color: UyirinaiTheme.colors.textMuted,
     textAlign: 'center',
@@ -1098,200 +1353,251 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
 
-  /* Modal */
-  modalOverlay: {
+  /* ======================================================== */
+  /* PHONE CONSTRAINED MODAL STYLES                           */
+  /* ======================================================== */
+  modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(37, 24, 56, 0.65)',
     justifyContent: 'center',
-    padding: 20,
+    alignItems: 'center',
+    padding: 16,
   },
-  modalCard: {
+  phoneModalSheet: {
     backgroundColor: UyirinaiTheme.colors.white,
     borderRadius: UyirinaiTheme.borderRadius.xl,
+    width: '100%',
+    maxWidth: 440,
     maxHeight: '85%',
-    padding: 20,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 8,
   },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  sheetHeader: {
+    paddingHorizontal: 18,
+    paddingTop: 10,
     paddingBottom: 12,
     borderBottomWidth: 1,
     borderBottomColor: UyirinaiTheme.colors.borderLight,
+    alignItems: 'center',
   },
-  modalTitle: {
+  sheetHandle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: UyirinaiTheme.colors.border,
+    marginBottom: 8,
+  },
+  sheetTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  sheetTitle: {
     fontSize: 16,
     fontWeight: '800',
     color: UyirinaiTheme.colors.textPrimary,
   },
-  modalClose: {
+  sheetCloseBtn: {
     padding: 4,
   },
-  modalScroll: {
-    paddingVertical: 12,
+  sheetBody: {
+    padding: 18,
   },
-  docModalHero: {
+  doctorSheetHero: {
     alignItems: 'center',
     marginBottom: 16,
   },
-  docModalAvatarCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: UyirinaiTheme.colors.softGreen,
+  heroAvatarBig: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    backgroundColor: UyirinaiTheme.colors.cardBackgroundSoft,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
+    borderWidth: 2,
+    borderColor: UyirinaiTheme.colors.border,
   },
-  docModalName: {
+  heroDoctorName: {
     fontSize: 18,
     fontWeight: '800',
     color: UyirinaiTheme.colors.textPrimary,
   },
-  docModalDesignation: {
+  heroDoctorSpecialty: {
     fontSize: 13,
     fontWeight: '700',
     color: UyirinaiTheme.colors.primary,
     marginTop: 2,
   },
-  docModalDept: {
+  heroDoctorDept: {
     fontSize: 12,
     color: UyirinaiTheme.colors.textSecondary,
     marginTop: 2,
   },
-  modalMetricsRow: {
+  sheetStatsRow: {
     flexDirection: 'row',
-    gap: 8,
-    backgroundColor: UyirinaiTheme.colors.secondaryBackground,
-    padding: 10,
-    borderRadius: UyirinaiTheme.borderRadius.md,
-    marginBottom: 14,
+    alignItems: 'center',
+    backgroundColor: UyirinaiTheme.colors.backgroundSecondary,
+    borderRadius: UyirinaiTheme.borderRadius.lg,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderLight,
   },
-  metricBox: {
+  sheetStatItem: {
     flex: 1,
     alignItems: 'center',
   },
-  metricVal: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: UyirinaiTheme.colors.textPrimary,
+  sheetStatDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: UyirinaiTheme.colors.border,
   },
-  metricLbl: {
+  sheetStatVal: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.primaryDark,
+  },
+  sheetStatLbl: {
     fontSize: 10,
+    fontWeight: '600',
     color: UyirinaiTheme.colors.textMuted,
     textTransform: 'uppercase',
     marginTop: 2,
   },
-  modalSection: {
-    marginBottom: 14,
+  sheetSection: {
+    marginBottom: 16,
   },
-  modalSectionTitle: {
+  sheetSectionHeading: {
     fontSize: 13,
     fontWeight: '800',
     color: UyirinaiTheme.colors.textPrimary,
-    marginBottom: 6,
+    marginBottom: 8,
   },
-  docModalBio: {
+  sheetBioText: {
     fontSize: 13,
     color: UyirinaiTheme.colors.textSecondary,
-    lineHeight: 18,
+    lineHeight: 19,
   },
-  qualificationItem: {
+  qualRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 4,
+    marginBottom: 6,
   },
-  qualText: {
-    fontSize: 12,
+  qualDegree: {
+    fontSize: 13,
     fontWeight: '700',
     color: UyirinaiTheme.colors.textPrimary,
   },
-  scheduleItemRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingVertical: 3,
-  },
-  scheduleItemText: {
-    fontSize: 12,
+  qualInst: {
+    fontWeight: '400',
     color: UyirinaiTheme.colors.textSecondary,
   },
-  modalSelectDoctorBtn: {
-    backgroundColor: UyirinaiTheme.colors.primary,
-    paddingVertical: 12,
-    borderRadius: UyirinaiTheme.borderRadius.lg,
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 16,
+  scheduleDaysGrid: {
+    gap: 6,
   },
-  modalSelectDoctorText: {
+  scheduleDayCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: UyirinaiTheme.colors.cardBackgroundSoft,
+    padding: 10,
+    borderRadius: UyirinaiTheme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: UyirinaiTheme.colors.borderLight,
+  },
+  scheduleDayTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: UyirinaiTheme.colors.textPrimary,
+  },
+  scheduleDayTiming: {
+    fontSize: 11,
+    color: UyirinaiTheme.colors.textSecondary,
+  },
+  sheetCtaBtn: {
+    backgroundColor: UyirinaiTheme.colors.primaryDark,
+    borderRadius: UyirinaiTheme.borderRadius.xl,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 20,
+  },
+  sheetCtaBtnText: {
     color: UyirinaiTheme.colors.white,
     fontSize: 14,
     fontWeight: '800',
   },
 
   /* Success Modal */
-  successModalCard: {
+  successSheetCard: {
     backgroundColor: UyirinaiTheme.colors.white,
     borderRadius: UyirinaiTheme.borderRadius.xl,
     padding: 24,
     alignItems: 'center',
+    width: '100%',
+    maxWidth: 420,
   },
-  successIconCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: '#DEF7EC',
+  successCircle: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    backgroundColor: UyirinaiTheme.colors.primaryDark,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: 14,
   },
-  successModalTitle: {
+  successHeading: {
     fontSize: 18,
     fontWeight: '800',
     color: UyirinaiTheme.colors.textPrimary,
     textAlign: 'center',
     marginBottom: 8,
   },
-  successModalText: {
+  successBody: {
     fontSize: 13,
     color: UyirinaiTheme.colors.textSecondary,
     textAlign: 'center',
     lineHeight: 19,
     marginBottom: 16,
   },
-  refBox: {
-    backgroundColor: UyirinaiTheme.colors.softGreen,
+  bookingRefCard: {
+    backgroundColor: UyirinaiTheme.colors.cardBackgroundSoft,
     borderRadius: UyirinaiTheme.borderRadius.md,
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 10,
     alignItems: 'center',
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: UyirinaiTheme.colors.lightGreen,
+    borderColor: UyirinaiTheme.colors.border,
   },
-  refLabel: {
+  bookingRefTitle: {
     fontSize: 10,
-    fontWeight: '600',
+    fontWeight: '700',
     color: UyirinaiTheme.colors.textMuted,
     textTransform: 'uppercase',
   },
-  refVal: {
-    fontSize: 14,
+  bookingRefCode: {
+    fontSize: 15,
     fontWeight: '800',
     color: UyirinaiTheme.colors.primaryDark,
     marginTop: 2,
   },
-  goToAptsBtn: {
-    backgroundColor: UyirinaiTheme.colors.primary,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+  successActionBtn: {
+    backgroundColor: UyirinaiTheme.colors.primaryDark,
+    paddingVertical: 14,
     borderRadius: UyirinaiTheme.borderRadius.full,
     width: '100%',
     alignItems: 'center',
   },
-  goToAptsText: {
+  successActionBtnText: {
     color: UyirinaiTheme.colors.white,
     fontSize: 14,
     fontWeight: '800',

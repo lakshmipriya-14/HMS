@@ -353,57 +353,59 @@ export default function MedicalHistoryScreen() {
   return (
     <View style={styles.container}>
       {/* 1. TOP 3 TABS SEGMENTED BAR */}
-      <View style={styles.segmentedTabBar}>
-        <Pressable
-          style={[styles.segmentTab, activeTab === 'appointments' && styles.segmentTabActive]}
-          onPress={() => setActiveTab('appointments')}
-          accessibilityRole="tab"
-          accessibilityState={{ selected: activeTab === 'appointments' }}
-        >
-          <Calendar
-            size={16}
-            color={activeTab === 'appointments' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.textSecondary}
-          />
-          <Text
-            style={[styles.segmentTabText, activeTab === 'appointments' && styles.segmentTabTextActive]}
+      <View style={styles.segmentedTabBarWrap}>
+        <View style={styles.segmentedTabBar}>
+          <Pressable
+            style={[styles.segmentTab, activeTab === 'appointments' && styles.segmentTabActive]}
+            onPress={() => setActiveTab('appointments')}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: activeTab === 'appointments' }}
           >
-            Appointments
-          </Text>
-        </Pressable>
+            <Calendar
+              size={16}
+              color={activeTab === 'appointments' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.textSecondary}
+            />
+            <Text
+              style={[styles.segmentTabText, activeTab === 'appointments' && styles.segmentTabTextActive]}
+            >
+              Appointments
+            </Text>
+          </Pressable>
 
-        <Pressable
-          style={[styles.segmentTab, activeTab === 'reports' && styles.segmentTabActive]}
-          onPress={() => setActiveTab('reports')}
-          accessibilityRole="tab"
-          accessibilityState={{ selected: activeTab === 'reports' }}
-        >
-          <HeartPulse
-            size={16}
-            color={activeTab === 'reports' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.textSecondary}
-          />
-          <Text
-            style={[styles.segmentTabText, activeTab === 'reports' && styles.segmentTabTextActive]}
+          <Pressable
+            style={[styles.segmentTab, activeTab === 'reports' && styles.segmentTabActive]}
+            onPress={() => setActiveTab('reports')}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: activeTab === 'reports' }}
           >
-            Reports
-          </Text>
-        </Pressable>
+            <HeartPulse
+              size={16}
+              color={activeTab === 'reports' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.textSecondary}
+            />
+            <Text
+              style={[styles.segmentTabText, activeTab === 'reports' && styles.segmentTabTextActive]}
+            >
+              Reports
+            </Text>
+          </Pressable>
 
-        <Pressable
-          style={[styles.segmentTab, activeTab === 'payments' && styles.segmentTabActive]}
-          onPress={() => setActiveTab('payments')}
-          accessibilityRole="tab"
-          accessibilityState={{ selected: activeTab === 'payments' }}
-        >
-          <CreditCard
-            size={16}
-            color={activeTab === 'payments' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.textSecondary}
-          />
-          <Text
-            style={[styles.segmentTabText, activeTab === 'payments' && styles.segmentTabTextActive]}
+          <Pressable
+            style={[styles.segmentTab, activeTab === 'payments' && styles.segmentTabActive]}
+            onPress={() => setActiveTab('payments')}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: activeTab === 'payments' }}
           >
-            Payments
-          </Text>
-        </Pressable>
+            <CreditCard
+              size={16}
+              color={activeTab === 'payments' ? UyirinaiTheme.colors.white : UyirinaiTheme.colors.textSecondary}
+            />
+            <Text
+              style={[styles.segmentTabText, activeTab === 'payments' && styles.segmentTabTextActive]}
+            >
+              Payments
+            </Text>
+          </Pressable>
+        </View>
       </View>
 
       <ScrollView
@@ -996,14 +998,20 @@ const styles = StyleSheet.create({
   },
 
   /* Segmented Bar */
-  segmentedTabBar: {
-    flexDirection: 'row',
+  segmentedTabBarWrap: {
     backgroundColor: UyirinaiTheme.colors.white,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: UyirinaiTheme.colors.borderLight,
+    width: '100%',
+  },
+  segmentedTabBar: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     gap: 8,
+    width: '100%',
+    maxWidth: 500,
+    alignSelf: 'center',
   },
   segmentTab: {
     flex: 1,
@@ -1036,6 +1044,9 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
     paddingBottom: 40,
+    width: '100%',
+    maxWidth: 500,
+    alignSelf: 'center',
   },
 
   /* Search & Filters */
@@ -1075,7 +1086,7 @@ const styles = StyleSheet.create({
     borderColor: UyirinaiTheme.colors.borderDefault,
   },
   filterChipActive: {
-    backgroundColor: UyirinaiTheme.colors.softGreen,
+    backgroundColor: UyirinaiTheme.colors.softLilac,
     borderColor: UyirinaiTheme.colors.primary,
   },
   filterChipText: {
@@ -1597,13 +1608,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'center',
+    alignItems: 'center',
     padding: 16,
   },
   reportModalCard: {
     backgroundColor: UyirinaiTheme.colors.white,
     borderRadius: UyirinaiTheme.borderRadius.xl,
     padding: 18,
+    width: '100%',
+    maxWidth: 480,
     maxHeight: '90%',
+    shadowColor: UyirinaiTheme.colors.primaryDark,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 5,
   },
   reportModalTopRow: {
     flexDirection: 'row',
@@ -1633,11 +1652,11 @@ const styles = StyleSheet.create({
     maxHeight: 520,
   },
   reportModalTestBanner: {
-    backgroundColor: UyirinaiTheme.colors.softGreenCard,
+    backgroundColor: UyirinaiTheme.colors.softLilac,
     borderRadius: UyirinaiTheme.borderRadius.lg,
     padding: 12,
     borderWidth: 1,
-    borderColor: UyirinaiTheme.colors.lightGreen,
+    borderColor: UyirinaiTheme.colors.lavender,
     marginBottom: 12,
   },
   reportModalTestName: {
@@ -1708,7 +1727,7 @@ const styles = StyleSheet.create({
   },
   paramTableHead: {
     flexDirection: 'row',
-    backgroundColor: UyirinaiTheme.colors.softGreenCard,
+    backgroundColor: UyirinaiTheme.colors.softLilac,
     paddingHorizontal: 8,
     paddingVertical: 7,
     borderBottomWidth: 1,
